@@ -28,10 +28,10 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    // Auto-navigate to onboarding after 2.5 s
+    // Auto-navigate to role selection after 2.5 s
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/customer/onboarding/1');
+        Navigator.pushReplacementNamed(context, '/role-selection');
       }
     });
   }

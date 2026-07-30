@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'app_routes.dart';
 
+// ── Role Selection ─────────────────────────────────────────────────────────────
+import '../role_selection/role_selection_screen.dart';
+
 // ── Screen imports ─────────────────────────────────────────────────────────────
 import '../../customer/splash/splash_screen.dart';
 import '../../customer/onboarding/onboarding_screen1.dart';
@@ -33,6 +36,68 @@ import '../../customer/normal_booking/live_tracking/live_tracking_screen.dart';
 import '../../customer/normal_booking/booking_status/booking_status_screen.dart';
 import '../../customer/normal_booking/work_in_progress/work_in_progress_screen.dart';
 import '../../customer/normal_booking/work_completed/work_completed_screen.dart';
+
+// Worker Module Imports
+import '../../worker/splash/splash_screen.dart';
+import '../../worker/onboarding/onboarding_page1.dart';
+import '../../worker/onboarding/onboarding_page2.dart';
+import '../../worker/onboarding/onboarding_page3.dart';
+import '../../worker/authentication/login/login_screen.dart';
+import '../../worker/authentication/register/register_screen.dart';
+import '../../worker/authentication/otp/otp_screen.dart';
+import '../../worker/profile/personal_information/personal_information_screen.dart';
+import '../../worker/profile/professional_information/professional_information_screen.dart';
+import '../../worker/profile/availability/availability_screen.dart';
+import '../../worker/profile/service_area/service_area_screen.dart';
+import '../../worker/profile/bank_details/bank_details_screen.dart';
+import '../../worker/verification/kyc_verification/kyc_verification_screen.dart';
+import '../../worker/verification/verification_status/verification_status_screen.dart';
+import '../../worker/verification/under_review/under_review_screen.dart';
+import '../../worker/dashboard/dashboard_screen.dart';
+import '../../worker/jobs/incoming_jobs/incoming_jobs_screen.dart';
+import '../../worker/jobs/job_details/job_details_screen.dart';
+import '../../worker/jobs/accept_reject/accept_reject_screen.dart';
+import '../../worker/jobs/active_jobs/active_jobs_screen.dart';
+import '../../worker/jobs/navigation/navigation_screen.dart';
+import '../../worker/jobs/arrival/mark_arrival_screen.dart';
+import '../../worker/jobs/start_work/start_work_screen.dart';
+import '../../worker/jobs/work_progress/work_progress_screen.dart';
+import '../../worker/jobs/complete_work/complete_work_screen.dart';
+import '../../worker/inspection/inspection_request/inspection_request_screen.dart';
+import '../../worker/inspection/inspection_checklist/inspection_checklist_screen.dart';
+import '../../worker/inspection/create_report/create_report_screen.dart';
+import '../../worker/inspection/create_quotation/create_quotation_screen.dart';
+import '../../worker/inspection/submission/submission_screen.dart';
+import '../../worker/inspection/customer_decision/customer_decision_screen.dart';
+import '../../worker/inspection/negotiation_chat/negotiation_chat_screen.dart';
+import '../../worker/inspection/revised_quotation/revised_quotation_screen.dart';
+import '../../worker/inspection/repair_confirmation/repair_confirmation_screen.dart';
+import '../../worker/inspection/repair_dashboard/repair_dashboard_screen.dart';
+import '../../worker/earnings/earnings_dashboard/earnings_dashboard_screen.dart';
+import '../../worker/earnings/wallet/wallet_screen.dart';
+import '../../worker/earnings/payout_history/payout_history_screen.dart';
+import '../../worker/earnings/transaction_details/transaction_details_screen.dart';
+import '../../worker/earnings/payment_accounts/payment_accounts_screen.dart';
+import '../../worker/performance/ratings/ratings_screen.dart';
+import '../../worker/performance/job_history/job_history_screen.dart';
+import '../../worker/performance/analytics/analytics_screen.dart';
+import '../../worker/performance/achievements/achievements_screen.dart';
+import '../../worker/performance/leaderboard/leaderboard_screen.dart';
+import '../../worker/profile/profile_screen.dart';
+import '../../worker/profile/edit_profile/edit_profile_screen.dart';
+import '../../worker/profile/documents/documents_screen.dart';
+import '../../worker/notifications/notifications_screen.dart';
+import '../../worker/settings/settings_screen.dart';
+import '../../worker/support/help_center/help_center_screen.dart';
+import '../../worker/support/live_chat/live_chat_screen.dart';
+import '../../worker/support/report_issue/report_issue_screen.dart';
+import '../../worker/support/ticket_history/ticket_history_screen.dart';
+import '../../worker/support/ticket_details/ticket_details_screen.dart';
+import '../../worker/about/about_screen.dart';
+import '../../worker/legal/terms_conditions/terms_conditions_screen.dart';
+import '../../worker/legal/privacy_policy/privacy_policy_screen.dart';
+import '../../worker/system/no_internet/no_internet_screen.dart';
+import '../../worker/system/system_status/system_status_screen.dart';
 
 // Inspection Booking Imports
 import '../../customer/inspection_booking/inspection_intro/inspection_intro_screen.dart';
@@ -91,9 +156,16 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
 
+      // ── Role Selection ─────────────────────────────────────────────────────────────
+      case AppRoutes.roleSelection:
+        return _build(const RoleSelectionScreen(), settings);
+
       // ── Splash ──────────────────────────────────────────────────────────────
       case AppRoutes.customerSplash:
         return _build(const SplashScreen(), settings);
+
+      case AppRoutes.workerSplash:
+        return _build(const WorkerSplashScreen(), settings);
 
       // ── Onboarding ──────────────────────────────────────────────────────────
       case AppRoutes.customerOnboarding:
@@ -106,9 +178,205 @@ class AppRouter {
       case '/customer/onboarding/3':
         return _build(const OnboardingPage3(), settings);
 
+      case '/worker/onboarding/1':
+        return _build(const WorkerOnboardingPage1(), settings);
+
+      case '/worker/onboarding/2':
+        return _build(const WorkerOnboardingPage2(), settings);
+
+      case '/worker/onboarding/3':
+        return _build(const WorkerOnboardingPage3(), settings);
+
       // ── Auth ────────────────────────────────────────────────────────────────
       case AppRoutes.customerLogin:
         return _build(const LoginScreen(), settings);
+
+      case AppRoutes.workerAuth:
+      case '/worker/auth/login':
+        return _build(const WorkerLoginScreen(), settings);
+
+      case '/worker/auth/register':
+        return _build(const WorkerRegisterScreen(), settings);
+
+      case '/worker/auth/otp':
+        return _build(const WorkerOtpScreen(), settings);
+
+      case '/worker/profile/personal-info':
+        return _build(const WorkerPersonalInformationScreen(), settings);
+
+      case '/worker/profile/professional-info':
+        return _build(const WorkerProfessionalInformationScreen(), settings);
+
+      case '/worker/profile/availability':
+        return _build(const WorkerAvailabilityScreen(), settings);
+
+      case '/worker/profile/service-area':
+        return _build(const WorkerServiceAreaScreen(), settings);
+
+      case '/worker/profile/bank-details':
+        return _build(const WorkerBankDetailsScreen(), settings);
+
+      case AppRoutes.workerKyc:
+      case '/worker/verification/kyc':
+        return _build(const WorkerKycVerificationScreen(), settings);
+
+      case '/worker/verification/status':
+        return _build(const WorkerVerificationStatusScreen(), settings);
+
+      case '/worker/verification/under-review':
+        return _build(const WorkerUnderReviewScreen(), settings);
+
+      case AppRoutes.workerDashboard:
+      case '/worker/dashboard':
+        return _build(const WorkerDashboardScreen(), settings);
+
+      case AppRoutes.workerIncomingJobs:
+      case '/worker/jobs/incoming':
+        return _build(const WorkerIncomingJobsScreen(), settings);
+
+      case '/worker/jobs/details':
+        return _build(const WorkerJobDetailsScreen(), settings);
+
+      case '/worker/jobs/accept-reject':
+        return _build(const WorkerAcceptRejectScreen(), settings);
+
+      case AppRoutes.workerActiveJobs:
+      case '/worker/jobs/active':
+        return _build(const WorkerActiveJobsScreen(), settings);
+
+      case '/worker/jobs/navigation':
+        return _build(const WorkerNavigationScreen(), settings);
+
+      case '/worker/jobs/mark-arrival':
+        return _build(const WorkerMarkArrivalScreen(), settings);
+
+      case '/worker/jobs/start-work':
+        return _build(const WorkerStartWorkScreen(), settings);
+
+      case '/worker/jobs/work-progress':
+        return _build(const WorkerWorkProgressScreen(), settings);
+
+      case '/worker/jobs/complete-work':
+        return _build(const WorkerCompleteWorkScreen(), settings);
+
+      case AppRoutes.workerInspectionReqs:
+      case '/worker/inspection/request':
+        return _build(const WorkerInspectionRequestScreen(), settings);
+
+      case '/worker/inspection/checklist':
+        return _build(const WorkerInspectionChecklistScreen(), settings);
+
+      case '/worker/inspection/create-report':
+        return _build(const WorkerCreateReportScreen(), settings);
+
+      case '/worker/inspection/create-quotation':
+        return _build(const WorkerCreateQuotationScreen(), settings);
+
+      case '/worker/inspection/submission':
+        return _build(const WorkerInspectionSubmissionScreen(), settings);
+
+      case '/worker/inspection/customer-decision':
+        return _build(const WorkerCustomerDecisionScreen(), settings);
+
+      case '/worker/inspection/negotiation-chat':
+        return _build(const WorkerNegotiationChatScreen(), settings);
+
+      case '/worker/inspection/revised-quotation':
+        return _build(const WorkerRevisedQuotationScreen(), settings);
+
+      case '/worker/inspection/repair-confirmation':
+        return _build(const WorkerRepairConfirmationScreen(), settings);
+
+      case '/worker/inspection/repair-dashboard':
+        return _build(const WorkerRepairDashboardScreen(), settings);
+
+      case AppRoutes.workerEarnings:
+      case '/worker/earnings/dashboard':
+        return _build(const WorkerEarningsDashboardScreen(), settings);
+
+      case AppRoutes.workerWallet:
+      case '/worker/earnings/wallet':
+        return _build(const WorkerWalletScreen(), settings);
+
+      case AppRoutes.workerWithdrawals:
+      case '/worker/earnings/payout-history':
+        return _build(const WorkerPayoutHistoryScreen(), settings);
+
+      case '/worker/earnings/transaction-details':
+        return _build(const WorkerTransactionDetailsScreen(), settings);
+
+      case '/worker/earnings/payment-accounts':
+        return _build(const WorkerPaymentAccountsScreen(), settings);
+
+      case AppRoutes.workerRatings:
+      case '/worker/performance/ratings':
+        return _build(const WorkerRatingsScreen(), settings);
+
+      case AppRoutes.workerJobHistory:
+      case '/worker/performance/job-history':
+        return _build(const WorkerJobHistoryScreen(), settings);
+
+      case '/worker/performance/analytics':
+        return _build(const WorkerAnalyticsScreen(), settings);
+
+      case '/worker/performance/achievements':
+        return _build(const WorkerAchievementsScreen(), settings);
+
+      case '/worker/performance/leaderboard':
+        return _build(const WorkerLeaderboardScreen(), settings);
+
+      case AppRoutes.workerProfile:
+      case '/worker/profile':
+        return _build(const WorkerProfileScreen(), settings);
+
+      case '/worker/profile/edit':
+        return _build(const WorkerEditProfileScreen(), settings);
+
+      case AppRoutes.workerDocuments:
+      case '/worker/profile/documents':
+        return _build(const WorkerDocumentsScreen(), settings);
+
+      case AppRoutes.workerNotifications:
+      case '/worker/notifications':
+        return _build(const WorkerNotificationsScreen(), settings);
+
+      case AppRoutes.workerSettings:
+      case '/worker/settings':
+        return _build(const WorkerSettingsScreen(), settings);
+
+      case AppRoutes.workerSupport:
+      case '/worker/support/help-center':
+        return _build(const WorkerHelpCenterScreen(), settings);
+
+      case '/worker/support/live-chat':
+        return _build(const WorkerLiveChatScreen(), settings);
+
+      case '/worker/support/report-issue':
+        return _build(const WorkerReportIssueScreen(), settings);
+
+      case '/worker/support/ticket-history':
+        return _build(const WorkerTicketHistoryScreen(), settings);
+
+      case '/worker/support/ticket-details':
+        return _build(const WorkerTicketDetailsScreen(), settings);
+
+      case AppRoutes.workerAbout:
+      case '/worker/about':
+        return _build(const WorkerAboutScreen(), settings);
+
+      case AppRoutes.workerTerms:
+      case '/worker/legal/terms':
+        return _build(const WorkerTermsConditionsScreen(), settings);
+
+      case AppRoutes.workerPrivacy:
+      case '/worker/legal/privacy':
+        return _build(const WorkerPrivacyPolicyScreen(), settings);
+
+      case '/worker/system/no-internet':
+        return _build(const WorkerNoInternetScreen(), settings);
+
+      case '/worker/system/status':
+        return _build(const WorkerSystemStatusScreen(), settings);
 
       case AppRoutes.customerRegister:
         return _build(const RegisterScreen(), settings);

@@ -38,7 +38,6 @@ class HireMeApp extends StatelessWidget {
       theme:     AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: AppRoutes.customerSplash,
       onGenerateRoute: AppRouter.generateRoute,
       home: const SplashScreen(),
     );

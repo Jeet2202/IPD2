@@ -1,6 +1,9 @@
 class AppRoutes {
   AppRoutes._();
 
+  // ── Shared ─────────────────────────────────────────────
+  static const String roleSelection         = '/role-selection';
+
   // ── Customer ──────────────────────────────────────────
   static const String customerSplash        = '/customer/splash';
   static const String customerOnboarding    = '/customer/onboarding';
@@ -106,12 +109,16 @@ class AppRoutes {
   static const String workerWithdrawals     = '/worker/withdrawals';
   static const String workerWallet          = '/worker/wallet';
   static const String workerRatings         = '/worker/ratings';
+  static const String workerJobHistory      = '/worker/performance/job-history';
   static const String workerNotifications   = '/worker/notifications';
   static const String workerChat            = '/worker/chat';
   static const String workerProfile         = '/worker/profile';
   static const String workerDocuments       = '/worker/documents';
   static const String workerSupport         = '/worker/support';
   static const String workerSettings        = '/worker/settings';
+  static const String workerAbout           = '/worker/about';
+  static const String workerTerms           = '/worker/legal/terms';
+  static const String workerPrivacy         = '/worker/legal/privacy';
 
   // ── Admin ─────────────────────────────────────────────
   static const String adminAuth             = '/admin/auth';
