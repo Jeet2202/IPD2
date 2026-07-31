@@ -1,13 +1,75 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_dimensions.dart';
+import '../../widgets/app_button.dart';
 
-class EmptyStateWidget extends StatelessWidget {{
-  const EmptyStateWidget({{super.key}});
+class EmptyStateWidget extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onActionPressed;
+
+  const EmptyStateWidget({
+    super.key,
+    this.icon = Icons.inbox_outlined,
+    this.title = 'No Data Available',
+    this.message = 'There is nothing to display right now.',
+    this.actionLabel,
+    this.onActionPressed,
+  });
 
   @override
-  Widget build(BuildContext context) {{
-    return Scaffold(
-      appBar: AppBar(title: const Text('E m p t y S t a t e W i d g e t')),
-      body: const Center(child: Text('E m p t y S t a t e W i d g e t')),
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppDimensions.lg),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: AppDimensions.iconXl,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.md),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppDimensions.xs),
+            Text(
+              message,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (actionLabel != null && onActionPressed != null) ...[
+              const SizedBox(height: AppDimensions.lg),
+              AppButton(
+                label: actionLabel!,
+                onPressed: onActionPressed,
+                width: 200,
+              ),
+            ],
+          ],
+        ),
+      ),
     );
-  }}
-}}
+  }
+}

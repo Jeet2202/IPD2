@@ -12,8 +12,6 @@ class WorkerEarningsDashboardScreen extends StatefulWidget {
 
 class _WorkerEarningsDashboardScreenState
     extends State<WorkerEarningsDashboardScreen> {
-  int _currentNavIndex = 2;
-
   final List<Map<String, String>> _recentTransactions = [
     {
       'title': 'AC Maintenance Repair #JOB-8821',
@@ -79,7 +77,7 @@ class _WorkerEarningsDashboardScreenState
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2563EB).withOpacity(0.25),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.25),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -104,7 +102,7 @@ class _WorkerEarningsDashboardScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: const Text(
@@ -227,7 +225,7 @@ class _WorkerEarningsDashboardScreenState
                   border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -375,7 +373,7 @@ class _WorkerEarningsDashboardScreenState
                     ),
                   ),
                 );
-              }).toList(),
+              }),
 
               const SizedBox(height: 24),
             ],

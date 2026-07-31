@@ -137,7 +137,15 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _messages.add({
+                          'isMe': true,
+                          'text': 'I would like to offer ₹4,700 for the entire DB replacement & wiring.',
+                          'time': 'Just now',
+                        });
+                      });
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFF2563EB)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -148,7 +156,7 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF16A34A),
                       foregroundColor: Colors.white,

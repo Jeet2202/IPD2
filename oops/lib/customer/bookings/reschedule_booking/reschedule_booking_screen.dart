@@ -217,7 +217,10 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Confirm Reschedule Action
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Booking rescheduled successfully!'), backgroundColor: Color(0xFF16A34A)),
+                    );
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),

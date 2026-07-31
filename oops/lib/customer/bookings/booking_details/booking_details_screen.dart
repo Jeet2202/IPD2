@@ -2,6 +2,7 @@
 // lib/customer/bookings/booking_details/booking_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class BookingDetailsScreen extends StatelessWidget {
   const BookingDetailsScreen({super.key});
@@ -91,7 +92,11 @@ class BookingDetailsScreen extends StatelessWidget {
                         decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                         child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: Container(
@@ -99,7 +104,7 @@ class BookingDetailsScreen extends StatelessWidget {
                         decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                         child: const Icon(Icons.chat_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                     ),
                   ],
                 ),
@@ -177,7 +182,7 @@ class BookingDetailsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.repairTracking),
                   icon: const Icon(Icons.speed_rounded, size: 20),
                   label: const Text('Track Live Progress', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
@@ -195,7 +200,7 @@ class BookingDetailsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.rescheduleBooking),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(color: Color(0xFFCBD5E1)),
@@ -208,7 +213,7 @@ class BookingDetailsScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.cancelBooking),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: const BorderSide(color: Color(0xFFEF4444)),

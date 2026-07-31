@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/market_price_comparison/market_price_comparison_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class MarketPriceComparisonScreen extends StatelessWidget {
   const MarketPriceComparisonScreen({super.key});
@@ -198,9 +199,7 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Quotation Review
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.quotationReview),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

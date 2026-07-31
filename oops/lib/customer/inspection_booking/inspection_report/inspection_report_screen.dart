@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_report/inspection_report_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionReportScreen extends StatelessWidget {
   const InspectionReportScreen({super.key});
@@ -203,9 +204,7 @@ class InspectionReportScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Market Price Comparison
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.priceComparison),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

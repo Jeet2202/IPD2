@@ -44,7 +44,7 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                      color: const Color(0xFF2563EB).withOpacity(0.2)),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -287,7 +287,7 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
               border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 3),
                 ),
@@ -332,7 +332,7 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

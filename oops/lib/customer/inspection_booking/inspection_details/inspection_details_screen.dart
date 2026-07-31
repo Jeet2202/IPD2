@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_details/inspection_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionDetailsScreen extends StatefulWidget {
   const InspectionDetailsScreen({super.key});
@@ -301,9 +302,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Schedule
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionSchedule),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

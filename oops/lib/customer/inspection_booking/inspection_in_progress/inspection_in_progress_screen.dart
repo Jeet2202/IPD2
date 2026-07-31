@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_in_progress/inspection_in_progress_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionInProgressScreen extends StatefulWidget {
   const InspectionInProgressScreen({super.key});
@@ -114,7 +115,11 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                         decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                         child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -251,7 +256,7 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                       icon: const Icon(Icons.chat_outlined, size: 18),
                       label: const Text('Chat with Sunil'),
                       style: OutlinedButton.styleFrom(
@@ -265,7 +270,7 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
                       icon: const Icon(Icons.support_agent_rounded, size: 18),
                       label: const Text('Contact Support'),
                       style: ElevatedButton.styleFrom(
@@ -278,6 +283,24 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                     ),
                   ),
                 ],
+              ),
+
+              const SizedBox(height: 16),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionReport),
+                  icon: const Icon(Icons.assessment_rounded, size: 20),
+                  label: const Text('View Diagnostic Report & Quote', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 24),

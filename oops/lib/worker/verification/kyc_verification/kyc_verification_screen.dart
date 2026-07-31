@@ -113,7 +113,7 @@ class _WorkerKycVerificationScreenState
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2563EB).withOpacity(0.25),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.25),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -137,7 +137,7 @@ class _WorkerKycVerificationScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -157,7 +157,7 @@ class _WorkerKycVerificationScreenState
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 8,
-                        backgroundColor: Colors.white.withOpacity(0.3),
+                        backgroundColor: Colors.white.withValues(alpha: 0.3),
                         valueColor:
                             const AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
@@ -169,7 +169,7 @@ class _WorkerKycVerificationScreenState
                           : 'Please upload mandatory documents to start earning.',
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -261,7 +261,7 @@ class _WorkerKycVerificationScreenState
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                      color: const Color(0xFF2563EB).withOpacity(0.2)),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
                 ),
                 child: const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +357,7 @@ class _WorkerKycVerificationScreenState
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

@@ -1,13 +1,14 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-class AdminReportsScreen extends StatelessWidget {{
-  const AdminReportsScreen({{super.key}});
+class AdminReportsScreen extends StatelessWidget {
+  const AdminReportsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {{
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('A d m i n R e p o r t s S c r e e n')),
-      body: const Center(child: Text('A d m i n R e p o r t s S c r e e n')),
+      appBar: AppBar(title: const Text('Admin Reports Screen')),
+      body: const Center(child: Text('Admin Reports Screen')),
     );
-  }}
-}}
+  }
+}
+
