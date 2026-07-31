@@ -1,0 +1,54 @@
+# =============================================================================
+# Production Dependencies — Blue-Collar Service Marketplace
+# Python 3.11 | Pinned for reproducible builds
+# =============================================================================
+
+# --- Web Framework ---
+# Async API framework with automatic OpenAPI docs, dependency injection,
+# and Pydantic-native request/response validation.
+fastapi==0.115.12
+
+# --- ASGI Server ---
+# Production ASGI server. [standard] extras install uvloop (faster event loop)
+# and httptools (faster HTTP parsing) for C-level performance on Linux.
+uvicorn[standard]==0.34.2
+
+# --- Database ---
+# Official async MongoDB driver. Required by Beanie internally.
+# Provides the async connection pool to MongoDB Atlas.
+motor==3.7.1
+
+# Async MongoDB ODM built on Motor + Pydantic v2.
+# Maps MongoDB documents to typed Pydantic models with async CRUD operations.
+beanie==1.27.0
+
+# --- Validation & Settings ---
+# Data validation library (v2). [email] adds email-validator for user email
+# fields in future service provider / customer models.
+pydantic[email]==2.11.5
+
+# Typed settings management. Reads .env files and environment variables
+# into validated Pydantic models. Single source of truth for all config.
+pydantic-settings==2.9.1
+
+# .env file parser. Used internally by pydantic-settings to load
+# environment variables from .env files during local development.
+python-dotenv==1.1.0
+
+# --- Utilities ---
+# Required by FastAPI for Form() data parsing and file upload handling.
+# Needed for future Cloudinary image uploads and form-based inputs.
+python-multipart==0.0.20
+
+# --- Security ---
+# Password hashing via bcrypt with automatic salt generation,
+# configurable work factor, and hash-upgrade support.
+passlib[bcrypt]==1.7.4
+
+# Pinned because passlib 1.7.4 is incompatible with bcrypt 5.x
+# (bcrypt 5 removed __about__ and changed hashpw() API).
+bcrypt==4.2.1
+
+# JWT token creation and validation. Actively maintained replacement
+# for python-jose. Used by the auth module for access/refresh tokens.
+PyJWT==2.10.1

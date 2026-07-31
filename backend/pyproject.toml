@@ -1,0 +1,31 @@
+[project]
+name = "service-marketplace"
+version = "0.1.0"
+description = "Production-ready blue-collar service marketplace backend"
+requires-python = "==3.11.*"
+readme = "README.md"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (import sorting)
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade (modern Python syntax)
+    "ASYNC",# flake8-async (async best practices)
+]
+ignore = [
+    "E501", # line length handled by formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
