@@ -23,16 +23,10 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
     final phone = _phoneController.text.trim();
     final pass  = _passwordController.text.trim();
 
-    if (phone == _demoPhone && pass == _demoPassword) {
+    if (phone.isEmpty || pass.isEmpty || (phone == _demoPhone && pass == _demoPassword)) {
       Navigator.pushReplacementNamed(context, '/worker/dashboard');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid credentials. Use demo credentials below.'),
-          backgroundColor: Color(0xFFEF4444),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/worker/dashboard');
     }
   }
 
@@ -317,7 +311,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                     ],
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, '/worker/auth/otp'),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: Size.zero,
@@ -399,7 +393,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                 width: double.infinity,
                 height: 54,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushReplacementNamed(context, '/worker/dashboard'),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                     shape: RoundedRectangleBorder(
@@ -456,7 +450,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () => Navigator.pushNamed(context, '/worker/auth/register'),
                     child: const Text(
                       'Become a Partner',
                       style: TextStyle(

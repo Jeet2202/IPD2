@@ -120,7 +120,7 @@ class _SearchScreenState extends State<SearchScreen> {
         title: Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: Container(
-            height: 48,
+            height: 44,
             decoration: BoxDecoration(
               color: const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(14),
@@ -130,32 +130,26 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               autofocus: true,
               onChanged: _onSearchChanged,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF0F172A)),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF0F172A)),
               decoration: InputDecoration(
-                hintText: 'Search services, electrician, plumber...',
-                hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
-                prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2563EB), size: 22),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_query.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.cancel_rounded, color: Color(0xFF94A3B8), size: 20),
+                hintText: 'Search services...',
+                hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2563EB), size: 20),
+                suffixIcon: _query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.cancel_rounded, color: Color(0xFF94A3B8), size: 18),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
                         },
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.mic_none_rounded, color: Color(0xFF2563EB), size: 20),
+                        onPressed: () {},
                       ),
-                    IconButton(
-                      icon: const Icon(Icons.mic_none_rounded, color: Color(0xFF2563EB), size: 22),
-                      onPressed: () {
-                        // Voice search placeholder
-                      },
-                    ),
-                  ],
-                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
               ),
             ),
           ),
@@ -174,10 +168,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '${filteredServices.length} Services Found',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF475569)),
+                    Expanded(
+                      child: Text(
+                        '${filteredServices.length} Services Found',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF475569)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Row(
                       children: [
                         _buildChipButton(
@@ -389,18 +387,22 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.star_rounded, size: 15, color: Color(0xFFFBBF24)),
-                    const SizedBox(width: 4),
+                    const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFBBF24)),
+                    const SizedBox(width: 2),
                     Text(
                       '${service['rating']} (${service['reviews']})',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
                     ),
-                    const SizedBox(width: 10),
-                    const Icon(Icons.schedule_rounded, size: 14, color: Color(0xFF94A3B8)),
-                    const SizedBox(width: 4),
-                    Text(
-                      service['duration'] as String,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.schedule_rounded, size: 13, color: Color(0xFF94A3B8)),
+                    const SizedBox(width: 2),
+                    Expanded(
+                      child: Text(
+                        service['duration'] as String,
+                        style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ],
                 ),

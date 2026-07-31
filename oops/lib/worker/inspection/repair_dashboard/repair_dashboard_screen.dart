@@ -65,7 +65,7 @@ class _WorkerRepairDashboardScreenState
           IconButton(
             icon: const Icon(Icons.notifications_outlined,
                 color: Color(0xFF0F172A)),
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/worker/notifications'),
           ),
         ],
       ),
@@ -207,7 +207,10 @@ class _WorkerRepairDashboardScreenState
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, '/worker/inspection/submission');
+                              },
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(color: Color(0xFFCBD5E1)),
                                 shape: RoundedRectangleBorder(
@@ -261,9 +264,14 @@ class _WorkerRepairDashboardScreenState
         backgroundColor: Colors.white,
         elevation: 12,
         onTap: (idx) {
-          setState(() => _currentNavIndex = idx);
           if (idx == 0) {
             Navigator.pushReplacementNamed(context, '/worker/dashboard');
+          } else if (idx == 1) {
+            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
+          } else if (idx == 2) {
+            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
+          } else if (idx == 3) {
+            Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
         items: const [

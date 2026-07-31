@@ -383,16 +383,20 @@ class _WorkerEarningsDashboardScreenState
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNavIndex,
+        currentIndex: 2,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         elevation: 12,
         onTap: (idx) {
-          setState(() => _currentNavIndex = idx);
+          if (idx == 2) return;
           if (idx == 0) {
             Navigator.pushReplacementNamed(context, '/worker/dashboard');
+          } else if (idx == 1) {
+            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
+          } else if (idx == 3) {
+            Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
         items: const [
@@ -424,7 +428,7 @@ class _WorkerEarningsDashboardScreenState
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
@@ -433,30 +437,39 @@ class _WorkerEarningsDashboardScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            period,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF64748B),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            amount,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              period,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF64748B),
+              ),
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            change,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              color: color,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              amount,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              change,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
           ),
         ],

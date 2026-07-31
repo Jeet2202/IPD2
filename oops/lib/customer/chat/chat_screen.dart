@@ -118,7 +118,11 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.call_outlined, color: Color(0xFF2563EB)),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Dialing Ramesh Kumar (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+              );
+            },
           ),
         ],
       ),
@@ -168,11 +172,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.sentiment_satisfied_alt_rounded, color: Color(0xFF64748B)),
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Emoji picker opened.')),
+                      );
+                    },
                   ),
                   IconButton(
                     icon: const Icon(Icons.attach_file_rounded, color: Color(0xFF64748B)),
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Select photo or file to attach.')),
+                      );
+                    },
                   ),
                   Expanded(
                     child: Container(

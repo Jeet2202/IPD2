@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/negotiation_chat/negotiation_chat_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class NegotiationChatScreen extends StatefulWidget {
   const NegotiationChatScreen({super.key});
@@ -193,7 +194,20 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                   backgroundColor: const Color(0xFF2563EB),
                   child: IconButton(
                     icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                    onPressed: () {},
+                    onPressed: () {
+                      final text = _msgController.text.trim();
+                      if (text.isNotEmpty) {
+                        setState(() {
+                          _messages.add({
+                            'sender': 'customer',
+                            'text': text,
+                            'time': 'Just now',
+                            'isCounterOffer': false,
+                          });
+                          _msgController.clear();
+                        });
+                      }
+                    },
                   ),
                 ),
               ],
@@ -233,6 +247,21 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
               _buildPriceColumn('Sunil\'s Offer', msg['workerOffer'] as String, const Color(0xFFEF4444)),
               _buildPriceColumn('Fair Estimate', msg['platformEstimate'] as String, const Color(0xFF16A34A)),
             ],
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
+              icon: const Icon(Icons.check_circle_rounded, size: 18),
+              label: const Text('Accept Offer & Start Repair', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF16A34A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
           ),
         ],
       ),

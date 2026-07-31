@@ -2,6 +2,7 @@
 // lib/customer/profile/payment_methods/payment_methods_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -65,7 +66,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                       ],
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.customerWallet),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF2563EB),
@@ -121,7 +122,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Add Payment Method dialog opened. Enter UPI/Card details.')),
+                    );
+                  },
                   icon: const Icon(Icons.add_rounded, size: 20),
                   label: const Text('Add New Card or UPI ID', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
                   style: OutlinedButton.styleFrom(

@@ -238,7 +238,14 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                     ),
                     const SizedBox(width: 12),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Photo attached successfully!'),
+                            backgroundColor: Color(0xFF10B981),
+                          ),
+                        );
+                      },
                       child: Container(
                         width: 76,
                         height: 76,

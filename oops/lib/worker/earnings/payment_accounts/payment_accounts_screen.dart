@@ -199,12 +199,20 @@ class _WorkerPaymentAccountsScreenState
                           Row(
                             children: [
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/worker/profile/bank-details');
+                                },
                                 child: const Text('Edit',
                                     style: TextStyle(fontSize: 12)),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Account removed.'),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   'Remove',
                                   style: TextStyle(
@@ -246,7 +254,10 @@ class _WorkerPaymentAccountsScreenState
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/worker/profile/bank-details');
+                      },
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: const Text('Add UPI VPA'),
                       style: OutlinedButton.styleFrom(

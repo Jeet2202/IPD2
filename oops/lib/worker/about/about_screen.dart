@@ -220,7 +220,14 @@ class WorkerAboutScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Opening Play Store rating...'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.star_outline_rounded, size: 18),
                       label: const Text('Rate Partner App'),
                       style: OutlinedButton.styleFrom(
@@ -236,7 +243,14 @@ class WorkerAboutScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sharing KaamSetu Partner App link...'),
+                            backgroundColor: Color(0xFF0EA5E9),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.share_rounded, size: 18),
                       label: const Text('Share App'),
                       style: OutlinedButton.styleFrom(

@@ -357,7 +357,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                 width: double.infinity,
                 height: 54,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, '/worker/auth/otp'),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                     shape: RoundedRectangleBorder(

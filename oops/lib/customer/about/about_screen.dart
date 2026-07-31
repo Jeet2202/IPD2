@@ -97,7 +97,7 @@ class AboutScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.5,
+                childAspectRatio: 1.3,
                 children: const [
                   _StatBox(val: '50,000+', title: 'Happy Customers'),
                   _StatBox(val: '10,000+', title: 'Verified Pros'),

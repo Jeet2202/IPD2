@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/booking_summary/booking_summary_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class BookingSummaryScreen extends StatefulWidget {
   const BookingSummaryScreen({super.key});
@@ -230,9 +231,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       height: 52,
                       child: ElevatedButton(
                         onPressed: _agreedToTerms
-                            ? () {
-                                // Confirm Booking action placeholder
-                              }
+                            ? () => Navigator.pushNamed(context, AppRoutes.bookingPayment)
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2563EB),
@@ -275,18 +274,28 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(icon, size: 18, color: const Color(0xFF2563EB)),
-                  const SizedBox(width: 8),
-                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(icon, size: 18, color: const Color(0xFF2563EB)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              if (onChangeTap != null)
+              if (onChangeTap != null) ...[
+                const SizedBox(width: 8),
                 GestureDetector(
                   onTap: onChangeTap,
                   child: const Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                 ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -300,14 +309,18 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isBold ? 14 : 13,
-            fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
-            color: isGreen ? const Color(0xFF16A34A) : const Color(0xFF475569),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: isBold ? 14 : 13,
+              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+              color: isGreen ? const Color(0xFF16A34A) : const Color(0xFF475569),
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
+        const SizedBox(width: 8),
         Text(
           value,
           style: TextStyle(

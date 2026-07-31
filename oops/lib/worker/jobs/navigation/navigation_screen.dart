@@ -97,7 +97,14 @@ class WorkerNavigationScreen extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Opening Google Maps navigation...'),
+                          backgroundColor: Color(0xFF0F172A),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.open_in_new_rounded, size: 16),
                     label: const Text('Open Google Maps'),
                     style: ElevatedButton.styleFrom(
@@ -243,12 +250,21 @@ class WorkerNavigationScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.call_rounded,
                             color: Color(0xFF10B981)),
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Calling customer: +91 98765 43210...'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.chat_bubble_outline_rounded,
                             color: Color(0xFF2563EB)),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/worker/support/live-chat');
+                        },
                       ),
                     ],
                   ),

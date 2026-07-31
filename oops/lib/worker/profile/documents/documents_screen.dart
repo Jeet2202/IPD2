@@ -126,7 +126,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, '/worker/verification/kyc'),
                   icon: const Icon(Icons.upload_file_rounded, size: 18),
                   label: const Text('Upload Additional Certificate / Document'),
                   style: OutlinedButton.styleFrom(

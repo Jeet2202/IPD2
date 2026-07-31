@@ -2,6 +2,7 @@
 // lib/customer/favorites/favorite_professionals_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class FavoriteProfessionalsScreen extends StatefulWidget {
   const FavoriteProfessionalsScreen({super.key});
@@ -172,7 +173,7 @@ class _FavoriteProfessionalsScreenState extends State<FavoriteProfessionalsScree
                                     child: Text(fav['available'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () => Navigator.pushNamed(context, AppRoutes.serviceSelection),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF2563EB),
                                       foregroundColor: Colors.white,

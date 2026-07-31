@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/live_tracking/live_tracking_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class LiveTrackingScreen extends StatelessWidget {
   const LiveTrackingScreen({super.key});
@@ -150,7 +151,11 @@ class LiveTrackingScreen extends StatelessWidget {
                           decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                           child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 20),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Calling technician Ramesh Kumar (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                          );
+                        },
                       ),
                       IconButton(
                         icon: Container(
@@ -158,7 +163,7 @@ class LiveTrackingScreen extends StatelessWidget {
                           decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                           child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 20),
                         ),
-                        onPressed: () {},
+                        onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                       ),
                     ],
                   ),
@@ -170,7 +175,11 @@ class LiveTrackingScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Live tracking link copied to clipboard!')),
+                            );
+                          },
                           icon: const Icon(Icons.share_location_rounded, size: 18),
                           label: const Text('Share Live Status'),
                           style: OutlinedButton.styleFrom(
@@ -183,7 +192,18 @@ class LiveTrackingScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Service Start OTP'),
+                                content: const Text('Share code 4829 with technician Ramesh Kumar when he arrives.'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+                                ],
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.qr_code_rounded, size: 18),
                           label: const Text('Show OTP 4829'),
                           style: ElevatedButton.styleFrom(

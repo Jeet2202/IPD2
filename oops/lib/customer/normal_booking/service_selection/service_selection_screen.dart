@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/service_selection/service_selection_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class ServiceSelectionScreen extends StatefulWidget {
   const ServiceSelectionScreen({super.key});
@@ -308,9 +309,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Step 2: Date & Time Slot Selection
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingSchedule),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
@@ -320,9 +319,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Continue to Date & Time',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.2),
+                      Flexible(
+                        child: Text(
+                          'Continue to Date & Time',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.2),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),

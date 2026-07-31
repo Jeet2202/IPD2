@@ -2,6 +2,7 @@
 // lib/customer/offers/offers_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class OffersScreen extends StatefulWidget {
   const OffersScreen({super.key});
@@ -88,7 +89,11 @@ class _OffersScreenState extends State<OffersScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Promo code applied successfully! 🎉'), backgroundColor: Color(0xFF16A34A)),
+                        );
+                      },
                       child: const Text('APPLY', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                     ),
                   ],
@@ -179,7 +184,12 @@ class _OffersScreenState extends State<OffersScreen> {
                                     child: Text(offer['code'] as String, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1, color: Color(0xFF0F172A))),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Promo "${offer['code']}" applied! Redirecting to booking...'), backgroundColor: const Color(0xFF2563EB)),
+                                      );
+                                      Navigator.pushNamed(context, AppRoutes.serviceSelection);
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF2563EB),
                                       foregroundColor: Colors.white,

@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/price_estimation/price_estimation_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class PriceEstimationScreen extends StatefulWidget {
   const PriceEstimationScreen({super.key});
@@ -267,9 +268,7 @@ class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Booking Summary
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingAddress),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

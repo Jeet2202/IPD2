@@ -288,7 +288,21 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                     }).toList(),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          _savedAreas.add({
+                            'name': 'Uttam Nagar, New Delhi',
+                            'pincode': '110059',
+                            'type': 'Secondary'
+                          });
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Added "Uttam Nagar, New Delhi" to service areas'),
+                            backgroundColor: Color(0xFF10B981),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.add_location_alt_outlined, size: 18),
                       label: const Text('Add Area / Locality'),
                       style: OutlinedButton.styleFrom(

@@ -169,7 +169,10 @@ class _WorkerJobHistoryScreenState extends State<WorkerJobHistoryScreen> {
                               ),
                             ),
                             OutlinedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                    context, '/worker/earnings/transaction-details');
+                              },
                               icon: const Icon(Icons.receipt_long_rounded,
                                   size: 14),
                               label: const Text('Invoice'),

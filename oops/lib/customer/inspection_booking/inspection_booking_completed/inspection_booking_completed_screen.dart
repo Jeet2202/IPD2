@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_booking_completed/inspection_booking_completed_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionBookingCompletedScreen extends StatefulWidget {
   const InspectionBookingCompletedScreen({super.key});
@@ -128,7 +129,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
                             icon: const Icon(Icons.receipt_long_rounded, size: 18),
                             label: const Text('Download Invoice'),
                             style: OutlinedButton.styleFrom(
@@ -142,7 +143,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                         const SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionReport),
                             icon: const Icon(Icons.assessment_outlined, size: 18),
                             label: const Text('Full Report'),
                             style: OutlinedButton.styleFrom(
@@ -167,7 +168,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to Home
+                    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerHome, (route) => false);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
@@ -182,7 +183,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
               const SizedBox(height: 12),
 
               TextButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.serviceSelection),
                 child: const Text('Book Another Inspection / Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
               ),
 

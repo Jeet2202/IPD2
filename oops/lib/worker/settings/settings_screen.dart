@@ -1,6 +1,7 @@
 // File: lib/worker/settings/settings_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class WorkerSettingsScreen extends StatefulWidget {
   const WorkerSettingsScreen({super.key});
@@ -101,21 +102,33 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
                 title: 'App Language',
                 subtitle: 'English (India)',
                 icon: Icons.language_rounded,
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('App Language: English (India) selected.'),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 8),
               _buildSettingTile(
                 title: 'Terms of Partner Service',
                 subtitle: 'Legal policies for KaamSetu partners',
                 icon: Icons.description_outlined,
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, '/worker/legal/terms'),
               ),
               const SizedBox(height: 8),
               _buildSettingTile(
                 title: 'App Version',
                 subtitle: 'v1.0.0 Partner Stable (Build 108)',
                 icon: Icons.info_outline_rounded,
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('App is up to date (v1.0.0 Build 108)'),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 32),
@@ -126,8 +139,36 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(
-                        context, '/worker/auth/login');
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                        content: const Text('Are you sure you want to logout from your KaamSetu Partner account?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                AppRoutes.workerAuth,
+                                (route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFEF4444),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),

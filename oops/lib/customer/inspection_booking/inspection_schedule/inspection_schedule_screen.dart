@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_schedule/inspection_schedule_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionScheduleScreen extends StatefulWidget {
   const InspectionScheduleScreen({super.key});
@@ -225,7 +226,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () => Navigator.pushNamed(context, AppRoutes.savedAddresses),
                         child: const Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                       ),
                     ],
@@ -254,9 +255,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Inspector Assigned
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.searchingProfessional),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

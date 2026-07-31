@@ -2,6 +2,7 @@
 // lib/customer/payment/payment_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -210,9 +211,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Invoice / Review
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.searchingWorker),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

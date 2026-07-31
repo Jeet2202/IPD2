@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/quotation_review/quotation_review_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class QuotationReviewScreen extends StatelessWidget {
   const QuotationReviewScreen({super.key});
@@ -156,9 +157,7 @@ class QuotationReviewScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Quotation Decision
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.quotationDecision),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

@@ -159,7 +159,14 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Downloading Tax Invoice PDF...'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.download_rounded, size: 18),
                       label: const Text('Invoice PDF'),
                       style: OutlinedButton.styleFrom(
@@ -175,7 +182,14 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sharing transaction receipt...'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.share_rounded, size: 18),
                       label: const Text('Share Receipt'),
                       style: ElevatedButton.styleFrom(

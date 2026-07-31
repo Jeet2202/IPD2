@@ -122,7 +122,11 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.attach_file_rounded, color: Color(0xFF64748B)),
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Attachment picker opened.')),
+                    );
+                  },
                 ),
                 Expanded(
                   child: Container(
@@ -146,7 +150,15 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                   backgroundColor: const Color(0xFF2563EB),
                   child: IconButton(
                     icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                    onPressed: () {},
+                    onPressed: () {
+                      final text = _msgController.text.trim();
+                      if (text.isNotEmpty) {
+                        setState(() {
+                          _messages.add({'sender': 'user', 'text': text, 'time': 'Just now'});
+                          _msgController.clear();
+                        });
+                      }
+                    },
                   ),
                 ),
               ],

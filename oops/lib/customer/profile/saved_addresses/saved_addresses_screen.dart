@@ -153,11 +153,25 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF64748B)),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Editing address "${addr['title']}"...')),
+                                    );
+                                  },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFEF4444)),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      _addresses.removeAt(index);
+                                      if (_defaultAddressIndex >= _addresses.length) {
+                                        _defaultAddressIndex = 0;
+                                      }
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Address deleted successfully.')),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -175,7 +189,11 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Opening Location Picker to add address...')),
+          );
+        },
         backgroundColor: const Color(0xFF2563EB),
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_location_alt_rounded),

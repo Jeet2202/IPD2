@@ -184,7 +184,14 @@ class _WorkerInspectionChecklistScreenState
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Inspection photo captured!'),
+                            backgroundColor: Color(0xFF8B5CF6),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.camera_alt_outlined, size: 18),
                       label: const Text('Capture Photo'),
                       style: OutlinedButton.styleFrom(
@@ -200,7 +207,14 @@ class _WorkerInspectionChecklistScreenState
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Inspection video clip recorded!'),
+                            backgroundColor: Color(0xFF0EA5E9),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.videocam_outlined, size: 18),
                       label: const Text('Record Clip'),
                       style: OutlinedButton.styleFrom(

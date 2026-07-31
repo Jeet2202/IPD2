@@ -159,7 +159,14 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.download_rounded,
                           color: Color(0xFF2563EB)),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Downloading PDF Report...'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -201,7 +208,10 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(
+                        context, '/worker/inspection/customer-decision');
+                  },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
                     shape: RoundedRectangleBorder(

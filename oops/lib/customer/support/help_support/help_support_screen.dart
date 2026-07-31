@@ -2,6 +2,7 @@
 // lib/customer/support/help_support/help_support_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -15,7 +16,13 @@ class HelpSupportScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+            }
+          },
         ),
         title: const Text(
           'Help & Support',
@@ -32,7 +39,7 @@ class HelpSupportScreen extends StatelessWidget {
             children: [
               // ── Search Help Bar ──────────────────────────────────────
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -41,14 +48,13 @@ class HelpSupportScreen extends StatelessWidget {
                 child: const Row(
                   children: [
                     Icon(Icons.search_rounded, color: Color(0xFF2563EB)),
-                    SizedBox(width: 12),
+                    SizedBox(width: 10),
                     Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Search help topics, refunds, booking issues...',
-                          hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                          border: InputBorder.none,
-                        ),
+                      child: Text(
+                        'Search help topics, refunds, booking issues...',
+                        style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],
@@ -67,7 +73,7 @@ class HelpSupportScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.5,
+                childAspectRatio: 1.3,
                 children: const [
                   _HelpCard(icon: Icons.calendar_today_rounded, title: 'Booking Issues', color: Color(0xFF2563EB)),
                   _HelpCard(icon: Icons.account_balance_wallet_rounded, title: 'Payments & Refund', color: Color(0xFF16A34A)),
@@ -136,7 +142,12 @@ class HelpSupportScreen extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 2),
-                          Text('Diagnostic Inspection Fee Inquiry', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text(
+                            'Diagnostic Inspection Fee Inquiry',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ],
                       ),
                     ),
@@ -164,7 +175,12 @@ class HelpSupportScreen extends StatelessWidget {
                         children: [
                           Text('Emergency Safety SOS 🚨', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B))),
                           SizedBox(height: 2),
-                          Text('Immediate assistance for active on-site safety issues.', style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D))),
+                          Text(
+                            'Immediate assistance for active on-site safety issues.',
+                            style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D)),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
                         ],
                       ),
                     ),
@@ -185,6 +201,64 @@ class HelpSupportScreen extends StatelessWidget {
               const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 2,
+          onTap: (index) {
+            if (index == 2) return;
+            switch (index) {
+              case 0:
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+                }
+                break;
+              case 1:
+                Navigator.pushReplacementNamed(context, AppRoutes.myBookings);
+                break;
+              case 3:
+                Navigator.pushReplacementNamed(context, AppRoutes.customerProfile);
+                break;
+            }
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF2563EB),
+          unselectedItemColor: const Color(0xFF94A3B8),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today_rounded),
+              label: 'Bookings',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.headset_mic_rounded),
+              label: 'Support',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: 'Profile',
+            ),
+          ],
         ),
       ),
     );
@@ -243,14 +317,26 @@ class _ContactBox extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 2),
-                Text(sub, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-              ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    sub,
+                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

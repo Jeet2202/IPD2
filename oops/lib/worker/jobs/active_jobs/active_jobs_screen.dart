@@ -35,7 +35,13 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/worker/dashboard');
+            }
+          },
         ),
         title: const Text(
           'Active & Scheduled Jobs',
@@ -223,7 +229,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/worker/jobs/navigation');
+                        },
                         icon: const Icon(Icons.navigation_rounded, size: 18),
                         label: const Text('Navigate'),
                         style: OutlinedButton.styleFrom(
@@ -239,7 +247,14 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                     const SizedBox(width: 8),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Calling customer: +91 98765 43210...'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.call_rounded, size: 18),
                         label: const Text('Call'),
                         style: OutlinedButton.styleFrom(
@@ -255,7 +270,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                     const SizedBox(width: 8),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/worker/support/live-chat');
+                        },
                         icon: const Icon(Icons.chat_bubble_outline_rounded,
                             size: 18),
                         label: const Text('Chat'),

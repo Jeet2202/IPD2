@@ -1,6 +1,7 @@
 // File: lib/worker/profile/profile_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class WorkerProfileScreen extends StatefulWidget {
   const WorkerProfileScreen({super.key});
@@ -104,12 +105,15 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Text(
-                                    'Ramesh Kumar',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
+                                  const Flexible(
+                                    child: Text(
+                                      'Ramesh Kumar',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   const SizedBox(width: 6),
@@ -256,8 +260,36 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                 height: 52,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(
-                        context, '/worker/auth/login');
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                        content: const Text('Are you sure you want to logout from your KaamSetu Partner account?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                AppRoutes.workerAuth,
+                                (route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFEF4444),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.logout_rounded,
                       color: Color(0xFFEF4444), size: 18),
@@ -284,16 +316,20 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNavIndex,
+        currentIndex: 3,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         elevation: 12,
         onTap: (idx) {
-          setState(() => _currentNavIndex = idx);
+          if (idx == 3) return;
           if (idx == 0) {
             Navigator.pushReplacementNamed(context, '/worker/dashboard');
+          } else if (idx == 1) {
+            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
+          } else if (idx == 2) {
+            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
           }
         },
         items: const [
@@ -328,21 +364,27 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       ),
       child: Column(
         children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+              ),
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF64748B),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF64748B),
+              ),
             ),
           ),
         ],

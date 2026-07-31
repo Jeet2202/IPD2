@@ -2,6 +2,7 @@
 // lib/customer/settings/settings_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -125,7 +126,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.lock_outline_rounded,
                       title: 'Change Password',
                       subtitle: 'Last updated 3 months ago',
-                      onTap: () {},
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Password reset link sent to your registered email.')),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -145,11 +150,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 child: Column(
                   children: [
-                    _SettingTile(icon: Icons.info_outline_rounded, title: 'App Version', subtitle: 'v2.4.0 (Build 9021)', onTap: () {}),
+                    _SettingTile(
+                      icon: Icons.info_outline_rounded,
+                      title: 'App Version',
+                      subtitle: 'v2.4.0 (Build 9021)',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('KaamSetu Customer App is up to date (v2.4.0)')),
+                        );
+                      },
+                    ),
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    _SettingTile(icon: Icons.description_outlined, title: 'Terms of Service', onTap: () {}),
+                    _SettingTile(
+                      icon: Icons.description_outlined,
+                      title: 'Terms of Service',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.termsConditions),
+                    ),
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    _SettingTile(icon: Icons.privacy_tip_outlined, title: 'Privacy Policy', onTap: () {}),
+                    _SettingTile(
+                      icon: Icons.privacy_tip_outlined,
+                      title: 'Privacy Policy',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
+                    ),
                   ],
                 ),
               ),
@@ -161,7 +183,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                        content: const Text('Are you sure you want to logout from your KaamSetu account?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                AppRoutes.customerLogin,
+                                (route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFEF4444),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
                   label: const Text('Logout Account', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
                   style: OutlinedButton.styleFrom(

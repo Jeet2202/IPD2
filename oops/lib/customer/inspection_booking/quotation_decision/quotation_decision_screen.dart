@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/quotation_decision/quotation_decision_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class QuotationDecisionScreen extends StatefulWidget {
   const QuotationDecisionScreen({super.key});
@@ -94,7 +95,7 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
                   icon: const Icon(Icons.check_circle_rounded, size: 22),
                   label: const Text('Accept Quote & Start Repair', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
@@ -168,7 +169,7 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                         width: double.infinity,
                         height: 46,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () => Navigator.pushNamed(context, AppRoutes.negotiationChat),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             foregroundColor: Colors.white,
@@ -189,7 +190,26 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Reject Quotation?'),
+                        content: const Text('Are you sure you want to decline this quote? Sunil Verma will finish the inspection process.'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+                            child: const Text('Reject'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.cancel_outlined, size: 20),
                   label: const Text('Reject Quotation', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                   style: OutlinedButton.styleFrom(

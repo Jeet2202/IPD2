@@ -25,7 +25,11 @@ class InvoiceScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Color(0xFF2563EB)),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sharing Tax Invoice #KS-INV-9812...')),
+              );
+            },
           ),
         ],
       ),
@@ -144,7 +148,14 @@ class InvoiceScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Invoice PDF downloaded to device storage.'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.download_rounded, size: 18),
                       label: const Text('Download PDF'),
                       style: OutlinedButton.styleFrom(

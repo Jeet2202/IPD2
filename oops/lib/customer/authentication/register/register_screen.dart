@@ -261,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () => Navigator.pushNamed(context, AppRoutes.termsConditions),
                             child: const Text(
                               'Terms of Service',
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
@@ -272,7 +272,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
                             child: const Text(
                               'Privacy Policy',
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),

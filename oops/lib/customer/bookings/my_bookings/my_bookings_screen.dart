@@ -2,6 +2,7 @@
 // lib/customer/bookings/my_bookings/my_bookings_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -93,7 +94,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+            }
+          },
         ),
         title: const Text(
           'My Bookings',
@@ -160,6 +167,64 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           ),
         ],
       ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 1,
+          onTap: (index) {
+            if (index == 1) return;
+            switch (index) {
+              case 0:
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+                }
+                break;
+              case 2:
+                Navigator.pushReplacementNamed(context, AppRoutes.helpSupport);
+                break;
+              case 3:
+                Navigator.pushReplacementNamed(context, AppRoutes.customerProfile);
+                break;
+            }
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF2563EB),
+          unselectedItemColor: const Color(0xFF94A3B8),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today_rounded),
+              label: 'Bookings',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.headset_mic_rounded),
+              label: 'Support',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: 'Profile',
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: const Color(0xFF2563EB),
@@ -218,8 +283,15 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 children: [
                   const Icon(Icons.person_outline_rounded, size: 16, color: Color(0xFF64748B)),
                   const SizedBox(width: 6),
-                  Text(b['tech'] as String, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                  const Spacer(),
+                  Expanded(
+                    child: Text(
+                      b['tech'] as String,
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   const Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF64748B)),
                   const SizedBox(width: 6),
                   Text('${b['date']} • ${b['time']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),

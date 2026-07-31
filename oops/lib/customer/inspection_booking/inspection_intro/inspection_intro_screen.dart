@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspection_intro/inspection_intro_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectionIntroScreen extends StatelessWidget {
   const InspectionIntroScreen({super.key});
@@ -198,9 +199,7 @@ class InspectionIntroScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Inspection Details
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionSchedule),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

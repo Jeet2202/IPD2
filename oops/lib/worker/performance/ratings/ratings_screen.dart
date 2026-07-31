@@ -275,7 +275,14 @@ class _WorkerRatingsScreenState extends State<WorkerRatingsScreen> {
                       ] else ...[
                         const SizedBox(height: 10),
                         OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Opening reply editor...'),
+                                backgroundColor: Color(0xFF2563EB),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.reply_rounded, size: 14),
                           label: const Text('Reply to Customer'),
                           style: OutlinedButton.styleFrom(

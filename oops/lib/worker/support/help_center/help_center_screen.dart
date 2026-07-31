@@ -127,7 +127,14 @@ class WorkerHelpCenterScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Calling Support Helpline: 1800-123-4567...'),
+                                  backgroundColor: Color(0xFF2563EB),
+                                ),
+                              );
+                            },
                             icon: const Icon(Icons.call_rounded, size: 18),
                             label: const Text('Call Support'),
                             style: OutlinedButton.styleFrom(

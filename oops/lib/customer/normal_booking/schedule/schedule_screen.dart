@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/schedule/schedule_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -179,7 +180,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingAddress),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: const Color(0xFF2563EB),
@@ -274,9 +275,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Price Estimation
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.priceEstimation),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,

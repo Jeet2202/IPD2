@@ -109,21 +109,25 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void _onBottomNavTapped(int index) {
-    if (index == _currentNavIndex) return;
+  void _onBottomNavTapped(int index) async {
+    if (index == 0) {
+      setState(() => _currentNavIndex = 0);
+      return;
+    }
     setState(() => _currentNavIndex = index);
     switch (index) {
-      case 0:
-        break;
       case 1:
-        Navigator.pushNamed(context, AppRoutes.myBookings);
+        await Navigator.pushNamed(context, AppRoutes.myBookings);
         break;
       case 2:
-        Navigator.pushNamed(context, AppRoutes.helpSupport);
+        await Navigator.pushNamed(context, AppRoutes.helpSupport);
         break;
       case 3:
-        Navigator.pushNamed(context, AppRoutes.customerProfile);
+        await Navigator.pushNamed(context, AppRoutes.customerProfile);
         break;
+    }
+    if (mounted) {
+      setState(() => _currentNavIndex = 0);
     }
   }
 
@@ -239,42 +243,50 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.customerProfile),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFEFF6FF),
-                        border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
-                      ),
-                      child: const CircleAvatar(
-                        backgroundColor: Color(0xFF2563EB),
-                        child: Text(
-                          'R',
-                          style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 18),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.customerProfile),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFEFF6FF),
+                          border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
+                        ),
+                        child: const CircleAvatar(
+                          backgroundColor: Color(0xFF2563EB),
+                          child: Text(
+                            'R',
+                            style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 18),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Good Morning 👋',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF64748B)),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Good Morning 👋',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF64748B)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Rahul Sharma',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Rahul Sharma',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(
@@ -347,6 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, AppRoutes.customerSearch),
         child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -359,25 +372,28 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          child: AbsorbPointer(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search for "AC repair", "Electrician"...',
-                hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
-                prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2563EB), size: 22),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.all(6),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2563EB),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+          child: Row(
+            children: [
+              const Icon(Icons.search_rounded, color: Color(0xFF2563EB), size: 22),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'Search for "AC repair", "Electrician"...',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
-            ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2563EB),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+              ),
+            ],
           ),
         ),
       ),
@@ -493,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisCount: 5,
           mainAxisSpacing: 16,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.72,
+          childAspectRatio: 0.64,
         ),
         itemBuilder: (context, index) {
           final cat = _categories[index];
@@ -692,9 +708,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              pro['distance'] as String,
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                            Expanded(
+                              child: Text(
+                                pro['distance'] as String,
+                                style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             ),
                           ],
                         ),

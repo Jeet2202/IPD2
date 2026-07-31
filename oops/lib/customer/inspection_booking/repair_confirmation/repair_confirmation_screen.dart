@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/repair_confirmation/repair_confirmation_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class RepairConfirmationScreen extends StatelessWidget {
   const RepairConfirmationScreen({super.key});
@@ -132,9 +133,7 @@ class RepairConfirmationScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // Navigate to Repair Tracking
-                  },
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.repairTracking),
                   icon: const Icon(Icons.speed_rounded, size: 20),
                   label: const Text('Track Live Repair Progress', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
@@ -152,7 +151,7 @@ class RepairConfirmationScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF64748B),
                     side: const BorderSide(color: Color(0xFFCBD5E1)),

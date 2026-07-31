@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/inspector_assigned/inspector_assigned_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class InspectorAssignedScreen extends StatelessWidget {
   const InspectorAssignedScreen({super.key});
@@ -143,7 +144,11 @@ class InspectorAssignedScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                              );
+                            },
                             icon: const Icon(Icons.call_rounded, size: 18),
                             label: const Text('Call'),
                             style: OutlinedButton.styleFrom(
@@ -157,7 +162,7 @@ class InspectorAssignedScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                             icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
                             label: const Text('Chat'),
                             style: OutlinedButton.styleFrom(
@@ -171,7 +176,7 @@ class InspectorAssignedScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionTracking),
                             icon: const Icon(Icons.navigation_rounded, size: 18),
                             label: const Text('Track'),
                             style: ElevatedButton.styleFrom(

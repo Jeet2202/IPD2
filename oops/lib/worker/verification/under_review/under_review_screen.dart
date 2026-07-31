@@ -224,7 +224,7 @@ class WorkerUnderReviewScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => Navigator.pushNamed(context, '/worker/support/help-center'),
                   icon: const Icon(Icons.headset_mic_outlined,
                       color: Color(0xFF2563EB)),
                   label: const Text(

@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/repair_tracking/repair_tracking_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class RepairTrackingScreen extends StatelessWidget {
   const RepairTrackingScreen({super.key});
@@ -101,7 +102,11 @@ class RepairTrackingScreen extends StatelessWidget {
                         decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                         child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: Container(
@@ -109,7 +114,7 @@ class RepairTrackingScreen extends StatelessWidget {
                         decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
                         child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
-                      onPressed: () {},
+                      onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                     ),
                   ],
                 ),
@@ -164,6 +169,24 @@ class RepairTrackingScreen extends StatelessWidget {
                     SizedBox(height: 12),
                     _TaskRow(title: 'Load Testing & Thermal Safety Audit', isDone: false),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionCompleted),
+                  icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
+                  label: const Text('Complete Repair & View Summary', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
                 ),
               ),
 

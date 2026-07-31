@@ -84,7 +84,14 @@ class ReferEarnScreen extends StatelessWidget {
                       ],
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Referral code "KAAM-RAHUL99" copied to clipboard!'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.copy_rounded, size: 16),
                       label: const Text('Copy Code'),
                       style: ElevatedButton.styleFrom(
@@ -152,7 +159,14 @@ class ReferEarnScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Sharing KaamSetu invite link...'),
+                        backgroundColor: Color(0xFF16A34A),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.share_rounded, size: 20),
                   label: const Text('Invite Friends Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(

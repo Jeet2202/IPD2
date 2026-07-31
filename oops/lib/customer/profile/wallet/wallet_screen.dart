@@ -113,7 +113,14 @@ class WalletScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Opening Payment Gateway to add ₹500...'),
+                            backgroundColor: Color(0xFF2563EB),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: const Text('Top Up Wallet', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
                       style: ElevatedButton.styleFrom(
@@ -128,7 +135,14 @@ class WalletScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Withdrawal request of ₹1,000 initiated to bank.'),
+                            backgroundColor: Color(0xFF0F172A),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.north_east_rounded, size: 18),
                       label: const Text('Withdraw', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
                       style: OutlinedButton.styleFrom(

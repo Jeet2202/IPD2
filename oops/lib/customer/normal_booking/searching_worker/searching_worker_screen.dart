@@ -1,7 +1,9 @@
 // File:
 // lib/customer/normal_booking/searching_worker/searching_worker_screen.dart
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 
 class SearchingWorkerScreen extends StatefulWidget {
   const SearchingWorkerScreen({super.key});
@@ -20,6 +22,12 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+
+    Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.workerAssigned);
+      }
+    });
   }
 
   @override

@@ -59,39 +59,43 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               ],
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Hello, Ramesh 👋',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Hello, Ramesh 👋',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'Electrician Pro',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2563EB),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Text(
+                          'Electrician Pro',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF2563EB),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -215,7 +219,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 crossAxisCount: 3,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 1.05,
+                childAspectRatio: 0.92,
                 children: [
                   _buildQuickActionItem(
                     label: 'Incoming Jobs',
@@ -237,13 +241,15 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                     label: 'Inspection Jobs',
                     icon: Icons.fact_check_rounded,
                     color: const Color(0xFF8B5CF6),
-                    onTap: () {},
+                    onTap: () =>
+                        Navigator.pushNamed(context, '/worker/inspection/request'),
                   ),
                   _buildQuickActionItem(
                     label: 'Earnings',
                     icon: Icons.payments_rounded,
                     color: const Color(0xFF10B981),
-                    onTap: () {},
+                    onTap: () =>
+                        Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard'),
                   ),
                   _buildQuickActionItem(
                     label: 'Availability',
@@ -381,18 +387,20 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentNavIndex,
+        currentIndex: 0,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         elevation: 12,
         onTap: (index) {
-          setState(() {
-            _currentNavIndex = index;
-          });
+          if (index == 0) return;
           if (index == 1) {
-            Navigator.pushNamed(context, '/worker/jobs/incoming');
+            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
+          } else if (index == 3) {
+            Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
         items: const [
@@ -444,14 +452,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white.withOpacity(0.85),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white.withOpacity(0.85),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 4),
               Icon(icon, color: Colors.white.withOpacity(0.9), size: 20),
             ],
           ),
@@ -509,27 +521,33 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF64748B),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF64748B),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF0F172A),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -573,10 +591,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                   ),
                   child: Icon(icon, color: color, size: 22),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   label,
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
