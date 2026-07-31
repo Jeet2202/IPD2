@@ -57,7 +57,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF2563EB).withOpacity(0.25),
+                            color: const Color(0xFF2563EB).withValues(alpha: 0.25),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -86,7 +86,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0EA5E9).withOpacity(0.12),
+                            color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(

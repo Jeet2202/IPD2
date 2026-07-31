@@ -49,7 +49,14 @@ import WorkerPayouts from '../pages/payments/WorkerPayouts';
 import Refunds from '../pages/payments/Refunds';
 import Revenue from '../pages/payments/Revenue';
 
-// Generic Fallback Placeholder for unbuilt pages
+// System & Analytics Pages (Screens 36 to 40)
+import Analytics from '../pages/analytics/Analytics';
+import Reports from '../pages/reports/Reports';
+import AuditLogs from '../pages/audit_logs/AuditLogs';
+import AdminUsers from '../pages/admins/AdminUsers';
+import Settings from '../pages/settings/Settings';
+
+// Fallback Placeholder Page
 import PlaceholderPage from '../pages/common/PlaceholderPage';
 
 export default function AppRoutes() {
@@ -64,7 +71,7 @@ export default function AppRoutes() {
         <Route path="login" element={<AdminLogin />} />
       </Route>
 
-      {/* Main Admin Application Routes (Screens 1 to 30) */}
+      {/* Main Admin Application Routes (Screens 1 to 40) */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
         
@@ -112,15 +119,18 @@ export default function AppRoutes() {
         <Route path="refunds" element={<Refunds />} />
         <Route path="revenue" element={<Revenue />} />
 
-        {/* Placeholder routes for remaining sidebar items */}
+        {/* Support Module (Screens 31 to 35) */}
         <Route path="complaints" element={<PlaceholderPage />} />
         <Route path="reviews" element={<PlaceholderPage />} />
         <Route path="notifications" element={<PlaceholderPage />} />
-        <Route path="analytics" element={<PlaceholderPage />} />
-        <Route path="reports" element={<PlaceholderPage />} />
-        <Route path="audit-logs" element={<PlaceholderPage />} />
-        <Route path="admins" element={<PlaceholderPage />} />
-        <Route path="settings" element={<PlaceholderPage />} />
+
+        {/* System Module (Screens 36 to 40) */}
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
+        <Route path="admins" element={<AdminUsers />} />
+        <Route path="admin-users" element={<AdminUsers />} />
+        <Route path="settings" element={<Settings />} />
 
         {/* Catch-all sub-route fallback */}
         <Route path="*" element={<PlaceholderPage />} />

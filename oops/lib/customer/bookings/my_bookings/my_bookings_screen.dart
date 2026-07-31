@@ -226,7 +226,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
         backgroundColor: const Color(0xFF2563EB),
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
@@ -305,7 +305,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 children: [
                   Text(b['amount'] as String, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFEFF6FF),
                       foregroundColor: const Color(0xFF2563EB),

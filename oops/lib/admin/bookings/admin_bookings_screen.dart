@@ -1,13 +1,14 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-class AdminBookingsScreen extends StatelessWidget {{
-  const AdminBookingsScreen({{super.key}});
+class AdminBookingsScreen extends StatelessWidget {
+  const AdminBookingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {{
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('A d m i n B o o k i n g s S c r e e n')),
-      body: const Center(child: Text('A d m i n B o o k i n g s S c r e e n')),
+      appBar: AppBar(title: const Text('Admin Bookings Screen')),
+      body: const Center(child: Text('Admin Bookings Screen')),
     );
-  }}
-}}
+  }
+}
+

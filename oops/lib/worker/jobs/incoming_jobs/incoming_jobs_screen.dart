@@ -195,7 +195,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -212,7 +212,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: badgeColor.withOpacity(0.12),
+                                  color: badgeColor.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(

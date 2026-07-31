@@ -31,7 +31,7 @@ class WorkerUnderReviewScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2563EB).withOpacity(0.2),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.2),
                       blurRadius: 32,
                       offset: const Offset(0, 10),
                     ),
@@ -80,7 +80,7 @@ class WorkerUnderReviewScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEF3C7),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.4)),
+                  border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -111,7 +111,7 @@ class WorkerUnderReviewScreen extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
