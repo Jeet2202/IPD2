@@ -36,7 +36,7 @@ from enum import Enum
 
 from beanie import Document, Indexed, before_event, Insert, Replace, Save, SaveChanges
 from pydantic import EmailStr, Field
-from pymongo import DESCENDING, IndexModel
+from pymongo import ASCENDING, DESCENDING, IndexModel
 
 
 # ---------------------------------------------------------------------------
@@ -71,6 +71,24 @@ class AccountStatus(str, Enum):
     INACTIVE = "inactive"
     BLOCKED = "blocked"
     PENDING_VERIFICATION = "pending_verification"
+
+
+class OTPPurpose(str, Enum):
+    """Purpose of the OTP verification request."""
+
+    REGISTRATION = "registration"
+    LOGIN = "login"
+    PASSWORD_RESET = "password_reset"
+    EMAIL_VERIFY = "email_verify"
+    PHONE_VERIFY = "phone_verify"
+
+
+class LoginStatus(str, Enum):
+    """Status of a login attempt."""
+
+    SUCCESS = "success"
+    FAILED = "failed"
+    LOCKED = "locked"
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +233,15 @@ class User(Document):
         default=None,
         description="Timestamp of the most recent successful login",
     )
+    failed_login_attempts: int = Field(
+        default=0,
+        ge=0,
+        description="Consecutive failed login attempts for brute force tracking",
+    )
+    locked_until: datetime | None = Field(
+        default=None,
+        description="Timestamp until which the account is temporarily locked",
+    )
 
     # --- Extensibility ---
     metadata: dict = Field(
@@ -304,3 +331,178 @@ class User(Document):
             f"<User id={self.id} email={self.email} "
             f"role={self.role.value} status={self.account_status.value}>"
         )
+
+
+# =============================================================================
+# OTP Verification Record (Beanie Document)
+# =============================================================================
+
+class OTPRecord(Document):
+    """
+    Secure OTP verification document stored in MongoDB.
+    OTPs are hashed with bcrypt before storage; never saved in plain text.
+    Uses a MongoDB TTL index on expires_at for automatic cleanup.
+    """
+
+    identifier: Indexed(str) = Field(  # type: ignore[valid-type]
+        ...,
+        description="Target email address or E.164 phone number",
+    )
+    otp_hash: str = Field(
+        ...,
+        description="Bcrypt hash of the 6-digit OTP",
+    )
+    purpose: OTPPurpose = Field(
+        ...,
+        description="Action for which OTP was generated",
+    )
+    expires_at: datetime = Field(
+        ...,
+        description="Timestamp after which OTP becomes invalid (TTL indexed)",
+    )
+    retry_count: int = Field(
+        default=0,
+        ge=0,
+        description="Failed verification attempts (max allowed: 5)",
+    )
+    resend_count: int = Field(
+        default=0,
+        ge=0,
+        description="Times OTP was resent for this request (max allowed: 3)",
+    )
+    is_used: bool = Field(
+        default=False,
+        description="True once verified to prevent reuse",
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Creation timestamp (UTC)",
+    )
+
+    class Settings:
+        name = "auth_otp_records"
+        use_state_management = False
+        indexes = [
+            IndexModel(
+                [("identifier", ASCENDING), ("purpose", ASCENDING), ("created_at", DESCENDING)],
+                name="idx_otp_lookup",
+            ),
+            # MongoDB TTL Index: automatically deletes expired OTP documents
+            IndexModel(
+                [("expires_at", ASCENDING)],
+                name="idx_otp_ttl",
+                expireAfterSeconds=0,
+            ),
+        ]
+
+
+# =============================================================================
+# User Session Management (Beanie Document)
+# =============================================================================
+
+class UserSession(Document):
+    """
+    Tracks active user devices and refresh tokens for selective or global logout.
+    """
+
+    user_id: Indexed(str) = Field(  # type: ignore[valid-type]
+        ...,
+        description="Owner User ObjectId string",
+    )
+    session_id: Indexed(str, unique=True) = Field(  # type: ignore[valid-type]
+        ...,
+        description="Unique session UUID4 identifier",
+    )
+    refresh_token_jti: str | None = Field(
+        default=None,
+        description="JTI claim of current active refresh token",
+    )
+    ip_address: str | None = Field(
+        default=None,
+        max_length=50,
+        description="Client origin IP address",
+    )
+    device: str | None = Field(
+        default=None,
+        max_length=255,
+        description="Client User-Agent or device name",
+    )
+    is_revoked: bool = Field(
+        default=False,
+        description="True if session was explicitly logged out",
+    )
+    last_active: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp of most recent activity on this session",
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Session creation timestamp",
+    )
+
+    class Settings:
+        name = "auth_user_sessions"
+        use_state_management = True
+        indexes = [
+            IndexModel(
+                [("user_id", ASCENDING), ("is_revoked", ASCENDING), ("last_active", DESCENDING)],
+                name="idx_user_active_sessions",
+            ),
+        ]
+
+
+# =============================================================================
+# Login History Ledger (Beanie Document)
+# =============================================================================
+
+class LoginHistory(Document):
+    """
+    Immutable audit ledger of user login attempts.
+    """
+
+    user_id: str | None = Field(
+        default=None,
+        description="Owner User ObjectId string if known",
+    )
+    identifier: str = Field(
+        ...,
+        max_length=150,
+        description="Email address or phone number attempted",
+    )
+    status: LoginStatus = Field(
+        ...,
+        description="Outcome: success, failed, or locked",
+    )
+    failure_reason: str | None = Field(
+        default=None,
+        max_length=255,
+        description="Explanation if status is failed or locked",
+    )
+    ip_address: str | None = Field(
+        default=None,
+        max_length=50,
+        description="Client origin IP address",
+    )
+    device: str | None = Field(
+        default=None,
+        max_length=255,
+        description="Client User-Agent or device name",
+    )
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Attempt timestamp (UTC)",
+    )
+
+    class Settings:
+        name = "auth_login_history"
+        use_state_management = False
+        indexes = [
+            IndexModel(
+                [("user_id", ASCENDING), ("timestamp", DESCENDING)],
+                name="idx_login_history_user",
+            ),
+            IndexModel(
+                [("identifier", ASCENDING), ("timestamp", DESCENDING)],
+                name="idx_login_history_identifier",
+            ),
+        ]

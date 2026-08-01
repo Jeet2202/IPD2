@@ -40,7 +40,8 @@ from pydantic import (
     model_validator,
 )
 
-from app.auth.models import AccountStatus, UserRole
+from app.auth.models import AccountStatus, LoginStatus, OTPPurpose, UserRole
+from app.auth.security import TokenPair
 
 
 # ---------------------------------------------------------------------------
@@ -401,3 +402,196 @@ class UserResponse(BaseModel):
         return a plain string for frontend compatibility.
         """
         return str(value)
+
+
+# ---------------------------------------------------------------------------
+# Phase 3.2 Authentication API Schemas
+# ---------------------------------------------------------------------------
+
+class LoginRequest(BaseModel):
+    """
+    Flexible login payload supporting either email address or E.164 phone number.
+    """
+    identifier: str = Field(
+        ...,
+        description="Registered email address OR phone number (+E.164 format)",
+        examples=["rajesh.kumar@example.com", "+919876543210"],
+    )
+    password: str = Field(
+        ...,
+        min_length=1,
+        max_length=_MAX_PASSWORD_LENGTH,
+        description="Account password",
+    )
+
+    @field_validator("identifier")
+    @classmethod
+    def normalize_identifier(cls, value: str) -> str:
+        return value.strip()
+
+
+class RefreshTokenRequest(BaseModel):
+    """Payload containing a refresh token to rotate sessions."""
+    refresh_token: str = Field(..., description="Current JWT refresh token")
+
+
+class ChangePasswordRequest(BaseModel):
+    """Payload to change an authenticated user's password."""
+    current_password: str = Field(..., description="User's current password")
+    new_password: str = Field(
+        ...,
+        min_length=_MIN_PASSWORD_LENGTH,
+        max_length=_MAX_PASSWORD_LENGTH,
+        description="New password meeting OWASP strength criteria",
+    )
+
+
+class ForgotPasswordRequest(BaseModel):
+    """Payload to request a password reset link."""
+    email: EmailStr = Field(..., description="Registered email address")
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.strip().lower()
+
+
+class ForgotPasswordResponse(BaseModel):
+    """Response returned upon initiating password recovery."""
+    message: str = Field(..., description="User-facing status message")
+    reset_token: str = Field(..., description="Secure password reset token (development preview)")
+
+
+class ResetPasswordRequest(BaseModel):
+    """Payload to reset password using a recovery token."""
+    token: str = Field(..., description="Password reset token")
+    new_password: str = Field(
+        ...,
+        min_length=_MIN_PASSWORD_LENGTH,
+        max_length=_MAX_PASSWORD_LENGTH,
+        description="New password meeting OWASP strength criteria",
+    )
+
+
+class VerifyEmailRequest(BaseModel):
+    """Payload to verify user email address."""
+    token: str = Field(..., description="Email verification token")
+
+
+class VerifyPhoneRequest(BaseModel):
+    """Payload to verify user phone number via SMS OTP."""
+    otp: str = Field(..., min_length=4, max_length=8, description="SMS OTP code")
+
+
+class AuthResponse(BaseModel):
+    """Authenticated session response containing profile and JWT tokens."""
+    user: UserResponse
+    tokens: TokenPair
+
+
+class MessageResponse(BaseModel):
+    """Generic status message response."""
+    message: str
+    success: bool = True
+
+
+# =============================================================================
+# OTP System Schemas (Phase 3.3)
+# =============================================================================
+
+class SendOTPRequest(BaseModel):
+    """Payload to request an OTP code sent to an email or phone number."""
+    identifier: str = Field(..., max_length=150, description="Email address or E.164 phone number")
+    purpose: OTPPurpose = Field(..., description="Target purpose for OTP verification")
+
+    @field_validator("identifier")
+    @classmethod
+    def normalize_identifier(cls, value: str) -> str:
+        return value.strip()
+
+
+class VerifyOTPRequest(BaseModel):
+    """Payload to verify a received 6-digit OTP code."""
+    identifier: str = Field(..., max_length=150, description="Email address or E.164 phone number")
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern="^[0-9]{6}$",
+        description="6-digit numeric OTP code",
+    )
+    purpose: OTPPurpose = Field(..., description="Target purpose matching OTP generation")
+
+    @field_validator("identifier")
+    @classmethod
+    def normalize_identifier(cls, value: str) -> str:
+        return value.strip()
+
+
+class ResendOTPRequest(BaseModel):
+    """Payload to request resending an unexpired OTP code."""
+    identifier: str = Field(..., max_length=150, description="Email address or E.164 phone number")
+    purpose: OTPPurpose = Field(..., description="Target purpose matching original OTP request")
+
+    @field_validator("identifier")
+    @classmethod
+    def normalize_identifier(cls, value: str) -> str:
+        return value.strip()
+
+
+class OTPResponse(BaseModel):
+    """Response returned upon successfully sending or resending an OTP code."""
+    success: bool = True
+    message: str = Field(..., description="Status message")
+    expires_in_seconds: int = Field(default=600, description="TTL in seconds until OTP expires")
+
+
+class OTPLoginRequest(BaseModel):
+    """Payload to authenticate via identifier and verified OTP code."""
+    identifier: str = Field(..., max_length=150, description="Email address or E.164 phone number")
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern="^[0-9]{6}$",
+        description="6-digit numeric OTP code",
+    )
+
+    @field_validator("identifier")
+    @classmethod
+    def normalize_identifier(cls, value: str) -> str:
+        return value.strip()
+
+
+# =============================================================================
+# Session Management & Login History Schemas (Phase 3.3)
+# =============================================================================
+
+class SessionResponse(BaseModel):
+    """Public representation of an active user session."""
+    session_id: str
+    ip_address: str | None
+    device: str | None
+    is_revoked: bool
+    last_active: datetime
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LogoutDeviceRequest(BaseModel):
+    """Payload to revoke a specific session by its session ID."""
+    session_id: str = Field(..., description="UUID4 session identifier to log out")
+
+
+class LoginHistoryResponse(BaseModel):
+    """Public audit log entry for a user login attempt."""
+    identifier: str
+    status: LoginStatus
+    failure_reason: str | None
+    ip_address: str | None
+    device: str | None
+    timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+

@@ -65,7 +65,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     )
 
     # Import all Beanie Document models for initialization
-    from app.auth.models import User
+    from app.auth.models import LoginHistory, OTPRecord, User, UserSession
     from app.customer.models import CustomerProfile
     from app.worker.models import WorkerProfile
     from app.category.models import ServiceCategory, Service
@@ -81,6 +81,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
     await connect_to_database(document_models=[
         User,
+        OTPRecord,
+        UserSession,
+        LoginHistory,
         CustomerProfile,
         WorkerProfile,
         ServiceCategory,
