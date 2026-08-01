@@ -170,5 +170,68 @@ class AppTheme {
         ),
       );
 
-  static ThemeData get darkTheme => lightTheme;
+  static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          primary: AppColors.primaryLight,
+          secondary: AppColors.secondaryLight,
+          surface: AppColors.darkSurface,
+          error: AppColors.error,
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: AppColors.darkBackground,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.darkSurface,
+          foregroundColor: AppColors.darkTextPrimary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          iconTheme: IconThemeData(color: AppColors.darkTextPrimary, size: 24),
+          actionsIconTheme: IconThemeData(color: AppColors.darkTextPrimary, size: 24),
+          titleTextStyle: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.darkTextPrimary,
+          ),
+        ),
+        textTheme: AppTextStyles.textTheme.apply(
+          bodyColor: AppColors.darkTextPrimary,
+          displayColor: AppColors.darkTextPrimary,
+        ),
+        cardTheme: CardThemeData(
+          color: AppColors.darkSurface,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+            side: const BorderSide(color: AppColors.darkBorder),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColors.darkSurface,
+          hintStyle: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            color: AppColors.textHint,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.darkBorder),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.darkBorder),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.error),
+          ),
+        ),
+      );
 }

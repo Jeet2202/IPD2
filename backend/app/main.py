@@ -63,7 +63,41 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         settings.APP_VERSION,
         settings.ENVIRONMENT.value,
     )
-    await connect_to_database(document_models=[])
+
+    # Import all Beanie Document models for initialization
+    from app.auth.models import User
+    from app.customer.models import CustomerProfile
+    from app.worker.models import WorkerProfile
+    from app.category.models import ServiceCategory, Service
+    from app.pricing.models import ServicePriceGuide, PricingConfiguration
+    from app.service_request.models import ServiceRequest
+    from app.inspection.models import InspectionRequest
+    from app.job.models import Job
+    from app.review.models import Review
+    from app.notification.models import Notification
+    from app.admin.models import (
+        WorkerVerification, AuditLog, AppSettings, Banner, SupportTicket,
+    )
+
+    await connect_to_database(document_models=[
+        User,
+        CustomerProfile,
+        WorkerProfile,
+        ServiceCategory,
+        Service,
+        ServicePriceGuide,
+        PricingConfiguration,
+        ServiceRequest,
+        InspectionRequest,
+        Job,
+        Review,
+        Notification,
+        WorkerVerification,
+        AuditLog,
+        AppSettings,
+        Banner,
+        SupportTicket,
+    ])
     yield
     # --- Shutdown ---
     await close_database_connection()
