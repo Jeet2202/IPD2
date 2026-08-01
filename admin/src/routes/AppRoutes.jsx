@@ -49,6 +49,13 @@ import WorkerPayouts from '../pages/payments/WorkerPayouts';
 import Refunds from '../pages/payments/Refunds';
 import Revenue from '../pages/payments/Revenue';
 
+// Support Module Pages (Screens 31 to 35)
+import Complaints from '../pages/complaints/Complaints';
+import ComplaintDetails from '../pages/complaints/ComplaintDetails';
+import Reviews from '../pages/reviews/Reviews';
+import Notifications from '../pages/notifications/Notifications';
+import BroadcastNotification from '../pages/notifications/BroadcastNotification';
+
 // System & Analytics Pages (Screens 36 to 40)
 import Analytics from '../pages/analytics/Analytics';
 import Reports from '../pages/reports/Reports';
@@ -120,9 +127,11 @@ export default function AppRoutes() {
         <Route path="revenue" element={<Revenue />} />
 
         {/* Support Module (Screens 31 to 35) */}
-        <Route path="complaints" element={<PlaceholderPage />} />
-        <Route path="reviews" element={<PlaceholderPage />} />
-        <Route path="notifications" element={<PlaceholderPage />} />
+        <Route path="complaints" element={<Complaints />} />
+        <Route path="complaints/:id" element={<ComplaintDetails />} />
+        <Route path="reviews" element={<Reviews />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="notifications/broadcast" element={<BroadcastNotification />} />
 
         {/* System Module (Screens 36 to 40) */}
         <Route path="analytics" element={<Analytics />} />
