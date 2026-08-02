@@ -111,10 +111,11 @@ class Settings(BaseSettings):
     MAX_ACTIVE_SESSIONS: int = 5
     AUDIT_RETENTION_DAYS: int = 90
 
-    # --- Cloudinary (activate when uploads module is built) ---
+    # --- Cloudinary ---
     CLOUDINARY_CLOUD_NAME: str | None = None
     CLOUDINARY_API_KEY: SecretStr | None = None
     CLOUDINARY_API_SECRET: SecretStr | None = None
+    CLOUDINARY_FOLDER: str = "kaamsetu/profile_pictures"
 
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None

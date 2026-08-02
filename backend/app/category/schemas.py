@@ -156,6 +156,16 @@ class CategoryCreateRequest(BaseModel):
         description="Hex color code (#RRGGBB)",
         examples=["#FF5722"],
     )
+    image_url: str | None = Field(
+        default=None,
+        max_length=1024,
+        description="Cloudinary or CDN image URL",
+    )
+    image_public_id: str | None = Field(
+        default=None,
+        max_length=256,
+        description="Cloudinary public_id",
+    )
 
     # --- Validators ---
 
@@ -242,6 +252,16 @@ class CategoryUpdateRequest(BaseModel):
     color_code: str | None = Field(
         default=None,
         description="Updated color code",
+    )
+    image_url: str | None = Field(
+        default=None,
+        max_length=1024,
+        description="Updated image URL",
+    )
+    image_public_id: str | None = Field(
+        default=None,
+        max_length=256,
+        description="Updated image public_id",
     )
 
     # --- Validators ---
@@ -686,6 +706,8 @@ class CategoryResponse(BaseModel):
     display_order: int = Field(..., description="Sort position")
     is_active: bool = Field(..., description="Visibility status")
     color_code: str | None = Field(None, description="Hex color code")
+    image_url: str | None = Field(None, description="Image URL")
+    image_public_id: str | None = Field(None, description="Image public ID")
     service_count: int = Field(default=0, description="Active services in category")
     created_at: datetime = Field(..., description="Creation time")
     updated_at: datetime = Field(..., description="Last update time")
@@ -811,3 +833,24 @@ class ServiceResponse(BaseModel):
 
         # For Beanie Documents: from_attributes reads @property directly
         return data
+
+
+class CategoryListResponse(BaseModel):
+    """List response DTO for categories."""
+
+    items: list[CategoryResponse] = Field(default_factory=list, description="List of categories")
+    total: int = Field(..., description="Total category count")
+
+
+class ReorderCategoryItem(BaseModel):
+    """Single item for category reordering."""
+
+    id: str = Field(..., description="Category ObjectId string")
+    display_order: int = Field(..., ge=0, description="New display order index")
+
+
+class ReorderCategoriesRequest(BaseModel):
+    """Payload for bulk category reordering."""
+
+    items: list[ReorderCategoryItem] = Field(..., min_length=1, description="List of category reorder items")
+

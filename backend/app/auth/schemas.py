@@ -106,18 +106,24 @@ class LogoutAllRequest(BaseModel):
 
 
 class ChangePasswordRequest(BaseModel):
-    """Request payload for password modification when logged in."""
+    """Request payload for password change by authenticated user."""
 
-    current_password: str
-    new_password: str
+    current_password: str = Field(..., description="Current account password")
+    new_password: str = Field(..., description="New password string")
 
     @field_validator("new_password")
     @classmethod
-    def validate_new_password(cls, v: str) -> str:
+    def validate_new_password_strength(cls, v: str) -> str:
         errors = validate_password_strength(v)
         if errors:
             raise ValueError("; ".join(errors))
         return v
+
+
+class DeleteAccountRequest(BaseModel):
+    """Request payload for account deletion confirmation."""
+
+    password: str = Field(..., description="Current password for identity verification")
 
 
 class ForgotPasswordRequest(BaseModel):

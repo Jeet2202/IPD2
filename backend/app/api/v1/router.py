@@ -35,12 +35,15 @@ from fastapi import APIRouter
 # ---------------------------------------------------------------------------
 from app.admin.router import router as admin_router
 from app.auth.router import router as auth_router
+from app.category.router import router as category_router
 from app.customer.router import router as customer_router
+from app.home.router import router as home_router
 from app.inspection.router import router as inspection_router
 from app.jobs.router import router as jobs_router
 from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
 from app.reviews.router import router as reviews_router
+from app.service.router import router as service_router
 from app.uploads.router import router as uploads_router
 from app.worker.router import router as worker_router
 
@@ -49,6 +52,29 @@ from app.worker.router import router as worker_router
 # ---------------------------------------------------------------------------
 
 v1_router = APIRouter(prefix="/api/v1")
+
+# --- Home, Services & Categories ---
+v1_router.include_router(
+    home_router,
+    prefix="",
+    tags=["Home"],
+)
+v1_router.include_router(
+    service_router,
+    prefix="",
+    tags=["Services"],
+)
+v1_router.include_router(
+    category_router,
+    prefix="/categories",
+    tags=["Categories"],
+)
+v1_router.include_router(
+    category_router,
+    prefix="/category",
+    tags=["Categories"],
+    include_in_schema=False,
+)
 
 # --- Auth ---
 # Registration, login, token refresh, OTP verification.
@@ -64,8 +90,14 @@ v1_router.include_router(
 # Requires authenticated customer role.
 v1_router.include_router(
     customer_router,
+    prefix="/customer",
+    tags=["Customers"],
+)
+v1_router.include_router(
+    customer_router,
     prefix="/customers",
     tags=["Customers"],
+    include_in_schema=False,
 )
 
 # --- Workers ---
@@ -73,8 +105,14 @@ v1_router.include_router(
 # Public listing endpoints + worker-only profile management.
 v1_router.include_router(
     worker_router,
+    prefix="/worker",
+    tags=["Workers"],
+)
+v1_router.include_router(
+    worker_router,
     prefix="/workers",
     tags=["Workers"],
+    include_in_schema=False,
 )
 
 # --- Jobs ---

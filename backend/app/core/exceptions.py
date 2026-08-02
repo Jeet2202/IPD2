@@ -200,3 +200,15 @@ class DatabaseException(AppException):
         details: list | None = None,
     ) -> None:
         super().__init__(message, error_code, 500, details)
+
+
+class InternalServerErrorException(AppException):
+    """500 — Internal server error."""
+
+    def __init__(
+        self,
+        message: str = "Internal server error",
+        error_code: str = "INTERNAL_SERVER_ERROR",
+        details: list | None = None,
+    ) -> None:
+        super().__init__(message, error_code, 500, details)

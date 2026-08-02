@@ -13,6 +13,7 @@ from fastapi import APIRouter, BackgroundTasks, Request, status
 
 from app.auth.schemas import (
     ChangePasswordRequest,
+    DeleteAccountRequest,
     ForgotPasswordRequest,
     LoginRequest,
     LogoutRequest,
@@ -344,4 +345,23 @@ async def verify_phone(payload: VerifyPhoneRequest) -> SuccessResponse:
         message="Phone verification is not available in the current version. This feature is planned for a future release.",
         error_code="FEATURE_NOT_IMPLEMENTED",
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
+    )
+
+
+@router.delete(
+    "/delete-account",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Delete user account",
+    description="Permanently delete user account, profile document, active sessions, and profile picture asset.",
+)
+async def delete_account(
+    payload: DeleteAccountRequest,
+    current_user: CurrentUserDep,
+) -> SuccessResponse:
+    """Delete authenticated user account and clean up all associated resources."""
+    await AuthService.delete_account(current_user.id, payload)
+    return SuccessResponse(
+        success=True,
+        message="Your account and all associated data have been permanently deleted.",
     )

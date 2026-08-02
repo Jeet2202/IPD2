@@ -1,7 +1,9 @@
-// File:
-// lib/customer/profile/edit_profile/edit_profile_screen.dart
+// File: lib/customer/profile/edit_profile/edit_profile_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/api_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -11,21 +13,278 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Rahul Sharma');
-  final TextEditingController _emailController = TextEditingController(text: 'rahul.sharma@example.com');
-  final TextEditingController _phoneController = TextEditingController(text: '+91 98765 43210');
-  final TextEditingController _dobController = TextEditingController(text: '14/08/1995');
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _altPhoneController = TextEditingController();
+  final _dobController = TextEditingController();
 
-  String _gender = 'Male';
-  String _selectedLanguage = 'English';
+  String? _gender;
+  String _preferredLanguage = 'hi';
+  bool _pushNotifications = true;
+  bool _emailNotifications = true;
+  bool _smsNotifications = true;
 
-  final List<String> _languages = ['English', 'Hindi', 'Kannada', 'Tamil', 'Telugu'];
+  bool _isLoading = true;
+  bool _isSaving = false;
+  bool _isUploadingPhoto = false;
+  String? _profilePhotoUrl;
+  String? _previousPhotoUrl;
+
+  final ImagePicker _picker = ImagePicker();
+
+  final Map<String, String> _languages = {
+    'hi': 'Hindi (हिंदी)',
+    'en': 'English',
+    'mr': 'Marathi (मराठी)',
+    'ta': 'Tamil (தமிழ்)',
+    'te': 'Telugu (తెలుగు)',
+    'kn': 'Kannada (ಕನ್ನಡ)',
+    'bn': 'Bengali (বাংলা)',
+    'gu': 'Gujarati (ગુજરાતી)',
+    'pa': 'Punjabi (ਪੰਜਾਬੀ)',
+  };
+
+  final List<String> _genders = ['male', 'female', 'other', 'prefer_not_to_say'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    try {
+      final res = await AuthService.instance.fetchCustomerProfile();
+      if (mounted) {
+        setState(() {
+          _nameController.text = (res['full_name'] as String?) ?? '';
+          _altPhoneController.text = (res['alternate_phone'] as String?) ?? '';
+          _dobController.text = (res['date_of_birth'] as String?) ?? '';
+          _gender = res['gender'] as String?;
+          _preferredLanguage = (res['preferred_language'] as String?) ?? 'hi';
+          _profilePhotoUrl = res['profile_photo_url'] as String?;
+
+          final notifs = res['notification_preferences'] as Map<String, dynamic>?;
+          if (notifs != null) {
+            _pushNotifications = notifs['push'] as bool? ?? true;
+            _emailNotifications = notifs['email'] as bool? ?? true;
+            _smsNotifications = notifs['sms'] as bool? ?? true;
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load profile: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _selectDateOfBirth() async {
+    DateTime initialDate = DateTime.now().subtract(const Duration(days: 365 * 25));
+    if (_dobController.text.isNotEmpty) {
+      try {
+        initialDate = DateTime.parse(_dobController.text);
+      } catch (_) {}
+    }
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1940),
+      lastDate: DateTime.now().subtract(const Duration(days: 365 * 10)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: Color(0xFF2563EB)),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      final formatted = "${picked.year.toString().padLeft(4, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      setState(() {
+        _dobController.text = formatted;
+      });
+    }
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    try {
+      final XFile? file = await _picker.pickImage(
+        source: source,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        imageQuality: 85,
+      );
+
+      if (file == null) return;
+
+      setState(() {
+        _previousPhotoUrl = _profilePhotoUrl;
+        _isUploadingPhoto = true;
+      });
+
+      final res = await AuthService.instance.uploadCustomerProfilePhoto(file.path);
+      final newUrl = res['profile_photo_url'] as String?;
+
+      setState(() {
+        _profilePhotoUrl = newUrl;
+        _isUploadingPhoto = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile photo updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _profilePhotoUrl = _previousPhotoUrl;
+        _isUploadingPhoto = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _deletePhoto() async {
+    try {
+      setState(() {
+        _previousPhotoUrl = _profilePhotoUrl;
+        _isUploadingPhoto = true;
+      });
+
+      await AuthService.instance.deleteCustomerProfilePhoto();
+
+      setState(() {
+        _profilePhotoUrl = null;
+        _isUploadingPhoto = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile photo removed.'), backgroundColor: Color(0xFF16A34A)),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _profilePhotoUrl = _previousPhotoUrl;
+        _isUploadingPhoto = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete photo: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _showPhotoOptionsModal() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            child: Wrap(
+              children: [
+                const Center(
+                  child: Text('Profile Photo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                ),
+                const SizedBox(height: 24),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_rounded, color: Color(0xFF2563EB)),
+                  title: const Text('Take Photo (Camera)'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUploadPhoto(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF2563EB)),
+                  title: const Text('Choose from Gallery'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickAndUploadPhoto(ImageSource.gallery);
+                  },
+                ),
+                if (_profilePhotoUrl != null && _profilePhotoUrl!.isNotEmpty)
+                  ListTile(
+                    leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                    title: const Text('Remove Photo', style: TextStyle(color: Colors.red)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _deletePhoto();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    final payload = <String, dynamic>{
+      'full_name': _nameController.text.trim(),
+      'alternate_phone': _altPhoneController.text.trim().isEmpty ? null : _altPhoneController.text.trim(),
+      'date_of_birth': _dobController.text.trim().isEmpty ? null : _dobController.text.trim(),
+      'gender': _gender,
+      'preferred_language': _preferredLanguage,
+      'notification_preferences': {
+        'push': _pushNotifications,
+        'email': _emailNotifications,
+        'sms': _smsNotifications,
+      },
+    };
+
+    try {
+      await AuthService.instance.updateCustomerProfile(payload);
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+        );
+        Navigator.pop(context);
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
+    _altPhoneController.dispose();
     _dobController.dispose();
     super.dispose();
   }
@@ -33,7 +292,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -43,157 +302,202 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         title: const Text(
           'Edit Profile',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+          style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Profile Photo Upload ─────────────────────────────────
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: const Color(0xFFDBEAFE),
-                      child: Text('RS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: const Color(0xFF2563EB))),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF2563EB),
-                          shape: BoxShape.circle,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          : SafeArea(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Avatar Edit Stack
+                      Center(
+                        child: GestureDetector(
+                          onTap: _isUploadingPhoto ? null : _showPhotoOptionsModal,
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundColor: const Color(0xFFDBEAFE),
+                                backgroundImage: (_profilePhotoUrl != null && _profilePhotoUrl!.isNotEmpty)
+                                    ? NetworkImage(_profilePhotoUrl!)
+                                    : null,
+                                child: _isUploadingPhoto
+                                    ? const CircularProgressIndicator(color: Color(0xFF2563EB))
+                                    : ((_profilePhotoUrl == null || _profilePhotoUrl!.isEmpty)
+                                        ? const Icon(Icons.person_rounded, size: 54, color: Color(0xFF2563EB))
+                                        : null),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
+                                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              const SizedBox(height: 28),
+                      const SizedBox(height: 28),
 
-              // ── Full Name ───────────────────────────────────────────
-              const Text('Full Name', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline_rounded, color: Color(0xFF2563EB)),
-                  contentPadding: const EdgeInsets.all(14),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
+                      // Full Name
+                      const Text('Full Name *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter full name',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.trim().length < 2) return 'Full name must be at least 2 characters';
+                          return null;
+                        },
+                      ),
 
-              const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-              // ── Phone Number (Read Only) ────────────────────────────
-              const Text('Phone Number (Verified)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _phoneController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.phone_android_rounded, color: Color(0xFF64748B)),
-                  suffixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF94A3B8), size: 18),
-                  fillColor: const Color(0xFFF1F5F9),
-                  filled: true,
-                  contentPadding: const EdgeInsets.all(14),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
+                      // Alternate Phone
+                      const Text('Alternate Phone Number', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _altPhoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          hintText: '+91 9876543210',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        ),
+                        validator: (v) {
+                          if (v != null && v.trim().isNotEmpty) {
+                            if (!RegExp(r'^\+91[6-9]\d{9}$').hasMatch(v.trim())) {
+                              return 'Must start with +91 followed by 10 digits';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
 
-              const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-              // ── Email Address ───────────────────────────────────────
-              const Text('Email Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-              const SizedBox(height: 6),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF2563EB)),
-                  contentPadding: const EdgeInsets.all(14),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
+                      // Date of Birth
+                      const Text('Date of Birth', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _dobController,
+                        readOnly: true,
+                        onTap: _selectDateOfBirth,
+                        decoration: InputDecoration(
+                          hintText: 'YYYY-MM-DD',
+                          suffixIcon: const Icon(Icons.calendar_today_rounded, color: Color(0xFF2563EB)),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        ),
+                      ),
 
-              const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-              // ── Gender Dropdown ─────────────────────────────────────
-              const Text('Gender', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFCBD5E1)),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _gender,
-                    isExpanded: true,
-                    items: ['Male', 'Female', 'Other'].map((g) => DropdownMenuItem(value: g, child: Text(g, style: const TextStyle(fontSize: 13)))).toList(),
-                    onChanged: (val) => setState(() => _gender = val!),
+                      // Gender Selection
+                      const Text('Gender', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: _genders.map((g) {
+                          final isSelected = _gender == g;
+                          return ChoiceChip(
+                            label: Text(g.replaceAll('_', ' ').toUpperCase(), style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF0F172A), fontSize: 12)),
+                            selected: isSelected,
+                            selectedColor: const Color(0xFF2563EB),
+                            backgroundColor: const Color(0xFFF1F5F9),
+                            onSelected: (selected) {
+                              setState(() => _gender = selected ? g : null);
+                            },
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Preferred Language
+                      const Text('Preferred App Language', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _languages.entries.map((entry) {
+                          final isSelected = _preferredLanguage == entry.key;
+                          return ChoiceChip(
+                            label: Text(entry.value, style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF0F172A), fontSize: 12)),
+                            selected: isSelected,
+                            selectedColor: const Color(0xFF2563EB),
+                            backgroundColor: const Color(0xFFF1F5F9),
+                            onSelected: (selected) {
+                              if (selected) setState(() => _preferredLanguage = entry.key);
+                            },
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Notification Preferences
+                      const Text('Notification Settings', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      const SizedBox(height: 8),
+                      SwitchListTile(
+                        title: const Text('Push Notifications', style: TextStyle(fontSize: 13)),
+                        value: _pushNotifications,
+                        activeThumbColor: const Color(0xFF2563EB),
+                        onChanged: (val) => setState(() => _pushNotifications = val),
+                      ),
+                      SwitchListTile(
+                        title: const Text('Email Alerts', style: TextStyle(fontSize: 13)),
+                        value: _emailNotifications,
+                        activeThumbColor: const Color(0xFF2563EB),
+                        onChanged: (val) => setState(() => _emailNotifications = val),
+                      ),
+                      SwitchListTile(
+                        title: const Text('SMS Updates', style: TextStyle(fontSize: 13)),
+                        value: _smsNotifications,
+                        activeThumbColor: const Color(0xFF2563EB),
+                        onChanged: (val) => setState(() => _smsNotifications = val),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Save Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _isSaving ? null : _saveProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          child: _isSaving
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 20),
-
-              // ── Preferred Language ──────────────────────────────────
-              const Text('Preferred Communication Language', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-              const SizedBox(height: 8),
-
-              Wrap(
-                spacing: 8,
-                children: _languages.map((lang) {
-                  final isSelected = _selectedLanguage == lang;
-                  return ChoiceChip(
-                    label: Text(lang),
-                    selected: isSelected,
-                    selectedColor: const Color(0xFF2563EB),
-                    backgroundColor: const Color(0xFFF1F5F9),
-                    labelStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                      color: isSelected ? Colors.white : const Color(0xFF475569),
-                    ),
-                    onSelected: (_) => setState(() => _selectedLanguage = lang),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 28),
-
-              // ── Buttons ─────────────────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text('Save Changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

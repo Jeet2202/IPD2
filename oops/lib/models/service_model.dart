@@ -1,51 +1,92 @@
 class ServiceModel {
   final String id;
   final String categoryId;
+  final String categorySlug;
   final String name;
+  final String slug;
+  final String shortDescription;
   final String description;
   final String image;
   final double basePrice;
-  final String unit; // e.g. "per visit", "per hour"
+  final String priceRangeDisplay;
+  final String durationDisplay;
+  final int estimatedDurationMinutes;
+  final String unit;
   final double rating;
   final int reviewCount;
+  final bool isFeatured;
   final bool isActive;
 
   const ServiceModel({
     required this.id,
     required this.categoryId,
+    this.categorySlug = '',
     required this.name,
-    required this.description,
+    this.slug = '',
+    this.shortDescription = '',
+    this.description = '',
     required this.image,
     required this.basePrice,
-    required this.unit,
-    this.rating = 0.0,
-    this.reviewCount = 0,
+    this.priceRangeDisplay = '',
+    this.durationDisplay = '',
+    this.estimatedDurationMinutes = 0,
+    this.unit = 'per service',
+    this.rating = 4.8,
+    this.reviewCount = 120,
+    this.isFeatured = false,
     this.isActive = true,
   });
 
-  factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
-        id:          json['_id'] as String,
-        categoryId:  json['categoryId'] as String,
-        name:        json['name'] as String,
-        description: json['description'] as String,
-        image:       json['image'] as String,
-        basePrice:   (json['basePrice'] as num).toDouble(),
-        unit:        json['unit'] as String,
-        rating:      (json['rating'] as num?)?.toDouble() ?? 0.0,
-        reviewCount: json['reviewCount'] as int? ?? 0,
-        isActive:    json['isActive'] as bool? ?? true,
-      );
+  factory ServiceModel.fromJson(Map<String, dynamic> json) {
+    final title = json['title'] as String? ?? json['name'] as String? ?? '';
+    final basePrice = (json['base_price'] as num?)?.toDouble() ??
+        (json['base_market_price'] as num?)?.toDouble() ??
+        (json['basePrice'] as num?)?.toDouble() ??
+        0.0;
+    final image = json['service_image_url'] as String? ??
+        json['service_image'] as String? ??
+        json['image'] as String? ??
+        '';
+    final durationMin = json['estimated_duration_minutes'] as int? ?? 0;
+
+    return ServiceModel(
+      id: json['id'] as String? ?? json['_id'] as String? ?? '',
+      categoryId: json['category_id'] as String? ?? json['categoryId'] as String? ?? '',
+      categorySlug: json['category_slug'] as String? ?? '',
+      name: title,
+      slug: json['slug'] as String? ?? '',
+      shortDescription: json['short_description'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      image: image,
+      basePrice: basePrice,
+      priceRangeDisplay: json['price_range_display'] as String? ?? '₹${basePrice.toStringAsFixed(0)}',
+      durationDisplay: json['duration_display'] as String? ?? (durationMin > 0 ? '$durationMin min' : ''),
+      estimatedDurationMinutes: durationMin,
+      unit: json['unit'] as String? ?? 'per service',
+      rating: (json['rating'] as num?)?.toDouble() ?? 4.8,
+      reviewCount: json['review_count'] as int? ?? json['reviewCount'] as int? ?? 120,
+      isFeatured: json['is_featured'] as bool? ?? false,
+      isActive: json['is_active'] as bool? ?? json['isActive'] as bool? ?? true,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        '_id':         id,
-        'categoryId':  categoryId,
-        'name':        name,
+        'id': id,
+        'category_id': categoryId,
+        'category_slug': categorySlug,
+        'title': name,
+        'slug': slug,
+        'short_description': shortDescription,
         'description': description,
-        'image':       image,
-        'basePrice':   basePrice,
-        'unit':        unit,
-        'rating':      rating,
-        'reviewCount': reviewCount,
-        'isActive':    isActive,
+        'service_image_url': image,
+        'base_price': basePrice,
+        'price_range_display': priceRangeDisplay,
+        'duration_display': durationDisplay,
+        'estimated_duration_minutes': estimatedDurationMinutes,
+        'unit': unit,
+        'rating': rating,
+        'review_count': reviewCount,
+        'is_featured': isFeatured,
+        'is_active': isActive,
       };
 }

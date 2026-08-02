@@ -1,11 +1,9 @@
-// File:
-// lib/customer/settings/settings_screen.dart
+// File: lib/customer/settings/settings_screen.dart
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_service.dart';
-import '../../utils/validators.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,13 +13,324 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notificationsEnabled = true;
-  bool _locationEnabled = true;
-  bool _autoUpdates = true;
-  bool _biometricEnabled = true;
+  bool _isLoading = true;
+  Map<String, dynamic>? _profileData;
+
+  bool _pushNotifications = true;
+  bool _emailNotifications = true;
+  bool _smsNotifications = true;
+
+  final _changePwdFormKey = GlobalKey<FormState>();
+  final _currentPwdController = TextEditingController();
+  final _newPwdController = TextEditingController();
+  final _confirmPwdController = TextEditingController();
+
+  final _deleteFormKey = GlobalKey<FormState>();
+  final _deletePasswordController = TextEditingController();
+
+  bool _isActionLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final res = await AuthService.instance.fetchCustomerProfile();
+      if (mounted) {
+        setState(() {
+          _profileData = res;
+          final notifs = res['notification_preferences'] as Map<String, dynamic>?;
+          if (notifs != null) {
+            _pushNotifications = notifs['push'] as bool? ?? true;
+            _emailNotifications = notifs['email'] as bool? ?? true;
+            _smsNotifications = notifs['sms'] as bool? ?? true;
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _updateNotificationPreferences() async {
+    try {
+      await AuthService.instance.updateCustomerProfile({
+        'notification_preferences': {
+          'push': _pushNotifications,
+          'email': _emailNotifications,
+          'sms': _smsNotifications,
+        },
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Preferences updated'), backgroundColor: Color(0xFF16A34A)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update preferences: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _showChangePasswordDialog() {
+    _currentPwdController.clear();
+    _newPwdController.clear();
+    _confirmPwdController.clear();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('Change Password', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            content: Form(
+              key: _changePwdFormKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _currentPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _newPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'New Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.length < 8) return 'Min 8 characters required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _confirmPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) {
+                        if (v != _newPwdController.text) return 'Passwords do not match';
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              ),
+              ElevatedButton(
+                onPressed: _isActionLoading
+                    ? null
+                    : () async {
+                        if (!_changePwdFormKey.currentState!.validate()) return;
+                        setDialogState(() => _isActionLoading = true);
+                        try {
+                          await AuthService.instance.changePassword(
+                            currentPassword: _currentPwdController.text,
+                            newPassword: _newPwdController.text,
+                          );
+                          if (mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password changed successfully! Please log in again.'),
+                                backgroundColor: Color(0xFF16A34A),
+                              ),
+                            );
+                            Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
+                          }
+                        } on ApiException catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+                          );
+                        } catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+                          );
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isActionLoading
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Update Password'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showLogoutAllDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Logout All Devices', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text('Are you sure you want to revoke all active sessions across all devices?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await AuthService.instance.logoutAll();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logged out from all devices.'), backgroundColor: Color(0xFF16A34A)),
+                );
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Logout All'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog() {
+    _deletePasswordController.clear();
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444)),
+                SizedBox(width: 8),
+                Text('Delete Account', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+              ],
+            ),
+            content: Form(
+              key: _deleteFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'This action is permanent and irreversible. All your profile details, booking history, and stored data will be deleted.',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Enter your password to confirm:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _deletePasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Current Password',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    validator: (v) => (v == null || v.isEmpty) ? 'Password is required' : null,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              ),
+              ElevatedButton(
+                onPressed: _isActionLoading
+                    ? null
+                    : () async {
+                        if (!_deleteFormKey.currentState!.validate()) return;
+                        setDialogState(() => _isActionLoading = true);
+                        try {
+                          await AuthService.instance.deleteAccount(_deletePasswordController.text);
+                          if (mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Account permanently deleted.'), backgroundColor: Color(0xFF16A34A)),
+                            );
+                            Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
+                          }
+                        } on ApiException catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+                          );
+                        } catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Account deletion failed: $e'), backgroundColor: Colors.red),
+                          );
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEF4444),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isActionLoading
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Permanently Delete'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _currentPwdController.dispose();
+    _newPwdController.dispose();
+    _confirmPwdController.dispose();
+    _deletePasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final data = _profileData;
+    final fullName = (data?['full_name'] as String?) ?? 'Customer';
+    final email = (data?['email'] as String?) ?? '';
+    final phone = (data?['phone'] as String?) ?? '';
+    final photoUrl = data?['profile_photo_url'] as String?;
+    final completion = (data?['profile_completion_percentage'] as num?)?.toInt() ?? 0;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -32,20 +341,78 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Settings',
+          'Settings & Account',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── General Preferences ──────────────────────────────────
-              const Text('GENERAL PREFERENCES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              // ── ACCOUNT SECTION ─────────────────────────────────────
+              const Text('ACCOUNT INFORMATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              const SizedBox(height: 10),
+
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor: const Color(0xFFDBEAFE),
+                          backgroundImage: (photoUrl != null && photoUrl.isNotEmpty) ? NetworkImage(photoUrl) : null,
+                          child: (photoUrl == null || photoUrl.isEmpty)
+                              ? const Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB))
+                              : null,
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                              const SizedBox(height: 2),
+                              Text(email, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text(phone, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Profile Completion: $completion%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(context, AppRoutes.customerProfile),
+                          child: const Text('View Full Profile'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── SECURITY SECTION ────────────────────────────────────
+              const Text('SECURITY & SESSIONS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
               const SizedBox(height: 10),
 
               Container(
@@ -57,79 +424,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     _SettingTile(
-                      icon: Icons.language_rounded,
-                      title: 'App Language',
-                      subtitle: 'English (US)',
-                      onTap: () {},
-                    ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    _SettingSwitchTile(
-                      icon: Icons.notifications_none_rounded,
-                      title: 'Push Notifications',
-                      value: _notificationsEnabled,
-                      onChanged: (val) => setState(() => _notificationsEnabled = val),
-                    ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    _SettingSwitchTile(
-                      icon: Icons.location_on_outlined,
-                      title: 'GPS Location Access',
-                      value: _locationEnabled,
-                      onChanged: (val) => setState(() => _locationEnabled = val),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Booking Alerts ──────────────────────────────────────
-              const Text('BOOKING ALERTS & UPDATES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
-
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Column(
-                  children: [
-                    _SettingSwitchTile(
-                      icon: Icons.mark_chat_unread_outlined,
-                      title: 'Real-time Service WhatsApp Updates',
-                      value: _autoUpdates,
-                      onChanged: (val) => setState(() => _autoUpdates = val),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Security Settings ───────────────────────────────────
-              const Text('SECURITY & PRIVACY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
-
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Column(
-                  children: [
-                    _SettingSwitchTile(
-                      icon: Icons.fingerprint_rounded,
-                      title: 'Biometric / Face ID Unlock',
-                      value: _biometricEnabled,
-                      onChanged: (val) => setState(() => _biometricEnabled = val),
-                    ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    _SettingTile(
-                      icon: Icons.lock_outline_rounded,
+                      icon: Icons.lock_reset_rounded,
                       title: 'Change Password',
-                      subtitle: 'Update your account password',
-                      onTap: () => _showChangePasswordDialog(context),
+                      subtitle: 'Update your login password',
+                      onTap: _showChangePasswordDialog,
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.devices_rounded,
+                      title: 'Logout All Devices',
+                      subtitle: 'Revoke active sessions across all devices',
+                      onTap: _showLogoutAllDialog,
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.logout_rounded,
+                      title: 'Logout Current Session',
+                      subtitle: 'Sign out from this device',
+                      isRed: true,
+                      onTap: () async {
+                        await AuthService.instance.logout();
+                        if (mounted) {
+                          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -137,8 +455,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 24),
 
-              // ── About Application ───────────────────────────────────
-              const Text('ABOUT KAAMSETU', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              // ── PREFERENCES SECTION ──────────────────────────────────
+              const Text('APP PREFERENCES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      title: const Text('Push Notifications', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      value: _pushNotifications,
+                      activeThumbColor: const Color(0xFF2563EB),
+                      onChanged: (val) {
+                        setState(() => _pushNotifications = val);
+                        _updateNotificationPreferences();
+                      },
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SwitchListTile(
+                      title: const Text('Email Alerts', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      value: _emailNotifications,
+                      activeThumbColor: const Color(0xFF2563EB),
+                      onChanged: (val) {
+                        setState(() => _emailNotifications = val);
+                        _updateNotificationPreferences();
+                      },
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SwitchListTile(
+                      title: const Text('SMS Updates', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      value: _smsNotifications,
+                      activeThumbColor: const Color(0xFF2563EB),
+                      onChanged: (val) {
+                        setState(() => _smsNotifications = val);
+                        _updateNotificationPreferences();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── SUPPORT & LEGAL SECTION ─────────────────────────────
+              const Text('SUPPORT & LEGAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
               const SizedBox(height: 10),
 
               Container(
@@ -150,225 +515,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     _SettingTile(
-                      icon: Icons.info_outline_rounded,
-                      title: 'App Version',
-                      subtitle: 'v2.4.0 (Build 9021)',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('KaamSetu Customer App is up to date (v2.4.0)')),
-                        );
-                      },
+                      icon: Icons.help_outline_rounded,
+                      title: 'Help & Support Center',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.policy_rounded,
+                      title: 'Privacy Policy',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
                     ),
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.description_outlined,
-                      title: 'Terms of Service',
+                      title: 'Terms & Conditions',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.termsConditions),
                     ),
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
-                      icon: Icons.privacy_tip_outlined,
-                      title: 'Privacy Policy',
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
+                      icon: Icons.info_outline_rounded,
+                      title: 'About KaamSetu',
+                      subtitle: 'Version 1.0.0 (Build 2026.08)',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.aboutUs),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
 
-              // ── Logout & Delete ──────────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-                        content: const Text('Are you sure you want to logout from your KaamSetu account?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                AppRoutes.customerLogin,
-                                (route) => false,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFEF4444),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
-                  label: const Text('Logout Account', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFFCA5A5)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
+              // ── DANGER ZONE ──────────────────────────────────────────
+              const Text('DANGER ZONE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFCA5A5)),
+                ),
+                child: _SettingTile(
+                  icon: Icons.delete_forever_rounded,
+                  title: 'Delete Account',
+                  subtitle: 'Permanently remove your account & all data',
+                  isRed: true,
+                  onTap: _showDeleteAccountDialog,
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showChangePasswordDialog(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    final currentCtr = TextEditingController();
-    final newCtr = TextEditingController();
-    final confirmCtr = TextEditingController();
-    bool loading = false;
-    bool obscureCurrent = true;
-    bool obscureNew = true;
-    bool obscureConfirm = true;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            ),
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE2E8F0),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Change Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 6),
-                  const Text('Enter your current password and set a new password.', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                  const SizedBox(height: 20),
-
-                  TextFormField(
-                    controller: currentCtr,
-                    obscureText: obscureCurrent,
-                    decoration: InputDecoration(
-                      labelText: 'Current Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureCurrent = !obscureCurrent),
-                      ),
-                    ),
-                    validator: (v) => (v == null || v.isEmpty) ? 'Current password is required' : null,
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: newCtr,
-                    obscureText: obscureNew,
-                    decoration: InputDecoration(
-                      labelText: 'New Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureNew = !obscureNew),
-                      ),
-                    ),
-                    validator: Validators.password,
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: confirmCtr,
-                    obscureText: obscureConfirm,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureConfirm = !obscureConfirm),
-                      ),
-                    ),
-                    validator: (v) => Validators.confirmPassword(v, newCtr.text),
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      onPressed: loading
-                          ? null
-                          : () async {
-                              if (!formKey.currentState!.validate()) return;
-                              setModalState(() => loading = true);
-                              try {
-                                await AuthService.instance.changePassword(
-                                  currentPassword: currentCtr.text,
-                                  newPassword: newCtr.text,
-                                );
-                                if (!context.mounted) return;
-                                Navigator.pop(ctx);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Password changed successfully. Please log in again.'),
-                                    backgroundColor: Color(0xFF2563EB),
-                                  ),
-                                );
-                                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
-                              } catch (e) {
-                                if (!context.mounted) return;
-                                final msg = e is ApiException ? e.message : 'Change password failed: $e';
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(msg), backgroundColor: Colors.red),
-                                );
-                              } finally {
-                                setModalState(() => loading = false);
-                              }
-                            },
-                      child: loading
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : const Text('Update Password', style: TextStyle(fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -379,38 +577,26 @@ class _SettingTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
+  final bool isRed;
 
-  const _SettingTile({required this.icon, required this.title, this.subtitle, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      leading: Icon(icon, color: const Color(0xFF2563EB), size: 22),
-      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-      subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))) : null,
-      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF94A3B8)),
-    );
-  }
-}
-
-class _SettingSwitchTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  const _SettingSwitchTile({required this.icon, required this.title, required this.value, required this.onChanged});
+  const _SettingTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    required this.onTap,
+    this.isRed = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2563EB), size: 22),
-      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-      trailing: Switch(
-        value: value,
-        activeColor: const Color(0xFF2563EB),
-        onChanged: onChanged,
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        leading: Icon(icon, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF2563EB)),
+        title: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF0F172A))),
+        subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))) : null,
+        trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+        onTap: onTap,
       ),
     );
   }

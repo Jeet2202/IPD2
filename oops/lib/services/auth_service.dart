@@ -153,4 +153,71 @@ class AuthService {
     } catch (_) {}
     TokenStorage.clear();
   }
+
+  /// Logout from all devices
+  Future<void> logoutAll() async {
+    try {
+      await ApiService.instance.post(ApiEndpoints.logoutAll, {});
+    } catch (_) {}
+    TokenStorage.clear();
+  }
+
+  /// Delete current user account permanently
+  Future<void> deleteAccount(String password) async {
+    await ApiService.instance.delete(
+      ApiEndpoints.deleteAccount,
+      body: {'password': password},
+    );
+    TokenStorage.clear();
+  }
+
+  /// Fetch customer profile data
+  Future<Map<String, dynamic>> fetchCustomerProfile() async {
+    final res = await ApiService.instance.get(ApiEndpoints.customerProfile);
+    return res;
+  }
+
+  /// Update customer profile details
+  Future<Map<String, dynamic>> updateCustomerProfile(Map<String, dynamic> data) async {
+    final res = await ApiService.instance.put(ApiEndpoints.customerProfile, data);
+    return res;
+  }
+
+  /// Fetch worker profile data
+  Future<Map<String, dynamic>> fetchWorkerProfile() async {
+    final res = await ApiService.instance.get(ApiEndpoints.workerProfile);
+    return res;
+  }
+
+  /// Update worker profile details
+  Future<Map<String, dynamic>> updateWorkerProfile(Map<String, dynamic> data) async {
+    final res = await ApiService.instance.put(ApiEndpoints.workerProfile, data);
+    return res;
+  }
+
+  /// Upload customer profile photo
+  Future<Map<String, dynamic>> uploadCustomerProfilePhoto(String filePath) async {
+    return await ApiService.instance.uploadMultipart(
+      ApiEndpoints.customerProfilePhoto,
+      filePath,
+    );
+  }
+
+  /// Delete customer profile photo
+  Future<Map<String, dynamic>> deleteCustomerProfilePhoto() async {
+    return await ApiService.instance.delete(ApiEndpoints.customerProfilePhoto);
+  }
+
+  /// Upload worker profile photo
+  Future<Map<String, dynamic>> uploadWorkerProfilePhoto(String filePath) async {
+    return await ApiService.instance.uploadMultipart(
+      ApiEndpoints.workerProfilePhoto,
+      filePath,
+    );
+  }
+
+  /// Delete worker profile photo
+  Future<Map<String, dynamic>> deleteWorkerProfilePhoto() async {
+    return await ApiService.instance.delete(ApiEndpoints.workerProfilePhoto);
+  }
 }

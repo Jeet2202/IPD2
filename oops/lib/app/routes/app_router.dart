@@ -414,7 +414,10 @@ class AppRouter {
         return _build(const SearchScreen(), settings);
 
       case AppRoutes.customerCategories:
-        return _build(const CategoryScreen(), settings);
+        final args = settings.arguments as Map<String, dynamic>?;
+        final catId = args?['category_id'] as String? ?? args?['id'] as String? ?? '';
+        final catName = args?['category_name'] as String? ?? args?['name'] as String? ?? 'Category Details';
+        return _build(CategoryScreen(categoryId: catId, categoryName: catName), settings);
 
       case AppRoutes.customerServices:
         return _build(const ServiceDetailsScreen(), settings);

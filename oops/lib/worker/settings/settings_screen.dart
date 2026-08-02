@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_service.dart';
-import '../../utils/validators.dart';
 
 class WorkerSettingsScreen extends StatefulWidget {
   const WorkerSettingsScreen({super.key});
@@ -14,14 +13,294 @@ class WorkerSettingsScreen extends StatefulWidget {
 }
 
 class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
-  bool _darkMode = false;
-  bool _autoAccept = true;
-  bool _emergencyJobs = true;
-  bool _inspectionRequests = true;
-  bool _biometricLogin = true;
+  bool _isLoading = true;
+  Map<String, dynamic>? _profileData;
+
+  bool _pushNotifications = true;
+  bool _emailNotifications = true;
+
+  final _changePwdFormKey = GlobalKey<FormState>();
+  final _currentPwdController = TextEditingController();
+  final _newPwdController = TextEditingController();
+  final _confirmPwdController = TextEditingController();
+
+  final _deleteFormKey = GlobalKey<FormState>();
+  final _deletePasswordController = TextEditingController();
+
+  bool _isActionLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWorkerProfile();
+  }
+
+  Future<void> _loadWorkerProfile() async {
+    try {
+      final res = await AuthService.instance.fetchWorkerProfile();
+      if (mounted) {
+        setState(() {
+          _profileData = res;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showChangePasswordDialog() {
+    _currentPwdController.clear();
+    _newPwdController.clear();
+    _confirmPwdController.clear();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('Change Password', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            content: Form(
+              key: _changePwdFormKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _currentPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _newPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'New Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.length < 8) return 'Min 8 characters required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _confirmPwdController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Password',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      validator: (v) {
+                        if (v != _newPwdController.text) return 'Passwords do not match';
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              ),
+              ElevatedButton(
+                onPressed: _isActionLoading
+                    ? null
+                    : () async {
+                        if (!_changePwdFormKey.currentState!.validate()) return;
+                        setDialogState(() => _isActionLoading = true);
+                        try {
+                          await AuthService.instance.changePassword(
+                            currentPassword: _currentPwdController.text,
+                            newPassword: _newPwdController.text,
+                          );
+                          if (mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password changed successfully! Please log in again.'),
+                                backgroundColor: Color(0xFF16A34A),
+                              ),
+                            );
+                            Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerLogin, (r) => false);
+                          }
+                        } on ApiException catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+                          );
+                        } catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+                          );
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isActionLoading
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Update Password'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showLogoutAllDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Logout All Devices', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text('Are you sure you want to revoke all active sessions for your partner account?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await AuthService.instance.logoutAll();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logged out from all devices.'), backgroundColor: Color(0xFF16A34A)),
+                );
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerLogin, (r) => false);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Logout All'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog() {
+    _deletePasswordController.clear();
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444)),
+                SizedBox(width: 8),
+                Text('Delete Partner Account', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+              ],
+            ),
+            content: Form(
+              key: _deleteFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Deleting your partner account will remove all your professional ratings, job history, profile photos, and verification records permanently.',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Enter your password to confirm:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _deletePasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Current Password',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    validator: (v) => (v == null || v.isEmpty) ? 'Password is required' : null,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              ),
+              ElevatedButton(
+                onPressed: _isActionLoading
+                    ? null
+                    : () async {
+                        if (!_deleteFormKey.currentState!.validate()) return;
+                        setDialogState(() => _isActionLoading = true);
+                        try {
+                          await AuthService.instance.deleteAccount(_deletePasswordController.text);
+                          if (mounted) {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Partner account permanently deleted.'), backgroundColor: Color(0xFF16A34A)),
+                            );
+                            Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerLogin, (r) => false);
+                          }
+                        } on ApiException catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+                          );
+                        } catch (e) {
+                          setDialogState(() => _isActionLoading = false);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Account deletion failed: $e'), backgroundColor: Colors.red),
+                          );
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEF4444),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isActionLoading
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Permanently Delete'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _currentPwdController.dispose();
+    _newPwdController.dispose();
+    _confirmPwdController.dispose();
+    _deletePasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final data = _profileData;
+    final fullName = (data?['full_name'] as String?) ?? 'Partner';
+    final email = (data?['email'] as String?) ?? '';
+    final phone = (data?['phone'] as String?) ?? '';
+    final photoUrl = data?['profile_photo_url'] as String?;
+    final completion = (data?['profile_completion_percentage'] as num?)?.toInt() ?? 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -32,414 +311,246 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Application Settings',
-          style: TextStyle(
-            color: Color(0xFF0F172A),
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
+          'Partner Settings',
+          style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Job Dispatch Preferences Card
-              _buildSectionHeader('Job Dispatch Preferences'),
+              // ── PARTNER ACCOUNT SECTION ─────────────────────────────
+              const Text('PARTNER ACCOUNT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
               const SizedBox(height: 10),
 
-              _buildSwitchTile(
-                title: 'Auto-Accept Instant Jobs',
-                subtitle: 'Automatically accept jobs within 5km radius',
-                value: _autoAccept,
-                onChanged: (v) => setState(() => _autoAccept = v),
-              ),
-              const SizedBox(height: 8),
-              _buildSwitchTile(
-                title: 'Emergency / Urgent Job Dispatch',
-                subtitle: 'Receive high priority emergency job alerts',
-                value: _emergencyJobs,
-                onChanged: (v) => setState(() => _emergencyJobs = v),
-              ),
-              const SizedBox(height: 8),
-              _buildSwitchTile(
-                title: 'Pre-Repair Inspection Requests',
-                subtitle: 'Receive diagnostic inspection assignments',
-                value: _inspectionRequests,
-                onChanged: (v) => setState(() => _inspectionRequests = v),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Security & Biometrics
-              _buildSectionHeader('Security & Biometrics'),
-              const SizedBox(height: 10),
-
-              _buildSwitchTile(
-                title: 'Biometric / Fingerprint Unlock',
-                subtitle: 'Require TouchID / FaceID to open partner app',
-                value: _biometricLogin,
-                onChanged: (v) => setState(() => _biometricLogin = v),
-              ),
-              const SizedBox(height: 8),
-              _buildSettingTile(
-                title: 'Change Password',
-                subtitle: 'Update your partner account password',
-                icon: Icons.lock_outline_rounded,
-                onTap: () => _showChangePasswordDialog(context),
-              ),
-
-              const SizedBox(height: 24),
-
-              // App General Settings
-              _buildSectionHeader('App Preferences & Info'),
-              const SizedBox(height: 10),
-
-              _buildSwitchTile(
-                title: 'Dark Theme Mode',
-                subtitle: 'Switch application color palette',
-                value: _darkMode,
-                onChanged: (v) => setState(() => _darkMode = v),
-              ),
-
-              const SizedBox(height: 12),
-
-              _buildSettingTile(
-                title: 'App Language',
-                subtitle: 'English (India)',
-                icon: Icons.language_rounded,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('App Language: English (India) selected.'),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-              _buildSettingTile(
-                title: 'Terms of Partner Service',
-                subtitle: 'Legal policies for KaamSetu partners',
-                icon: Icons.description_outlined,
-                onTap: () => Navigator.pushNamed(context, '/worker/legal/terms'),
-              ),
-              const SizedBox(height: 8),
-              _buildSettingTile(
-                title: 'App Version',
-                subtitle: 'v1.0.0 Partner Stable (Build 108)',
-                icon: Icons.info_outline_rounded,
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('App is up to date (v1.0.0 Build 108)'),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 32),
-
-              // Logout Button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-                        content: const Text('Are you sure you want to logout from your KaamSetu Partner account?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor: const Color(0xFFDBEAFE),
+                          backgroundImage: (photoUrl != null && photoUrl.isNotEmpty) ? NetworkImage(photoUrl) : null,
+                          child: (photoUrl == null || photoUrl.isEmpty)
+                              ? const Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB))
+                              : null,
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                              const SizedBox(height: 2),
+                              Text(email, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text(phone, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            ],
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                AppRoutes.workerAuth,
-                                (route) => false,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFEF4444),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: const Text(
-                    'Log Out',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 14),
+                    const Divider(color: Color(0xFFE2E8F0), height: 1),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Profile Score: $completion%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(context, AppRoutes.workerProfile),
+                          child: const Text('View Partner Profile'),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+
+              // ── SECURITY SECTION ────────────────────────────────────
+              const Text('SECURITY & SESSIONS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    _SettingTile(
+                      icon: Icons.lock_reset_rounded,
+                      title: 'Change Password',
+                      subtitle: 'Update account login password',
+                      onTap: _showChangePasswordDialog,
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.devices_rounded,
+                      title: 'Logout All Devices',
+                      subtitle: 'Revoke active sessions across all devices',
+                      onTap: _showLogoutAllDialog,
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.logout_rounded,
+                      title: 'Logout Current Session',
+                      subtitle: 'Sign out from this device',
+                      isRed: true,
+                      onTap: () async {
+                        await AuthService.instance.logout();
+                        if (mounted) {
+                          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerLogin, (r) => false);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── PREFERENCES SECTION ──────────────────────────────────
+              const Text('PARTNER PREFERENCES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      title: const Text('Job Request Notifications', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      value: _pushNotifications,
+                      activeThumbColor: const Color(0xFF2563EB),
+                      onChanged: (val) => setState(() => _pushNotifications = val),
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SwitchListTile(
+                      title: const Text('Email Alerts & Payout Slips', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      value: _emailNotifications,
+                      activeThumbColor: const Color(0xFF2563EB),
+                      onChanged: (val) => setState(() => _emailNotifications = val),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── SUPPORT & LEGAL SECTION ─────────────────────────────
+              const Text('SUPPORT & LEGAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  children: [
+                    _SettingTile(
+                      icon: Icons.help_outline_rounded,
+                      title: 'Partner Support Center',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.workerSupport),
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.policy_rounded,
+                      title: 'Privacy Policy',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.workerPrivacy),
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.description_outlined,
+                      title: 'Terms of Service',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.workerTerms),
+                    ),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    _SettingTile(
+                      icon: Icons.info_outline_rounded,
+                      title: 'About KaamSetu Partner',
+                      subtitle: 'Version 1.0.0 (Build 2026.08)',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.workerAbout),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ── DANGER ZONE ──────────────────────────────────────────
+              const Text('DANGER ZONE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+              const SizedBox(height: 10),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFCA5A5)),
+                ),
+                child: _SettingTile(
+                  icon: Icons.delete_forever_rounded,
+                  title: 'Delete Partner Account',
+                  subtitle: 'Permanently delete partner account & ratings',
+                  isRed: true,
+                  onTap: _showDeleteAccountDialog,
+                ),
+              ),
+
+              const SizedBox(height: 32),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w800,
-        color: Color(0xFF0F172A),
-      ),
-    );
-  }
+class _SettingTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  final bool isRed;
 
-  Widget _buildSwitchTile({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            activeColor: const Color(0xFF2563EB),
-            onChanged: onChanged,
-          ),
-        ],
-      ),
-    );
-  }
+  const _SettingTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    required this.onTap,
+    this.isRed = false,
+  });
 
-  Widget _buildSettingTile({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
       child: ListTile(
+        leading: Icon(icon, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF2563EB)),
+        title: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF0F172A))),
+        subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))) : null,
+        trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-        leading: Icon(icon, color: const Color(0xFF64748B), size: 20),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Color(0xFF64748B),
-          ),
-        ),
-        trailing: const Icon(Icons.chevron_right_rounded,
-            color: Color(0xFF94A3B8), size: 18),
-      ),
-    );
-  }
-
-  void _showChangePasswordDialog(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    final currentCtr = TextEditingController();
-    final newCtr = TextEditingController();
-    final confirmCtr = TextEditingController();
-    bool loading = false;
-    bool obscureCurrent = true;
-    bool obscureNew = true;
-    bool obscureConfirm = true;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-            ),
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE2E8F0),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Change Partner Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 6),
-                  const Text('Enter your current password and set a new password.', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                  const SizedBox(height: 20),
-
-                  TextFormField(
-                    controller: currentCtr,
-                    obscureText: obscureCurrent,
-                    decoration: InputDecoration(
-                      labelText: 'Current Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureCurrent = !obscureCurrent),
-                      ),
-                    ),
-                    validator: (v) => (v == null || v.isEmpty) ? 'Current password is required' : null,
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: newCtr,
-                    obscureText: obscureNew,
-                    decoration: InputDecoration(
-                      labelText: 'New Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureNew = !obscureNew),
-                      ),
-                    ),
-                    validator: Validators.password,
-                  ),
-                  const SizedBox(height: 14),
-
-                  TextFormField(
-                    controller: confirmCtr,
-                    obscureText: obscureConfirm,
-                    decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
-                      suffixIcon: IconButton(
-                        icon: Icon(obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                        onPressed: () => setModalState(() => obscureConfirm = !obscureConfirm),
-                      ),
-                    ),
-                    validator: (v) => Validators.confirmPassword(v, newCtr.text),
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      onPressed: loading
-                          ? null
-                          : () async {
-                              if (!formKey.currentState!.validate()) return;
-                              setModalState(() => loading = true);
-                              try {
-                                await AuthService.instance.changePassword(
-                                  currentPassword: currentCtr.text,
-                                  newPassword: newCtr.text,
-                                );
-                                if (!context.mounted) return;
-                                Navigator.pop(ctx);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Password changed successfully. Please log in again.'),
-                                    backgroundColor: Color(0xFF2563EB),
-                                  ),
-                                );
-                                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerAuth, (r) => false);
-                              } catch (e) {
-                                if (!context.mounted) return;
-                                final msg = e is ApiException ? e.message : 'Change password failed: $e';
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(msg), backgroundColor: Colors.red),
-                                );
-                              } finally {
-                                setModalState(() => loading = false);
-                              }
-                            },
-                      child: loading
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : const Text('Update Password', style: TextStyle(fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }

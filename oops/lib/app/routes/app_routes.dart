@@ -99,6 +99,7 @@ class AppRoutes {
   // ── Worker ────────────────────────────────────────────
   static const String workerSplash          = '/worker/splash';
   static const String workerAuth            = '/worker/auth';
+  static const String workerLogin           = '/worker/auth/login';
   static const String workerKyc             = '/worker/kyc';
   static const String workerDashboard       = '/worker/dashboard';
   static const String workerIncomingJobs    = '/worker/incoming-jobs';
@@ -114,6 +115,7 @@ class AppRoutes {
   static const String workerNotifications   = '/worker/notifications';
   static const String workerChat            = '/worker/chat';
   static const String workerProfile         = '/worker/profile';
+  static const String workerEditProfile     = '/worker/profile/edit';
   static const String workerDocuments       = '/worker/documents';
   static const String workerSupport         = '/worker/support';
   static const String workerSettings        = '/worker/settings';

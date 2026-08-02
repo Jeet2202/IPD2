@@ -3,9 +3,23 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../config/app_config.dart';
 import '../config/environment.dart';
+import '../models/home_model.dart';
 import '../utils/token_storage.dart';
+
+MediaType _determineMediaType(String filePath) {
+  final ext = filePath.toLowerCase();
+  if (ext.endsWith('.png')) {
+    return MediaType('image', 'png');
+  } else if (ext.endsWith('.webp')) {
+    return MediaType('image', 'webp');
+  } else if (ext.endsWith('.jpg') || ext.endsWith('.jpeg')) {
+    return MediaType('image', 'jpeg');
+  }
+  return MediaType('image', 'jpeg');
+}
 
 class ApiService {
   ApiService._();
@@ -127,6 +141,32 @@ class ApiService {
     );
   }
 
+  Future<HomeModel> getHomeData() async {
+    final res = await get('/home');
+    return HomeModel.fromJson(res);
+  }
+
+  Future<Map<String, dynamic>> getCategoryServices(
+    String categoryId, {
+    int page = 1,
+    int limit = 10,
+    String sortBy = 'display_order',
+  }) async {
+    return get(
+      '/categories/$categoryId/services',
+      params: {
+        'page': page.toString(),
+        'limit': limit.toString(),
+        'sort_by': sortBy,
+      },
+    );
+  }
+
+  Future<CategoryModel> getCategoryById(String categoryId) async {
+    final res = await get('/categories/$categoryId');
+    return CategoryModel.fromJson(res);
+  }
+
   Future<Map<String, dynamic>> post(
     String path,
     Map<String, dynamic> body,
@@ -149,12 +189,84 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> delete(String path) async {
+  Future<Map<String, dynamic>> delete(String path, {Map<String, dynamic>? body}) async {
     return _send(
       'DELETE',
       path,
-      (uri) => _client.delete(uri, headers: _headers),
+      (uri) => _client.delete(uri, headers: _headers, body: body != null ? jsonEncode(body) : null),
     );
+  }
+
+  Future<Map<String, dynamic>> uploadMultipart(
+    String path,
+    String filePath, {
+    String fileField = 'file',
+  }) async {
+    final uri = _uri(path);
+    final stopwatch = Stopwatch()..start();
+
+    try {
+      var request = http.MultipartRequest('POST', uri);
+      request.headers.addAll({
+        'Authorization': 'Bearer ${TokenStorage.accessToken}',
+      });
+
+      final file = await http.MultipartFile.fromPath(
+        fileField,
+        filePath,
+        contentType: _determineMediaType(filePath),
+      );
+      request.files.add(file);
+
+      final streamedRes = await request.send().timeout(AppConfig.apiTimeout);
+      final res = await http.Response.fromStream(streamedRes);
+      _logTiming('POST (Multipart)', uri, stopwatch, statusCode: res.statusCode);
+
+      if (res.statusCode == 401) {
+        final refreshed = await _tryRefresh();
+        if (refreshed) {
+          var retryRequest = http.MultipartRequest('POST', uri);
+          retryRequest.headers.addAll({
+            'Authorization': 'Bearer ${TokenStorage.accessToken}',
+          });
+          final retryFile = await http.MultipartFile.fromPath(
+            fileField,
+            filePath,
+            contentType: _determineMediaType(filePath),
+          );
+          retryRequest.files.add(retryFile);
+          final retryStreamed = await retryRequest.send().timeout(AppConfig.apiTimeout);
+          final retryRes = await http.Response.fromStream(retryStreamed);
+          _logTiming('POST (Multipart Retry)', uri, stopwatch, statusCode: retryRes.statusCode);
+          return _handle(retryRes);
+        }
+      }
+
+      return _handle(res);
+    } on TimeoutException {
+      _logTiming('POST (Multipart)', uri, stopwatch, error: 'TimeoutException');
+      throw ApiException(
+        statusCode: 408,
+        message: 'Image upload timed out. Please check your internet connection.',
+        errorCode: 'NETWORK_TIMEOUT',
+      );
+    } on SocketException catch (e) {
+      _logTiming('POST (Multipart)', uri, stopwatch, error: e);
+      throw ApiException(
+        statusCode: 503,
+        message: 'Server is unavailable. Please check your network connection.',
+        errorCode: 'SERVER_UNAVAILABLE',
+      );
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      _logTiming('POST (Multipart)', uri, stopwatch, error: e);
+      throw ApiException(
+        statusCode: 500,
+        message: 'Image upload failed: $e',
+        errorCode: 'UPLOAD_ERROR',
+      );
+    }
   }
 
   Map<String, dynamic> _handle(http.Response res) {

@@ -24,6 +24,7 @@ from app.auth.models import RefreshToken, User
 from app.auth.repository import AuthRepository
 from app.auth.schemas import (
     ChangePasswordRequest,
+    DeleteAccountRequest,
     ForgotPasswordRequest,
     LoginRequest,
     RefreshTokenRequest,
@@ -1040,3 +1041,52 @@ class AuthService:
             details={"revoked_session": session_id_or_jti},
         )
         return True
+
+    @staticmethod
+    async def delete_account(
+        user_id: PydanticObjectId | str,
+        payload: DeleteAccountRequest,
+    ) -> None:
+        """
+        Delete user account and all associated profile, session, and Cloudinary image assets.
+        Requires valid current password confirmation.
+        """
+        user = await AuthRepository.find_user_by_id(user_id)
+        if user is None:
+            raise UnauthorizedException(message="User account not found")
+
+        if not verify_password(payload.password, user.password_hash):
+            raise BadRequestException(
+                message="Invalid password. Account deletion requires valid password confirmation.",
+                error_code="INVALID_PASSWORD",
+            )
+
+        # 1. Clean up Cloudinary Profile Photo & Delete Profile Document
+        if user.role == UserRole.CUSTOMER:
+            from app.customer.models import CustomerProfile
+            profile = await CustomerProfile.find_one(CustomerProfile.user_id == user.id)
+            if profile:
+                if profile.profile_photo_public_id:
+                    from app.uploads.service import CloudinaryService
+                    CloudinaryService.delete_image(profile.profile_photo_public_id)
+                await profile.delete()
+        elif user.role == UserRole.WORKER:
+            from app.worker.models import WorkerProfile
+            profile = await WorkerProfile.find_one(WorkerProfile.user_id == user.id)
+            if profile:
+                if profile.profile_photo_public_id:
+                    from app.uploads.service import CloudinaryService
+                    CloudinaryService.delete_image(profile.profile_photo_public_id)
+                await profile.delete()
+
+        # 2. Revoke & delete all refresh tokens
+        await AuthRepository.revoke_all_refresh_tokens(user.id)
+
+        # 3. Log audit event & delete user document
+        await AuthRepository.log_audit_event(
+            action="ACCOUNT_DELETED",
+            status="SUCCESS",
+            user_id=user.id,
+            details={"email": user.email, "role": user.role.value},
+        )
+        await user.delete()

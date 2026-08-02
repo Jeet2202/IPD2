@@ -161,6 +161,16 @@ class ServiceCategory(Document):
         description="Short category description",
         examples=["All electrical services for your home"],
     )
+    image_url: str | None = Field(
+        default=None,
+        max_length=1024,
+        description="Cloudinary or CDN URL for category image",
+    )
+    image_public_id: str | None = Field(
+        default=None,
+        max_length=256,
+        description="Cloudinary public_id for category image",
+    )
     display_order: int = Field(
         default=0,
         ge=0,
@@ -339,7 +349,7 @@ class Service(Document):
         ...,
         min_length=2,
         max_length=200,
-        description="Service display name",
+        description="Service display name / title",
         examples=["Fan Installation"],
     )
     slug: Indexed(str, unique=True) = Field(  # type: ignore[valid-type]
@@ -348,6 +358,12 @@ class Service(Document):
         max_length=220,
         description="URL-friendly identifier (unique, auto-generated)",
         examples=["fan-installation"],
+    )
+    short_description: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Short service summary for cards",
+        examples=["Quick and reliable fan installation service."],
     )
     description: str | None = Field(
         default=None,
@@ -365,14 +381,14 @@ class Service(Document):
         examples=[499.0],
     )
     minimum_price: float = Field(
-        ...,
+        default=0.0,
         ge=0.0,
         le=500000.0,
         description="Floor price — dynamic pricing minimum (INR)",
         examples=[299.0],
     )
     maximum_price: float = Field(
-        ...,
+        default=0.0,
         ge=0.0,
         le=500000.0,
         description="Ceiling price — dynamic pricing maximum (INR)",
@@ -382,9 +398,9 @@ class Service(Document):
     # --- Duration & Requirements ---
     estimated_duration_minutes: int = Field(
         ...,
-        ge=5,
+        gt=0,
         le=2880,
-        description="Expected completion time (minutes, max 48 hours)",
+        description="Expected completion time (minutes)",
         examples=[60],
     )
     required_experience_years: float = Field(
@@ -409,12 +425,43 @@ class Service(Document):
     )
     service_image: str | None = Field(
         default=None,
-        max_length=512,
+        max_length=1024,
         description="Hero image URL for service detail page",
         examples=["https://res.cloudinary.com/kaamsetu/image/upload/v1/services/fan.jpg"],
     )
+    service_image_url: str | None = Field(
+        default=None,
+        max_length=1024,
+        description="Cloudinary image URL",
+    )
+    service_image_public_id: str | None = Field(
+        default=None,
+        max_length=256,
+        description="Cloudinary public ID",
+    )
+
+    # --- Search & Metadata ---
+    tags: list[str] = Field(
+        default_factory=list,
+        description="Searchable tags",
+        examples=[["fan", "wiring", "electrical"]],
+    )
+    keywords: list[str] = Field(
+        default_factory=list,
+        description="Search keywords",
+        examples=[["install", "ceiling fan", "appliance"]],
+    )
+    display_order: int = Field(
+        default=0,
+        ge=0,
+        description="Card display sort index (lower = first)",
+    )
 
     # --- Flags ---
+    is_featured: bool = Field(
+        default=False,
+        description="Featured service toggle for home screen grid",
+    )
     is_inspection_required: bool = Field(
         default=False,
         description="Requires on-site inspection before final quote",
@@ -445,6 +492,20 @@ class Service(Document):
     )
 
     # ------------------------------------------------------------------
+    # Aliases & Helper Properties
+    # ------------------------------------------------------------------
+
+    @property
+    def title(self) -> str:
+        """Alias for name."""
+        return self.name
+
+    @property
+    def base_price(self) -> float:
+        """Alias for base_market_price."""
+        return self.base_market_price
+
+    # ------------------------------------------------------------------
     # Beanie Event Hooks
     # ------------------------------------------------------------------
 
@@ -452,6 +513,10 @@ class Service(Document):
     async def set_updated_at(self) -> None:
         """Auto-update `updated_at` on every write operation."""
         self.updated_at = datetime.now(timezone.utc)
+        if self.service_image_url and not self.service_image:
+            self.service_image = self.service_image_url
+        elif self.service_image and not self.service_image_url:
+            self.service_image_url = self.service_image
 
     # ------------------------------------------------------------------
     # Beanie Settings
@@ -470,36 +535,42 @@ class Service(Document):
         use_state_management = True
 
         indexes = [
-            # Compound: active services within a category.
-            # Covers "show all active services in Electrical" — the most
-            # common customer-facing query on the category detail page.
+            # Compound: active services within a category ordered by display_order.
             IndexModel(
-                [("category_id", ASCENDING), ("is_active", ASCENDING)],
-                name="idx_category_active",
+                [("category_id", ASCENDING), ("is_active", ASCENDING), ("display_order", ASCENDING)],
+                name="idx_category_active_order",
+            ),
+            # Featured services index.
+            IndexModel(
+                [("is_featured", ASCENDING), ("is_active", ASCENDING)],
+                name="idx_featured_active",
+            ),
+            # Active service display order index.
+            IndexModel(
+                [("is_active", ASCENDING), ("display_order", ASCENDING)],
+                name="idx_active_display_order",
             ),
             # Required skills multikey index for worker matching.
-            # "Which services need the plumbing skill?" — used by the
-            # AI matching algorithm to find compatible workers.
             IndexModel(
                 [("required_skills", ASCENDING)],
                 name="idx_required_skills",
+            ),
+            # Tags index for search preparation.
+            IndexModel(
+                [("tags", ASCENDING)],
+                name="idx_tags",
+            ),
+            # Keywords index for search preparation.
+            IndexModel(
+                [("keywords", ASCENDING)],
+                name="idx_keywords",
             ),
             # Price sorting for customer price range filtering.
             IndexModel(
                 [("base_market_price", ASCENDING)],
                 name="idx_base_price",
             ),
-            # Compound: emergency services listing for priority dispatch.
-            IndexModel(
-                [("is_active", ASCENDING), ("is_emergency_service", ASCENDING)],
-                name="idx_active_emergency",
-            ),
-            # Descending sort on created_at for admin dashboard pagination.
-            IndexModel(
-                [("created_at", DESCENDING)],
-                name="idx_created_at_desc",
-            ),
-            # Category slug for denormalized category-based queries.
+            # Category slug index.
             IndexModel(
                 [("category_slug", ASCENDING)],
                 name="idx_category_slug",

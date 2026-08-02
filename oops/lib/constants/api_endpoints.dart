@@ -15,9 +15,11 @@ class ApiEndpoints {
   static const String resetPassword           = '/auth/reset-password';
   static const String sessions                = '/auth/sessions';
   static const String changePassword          = '/auth/change-password';
+  static const String deleteAccount           = '/auth/delete-account';
 
   // ── Customer ──────────────────────────────────────────
   static const String customerProfile       = '/customer/profile';
+  static const String customerProfilePhoto  = '/customer/profile/photo';
   static const String customerAddresses     = '/customer/addresses';
   static const String customerWallet        = '/customer/wallet';
   static const String customerNotifications = '/customer/notifications';
@@ -41,8 +43,9 @@ class ApiEndpoints {
   static const String approveQuotation = '/inspections/:id/approve';
 
   // ── Worker ────────────────────────────────────────────
-  static const String workerProfile   = '/worker/profile';
-  static const String workerJobs      = '/worker/jobs';
+  static const String workerProfile      = '/worker/profile';
+  static const String workerProfilePhoto = '/worker/profile/photo';
+  static const String workerJobs         = '/worker/jobs';
   static const String workerEarnings  = '/worker/earnings';
   static const String workerKyc       = '/worker/kyc';
   static const String workerWithdraw  = '/worker/withdraw';

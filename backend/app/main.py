@@ -64,6 +64,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         settings.ENVIRONMENT.value,
     )
     from app.auth.models import AuthAuditLog, RefreshToken, User
+    from app.category.models import Service, ServiceCategory
     from app.customer.models import CustomerProfile
     from app.otp.models import OTP
     from app.worker.models import WorkerProfile
@@ -76,6 +77,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             WorkerProfile,
             OTP,
             AuthAuditLog,
+            ServiceCategory,
+            Service,
         ]
     )
     yield
