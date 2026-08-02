@@ -71,6 +71,9 @@ class AppRoutes {
   static const String customerProfile       = '/customer/profile';
   static const String editProfile           = '/customer/profile/edit';
   static const String savedAddresses        = '/customer/profile/saved-addresses';
+  static const String addAddress            = '/customer/profile/saved-addresses/add';
+  static const String editAddress           = '/customer/profile/saved-addresses/edit';
+  static const String mapPicker             = '/customer/address/map-picker';
   static const String paymentMethods        = '/customer/profile/payment-methods';
   static const String customerWallet        = '/customer/wallet';
 

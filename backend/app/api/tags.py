@@ -50,6 +50,13 @@ OPENAPI_TAGS: list[dict[str, str]] = [
         ),
     },
     {
+        "name": "Addresses",
+        "description": (
+            "Customer address management — create, list, update, soft-delete, and set default. "
+            "Requires authenticated customer role. Used by the booking system as service location."
+        ),
+    },
+    {
         "name": "Pricing",
         "description": (
             "Service pricing catalog. Public read access for all users, "

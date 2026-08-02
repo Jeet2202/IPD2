@@ -33,6 +33,7 @@ from fastapi import APIRouter
 # ---------------------------------------------------------------------------
 # Feature Router Imports
 # ---------------------------------------------------------------------------
+from app.address.router import router as address_router
 from app.admin.router import router as admin_router
 from app.auth.router import router as auth_router
 from app.category.router import router as category_router
@@ -98,6 +99,15 @@ v1_router.include_router(
     prefix="/customers",
     tags=["Customers"],
     include_in_schema=False,
+)
+
+# --- Addresses ---
+# Customer address management (CRUD + default management).
+# Requires authenticated customer role.
+v1_router.include_router(
+    address_router,
+    prefix="/customer",
+    tags=["Addresses"],
 )
 
 # --- Workers ---

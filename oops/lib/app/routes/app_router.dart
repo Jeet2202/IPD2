@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'app_routes.dart';
+import '../../models/address_model.dart';
+import '../../services/location_service.dart';
 
 // ── Role Selection ─────────────────────────────────────────────────────────────
 import '../role_selection/role_selection_screen.dart';
@@ -24,6 +26,8 @@ import '../../customer/services/services_screen.dart';
 import '../../customer/services/service_details_screen.dart';
 import '../../customer/services/service_faq_screen.dart';
 import '../../customer/address/select_address_screen.dart';
+import '../../customer/address/add_edit_address_screen.dart';
+import '../../customer/address/map_picker_screen.dart';
 import '../../customer/chat/chat_screen.dart';
 import '../../customer/payment/payment_screen.dart';
 import '../../customer/payment/invoice_screen.dart';
@@ -485,6 +489,17 @@ class AppRouter {
 
       case AppRoutes.savedAddresses:
         return _build(const SavedAddressesScreen(), settings);
+
+      case AppRoutes.addAddress:
+        return _build(const AddEditAddressScreen(), settings);
+
+      case AppRoutes.editAddress:
+        final addr = settings.arguments as AddressModel?;
+        return _build(AddEditAddressScreen(existingAddress: addr), settings);
+
+      case AppRoutes.mapPicker:
+        final initialLoc = settings.arguments as LatLng?;
+        return _build(MapPickerScreen(initialLocation: initialLoc), settings);
 
       case AppRoutes.paymentMethods:
         return _build(const PaymentMethodsScreen(), settings);

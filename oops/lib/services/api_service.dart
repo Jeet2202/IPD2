@@ -8,8 +8,8 @@ import '../config/app_config.dart';
 import '../config/environment.dart';
 import '../models/category_model.dart';
 import '../models/home_model.dart';
-import '../models/category_model.dart';
 import '../utils/token_storage.dart';
+
 
 MediaType _determineMediaType(String filePath) {
   final ext = filePath.toLowerCase();
@@ -288,6 +288,14 @@ class ApiService {
       'DELETE',
       path,
       (uri) => _client.delete(uri, headers: _headers, body: body != null ? jsonEncode(body) : null),
+    );
+  }
+
+  Future<Map<String, dynamic>> patch(String path, [Map<String, dynamic>? body]) async {
+    return _send(
+      'PATCH',
+      path,
+      (uri) => _client.patch(uri, headers: _headers, body: body != null ? jsonEncode(body) : null),
     );
   }
 
