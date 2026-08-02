@@ -143,6 +143,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, AppRoutes.roleSelection);
             }
           },
         ),

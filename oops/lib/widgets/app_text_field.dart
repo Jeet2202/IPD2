@@ -6,6 +6,7 @@ import '../app/theme/app_dimensions.dart';
 class AppTextField extends StatelessWidget {
   final String label;
   final String? hint;
+  final String? helperText;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
@@ -16,12 +17,16 @@ class AppTextField extends StatelessWidget {
   final Widget? prefix;
   final List<TextInputFormatter>? formatters;
   final void Function(String)? onChanged;
+  final VoidCallback? onTap;
   final bool readOnly;
+  final bool autofocus;
+  final TextInputAction? textInputAction;
 
   const AppTextField({
     super.key,
     required this.label,
     this.hint,
+    this.helperText,
     this.controller,
     this.validator,
     this.keyboardType = TextInputType.text,
@@ -32,7 +37,10 @@ class AppTextField extends StatelessWidget {
     this.prefix,
     this.formatters,
     this.onChanged,
+    this.onTap,
     this.readOnly = false,
+    this.autofocus = false,
+    this.textInputAction,
   });
 
   @override
@@ -40,13 +48,17 @@ class AppTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,
-            )),
-        const SizedBox(height: 6),
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
         TextFormField(
           controller:          controller,
           validator:           validator,
@@ -56,15 +68,20 @@ class AppTextField extends StatelessWidget {
           maxLines:            obscureText ? 1 : maxLines,
           inputFormatters:     formatters,
           onChanged:           onChanged,
+          onTap:               onTap,
           readOnly:            readOnly,
+          autofocus:           autofocus,
+          textInputAction:     textInputAction,
           decoration: InputDecoration(
             hintText:        hint,
-            hintStyle:       const TextStyle(color: AppColors.textHint),
+            helperText:      helperText,
+            hintStyle:       const TextStyle(color: AppColors.textHint, fontSize: 14),
             suffixIcon:      suffix,
             prefixIcon:      prefix,
             counterText:     '',
             filled:          true,
             fillColor:       AppColors.surface,
+            contentPadding:  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
               borderSide:   const BorderSide(color: AppColors.border),
@@ -81,9 +98,14 @@ class AppTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
               borderSide:   const BorderSide(color: AppColors.error),
             ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+              borderSide:   const BorderSide(color: AppColors.error, width: 2),
+            ),
           ),
         ),
       ],
     );
   }
 }
+

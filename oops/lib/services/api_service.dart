@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '../config/app_config.dart';
 import '../config/environment.dart';
+import '../models/category_model.dart';
 import '../models/home_model.dart';
 import '../utils/token_storage.dart';
 
