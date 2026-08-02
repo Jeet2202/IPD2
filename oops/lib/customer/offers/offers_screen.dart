@@ -188,7 +188,7 @@ class _OffersScreenState extends State<OffersScreen> {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text('Promo "${offer['code']}" applied! Redirecting to booking...'), backgroundColor: const Color(0xFF2563EB)),
                                       );
-                                      Navigator.pushNamed(context, AppRoutes.serviceSelection);
+                                      Navigator.pushNamed(context, AppRoutes.customerServices);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF2563EB),

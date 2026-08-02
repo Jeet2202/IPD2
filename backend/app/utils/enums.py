@@ -63,6 +63,47 @@ class JobType(str, Enum):
 
 
 # ---------------------------------------------------------------------------
+# Booking Lifecycle
+# ---------------------------------------------------------------------------
+
+class BookingStatus(str, Enum):
+    """
+    Booking lifecycle states.
+
+    Initial states implemented in Phase 4.4.1:
+        PENDING   — Customer created booking, awaiting worker assignment.
+        CANCELLED — Customer cancelled before worker was assigned.
+
+    Future states (Phase 4.4.x):
+        ACCEPTED       — Worker accepted the booking.
+        IN_PROGRESS    — Worker is on-site / working.
+        COMPLETED      — Job finished and confirmed.
+        PAYMENT_PENDING — Job done, payment not yet received.
+    """
+    PENDING = "pending"                     # Phase 4.4.1 — created, no worker yet
+    CANCELLED = "cancelled"                 # Phase 4.4.1 — cancelled by customer
+    # --- Reserved for future phases ---
+    ACCEPTED = "accepted"                   # Phase 4.4.x — worker accepted
+    IN_PROGRESS = "in_progress"             # Phase 4.4.x — worker on-site
+    COMPLETED = "completed"                 # Phase 4.4.x — job done
+    PAYMENT_PENDING = "payment_pending"     # Phase 4.4.x — awaiting payment
+
+
+class BookingType(str, Enum):
+    """
+    Type of booking the customer is making.
+
+    NORMAL_SERVICE     — Standard fixed-price service booking.
+                         Worker is dispatched and performs the service.
+    INSPECTION_REQUEST — Customer requests a site visit for assessment
+                         before committing to a full service (e.g., home
+                         painting, renovation). Results in a Quotation.
+    """
+    NORMAL_SERVICE = "normal_service"
+    INSPECTION_REQUEST = "inspection_request"
+
+
+# ---------------------------------------------------------------------------
 # Service Categories
 # ---------------------------------------------------------------------------
 

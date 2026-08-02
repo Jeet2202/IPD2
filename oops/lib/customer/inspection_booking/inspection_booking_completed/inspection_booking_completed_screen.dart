@@ -183,7 +183,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
               const SizedBox(height: 12),
 
               TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.serviceSelection),
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.customerServices),
                 child: const Text('Book Another Inspection / Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
               ),
 

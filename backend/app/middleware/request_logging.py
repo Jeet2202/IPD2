@@ -58,7 +58,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             duration_ms = (time.perf_counter() - start_time) * 1000
 
             logger.info(
-                "%s %s → %d (%.1fms)",
+                "%s %s -> %d (%.1fms)",
                 request.method,
                 request.url.path,
                 response.status_code,
@@ -72,7 +72,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         except Exception:
             duration_ms = (time.perf_counter() - start_time) * 1000
             logger.exception(
-                "%s %s → 500 (%.1fms) UNHANDLED EXCEPTION",
+                "%s %s -> 500 (%.1fms) UNHANDLED EXCEPTION",
                 request.method,
                 request.url.path,
                 duration_ms,

@@ -173,7 +173,7 @@ class _FavoriteProfessionalsScreenState extends State<FavoriteProfessionalsScree
                                     child: Text(fav['available'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () => Navigator.pushNamed(context, AppRoutes.serviceSelection),
+                                    onPressed: () => Navigator.pushNamed(context, AppRoutes.customerServices),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF2563EB),
                                       foregroundColor: Colors.white,

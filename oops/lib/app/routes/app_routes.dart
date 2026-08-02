@@ -31,6 +31,7 @@ class AppRoutes {
   static const String bookingSchedule       = '/customer/booking/schedule';
   static const String priceEstimation       = '/customer/booking/price-estimation';
   static const String bookingSummary        = '/customer/booking/summary';
+  static const String bookingSuccess        = '/customer/booking/success';
   static const String searchingWorker       = '/customer/booking/searching-worker';
   static const String workerAssigned        = '/customer/booking/worker-assigned';
   static const String liveTracking          = '/customer/booking/live-tracking';

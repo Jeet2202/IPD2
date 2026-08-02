@@ -21,6 +21,7 @@ class ApiEndpoints {
   static const String customerProfile       = '/customer/profile';
   static const String customerProfilePhoto  = '/customer/profile/photo';
   static const String customerAddresses     = '/customer/addresses';
+  static const String customerBookings      = '/customer/bookings';
   static const String customerWallet        = '/customer/wallet';
   static const String customerNotifications = '/customer/notifications';
 

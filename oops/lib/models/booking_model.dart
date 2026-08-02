@@ -1,103 +1,346 @@
-class BookingModel {
-  final String id;
-  final String customerId;
-  final String workerId;
-  final String serviceId;
-  final String serviceName;
-  final String status;
-  final AddressModel address;
-  final DateTime scheduledAt;
-  final double totalAmount;
-  final String paymentMethod;
-  final String paymentStatus;
-  final DateTime createdAt;
+// File: lib/models/booking_model.dart
 
-  const BookingModel({
-    required this.id,
-    required this.customerId,
-    required this.workerId,
+/// Data model representing a customer Booking response from the backend.
+/// Maps 1-to-1 with app/booking/schemas.py (BookingResponse).
+
+class ServiceSnapshotModel {
+  final String serviceId;
+  final String name;
+  final String categoryId;
+  final String categorySlug;
+  final double baseMarketPrice;
+  final int estimatedDurationMinutes;
+  final bool isInspectionRequired;
+
+  const ServiceSnapshotModel({
     required this.serviceId,
-    required this.serviceName,
-    required this.status,
-    required this.address,
-    required this.scheduledAt,
-    required this.totalAmount,
-    required this.paymentMethod,
-    required this.paymentStatus,
-    required this.createdAt,
+    required this.name,
+    required this.categoryId,
+    required this.categorySlug,
+    required this.baseMarketPrice,
+    required this.estimatedDurationMinutes,
+    required this.isInspectionRequired,
   });
 
-  factory BookingModel.fromJson(Map<String, dynamic> json) => BookingModel(
-        id:            json['_id'] as String,
-        customerId:    json['customerId'] as String,
-        workerId:      json['workerId'] as String,
-        serviceId:     json['serviceId'] as String,
-        serviceName:   json['serviceName'] as String,
-        status:        json['status'] as String,
-        address:       AddressModel.fromJson(json['address'] as Map<String, dynamic>),
-        scheduledAt:   DateTime.parse(json['scheduledAt'] as String),
-        totalAmount:   (json['totalAmount'] as num).toDouble(),
-        paymentMethod: json['paymentMethod'] as String,
-        paymentStatus: json['paymentStatus'] as String,
-        createdAt:     DateTime.parse(json['createdAt'] as String),
-      );
+  factory ServiceSnapshotModel.fromJson(Map<String, dynamic> json) {
+    return ServiceSnapshotModel(
+      serviceId: json['service_id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      categoryId: json['category_id'] as String? ?? '',
+      categorySlug: json['category_slug'] as String? ?? '',
+      baseMarketPrice: (json['base_market_price'] as num?)?.toDouble() ?? 0.0,
+      estimatedDurationMinutes: (json['estimated_duration_minutes'] as num?)?.toInt() ?? 0,
+      isInspectionRequired: json['is_inspection_required'] as bool? ?? false,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        '_id':           id,
-        'customerId':    customerId,
-        'workerId':      workerId,
-        'serviceId':     serviceId,
-        'serviceName':   serviceName,
-        'status':        status,
-        'address':       address.toJson(),
-        'scheduledAt':   scheduledAt.toIso8601String(),
-        'totalAmount':   totalAmount,
-        'paymentMethod': paymentMethod,
-        'paymentStatus': paymentStatus,
-        'createdAt':     createdAt.toIso8601String(),
+        'service_id': serviceId,
+        'name': name,
+        'category_id': categoryId,
+        'category_slug': categorySlug,
+        'base_market_price': baseMarketPrice,
+        'estimated_duration_minutes': estimatedDurationMinutes,
+        'is_inspection_required': isInspectionRequired,
       };
 }
 
-class AddressModel {
+class AddressSnapshotModel {
+  final String addressId;
   final String label;
-  final String line1;
-  final String? line2;
+  final String fullName;
+  final String phone;
+  final String addressLine1;
+  final String? addressLine2;
+  final String? landmark;
   final String city;
   final String state;
-  final String pincode;
-  final double lat;
-  final double lng;
+  final String country;
+  final String postalCode;
+  final double? latitude;
+  final double? longitude;
 
-  const AddressModel({
+  const AddressSnapshotModel({
+    required this.addressId,
     required this.label,
-    required this.line1,
-    this.line2,
+    required this.fullName,
+    required this.phone,
+    required this.addressLine1,
+    this.addressLine2,
+    this.landmark,
     required this.city,
     required this.state,
-    required this.pincode,
-    required this.lat,
-    required this.lng,
+    required this.country,
+    required this.postalCode,
+    this.latitude,
+    this.longitude,
   });
 
-  factory AddressModel.fromJson(Map<String, dynamic> json) => AddressModel(
-        label:   json['label'] as String,
-        line1:   json['line1'] as String,
-        line2:   json['line2'] as String?,
-        city:    json['city'] as String,
-        state:   json['state'] as String,
-        pincode: json['pincode'] as String,
-        lat:     (json['lat'] as num).toDouble(),
-        lng:     (json['lng'] as num).toDouble(),
-      );
+  factory AddressSnapshotModel.fromJson(Map<String, dynamic> json) {
+    return AddressSnapshotModel(
+      addressId: json['address_id'] as String? ?? '',
+      label: json['label'] as String? ?? 'Home',
+      fullName: json['full_name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      addressLine1: json['address_line_1'] as String? ?? '',
+      addressLine2: json['address_line_2'] as String?,
+      landmark: json['landmark'] as String?,
+      city: json['city'] as String? ?? '',
+      state: json['state'] as String? ?? '',
+      country: json['country'] as String? ?? 'India',
+      postalCode: json['postal_code'] as String? ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        'label':   label,
-        'line1':   line1,
-        'line2':   line2,
-        'city':    city,
-        'state':   state,
-        'pincode': pincode,
-        'lat':     lat,
-        'lng':     lng,
+        'address_id': addressId,
+        'label': label,
+        'full_name': fullName,
+        'phone': phone,
+        'address_line_1': addressLine1,
+        'address_line_2': addressLine2,
+        'landmark': landmark,
+        'city': city,
+        'state': state,
+        'country': country,
+        'postal_code': postalCode,
+        'latitude': latitude,
+        'longitude': longitude,
       };
+
+  String get shortAddress {
+    final parts = <String>[addressLine1];
+    if (addressLine2 != null && addressLine2!.isNotEmpty) parts.add(addressLine2!);
+    parts.addAll([city, '$state - $postalCode']);
+    return parts.join(', ');
+  }
+}
+
+class BookingModel {
+  final String id;
+  final String bookingNumber;
+  final String customerId;
+  final String bookingType;
+  final String status;
+  final ServiceSnapshotModel serviceSnapshot;
+  final AddressSnapshotModel addressSnapshot;
+  final double? latitude;
+  final double? longitude;
+  final String? scheduledDate;
+  final String? scheduledTime;
+  final double? estimatedPrice;
+  final int? estimatedDurationMinutes;
+  final String? customerNotes;
+  final String? problemDescription;
+  final List<String> problemPhotos;
+  final String? workerId;
+  final String? assignedAt;
+  final String? startedAt;
+  final String? completedAt;
+  final String? cancelledAt;
+  final String? cancellationReason;
+  final double? finalPrice;
+  final String? inspectionId;
+  final String? quotationId;
+  final String? paymentId;
+  final String createdAt;
+  final String updatedAt;
+
+  const BookingModel({
+    required this.id,
+    required this.bookingNumber,
+    required this.customerId,
+    required this.bookingType,
+    required this.status,
+    required this.serviceSnapshot,
+    required this.addressSnapshot,
+    this.latitude,
+    this.longitude,
+    this.scheduledDate,
+    this.scheduledTime,
+    this.estimatedPrice,
+    this.estimatedDurationMinutes,
+    this.customerNotes,
+    this.problemDescription,
+    this.problemPhotos = const [],
+    this.workerId,
+    this.assignedAt,
+    this.startedAt,
+    this.completedAt,
+    this.cancelledAt,
+    this.cancellationReason,
+    this.finalPrice,
+    this.inspectionId,
+    this.quotationId,
+    this.paymentId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory BookingModel.fromJson(Map<String, dynamic> json) {
+    // If wrapped in 'data', unwrap
+    final raw = (json['data'] is Map<String, dynamic>) ? json['data'] as Map<String, dynamic> : json;
+
+    return BookingModel(
+      id: raw['id'] as String? ?? '',
+      bookingNumber: raw['booking_number'] as String? ?? '',
+      customerId: raw['customer_id'] as String? ?? '',
+      bookingType: raw['booking_type'] as String? ?? 'normal_service',
+      status: raw['status'] as String? ?? 'pending',
+      serviceSnapshot: ServiceSnapshotModel.fromJson(raw['service_snapshot'] as Map<String, dynamic>? ?? {}),
+      addressSnapshot: AddressSnapshotModel.fromJson(raw['address_snapshot'] as Map<String, dynamic>? ?? {}),
+      latitude: (raw['latitude'] as num?)?.toDouble(),
+      longitude: (raw['longitude'] as num?)?.toDouble(),
+      scheduledDate: raw['scheduled_date'] as String?,
+      scheduledTime: raw['scheduled_time'] as String?,
+      estimatedPrice: (raw['estimated_price'] as num?)?.toDouble(),
+      estimatedDurationMinutes: (raw['estimated_duration_minutes'] as num?)?.toInt(),
+      customerNotes: raw['customer_notes'] as String?,
+      problemDescription: raw['problem_description'] as String?,
+      problemPhotos: (raw['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      workerId: raw['worker_id'] as String?,
+      assignedAt: raw['assigned_at'] as String?,
+      startedAt: raw['started_at'] as String?,
+      completedAt: raw['completed_at'] as String?,
+      cancelledAt: raw['cancelled_at'] as String?,
+      cancellationReason: raw['cancellation_reason'] as String?,
+      finalPrice: (raw['final_price'] as num?)?.toDouble(),
+      inspectionId: raw['inspection_id'] as String?,
+      quotationId: raw['quotation_id'] as String?,
+      paymentId: raw['payment_id'] as String?,
+      createdAt: raw['created_at'] as String? ?? '',
+      updatedAt: raw['updated_at'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'booking_number': bookingNumber,
+        'customer_id': customerId,
+        'booking_type': bookingType,
+        'status': status,
+        'service_snapshot': serviceSnapshot.toJson(),
+        'address_snapshot': addressSnapshot.toJson(),
+        'latitude': latitude,
+        'longitude': longitude,
+        'scheduled_date': scheduledDate,
+        'scheduled_time': scheduledTime,
+        'estimated_price': estimatedPrice,
+        'estimated_duration_minutes': estimatedDurationMinutes,
+        'customer_notes': customerNotes,
+        'problem_description': problemDescription,
+        'problem_photos': problemPhotos,
+        'worker_id': workerId,
+        'assigned_at': assignedAt,
+        'started_at': startedAt,
+        'completed_at': completedAt,
+        'cancelled_at': cancelledAt,
+        'cancellation_reason': cancellationReason,
+        'final_price': finalPrice,
+        'inspection_id': inspectionId,
+        'quotation_id': quotationId,
+        'payment_id': paymentId,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+      };
+}
+
+/// Payload sent to POST /customer/bookings (CreateBookingRequest schema)
+class CreateBookingPayload {
+  final String serviceId;
+  final String addressId;
+  final String bookingType; // 'normal_service' or 'inspection_request'
+  final String? scheduledDate; // YYYY-MM-DD
+  final String? scheduledTime; // e.g. '10:00-12:00'
+  final String? customerNotes;
+  final String? problemDescription;
+  final List<String> problemPhotos;
+
+  const CreateBookingPayload({
+    required this.serviceId,
+    required this.addressId,
+    this.bookingType = 'normal_service',
+    this.scheduledDate,
+    this.scheduledTime,
+    this.customerNotes,
+    this.problemDescription,
+    this.problemPhotos = const [],
+  });
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'service_id': serviceId,
+      'address_id': addressId,
+      'booking_type': bookingType,
+    };
+    if (scheduledDate != null && scheduledDate!.isNotEmpty) {
+      map['scheduled_date'] = scheduledDate;
+    }
+    if (scheduledTime != null && scheduledTime!.isNotEmpty) {
+      map['scheduled_time'] = scheduledTime;
+    }
+    if (customerNotes != null && customerNotes!.trim().isNotEmpty) {
+      map['customer_notes'] = customerNotes!.trim();
+    }
+    if (problemDescription != null && problemDescription!.trim().isNotEmpty) {
+      map['problem_description'] = problemDescription!.trim();
+    }
+    if (problemPhotos.isNotEmpty) {
+      map['problem_photos'] = problemPhotos;
+    }
+    return map;
+  }
+}
+
+/// DTO for an individual booking time slot returned by backend scheduling API
+class TimeSlotModel {
+  final String slotId;
+  final String startTime;
+  final String endTime;
+  final bool isAvailable;
+  final String? reason;
+
+  const TimeSlotModel({
+    required this.slotId,
+    required this.startTime,
+    required this.endTime,
+    required this.isAvailable,
+    this.reason,
+  });
+
+  factory TimeSlotModel.fromJson(Map<String, dynamic> json) {
+    return TimeSlotModel(
+      slotId: json['slot_id'] as String? ?? '',
+      startTime: json['start_time'] as String? ?? '',
+      endTime: json['end_time'] as String? ?? '',
+      isAvailable: json['is_available'] as bool? ?? true,
+      reason: json['reason'] as String?,
+    );
+  }
+}
+
+/// DTO for available slots response returned by GET /customer/bookings/slots
+class AvailableSlotsModel {
+  final String date;
+  final bool isDateAvailable;
+  final List<TimeSlotModel> slots;
+
+  const AvailableSlotsModel({
+    required this.date,
+    required this.isDateAvailable,
+    required this.slots,
+  });
+
+  factory AvailableSlotsModel.fromJson(Map<String, dynamic> json) {
+    final raw = (json['data'] is Map<String, dynamic>) ? json['data'] as Map<String, dynamic> : json;
+    final slotList = raw['slots'] as List<dynamic>? ?? [];
+
+    return AvailableSlotsModel(
+      date: raw['date'] as String? ?? '',
+      isDateAvailable: raw['is_date_available'] as bool? ?? true,
+      slots: slotList.map((e) => TimeSlotModel.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  }
 }

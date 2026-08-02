@@ -117,6 +117,13 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: SecretStr | None = None
     CLOUDINARY_FOLDER: str = "kaamsetu/profile_pictures"
 
+    # --- Booking & Scheduling Configuration ---
+    BOOKING_BUSINESS_START_HOUR: int = 8       # 08:00 AM
+    BOOKING_BUSINESS_END_HOUR: int = 20        # 08:00 PM
+    BOOKING_SLOT_DURATION_MINUTES: int = 120   # 2-hour slots
+    BOOKING_MAX_ADVANCE_DAYS: int = 60          # 60 days max booking window
+    BOOKING_SAME_DAY_BUFFER_HOURS: int = 1     # 1 hour minimum lead time for today's slots
+
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None
 

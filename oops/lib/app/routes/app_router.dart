@@ -37,6 +37,7 @@ import '../../customer/normal_booking/booking_details/booking_details_screen.dar
 import '../../customer/normal_booking/schedule/schedule_screen.dart';
 import '../../customer/normal_booking/price_estimation/price_estimation_screen.dart';
 import '../../customer/normal_booking/booking_summary/booking_summary_screen.dart';
+import '../../customer/normal_booking/booking_success_screen.dart';
 import '../../customer/normal_booking/searching_worker/searching_worker_screen.dart';
 import '../../customer/normal_booking/worker_assigned/worker_assigned_screen.dart';
 import '../../customer/normal_booking/live_tracking/live_tracking_screen.dart';
@@ -585,7 +586,7 @@ class AppRouter {
 
       // ── Normal Booking Flow ─────────────────────────────────────────────────
       case AppRoutes.serviceSelection:
-        return _build(const ServiceSelectionScreen(), settings);
+        return _build(const ServicesScreen(), settings);
 
       case AppRoutes.bookingDetails:
         return _build(const BookingDetailsScreen(), settings);
@@ -598,6 +599,9 @@ class AppRouter {
 
       case AppRoutes.bookingSummary:
         return _build(const BookingSummaryScreen(), settings);
+
+      case AppRoutes.bookingSuccess:
+        return _build(const BookingSuccessScreen(), settings);
 
       case AppRoutes.searchingWorker:
         return _build(const SearchingWorkerScreen(), settings);

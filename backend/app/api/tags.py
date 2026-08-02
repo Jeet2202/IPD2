@@ -57,6 +57,15 @@ OPENAPI_TAGS: list[dict[str, str]] = [
         ),
     },
     {
+        "name": "Bookings",
+        "description": (
+            "Service booking management — create, list, and retrieve bookings. "
+            "Each booking captures a point-in-time snapshot of the service and address. "
+            "Booking numbers follow the KSYYYYnnnnn format. "
+            "Requires authenticated customer role."
+        ),
+    },
+    {
         "name": "Pricing",
         "description": (
             "Service pricing catalog. Public read access for all users, "

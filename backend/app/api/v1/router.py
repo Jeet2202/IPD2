@@ -36,6 +36,7 @@ from fastapi import APIRouter
 from app.address.router import router as address_router
 from app.admin.router import router as admin_router
 from app.auth.router import router as auth_router
+from app.booking.router import router as booking_router
 from app.category.router import router as category_router
 from app.customer.router import router as customer_router
 from app.home.router import router as home_router
@@ -108,6 +109,15 @@ v1_router.include_router(
     address_router,
     prefix="/customer",
     tags=["Addresses"],
+)
+
+# --- Bookings ---
+# Service booking creation, listing, and retrieval.
+# Requires authenticated customer role.
+v1_router.include_router(
+    booking_router,
+    prefix="/customer",
+    tags=["Bookings"],
 )
 
 # --- Workers ---

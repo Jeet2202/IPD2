@@ -1,3 +1,4 @@
+import '../models/address_model.dart';
 import '../models/category_model.dart';
 import '../models/service_model.dart';
 import '../models/worker_model.dart';
@@ -73,9 +74,23 @@ class MockData {
   ];
 
   // ── Address ───────────────────────────────────────────
-  static const AddressModel homeAddress = AddressModel(
-    label: 'Home', line1: '12, MG Road', line2: 'Near City Mall',
-    city: 'Bengaluru', state: 'Karnataka', pincode: '560001',
-    lat: 12.9716, lng: 77.5946,
+  static final AddressModel homeAddress = AddressModel(
+    id: 'addr_mock_001',
+    customerId: 'usr_001',
+    label: 'Home',
+    fullName: 'Rahul Sharma',
+    phone: '+919876543210',
+    addressLine1: '12, MG Road',
+    addressLine2: 'Near City Mall',
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    country: 'India',
+    postalCode: '560001',
+    latitude: 12.9716,
+    longitude: 77.5946,
+    isDefault: true,
+    isDeleted: false,
+    createdAt: DateTime.now().toIso8601String(),
+    updatedAt: DateTime.now().toIso8601String(),
   );
 }

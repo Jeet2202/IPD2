@@ -368,6 +368,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
           _MenuItem(
+            icon: Icons.receipt_long_rounded,
+            title: 'My Bookings',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.myBookings),
+          ),
+          _MenuItem(
             icon: Icons.location_on_outlined,
             title: 'Saved Addresses',
             onTap: () => Navigator.pushNamed(context, AppRoutes.savedAddresses),

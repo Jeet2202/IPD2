@@ -642,8 +642,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(
         context,
-        AppRoutes.serviceSelection,
-        arguments: {'service_id': service.id, 'service_name': service.name},
+        AppRoutes.customerServiceDetail,
+        arguments: {'service_id': service.id, 'service': service},
       ),
       child: Container(
         width: 190,

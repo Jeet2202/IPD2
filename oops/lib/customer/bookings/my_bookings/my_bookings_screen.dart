@@ -1,8 +1,11 @@
-// File:
-// lib/customer/bookings/my_bookings/my_bookings_screen.dart
+// File: lib/customer/bookings/my_bookings/my_bookings_screen.dart
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../app/theme/app_colors.dart';
+import '../../../models/booking_model.dart';
+import '../../../services/api_service.dart';
+import '../../../services/booking_service.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -13,76 +16,108 @@ class MyBookingsScreen extends StatefulWidget {
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final BookingService _bookingService = BookingService.instance;
+
   String _selectedFilter = 'All';
+  final List<String> _filters = ['All', 'Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'];
 
-  final List<String> _filters = ['All', 'Upcoming', 'In Progress', 'Completed', 'Cancelled'];
-
-  final List<Map<String, dynamic>> _normalBookings = [
-    {
-      'id': '#BK-90214',
-      'service': 'Full AC Deep Servicing',
-      'tech': 'Ramesh Kumar',
-      'date': '31 Jul 2026',
-      'time': '02:00 PM',
-      'amount': '₹899',
-      'status': 'In Progress',
-      'statusColor': const Color(0xFF2563EB),
-    },
-    {
-      'id': '#BK-88102',
-      'service': 'Bathroom Deep Cleaning',
-      'tech': 'Pooja Sharma',
-      'date': '02 Aug 2026',
-      'time': '10:00 AM',
-      'amount': '₹1,249',
-      'status': 'Upcoming',
-      'statusColor': const Color(0xFF0EA5E9),
-    },
-    {
-      'id': '#BK-74912',
-      'service': 'Kitchen Tap Leakage Repair',
-      'tech': 'Suresh Patel',
-      'date': '24 Jul 2026',
-      'time': '04:30 PM',
-      'amount': '₹450',
-      'status': 'Completed',
-      'statusColor': const Color(0xFF16A34A),
-    },
-  ];
-
-  final List<Map<String, dynamic>> _inspectionBookings = [
-    {
-      'id': '#INS-49210',
-      'service': 'Electrical DB Short Circuit Diagnosis',
-      'tech': 'Sunil Verma',
-      'date': '31 Jul 2026',
-      'time': '11:00 AM',
-      'amount': '₹99',
-      'status': 'In Progress',
-      'statusColor': const Color(0xFF2563EB),
-    },
-    {
-      'id': '#INS-38104',
-      'service': 'Washing Machine Drainage Diagnosis',
-      'tech': 'Amit Roy',
-      'date': '15 Jul 2026',
-      'time': '03:00 PM',
-      'amount': '₹99',
-      'status': 'Completed',
-      'statusColor': const Color(0xFF16A34A),
-    },
-  ];
+  bool _isLoading = true;
+  String? _errorMessage;
+  List<BookingModel> _allBookings = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+    _fetchBookings();
+  }
+
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     super.dispose();
+  }
+
+  String? _mapFilterToStatusParam(String filter) {
+    switch (filter) {
+      case 'Pending':
+        return 'pending';
+      case 'Accepted':
+        return 'accepted';
+      case 'In Progress':
+        return 'in_progress';
+      case 'Completed':
+        return 'completed';
+      case 'Cancelled':
+        return 'cancelled';
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _fetchBookings() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final statusParam = _mapFilterToStatusParam(_selectedFilter);
+      final list = await _bookingService.fetchBookings(status: statusParam);
+      if (!mounted) return;
+
+      setState(() {
+        _allBookings = list;
+        _isLoading = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.message;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Failed to load bookings. Please check network connection.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<BookingModel> _getFilteredListForTab(int tabIndex) {
+    if (tabIndex == 0) {
+      // Direct Services
+      return _allBookings.where((b) => b.bookingType != 'inspection_request').toList();
+    } else {
+      // Inspection Flow
+      return _allBookings.where((b) => b.bookingType == 'inspection_request').toList();
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return const Color(0xFFD97706); // Amber
+      case 'accepted':
+        return const Color(0xFF2563EB); // Blue
+      case 'in_progress':
+        return const Color(0xFF4F46E5); // Indigo
+      case 'completed':
+        return const Color(0xFF16A34A); // Green
+      case 'cancelled':
+        return const Color(0xFFDC2626); // Red
+      default:
+        return AppColors.textSecondary;
+    }
   }
 
   @override
@@ -109,14 +144,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFF2563EB),
+          labelColor: AppColors.primary,
           unselectedLabelColor: const Color(0xFF64748B),
-          indicatorColor: const Color(0xFF2563EB),
+          indicatorColor: AppColors.primary,
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           tabs: const [
             Tab(text: 'Direct Services'),
-            Tab(text: 'Inspection Flow'),
+            Tab(text: 'Inspection Visits'),
           ],
         ),
       ),
@@ -140,14 +175,17 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                     child: ChoiceChip(
                       label: Text(filter),
                       selected: isSelected,
-                      selectedColor: const Color(0xFF2563EB),
+                      selectedColor: AppColors.primary,
                       backgroundColor: const Color(0xFFF1F5F9),
                       labelStyle: TextStyle(
                         fontSize: 12,
                         fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                         color: isSelected ? Colors.white : const Color(0xFF475569),
                       ),
-                      onSelected: (_) => setState(() => _selectedFilter = filter),
+                      onSelected: (_) {
+                        setState(() => _selectedFilter = filter);
+                        _fetchBookings();
+                      },
                     ),
                   );
                 },
@@ -160,8 +198,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildBookingList(_normalBookings),
-                _buildBookingList(_inspectionBookings),
+                _buildTabBody(0),
+                _buildTabBody(1),
               ],
             ),
           ),
@@ -172,7 +210,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 20,
               offset: const Offset(0, -4),
             ),
@@ -200,7 +238,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF2563EB),
+          selectedItemColor: AppColors.primary,
           unselectedItemColor: const Color(0xFF94A3B8),
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
@@ -227,7 +265,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
         label: const Text('Book New Service', style: TextStyle(fontWeight: FontWeight.w800)),
@@ -235,91 +273,225 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildBookingList(List<Map<String, dynamic>> bookings) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      physics: const BouncingScrollPhysics(),
-      itemCount: bookings.length,
-      itemBuilder: (context, index) {
-        final b = bookings[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
-          ),
+  Widget _buildTabBody(int tabIndex) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(b['id'] as String, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF64748B))),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: (b['statusColor'] as Color).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      b['status'] as String,
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: b['statusColor'] as Color),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
+              const Icon(Icons.cloud_off_rounded, size: 56, color: Color(0xFF94A3B8)),
+              const SizedBox(height: 16),
               Text(
-                b['service'] as String,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  const Icon(Icons.person_outline_rounded, size: 16, color: Color(0xFF64748B)),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      b['tech'] as String,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF64748B)),
-                  const SizedBox(width: 6),
-                  Text('${b['date']} • ${b['time']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                ],
-              ),
-              const SizedBox(height: 14),
-              const Divider(color: Color(0xFFF1F5F9), height: 1),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(b['amount'] as String, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFEFF6FF),
-                      foregroundColor: const Color(0xFF2563EB),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: _fetchBookings,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
               ),
             ],
           ),
-        );
-      },
+        ),
+      );
+    }
+
+    final bookings = _getFilteredListForTab(tabIndex);
+
+    if (bookings.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _fetchBookings,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          child: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 80),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEFF6FF),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.calendar_today_outlined, size: 48, color: AppColors.primary),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  tabIndex == 0 ? 'No Direct Service Bookings' : 'No Inspection Requests',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _selectedFilter == 'All'
+                      ? 'You have not placed any service bookings yet.'
+                      : 'No bookings found with status "$_selectedFilter".',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Explore Services', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchBookings,
+      color: AppColors.primary,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        itemCount: bookings.length,
+        itemBuilder: (context, index) {
+          final b = bookings[index];
+          final statusColor = _getStatusColor(b.status);
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          b.bookingNumber,
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: b.bookingType == 'inspection_request' ? const Color(0xFFFEF3C7) : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            b.bookingType == 'inspection_request' ? 'Inspection' : 'Direct',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: b.bookingType == 'inspection_request' ? const Color(0xFFD97706) : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        b.status.toUpperCase(),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: statusColor),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  b.serviceSnapshot.name,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${b.addressSnapshot.label} • ${b.addressSnapshot.city}',
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.schedule_rounded, size: 16, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${b.scheduledDate ?? 'ASAP'} ${b.scheduledTime != null ? '• ${b.scheduledTime}' : ''}',
+                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                const Divider(color: Color(0xFFF1F5F9), height: 1),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '₹${b.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.bookingDetails,
+                          arguments: {'booking': b, 'booking_id': b.id},
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEFF6FF),
+                        foregroundColor: AppColors.primary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

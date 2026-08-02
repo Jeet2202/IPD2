@@ -527,7 +527,16 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () => _showPhase5Modal(isInspection: true),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.bookingDetails,
+                              arguments: {
+                                'service': service,
+                                'booking_type': 'inspection_request',
+                              },
+                            );
+                          },
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             side: const BorderSide(color: AppColors.primary, width: 1.5),
@@ -542,7 +551,16 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => _showPhase5Modal(isInspection: false),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.bookingDetails,
+                              arguments: {
+                                'service': service,
+                                'booking_type': 'normal_service',
+                              },
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,

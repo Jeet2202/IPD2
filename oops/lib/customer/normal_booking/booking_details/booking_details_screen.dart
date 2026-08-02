@@ -1,19 +1,308 @@
-// File:
-// lib/customer/normal_booking/booking_details/booking_details_screen.dart
+// File: lib/customer/normal_booking/booking_details/booking_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
+import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_dimensions.dart';
+import '../../../models/address_model.dart';
+import '../../../models/booking_model.dart';
+import '../../../models/service_model.dart';
+import '../../../services/address_service.dart';
+import '../../../services/booking_service.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
-  const BookingDetailsScreen({super.key});
+  final ServiceModel? service;
+  final String? initialBookingType;
+
+  const BookingDetailsScreen({
+    super.key,
+    this.service,
+    this.initialBookingType,
+  });
 
   @override
   State<BookingDetailsScreen> createState() => _BookingDetailsScreenState();
 }
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+  final AddressService _addressService = AddressService.instance;
   final TextEditingController _notesController = TextEditingController();
-  bool _isEmergencyService = false;
-  final List<String> _uploadedPhotos = ['Photo 1', 'Photo 2'];
+  final TextEditingController _problemDescController = TextEditingController();
+
+  ServiceModel? _service;
+  List<AddressModel> _savedAddresses = [];
+  AddressModel? _selectedAddress;
+
+  bool _isLoadingAddresses = true;
+  String? _addressError;
+
+  late String _bookingType; // 'normal_service' or 'inspection_request'
+  late DateTime _selectedDate;
+  String _selectedTimeSlot = '';
+  bool _isLoadingSlots = false;
+  List<TimeSlotModel> _availableSlots = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = DateTime.now();
+    _bookingType = widget.initialBookingType ?? 'normal_service';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _extractArgsAndFetch();
+      _fetchSlotsForDate(_selectedDate);
+    });
+  }
+
+  void _extractArgsAndFetch() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      if (args['service'] is ServiceModel) {
+        _service = args['service'] as ServiceModel;
+      }
+      if (args['booking_type'] is String) {
+        _bookingType = args['booking_type'] as String;
+      }
+    } else if (widget.service != null) {
+      _service = widget.service;
+    }
+
+    _fetchSavedAddresses();
+  }
+
+  Future<void> _fetchSavedAddresses() async {
+    setState(() {
+      _isLoadingAddresses = true;
+      _addressError = null;
+    });
+
+    try {
+      final list = await _addressService.listAddresses();
+      if (!mounted) return;
+
+      setState(() {
+        _savedAddresses = list;
+        _isLoadingAddresses = false;
+        // Pre-select default address or first address
+        if (list.isNotEmpty) {
+          _selectedAddress = list.firstWhere(
+            (a) => a.isDefault,
+            orElse: () => list.first,
+          );
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingAddresses = false;
+        _addressError = 'Failed to load saved addresses. Please try again.';
+      });
+    }
+  }
+
+  Future<void> _selectDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate.isBefore(now) ? now : _selectedDate,
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: DateTime.now().add(const Duration(days: 90)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              onSurface: AppColors.textPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && mounted) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      _fetchSlotsForDate(picked);
+    }
+  }
+
+  Future<void> _fetchSlotsForDate(DateTime dt) async {
+    setState(() {
+      _isLoadingSlots = true;
+    });
+
+    final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+
+    try {
+      final res = await BookingService.instance.fetchAvailableSlots(dateStr);
+      if (!mounted) return;
+
+      setState(() {
+        _availableSlots = res.slots;
+        _isLoadingSlots = false;
+
+        final avail = res.slots.where((s) => s.isAvailable).toList();
+        if (avail.isNotEmpty) {
+          _selectedTimeSlot = avail.first.slotId;
+        } else {
+          _selectedTimeSlot = '';
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingSlots = false;
+      });
+    }
+  }
+
+  Future<void> _addNewAddress() async {
+    final result = await Navigator.pushNamed(context, AppRoutes.addAddress);
+    if (result == true && mounted) {
+      _fetchSavedAddresses();
+    }
+  }
+
+  void _showAddressPickerModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Select Service Address',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _addNewAddress();
+                    },
+                    icon: const Icon(Icons.add_rounded, size: 18, color: AppColors.primary),
+                    label: const Text('Add New', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _savedAddresses.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.divider),
+                  itemBuilder: (context, idx) {
+                    final addr = _savedAddresses[idx];
+                    final isSelected = _selectedAddress?.id == addr.id;
+
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : const Color(0xFFF1F5F9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          addr.label == 'Home'
+                              ? Icons.home_rounded
+                              : addr.label == 'Office'
+                                  ? Icons.work_rounded
+                                  : Icons.location_on_rounded,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          size: 20,
+                        ),
+                      ),
+                      title: Row(
+                        children: [
+                          Text(addr.label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          if (addr.isDefault) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(4)),
+                              child: const Text('DEFAULT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+                            ),
+                          ],
+                        ],
+                      ),
+                      subtitle: Text(
+                        '${addr.fullName} • ${addr.shortAddress}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
+                          : const Icon(Icons.radio_button_unchecked_rounded, color: AppColors.textHint),
+                      onTap: () {
+                        setState(() => _selectedAddress = addr);
+                        Navigator.pop(ctx);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _proceedToSummary() {
+    if (_service == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a valid service.')),
+      );
+      return;
+    }
+
+    if (_selectedAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select or add a service address.')),
+      );
+      return;
+    }
+
+    if (_bookingType == 'inspection_request' && _problemDescController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please provide a problem description for the inspection request.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final dateStr = '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
+
+    Navigator.pushNamed(
+      context,
+      AppRoutes.bookingSummary,
+      arguments: {
+        'service': _service,
+        'address': _selectedAddress,
+        'booking_type': _bookingType,
+        'scheduled_date': dateStr,
+        'scheduled_time': _selectedTimeSlot,
+        'customer_notes': _notesController.text.trim(),
+        'problem_description': _problemDescController.text.trim(),
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -23,24 +312,26 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final service = _service;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Column(
           children: [
             Text(
-              'Step 2 of 4',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
+              'Step 1 of 2',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
             ),
             Text(
               'Booking Details',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
             ),
           ],
         ),
@@ -50,208 +341,211 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Selected Service Summary Card ─────────────────────
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2563EB).withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(Icons.bolt_rounded, color: Color(0xFF2563EB), size: 30),
-                      ),
-                      const SizedBox(width: 14),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Switchboard & Wiring Repair',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                // ── Selected Service Summary ─────────────────────────
+                if (service != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            color: const Color(0xFFF1F5F9),
+                            child: Image.network(
+                              service.resolvedImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.build_rounded, color: AppColors.primary, size: 28),
                             ),
-                            SizedBox(height: 3),
-                            Text(
-                              'Electrical • 2 Items Selected',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      const Text(
-                        '₹349',
-                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Emergency Service Toggle Card ────────────────────
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: _isEmergencyService ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _isEmergencyService ? const Color(0xFFFCA5A5) : const Color(0xFFE2E8F0),
-                      width: 1.5,
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                service.name,
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${service.categorySlug.replaceAll('-', ' ').toUpperCase()} • ${service.durationDisplay}',
+                                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.primary),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: _isEmergencyService ? const Color(0xFFEF4444) : const Color(0xFFCBD5E1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 20),
+                  const SizedBox(height: 20),
+                ],
+
+                // ── Address Selection Section ──────────────────────────
+                _buildSectionHeader(
+                  title: 'Service Address',
+                  icon: Icons.location_on_rounded,
+                ),
+                const SizedBox(height: 10),
+                _buildAddressCard(),
+
+                const SizedBox(height: 24),
+
+                // ── Booking Type Selector ──────────────────────────────
+                _buildSectionHeader(
+                  title: 'Booking Type',
+                  icon: Icons.category_rounded,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildBookingTypeTile(
+                        typeKey: 'normal_service',
+                        title: 'Normal Service',
+                        subtitle: 'Fixed price job dispatch',
+                        icon: Icons.flash_on_rounded,
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildBookingTypeTile(
+                        typeKey: 'inspection_request',
+                        title: 'Inspection Visit',
+                        subtitle: 'On-site estimate first',
+                        icon: Icons.search_rounded,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // ── Date Selector ──────────────────────────────────────
+                _buildSectionHeader(
+                  title: 'Preferred Date',
+                  icon: Icons.calendar_month_rounded,
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: _selectDate,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
                           children: [
+                            const Icon(Icons.today_rounded, color: AppColors.primary, size: 22),
+                            const SizedBox(width: 12),
                             Text(
-                              'Emergency Express Service',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Professional arrives within 60 mins (+₹99)',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                              '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                             ),
                           ],
                         ),
-                      ),
-                      Switch(
-                        value: _isEmergencyService,
-                        activeColor: const Color(0xFFEF4444),
-                        onChanged: (val) => setState(() => _isEmergencyService = val),
-                      ),
-                    ],
+                        const Row(
+                          children: [
+                            Text('Change Date', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                            SizedBox(width: 4),
+                            Icon(Icons.chevron_right_rounded, color: AppColors.primary, size: 18),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // ── Preferred Duration Card ───────────────────────────
-                const Text(
-                  'Estimated Work Duration',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                // ── Time Slot Selector ─────────────────────────────────
+                _buildSectionHeader(
+                  title: 'Preferred Time Slot',
+                  icon: Icons.access_time_rounded,
+                ),
+                _buildTimeSlotsWidget(),
+
+                const SizedBox(height: 24),
+
+                // ── Inspection Problem Description (Required if inspection_request) ──
+                if (_bookingType == 'inspection_request') ...[
+                  _buildSectionHeader(
+                    title: 'Problem Description (Required)',
+                    icon: Icons.assignment_late_rounded,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFD97706), width: 1.5),
+                    ),
+                    child: TextField(
+                      controller: _problemDescController,
+                      maxLines: 3,
+                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                      decoration: const InputDecoration(
+                        hintText: 'Describe the issue in detail (e.g. AC unit leaking, switchboard sparking)...',
+                        hintStyle: TextStyle(fontSize: 13, color: AppColors.textHint),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(14),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // ── Customer Notes ─────────────────────────────────────
+                _buildSectionHeader(
+                  title: 'Customer Notes (Optional)',
+                  icon: Icons.edit_note_rounded,
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.schedule_rounded, color: Color(0xFF2563EB), size: 22),
-                      SizedBox(width: 12),
-                      Text(
-                        'Approx. 45 - 60 Minutes',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── Additional Notes ──────────────────────────────────
-                const Text(
-                  'Special Instructions / Notes',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                    border: Border.all(color: AppColors.divider),
                   ),
                   child: TextField(
                     controller: _notesController,
                     maxLines: 3,
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+                    style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
                     decoration: const InputDecoration(
-                      hintText: 'Add instructions like gate code, landmark, or specific requests...',
-                      hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                      hintText: 'Add instructions like landmark, gate code, or specific preferences...',
+                      hintStyle: TextStyle(fontSize: 13, color: AppColors.textHint),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.all(14),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
-                // ── Upload Photos Section ─────────────────────────────
-                const Text(
-                  'Attached Problem Photos',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
-                ),
-                const SizedBox(height: 12),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFCBD5E1)),
-                          ),
-                          child: const Icon(Icons.add_a_photo_rounded, color: Color(0xFF2563EB), size: 24),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      ..._uploadedPhotos.map((photo) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          margin: const EdgeInsets.only(right: 12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE0F2FE),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFF0EA5E9)),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.image_rounded, color: Color(0xFF0EA5E9), size: 32),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 100),
+                const SizedBox(height: 110), // Bottom padding for sticky button
               ],
             ),
           ),
 
-          // ── Sticky Bottom Button ────────────────────────────────────
+          // ── Sticky Bottom CTA Bar ────────────────────────────────────
           Positioned(
             left: 0,
             right: 0,
@@ -261,28 +555,32 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, -4),
+                  ),
                 ],
               ),
               child: SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Address Selection
-                  },
+                  onPressed: _proceedToSummary,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                    ),
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Select Address',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        'Continue to Summary',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),
@@ -294,6 +592,256 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSectionHeader({required String title, required IconData icon}) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressCard() {
+    if (_isLoadingAddresses) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.divider)),
+        child: const Row(
+          children: [
+            SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+            SizedBox(width: 12),
+            Text('Loading saved addresses...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          ],
+        ),
+      );
+    }
+
+    if (_addressError != null) {
+      return Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFFCA5A5))),
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+            const SizedBox(width: 10),
+            Expanded(child: Text(_addressError!, style: const TextStyle(fontSize: 12, color: AppColors.error))),
+            TextButton(onPressed: _fetchSavedAddresses, child: const Text('Retry')),
+          ],
+        ),
+      );
+    }
+
+    if (_savedAddresses.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.divider)),
+        child: Column(
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.location_off_rounded, color: AppColors.warning, size: 24),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'No saved addresses found. Please add a service location.',
+                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _addNewAddress,
+                icon: const Icon(Icons.add_location_alt_rounded, size: 18),
+                label: const Text('Add Address Now', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final addr = _selectedAddress;
+    if (addr == null) return const SizedBox.shrink();
+
+    return GestureDetector(
+      onTap: _showAddressPickerModal,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primary, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                addr.label == 'Home'
+                    ? Icons.home_rounded
+                    : addr.label == 'Office'
+                        ? Icons.work_rounded
+                        : Icons.location_on_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(addr.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                      if (addr.isDefault) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(4)),
+                          child: const Text('DEFAULT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    addr.shortAddress,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
+                  ),
+                ],
+              ),
+            ),
+            const Column(
+              children: [
+                Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary, size: 20),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookingTypeTile({
+    required String typeKey,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final isSelected = _bookingType == typeKey;
+
+    return GestureDetector(
+      onTap: () => setState(() => _bookingType = typeKey),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.divider,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 22),
+                if (isSelected) const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 18),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isSelected ? AppColors.primary : AppColors.textPrimary)),
+            const SizedBox(height: 2),
+            Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeSlotsWidget() {
+    if (_isLoadingSlots) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.divider)),
+        child: const Row(
+          children: [
+            SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+            SizedBox(width: 12),
+            Text('Loading available time slots...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          ],
+        ),
+      );
+    }
+
+    final slots = _availableSlots.isNotEmpty
+        ? _availableSlots
+        : const [
+            TimeSlotModel(slotId: '09:00 - 11:00', startTime: '09:00', endTime: '11:00', isAvailable: true),
+            TimeSlotModel(slotId: '11:00 - 13:00', startTime: '11:00', endTime: '13:00', isAvailable: true),
+            TimeSlotModel(slotId: '14:00 - 16:00', startTime: '14:00', endTime: '16:00', isAvailable: true),
+            TimeSlotModel(slotId: '16:00 - 18:00', startTime: '16:00', endTime: '18:00', isAvailable: true),
+          ];
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: slots.map((slot) {
+        final isSelected = _selectedTimeSlot == slot.slotId;
+        final isAvail = slot.isAvailable;
+
+        return ChoiceChip(
+          label: Text(
+            isAvail ? slot.slotId : '${slot.slotId} (Passed)',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: isSelected
+                  ? Colors.white
+                  : (isAvail ? AppColors.textPrimary : AppColors.textHint),
+              decoration: isAvail ? TextDecoration.none : TextDecoration.lineThrough,
+            ),
+          ),
+          selected: isSelected && isAvail,
+          disabledColor: const Color(0xFFF1F5F9),
+          selectedColor: AppColors.primary,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: isSelected
+                  ? AppColors.primary
+                  : (isAvail ? AppColors.divider : const Color(0xFFE2E8F0)),
+            ),
+          ),
+          onSelected: isAvail
+              ? (val) {
+                  if (val) setState(() => _selectedTimeSlot = slot.slotId);
+                }
+              : null,
+        );
+      }).toList(),
     );
   }
 }

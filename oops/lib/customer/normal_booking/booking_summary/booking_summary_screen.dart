@@ -1,33 +1,198 @@
-// File:
-// lib/customer/normal_booking/booking_summary/booking_summary_screen.dart
+// File: lib/customer/normal_booking/booking_summary/booking_summary_screen.dart
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_dimensions.dart';
+import '../../../models/address_model.dart';
+import '../../../models/booking_model.dart';
+import '../../../models/service_model.dart';
+import '../../../services/api_service.dart';
+import '../../../services/booking_service.dart';
 
 class BookingSummaryScreen extends StatefulWidget {
-  const BookingSummaryScreen({super.key});
+  final ServiceModel? service;
+  final AddressModel? address;
+  final String? bookingType;
+  final String? scheduledDate;
+  final String? scheduledTime;
+  final String? customerNotes;
+
+  const BookingSummaryScreen({
+    super.key,
+    this.service,
+    this.address,
+    this.bookingType,
+    this.scheduledDate,
+    this.scheduledTime,
+    this.customerNotes,
+  });
 
   @override
   State<BookingSummaryScreen> createState() => _BookingSummaryScreenState();
 }
 
 class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
-  bool _agreedToTerms = true;
+  final BookingService _bookingService = BookingService.instance;
+
+  ServiceModel? _service;
+  AddressModel? _address;
+  String _bookingType = 'normal_service';
+  String? _scheduledDate;
+  String? _scheduledTime;
+  String? _customerNotes;
+  String? _problemDescription;
+
+  bool _isSubmitting = false;
+  String? _submitError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _extractArgs();
+    });
+  }
+
+  void _extractArgs() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      setState(() {
+        _service = args['service'] as ServiceModel?;
+        _address = args['address'] as AddressModel?;
+        _bookingType = args['booking_type'] as String? ?? 'normal_service';
+        _scheduledDate = args['scheduled_date'] as String?;
+        _scheduledTime = args['scheduled_time'] as String?;
+        _customerNotes = args['customer_notes'] as String?;
+        _problemDescription = args['problem_description'] as String?;
+      });
+    } else {
+      setState(() {
+        _service = widget.service;
+        _address = widget.address;
+        _bookingType = widget.bookingType ?? 'normal_service';
+        _scheduledDate = widget.scheduledDate;
+        _scheduledTime = widget.scheduledTime;
+        _customerNotes = widget.customerNotes;
+      });
+    }
+  }
+
+  Future<void> _confirmAndBook() async {
+    if (_service == null || _address == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Missing booking details. Please go back and select.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _submitError = null;
+    });
+
+    try {
+      final payload = CreateBookingPayload(
+        serviceId: _service!.id,
+        addressId: _address!.id,
+        bookingType: _bookingType,
+        scheduledDate: _scheduledDate,
+        scheduledTime: _scheduledTime,
+        customerNotes: _customerNotes,
+        problemDescription: _problemDescription,
+      );
+
+      final bookingResult = await _bookingService.createBooking(payload);
+
+      if (!mounted) return;
+
+      setState(() => _isSubmitting = false);
+
+      // Navigate to Booking Success Screen, replacing summary screen
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.bookingSuccess,
+        (route) => route.isFirst || route.settings.name == AppRoutes.customerHome,
+        arguments: {'booking': bookingResult},
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+        _submitError = e.message;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+        _submitError = 'An unexpected error occurred. Please try again.';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Network error. Please check your connection and try again.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final service = _service;
+    final address = _address;
+
+    if (service == null || address == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Booking Summary')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.info_outline_rounded, size: 48, color: AppColors.warning),
+              const SizedBox(height: 12),
+              const Text('Incomplete booking information.', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Go Back'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final estimatedPrice = service.basePrice;
+    final priceDisplay = service.priceRangeDisplay.isNotEmpty
+        ? service.priceRangeDisplay
+        : '₹${estimatedPrice.toStringAsFixed(0)}';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Booking Summary',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: const Column(
+          children: [
+            Text(
+              'Step 2 of 2',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
+            ),
+            Text(
+              'Booking Summary',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+            ),
+          ],
         ),
         centerTitle: true,
       ),
@@ -39,48 +204,70 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (_submitError != null) ...[
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFFCA5A5)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _submitError!,
+                            style: const TextStyle(fontSize: 13, color: AppColors.error),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 // ── Service Details Summary Card ───────────────────────
                 _buildSummaryCard(
                   title: 'Service Selected',
-                  icon: Icons.electrical_services_rounded,
-                  content: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  icon: Icons.build_circle_rounded,
+                  content: Row(
                     children: [
-                      const Text(
-                        'Switchboard & Wiring Repair',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text('Tasks: Wiring fix, Switch replacement', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          color: const Color(0xFFF1F5F9),
+                          child: Image.network(
+                            service.resolvedImage,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(Icons.handyman_rounded, color: AppColors.primary, size: 24),
+                          ),
                         ),
-                        child: const Text('Certified Electrician Assigned', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                       ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // ── Date & Time Card ──────────────────────────────────
-                _buildSummaryCard(
-                  title: 'Date & Time Slot',
-                  icon: Icons.calendar_month_rounded,
-                  onChangeTap: () {},
-                  content: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              service.name,
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Category: ${service.categorySlug.replaceAll('-', ' ').toUpperCase()}',
+                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
                       Text(
-                        'Thursday, 31 July 2026',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                        priceDisplay,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary),
                       ),
-                      SizedBox(height: 4),
-                      Text('10:30 AM - 11:30 AM Slot', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
                     ],
                   ),
                 ),
@@ -91,59 +278,24 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                 _buildSummaryCard(
                   title: 'Service Address',
                   icon: Icons.location_on_rounded,
-                  onChangeTap: () {},
-                  content: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Home (Default)',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Flat 402, Royal Palms Heights, Sector 6, HSR Layout, Bengaluru - 560102',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // ── Notes & Uploads Card ──────────────────────────────
-                _buildSummaryCard(
-                  title: 'Instructions & Photos',
-                  icon: Icons.note_alt_rounded,
+                  onChangeTap: () => Navigator.pop(context),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Notes: "Living room switchboard sparking when AC is turned on."',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF475569), fontStyle: FontStyle.italic),
-                      ),
-                      const SizedBox(height: 10),
                       Row(
                         children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE0F2FE),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.image_rounded, color: Color(0xFF0EA5E9), size: 24),
+                          Text(
+                            address.label,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                           ),
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE0F2FE),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.image_rounded, color: Color(0xFF0EA5E9), size: 24),
-                          ),
+                          const SizedBox(width: 8),
+                          Text('(${address.fullName} • ${address.phone})', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        address.shortAddress,
+                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
                       ),
                     ],
                   ),
@@ -151,55 +303,61 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
                 const SizedBox(height: 16),
 
-                // ── Final Payment Breakdown Card ──────────────────────
+                // ── Date, Time & Booking Type Card ─────────────────────
                 _buildSummaryCard(
-                  title: 'Payment Details',
+                  title: 'Schedule & Type',
+                  icon: Icons.calendar_month_rounded,
+                  onChangeTap: () => Navigator.pop(context),
+                  content: Column(
+                    children: [
+                      _buildRow('Booking Type', _bookingType == 'inspection_request' ? 'Inspection Visit' : 'Normal Service', isBold: true),
+                      const SizedBox(height: 6),
+                      _buildRow('Scheduled Date', _scheduledDate ?? 'ASAP'),
+                      const SizedBox(height: 6),
+                      _buildRow('Scheduled Time', _scheduledTime ?? 'Flexible'),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // ── Customer Notes Card ───────────────────────────────
+                if (_customerNotes != null && _customerNotes!.isNotEmpty) ...[
+                  _buildSummaryCard(
+                    title: 'Customer Notes',
+                    icon: Icons.note_alt_rounded,
+                    onChangeTap: () => Navigator.pop(context),
+                    content: Text(
+                      '"$_customerNotes"',
+                      style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // ── Estimated Price Breakdown Card ────────────────────
+                _buildSummaryCard(
+                  title: 'Price Estimate',
                   icon: Icons.receipt_long_rounded,
                   content: Column(
                     children: [
-                      _buildRow('Subtotal', '₹477'),
+                      _buildRow('Base Market Price', '₹${estimatedPrice.toStringAsFixed(0)}'),
                       const SizedBox(height: 6),
-                      _buildRow('Discount Coupon (KAAMSETU50)', '-₹100', isGreen: true),
+                      _buildRow('Estimated Duration', service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} mins'),
                       const SizedBox(height: 8),
-                      const Divider(color: Color(0xFFF1F5F9), height: 1),
+                      const Divider(color: AppColors.divider, height: 1),
                       const SizedBox(height: 8),
-                      _buildRow('Total Estimated Pay', '₹377', isBold: true),
+                      _buildRow('Total Estimated Pay', '₹${estimatedPrice.toStringAsFixed(0)}', isBold: true),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
-                // ── Terms Checkbox ────────────────────────────────────
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: Checkbox(
-                        value: _agreedToTerms,
-                        activeColor: const Color(0xFF2563EB),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        'I agree to KaamSetu\'s Terms of Service and Cancellation Policy.',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 110),
+                const SizedBox(height: 120),
               ],
             ),
           ),
 
-          // ── Bottom Sticky Bar ───────────────────────────────────────
+          // ── Sticky Bottom Confirm CTA ───────────────────────────────
           Positioned(
             left: 0,
             right: 0,
@@ -209,19 +367,24 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, -4),
+                  ),
                 ],
               ),
               child: Row(
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Total Payable', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-                      SizedBox(height: 2),
+                      const Text('Total Estimated', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      const SizedBox(height: 2),
                       Text(
-                        '₹377',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF2563EB)),
+                        '₹${estimatedPrice.toStringAsFixed(0)}',
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.primary),
                       ),
                     ],
                   ),
@@ -230,19 +393,25 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     child: SizedBox(
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: _agreedToTerms
-                            ? () => Navigator.pushNamed(context, AppRoutes.bookingPayment)
-                            : null,
+                        onPressed: _isSubmitting ? null : _confirmAndBook,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                          ),
                         ),
-                        child: const Text(
-                          'Confirm & Book',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                              )
+                            : const Text(
+                                'Confirm & Book',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                       ),
                     ),
                   ),
@@ -266,7 +435,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,28 +443,21 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(icon, size: 18, color: const Color(0xFF2563EB)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+              Row(
+                children: [
+                  Icon(icon, size: 18, color: AppColors.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                  ),
+                ],
               ),
-              if (onChangeTap != null) ...[
-                const SizedBox(width: 8),
+              if (onChangeTap != null)
                 GestureDetector(
                   onTap: onChangeTap,
-                  child: const Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                  child: const Text('Edit', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
                 ),
-              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -305,28 +467,24 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     );
   }
 
-  Widget _buildRow(String label, String value, {bool isGreen = false, bool isBold = false}) {
+  Widget _buildRow(String label, String value, {bool isBold = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: isBold ? 14 : 13,
-              fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
-              color: isGreen ? const Color(0xFF16A34A) : const Color(0xFF475569),
-            ),
-            overflow: TextOverflow.ellipsis,
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isBold ? 14 : 13,
+            fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+            color: isBold ? AppColors.textPrimary : AppColors.textSecondary,
           ),
         ),
-        const SizedBox(width: 8),
         Text(
           value,
           style: TextStyle(
-            fontSize: isBold ? 16 : 13,
-            fontWeight: isBold || isGreen ? FontWeight.w800 : FontWeight.w600,
-            color: isBold ? const Color(0xFF2563EB) : (isGreen ? const Color(0xFF16A34A) : const Color(0xFF0F172A)),
+            fontSize: isBold ? 15 : 13,
+            fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+            color: isBold ? AppColors.primary : AppColors.textPrimary,
           ),
         ),
       ],
