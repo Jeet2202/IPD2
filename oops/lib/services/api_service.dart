@@ -8,6 +8,7 @@ import '../config/app_config.dart';
 import '../config/environment.dart';
 import '../models/category_model.dart';
 import '../models/home_model.dart';
+import '../models/category_model.dart';
 import '../utils/token_storage.dart';
 
 MediaType _determineMediaType(String filePath) {
@@ -166,6 +167,29 @@ class ApiService {
   Future<CategoryModel> getCategoryById(String categoryId) async {
     final res = await get('/categories/$categoryId');
     return CategoryModel.fromJson(res);
+  }
+
+  Future<Map<String, dynamic>> fetchServices({
+    int page = 1,
+    int limit = 10,
+    String? categoryId,
+    String? search,
+    String sortBy = 'display_order',
+  }) async {
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+      'sort_by': sortBy,
+    };
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (search != null && search.isNotEmpty) {
+      queryParams['search'] = search;
+    }
+
+    final queryString = Uri(queryParameters: queryParams).query;
+    return get('/services?$queryString');
   }
 
   Future<Map<String, dynamic>> post(
