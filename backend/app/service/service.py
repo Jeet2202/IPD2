@@ -118,30 +118,38 @@ class ServiceManagementService:
     @classmethod
     async def list_services(
         cls,
+        page: int = 1,
+        limit: int = 10,
         category_id: str | None = None,
         is_featured: bool | None = None,
         search: str | None = None,
+        sort_by: str = "display_order",
         include_inactive: bool = False,
         current_user: CurrentUser | None = None,
     ) -> ServiceListResponse:
-        """List services with optional category, featured, and search filters."""
-        allow_inactive = include_inactive and (current_user is not None and current_user.role == UserRole.ADMIN)
+        """List services with pagination, optional category, featured, search and sort filters."""
+        allow_inactive = include_inactive and (current_user is not None and getattr(current_user, "role", None) == UserRole.ADMIN)
 
-        if search and search.strip():
-            services = await ServiceRepository.search_services(
-                query_str=search,
-                category_id=category_id,
-                include_inactive=allow_inactive,
-            )
-        else:
-            services = await ServiceRepository.list_services(
-                category_id=category_id,
-                is_featured=is_featured,
-                include_inactive=allow_inactive,
-            )
+        items, total = await ServiceRepository.list_services_paginated(
+            page=page,
+            limit=limit,
+            category_id=category_id,
+            is_featured=is_featured,
+            search=search,
+            sort_by=sort_by,
+            include_inactive=allow_inactive,
+        )
 
-        items = [ServiceResponse.model_validate(srv) for srv in services]
-        return ServiceListResponse(items=items, total=len(items))
+        pages = (total + limit - 1) // limit if total > 0 else 1
+        service_responses = [ServiceResponse.model_validate(srv) for srv in items]
+
+        return ServiceListResponse(
+            items=service_responses,
+            total=total,
+            page=page,
+            limit=limit,
+            pages=pages,
+        )
 
     @classmethod
     async def list_services_by_category(

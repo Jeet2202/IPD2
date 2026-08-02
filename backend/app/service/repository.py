@@ -107,6 +107,50 @@ class ServiceRepository:
         return items, total
 
     @staticmethod
+    async def list_services_paginated(
+        page: int = 1,
+        limit: int = 10,
+        category_id: str | None = None,
+        is_featured: bool | None = None,
+        search: str | None = None,
+        sort_by: str = "display_order",
+        include_inactive: bool = False,
+    ) -> tuple[list[Service], int]:
+        """List services with pagination, category filter, search, sorting, and metadata."""
+        queries = []
+        if not include_inactive:
+            queries.append(Service.is_active == True)
+        if category_id and ObjectId.is_valid(category_id):
+            queries.append(Service.category_id == category_id)
+        if is_featured is not None:
+            queries.append(Service.is_featured == is_featured)
+        if search and search.strip():
+            regex = f".*{search.strip()}.*"
+            queries.append(
+                Or(
+                    RegEx(Service.name, regex, "i"),
+                    RegEx(Service.description, regex, "i"),
+                    RegEx(Service.short_description, regex, "i"),
+                )
+            )
+
+        base_query = Service.find(*queries) if queries else Service.find_all()
+        total = await base_query.count()
+
+        if sort_by == "-created_at":
+            req = (Service.find(*queries) if queries else Service.find_all()).sort(-Service.created_at)
+        elif sort_by == "price_asc":
+            req = (Service.find(*queries) if queries else Service.find_all()).sort(+Service.base_market_price)
+        elif sort_by == "price_desc":
+            req = (Service.find(*queries) if queries else Service.find_all()).sort(-Service.base_market_price)
+        else:
+            req = (Service.find(*queries) if queries else Service.find_all()).sort(+Service.display_order)
+
+        skip = (page - 1) * limit
+        items = await req.skip(skip).limit(limit).to_list()
+        return items, total
+
+    @staticmethod
     async def update_service(service: Service, update_data: dict) -> Service:
         """Apply update values to service document."""
         for key, value in update_data.items():

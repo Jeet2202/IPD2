@@ -168,6 +168,29 @@ class ApiService {
     return CategoryModel.fromJson(res);
   }
 
+  Future<Map<String, dynamic>> fetchServices({
+    int page = 1,
+    int limit = 10,
+    String? categoryId,
+    String? search,
+    String sortBy = 'display_order',
+  }) async {
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+      'sort_by': sortBy,
+    };
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (search != null && search.isNotEmpty) {
+      queryParams['search'] = search;
+    }
+
+    final queryString = Uri(queryParameters: queryParams).query;
+    return get('/services?$queryString');
+  }
+
   Future<Map<String, dynamic>> post(
     String path,
     Map<String, dynamic> body,

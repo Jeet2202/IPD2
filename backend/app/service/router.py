@@ -25,20 +25,26 @@ router = APIRouter()
     response_model=ServiceListResponse,
     status_code=status.HTTP_200_OK,
     summary="List all services",
-    description="Retrieve services with optional category filtering, featured status, and search query. Admins can pass include_inactive=true.",
+    description="Retrieve paginated services with optional category filtering, featured status, search query, and sorting. Admins can pass include_inactive=true.",
 )
 async def list_services(
+    page: int = Query(default=1, ge=1, description="Page number"),
+    limit: int = Query(default=10, ge=1, le=100, description="Items per page"),
     category_id: str | None = Query(default=None, description="Filter by category ObjectId string"),
     is_featured: bool | None = Query(default=None, description="Filter featured services"),
     search: str | None = Query(default=None, description="Search query string (title, tags, keywords)"),
+    sort_by: str = Query(default="display_order", description="Sort field (display_order, -created_at, price_asc, price_desc)"),
     include_inactive: bool = Query(default=False, description="Include soft-deleted services (Admin only)"),
     user: OptionalUserDep = None,
 ) -> ServiceListResponse:
     """List services."""
     return await ServiceManagementService.list_services(
+        page=page,
+        limit=limit,
         category_id=category_id,
         is_featured=is_featured,
         search=search,
+        sort_by=sort_by,
         include_inactive=include_inactive,
         current_user=user,
     )
