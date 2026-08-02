@@ -7,6 +7,7 @@ import '../../app/theme/app_dimensions.dart';
 import '../../models/service_model.dart';
 import '../../services/api_service.dart';
 import '../../shared/cards/service_card.dart';
+import '../../shared/utils/category_helper.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
   final String? serviceId;
@@ -208,13 +209,11 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                       height: 260,
                       width: double.infinity,
                       color: const Color(0xFF0F172A),
-                      child: service.image.isNotEmpty
-                          ? Image.network(
-                              service.image,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildFallbackHeroBanner(service),
-                            )
-                          : _buildFallbackHeroBanner(service),
+                      child: Image.network(
+                        service.resolvedImage,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _buildFallbackHeroBanner(service),
+                      ),
                     ),
 
                     // App Bar Overlay
@@ -471,7 +470,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 title: relSrv.name,
                                 category: relSrv.categorySlug.replaceAll('-', ' '),
                                 price: relSrv.priceRangeDisplay,
-                                imageUrl: relSrv.image,
+                                imageUrl: relSrv.resolvedImage,
                                 duration: relSrv.durationDisplay,
                                 shortDescription: relSrv.shortDescription,
                                 isFeatured: relSrv.isFeatured,
@@ -569,14 +568,17 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   }
 
   Widget _buildFallbackHeroBanner(ServiceModel service) {
+    final catIcon = CategoryHelper.getCategoryIcon(service.categorySlug);
+    final catColor = CategoryHelper.getCategoryColor(service.categorySlug);
+
     return Stack(
       alignment: Alignment.center,
       children: [
         Positioned.fill(
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                colors: [catColor, const Color(0xFF0F172A)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -586,13 +588,13 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
         Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.2),
+            color: Colors.white.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.home_repair_service_rounded,
+          child: Icon(
+            catIcon,
             size: 64,
-            color: Color(0xFF38BDF8),
+            color: Colors.white,
           ),
         ),
       ],

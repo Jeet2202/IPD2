@@ -7,6 +7,7 @@ import '../../models/service_model.dart';
 import '../../services/api_service.dart';
 import '../../shared/cards/service_card.dart';
 import '../../shared/modals/service_filter_modal.dart';
+import '../../shared/utils/category_helper.dart';
 import '../../shared/widgets/active_filter_chips_bar.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -284,20 +285,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Widget _buildHeaderCard(String title) {
+    final catImage = _categoryDetail?.resolvedImage ?? CategoryHelper.getCategoryImageUrl(title);
+    final catIcon = _categoryDetail?.resolvedIcon ?? CategoryHelper.getCategoryIcon(title);
+    final catColor = _categoryDetail?.resolvedColor ?? CategoryHelper.getCategoryColor(title);
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
+        gradient: LinearGradient(
+          colors: [catColor, catColor.withValues(alpha: 0.85)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2563EB).withOpacity(0.3),
+            color: catColor.withOpacity(0.3),
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -328,15 +333,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: _categoryDetail?.image.isNotEmpty == true
-                ? ClipOval(
-                    child: Image.network(
-                      _categoryDetail!.image,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.home_repair_service_rounded, color: Colors.white, size: 28),
-                    ),
-                  )
-                : const Icon(Icons.home_repair_service_rounded, color: Colors.white, size: 28),
+            child: ClipOval(
+              child: Image.network(
+                catImage,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(catIcon, color: Colors.white, size: 28),
+              ),
+            ),
           ),
         ],
       ),
@@ -389,7 +392,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
       title: service.name,
       category: service.categorySlug.replaceAll('-', ' '),
       price: priceDisplay,
-      imageUrl: service.image,
+      imageUrl: service.resolvedImage,
       duration: durationDisplay,
       shortDescription: service.shortDescription,
       isFeatured: service.isFeatured,

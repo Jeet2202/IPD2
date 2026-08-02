@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../models/category_model.dart';
+import '../../shared/utils/category_helper.dart';
 import '../../models/home_model.dart';
 import '../../models/service_model.dart';
 import '../../services/api_service.dart';
@@ -570,28 +571,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEFF6FF),
+                        color: cat.resolvedBgLight,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFDBEAFE)),
+                        border: Border.all(color: cat.resolvedColor.withValues(alpha: 0.2)),
                       ),
-                      child: cat.image.isNotEmpty
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.network(
-                                cat.image,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.category_rounded,
-                                  color: Color(0xFF2563EB),
-                                  size: 28,
-                                ),
-                              ),
-                            )
-                          : const Icon(
-                              Icons.category_rounded,
-                              color: Color(0xFF2563EB),
-                              size: 28,
-                            ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                          cat.resolvedImage,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Icon(
+                            cat.resolvedIcon,
+                            color: cat.resolvedColor,
+                            size: 28,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -677,26 +672,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
                   ),
-                  child: service.image.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                          child: Image.network(
-                            service.image,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.home_repair_service_rounded,
-                              color: Color(0xFF94A3B8),
-                              size: 40,
-                            ),
-                          ),
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.home_repair_service_rounded,
-                            color: Color(0xFF94A3B8),
-                            size: 40,
-                          ),
-                        ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                    child: Image.network(
+                      service.resolvedImage,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        CategoryHelper.getCategoryIcon(service.categorySlug),
+                        color: CategoryHelper.getCategoryColor(service.categorySlug),
+                        size: 40,
+                      ),
+                    ),
+                  ),
                 ),
                 if (service.isFeatured)
                   Positioned(
@@ -758,19 +745,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          service.priceRangeDisplay.isNotEmpty
-                              ? service.priceRangeDisplay
-                              : '₹${service.basePrice.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2563EB),
+                        Flexible(
+                          child: Text(
+                            service.priceRangeDisplay.isNotEmpty
+                                ? service.priceRangeDisplay
+                                : '₹${service.basePrice.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2563EB),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 4),
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
                             const SizedBox(width: 2),

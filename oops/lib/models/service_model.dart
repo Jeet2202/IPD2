@@ -1,3 +1,5 @@
+import '../shared/utils/category_helper.dart';
+
 class ServiceModel {
   final String id;
   final String categoryId;
@@ -40,6 +42,8 @@ class ServiceModel {
     this.whatsIncluded = const [],
     this.whatsNotIncluded = const [],
   });
+
+  String get resolvedImage => image.isNotEmpty ? image : CategoryHelper.getServiceImageUrl(slug, categorySlug, name);
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
     final title = json['title'] as String? ?? json['name'] as String? ?? '';

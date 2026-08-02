@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../widgets/app_card.dart';
+import '../utils/category_helper.dart';
 
 class ServiceCard extends StatelessWidget {
   final String title;
@@ -12,8 +13,8 @@ class ServiceCard extends StatelessWidget {
   final String? duration;
   final String? shortDescription;
   final bool isFeatured;
-  final IconData icon;
-  final Color iconColor;
+  final IconData? icon;
+  final Color? iconColor;
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
 
@@ -27,14 +28,20 @@ class ServiceCard extends StatelessWidget {
     this.duration,
     this.shortDescription,
     this.isFeatured = false,
-    this.icon = Icons.cleaning_services_rounded,
-    this.iconColor = AppColors.primary,
+    this.icon,
+    this.iconColor,
     this.onTap,
     this.onAdd,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveImageUrl = (imageUrl != null && imageUrl!.isNotEmpty)
+        ? imageUrl!
+        : CategoryHelper.getServiceImageUrl('', category, title);
+    final effectiveIcon = icon ?? CategoryHelper.getCategoryIcon(category);
+    final effectiveIconColor = iconColor ?? CategoryHelper.getCategoryColor(category);
+
     return AppCard(
       onTap: onTap,
       child: Container(
@@ -58,24 +65,24 @@ class ServiceCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                  child: imageUrl != null && imageUrl!.isNotEmpty
+                  child: effectiveImageUrl.isNotEmpty
                       ? Image.network(
-                          imageUrl!,
+                          effectiveImageUrl,
                           width: 64,
                           height: 64,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Container(
                             width: 64,
                             height: 64,
-                            color: iconColor.withValues(alpha: 0.1),
-                            child: Icon(icon, color: iconColor, size: 28),
+                            color: effectiveIconColor.withValues(alpha: 0.1),
+                            child: Icon(effectiveIcon, color: effectiveIconColor, size: 28),
                           ),
                         )
                       : Container(
                           width: 64,
                           height: 64,
-                          color: iconColor.withValues(alpha: 0.1),
-                          child: Icon(icon, color: iconColor, size: 28),
+                          color: effectiveIconColor.withValues(alpha: 0.1),
+                          child: Icon(effectiveIcon, color: effectiveIconColor, size: 28),
                         ),
                 ),
                 if (isFeatured)
@@ -109,10 +116,10 @@ class ServiceCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           category.toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
+                            color: effectiveIconColor,
                             letterSpacing: 0.5,
                           ),
                           maxLines: 1,
@@ -164,34 +171,46 @@ class ServiceCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: AppColors.starRating, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        rating,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Icon(Icons.star_rounded, color: AppColors.starRating, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              rating,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            if (duration != null && duration!.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  '• $duration',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      if (duration != null && duration!.isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          '• $duration',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
+                      const SizedBox(width: 8),
                       Text(
                         price,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: AppColors.primary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

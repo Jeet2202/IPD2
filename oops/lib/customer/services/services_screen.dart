@@ -5,6 +5,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../services/api_service.dart';
 import '../../shared/cards/service_card.dart';
+import '../../shared/utils/category_helper.dart';
 import '../../shared/modals/service_filter_modal.dart';
 import '../../shared/widgets/active_filter_chips_bar.dart';
 
@@ -377,9 +378,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
         final srv = _services[index];
         final title = srv['title'] as String? ?? srv['name'] as String? ?? 'Service';
         final catSlug = srv['category_slug'] as String? ?? 'General';
+        final srvSlug = srv['slug'] as String? ?? '';
         final priceDisplay = srv['price_range_display'] as String? ?? '₹${srv['base_price']}';
         final durationDisplay = srv['duration_display'] as String?;
-        final imageUrl = srv['service_image_url'] as String? ?? srv['service_image'] as String?;
+        final rawImg = srv['service_image_url'] as String? ?? srv['service_image'] as String?;
+        final imageUrl = (rawImg != null && rawImg.isNotEmpty)
+            ? rawImg
+            : CategoryHelper.getServiceImageUrl(srvSlug, catSlug, title);
         final shortDesc = srv['short_description'] as String?;
         final isFeatured = (srv['is_featured'] as bool?) ?? false;
 

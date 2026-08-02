@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../shared/utils/category_helper.dart';
+
 class CategoryModel {
   final String id;
   final String name;
@@ -16,6 +19,11 @@ class CategoryModel {
     this.serviceCount = 0,
     this.isActive = true,
   });
+
+  String get resolvedImage => image.isNotEmpty ? image : CategoryHelper.getCategoryImageUrl(slug.isNotEmpty ? slug : name);
+  IconData get resolvedIcon => CategoryHelper.getCategoryIcon(slug.isNotEmpty ? slug : name);
+  Color get resolvedColor => CategoryHelper.getCategoryColor(slug.isNotEmpty ? slug : name);
+  Color get resolvedBgLight => CategoryHelper.getCategoryBgLight(slug.isNotEmpty ? slug : name);
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
         id: json['id'] as String? ?? json['_id'] as String? ?? '',
