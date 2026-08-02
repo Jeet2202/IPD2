@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/theme/app_colors.dart';
 
 /// Generic shimmer loading placeholder.
 class AppShimmer extends StatefulWidget {
@@ -51,9 +52,9 @@ class _AppShimmerState extends State<AppShimmer>
             begin: Alignment(_anim.value - 1, 0),
             end:   Alignment(_anim.value + 1, 0),
             colors: const [
-              Color(0xFFE2E8F0),
-              Color(0xFFF8FAFC),
-              Color(0xFFE2E8F0),
+              AppColors.shimmerBase,
+              AppColors.shimmerHighlight,
+              AppColors.shimmerBase,
             ],
           ),
         ),
@@ -61,3 +62,4 @@ class _AppShimmerState extends State<AppShimmer>
     );
   }
 }
+

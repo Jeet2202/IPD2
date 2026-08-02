@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
+import '../../widgets/app_card.dart';
 
 class ServiceCard extends StatelessWidget {
   final String title;
@@ -18,10 +19,10 @@ class ServiceCard extends StatelessWidget {
 
   const ServiceCard({
     super.key,
-    this.title = 'Service Name',
-    this.category = 'Category',
-    this.price = '₹199',
-    this.rating = '4.8',
+    this.title = 'Deep House Cleaning',
+    this.category = 'Cleaning',
+    this.price = '₹1,499',
+    this.rating = '4.8 (1.2k)',
     this.imageUrl,
     this.duration,
     this.shortDescription,
@@ -34,7 +35,7 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return AppCard(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.md),

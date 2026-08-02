@@ -1,6 +1,7 @@
 // File: lib/worker/authentication/register/register_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/validators.dart';
@@ -141,6 +142,8 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, AppRoutes.roleSelection);
             }
           },
         ),
