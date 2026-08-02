@@ -152,14 +152,24 @@ class ApiService {
     int page = 1,
     int limit = 10,
     String sortBy = 'display_order',
+    bool? isFeatured,
+    double? minPrice,
+    double? maxPrice,
+    int? maxDuration,
   }) async {
+    final params = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+      'sort_by': sortBy,
+    };
+    if (isFeatured != null) params['is_featured'] = isFeatured.toString();
+    if (minPrice != null) params['min_price'] = minPrice.toString();
+    if (maxPrice != null) params['max_price'] = maxPrice.toString();
+    if (maxDuration != null) params['max_duration'] = maxDuration.toString();
+
     return get(
       '/categories/$categoryId/services',
-      params: {
-        'page': page.toString(),
-        'limit': limit.toString(),
-        'sort_by': sortBy,
-      },
+      params: params,
     );
   }
 
@@ -172,6 +182,10 @@ class ApiService {
     int page = 1,
     int limit = 10,
     String? categoryId,
+    bool? isFeatured,
+    double? minPrice,
+    double? maxPrice,
+    int? maxDuration,
     String? search,
     String sortBy = 'display_order',
   }) async {
@@ -183,12 +197,67 @@ class ApiService {
     if (categoryId != null && categoryId.isNotEmpty) {
       queryParams['category_id'] = categoryId;
     }
+    if (isFeatured != null) {
+      queryParams['is_featured'] = isFeatured.toString();
+    }
+    if (minPrice != null) {
+      queryParams['min_price'] = minPrice.toString();
+    }
+    if (maxPrice != null) {
+      queryParams['max_price'] = maxPrice.toString();
+    }
+    if (maxDuration != null) {
+      queryParams['max_duration'] = maxDuration.toString();
+    }
     if (search != null && search.isNotEmpty) {
       queryParams['search'] = search;
     }
 
     final queryString = Uri(queryParameters: queryParams).query;
     return get('/services?$queryString');
+  }
+
+  Future<Map<String, dynamic>> getServiceById(String serviceId) async {
+    return get('/services/$serviceId');
+  }
+
+  Future<Map<String, dynamic>> searchServices({
+    String? query,
+    int page = 1,
+    int pageSize = 10,
+    String? category,
+    bool? featured,
+    double? minPrice,
+    double? maxPrice,
+    int? maxDuration,
+    String sortBy = 'relevance',
+  }) async {
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'page_size': pageSize.toString(),
+      'sort_by': sortBy,
+    };
+    if (query != null && query.isNotEmpty) {
+      queryParams['query'] = query;
+    }
+    if (category != null && category.isNotEmpty) {
+      queryParams['category'] = category;
+    }
+    if (featured != null) {
+      queryParams['featured'] = featured.toString();
+    }
+    if (minPrice != null) {
+      queryParams['min_price'] = minPrice.toString();
+    }
+    if (maxPrice != null) {
+      queryParams['max_price'] = maxPrice.toString();
+    }
+    if (maxDuration != null) {
+      queryParams['max_duration'] = maxDuration.toString();
+    }
+
+    final queryString = Uri(queryParameters: queryParams).query;
+    return get('/services/search?$queryString');
   }
 
   Future<Map<String, dynamic>> post(

@@ -89,9 +89,13 @@ class CategoryService:
         page: int = 1,
         limit: int = 10,
         sort_by: str = "display_order",
+        is_featured: bool | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        max_duration: int | None = None,
         current_user: User | None = None,
     ) -> ServiceListResponse:
-        """Fetch paginated services for a given category ID."""
+        """Fetch paginated services for a given category ID with filters and sorting."""
         # 1. Verify category exists
         await cls.get_category_by_id(category_id)
 
@@ -101,11 +105,15 @@ class CategoryService:
             include_inactive = True
 
         # 3. Fetch paginated services
-        items, total = await ServiceRepository.list_services_by_category_paginated(
+        items, total = await ServiceRepository.list_services_paginated(
             category_id=category_id,
             page=page,
             limit=limit,
             sort_by=sort_by,
+            is_featured=is_featured,
+            min_price=min_price,
+            max_price=max_price,
+            max_duration=max_duration,
             include_inactive=include_inactive,
         )
 

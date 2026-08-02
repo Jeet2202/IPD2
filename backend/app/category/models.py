@@ -440,7 +440,17 @@ class Service(Document):
         description="Cloudinary public ID",
     )
 
-    # --- Search & Metadata ---
+    # --- Search & Inclusions ---
+    whats_included: list[str] = Field(
+        default_factory=list,
+        description="Items included in the service package",
+        examples=[["Deep cleaning of coils", "High-pressure jet wash", "Gas check"]],
+    )
+    whats_not_included: list[str] = Field(
+        default_factory=list,
+        description="Items excluded from the service package",
+        examples=[["Spare parts replacement", "Gas refilling", "Copper pipe repairs"]],
+    )
     tags: list[str] = Field(
         default_factory=list,
         description="Searchable tags",

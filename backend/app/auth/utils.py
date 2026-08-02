@@ -17,7 +17,7 @@ from app.auth.constants import (
     MIN_PASSWORD_LENGTH,
 )
 from app.auth.exceptions import InvalidTokenError
-from app.auth.models import AccountStatus, UserRole
+from app.utils.enums import UserRole
 from app.core.config import settings
 
 
@@ -100,17 +100,17 @@ def generate_secure_random_token(length: int = 32) -> str:
     return secrets.token_urlsafe(length)
 
 
-def is_account_active(status: AccountStatus) -> bool:
+def is_account_active(is_active: bool) -> bool:
     """
     Check if an account lifecycle status allows normal platform operations.
 
     Args:
-        status: The user's current AccountStatus enum value.
+        is_active: Whether the account is active.
 
     Returns:
-        True if the account is ACTIVE, False otherwise.
+        True if the account is active, False otherwise.
     """
-    return status == AccountStatus.ACTIVE
+    return is_active
 
 
 def can_access_admin_panel(role: UserRole) -> bool:

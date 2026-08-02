@@ -30,10 +30,13 @@ router = APIRouter()
 async def list_services(
     page: int = Query(default=1, ge=1, description="Page number"),
     limit: int = Query(default=10, ge=1, le=100, description="Items per page"),
-    category_id: str | None = Query(default=None, description="Filter by category ObjectId string"),
+    category_id: str | None = Query(default=None, description="Filter by category ObjectId string or slug"),
     is_featured: bool | None = Query(default=None, description="Filter featured services"),
+    min_price: float | None = Query(default=None, ge=0, description="Minimum price filter"),
+    max_price: float | None = Query(default=None, ge=0, description="Maximum price filter"),
+    max_duration: int | None = Query(default=None, ge=0, description="Maximum estimated duration in minutes"),
     search: str | None = Query(default=None, description="Search query string (title, tags, keywords)"),
-    sort_by: str = Query(default="display_order", description="Sort field (display_order, -created_at, price_asc, price_desc)"),
+    sort_by: str = Query(default="display_order", description="Sort field (display_order, -created_at, price_asc, price_desc, title_asc, title_desc)"),
     include_inactive: bool = Query(default=False, description="Include soft-deleted services (Admin only)"),
     user: OptionalUserDep = None,
 ) -> ServiceListResponse:
@@ -43,10 +46,45 @@ async def list_services(
         limit=limit,
         category_id=category_id,
         is_featured=is_featured,
+        min_price=min_price,
+        max_price=max_price,
+        max_duration=max_duration,
         search=search,
         sort_by=sort_by,
         include_inactive=include_inactive,
         current_user=user,
+    )
+
+
+@router.get(
+    "/services/search",
+    response_model=ServiceListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Global search services",
+    description="Search active services by title, category, tags, keywords, short description, and description with relevance ranking and filtering.",
+)
+async def search_services(
+    query: str | None = Query(default=None, description="Search query string"),
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=10, ge=1, le=100, description="Items per page"),
+    category: str | None = Query(default=None, description="Filter by category ID or slug"),
+    featured: bool | None = Query(default=None, description="Filter by featured status"),
+    min_price: float | None = Query(default=None, ge=0, description="Minimum price filter"),
+    max_price: float | None = Query(default=None, ge=0, description="Maximum price filter"),
+    max_duration: int | None = Query(default=None, ge=0, description="Maximum estimated duration in minutes"),
+    sort_by: str = Query(default="relevance", description="Sort field (relevance, display_order, -created_at, price_asc, price_desc, title_asc, title_desc)"),
+) -> ServiceListResponse:
+    """Global search services."""
+    return await ServiceManagementService.search_services(
+        query=query,
+        page=page,
+        page_size=page_size,
+        category=category,
+        featured=featured,
+        min_price=min_price,
+        max_price=max_price,
+        max_duration=max_duration,
+        sort_by=sort_by,
     )
 
 

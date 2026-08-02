@@ -1,13 +1,21 @@
-// File:
-// lib/customer/services/service_details_screen.dart
+// File: lib/customer/services/service_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
+import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_dimensions.dart';
+import '../../models/service_model.dart';
+import '../../services/api_service.dart';
+import '../../shared/cards/service_card.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
+  final String? serviceId;
   final String serviceTitle;
+
   const ServiceDetailsScreen({
     super.key,
-    this.serviceTitle = 'Split AC Service & Inspection',
+    this.serviceId,
+    this.serviceTitle = 'Service Details',
   });
 
   @override
@@ -15,93 +23,201 @@ class ServiceDetailsScreen extends StatefulWidget {
 }
 
 class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
+  final ApiService _apiService = ApiService.instance;
+
+  ServiceModel? _service;
+  List<ServiceModel> _relatedServices = [];
+
+  bool _isLoading = true;
   bool _isBookmarked = false;
+  String? _errorMessage;
+  String? _resolvedServiceId;
 
-  final List<String> _whatsIncluded = [
-    'Deep cleaning of indoor cooling coils & filter',
-    'Outdoor unit high-pressure jet washing',
-    'Gas pressure check & leak check inspection',
-    'Drain pipe flushing and clearing blockages',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _extractArgsAndFetch();
+    });
+  }
 
-  final List<String> _whatsNotIncluded = [
-    'Spare parts replacement (charged separately if needed)',
-    'Gas refilling (can be added separately if pressure low)',
-    'Major copper pipe repair works',
-  ];
+  void _extractArgsAndFetch() {
+    final routeArgs = ModalRoute.of(context)?.settings.arguments;
+    String? sId = widget.serviceId;
 
-  final List<Map<String, dynamic>> _whyChooseUs = [
-    {'title': '30-Day Guarantee', 'subtitle': 'Free re-service if issue persists', 'icon': Icons.shield_rounded},
-    {'title': 'Verified Pros', 'subtitle': 'Background checked technicians', 'icon': Icons.verified_user_rounded},
-    {'title': 'Transparent Price', 'subtitle': 'Standardized rate card', 'icon': Icons.receipt_long_rounded},
-  ];
+    if (routeArgs is Map) {
+      sId = routeArgs['service_id'] as String? ?? sId;
+    }
 
-  final List<Map<String, String>> _reviews = [
-    {
-      'name': 'Vikram Singh',
-      'rating': '5.0',
-      'date': '2 days ago',
-      'comment': 'Awesome cooling performance after service! The professional arrived right on time and cleaned everything neatly.',
-    },
-    {
-      'name': 'Ananya Roy',
-      'rating': '4.8',
-      'date': '1 week ago',
-      'comment': 'Thorough inspection and jet cleaning. Very polite behavior.',
-    },
-  ];
+    _resolvedServiceId = sId;
+
+    if (sId != null && sId.isNotEmpty) {
+      _fetchServiceDetails(sId);
+    } else {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'No service ID provided.';
+      });
+    }
+  }
+
+  Future<void> _fetchServiceDetails(String sId) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final res = await _apiService.getServiceById(sId);
+      final model = ServiceModel.fromJson(res);
+
+      if (!mounted) return;
+
+      setState(() {
+        _service = model;
+        _isLoading = false;
+      });
+
+      // Fetch related services from same category
+      if (model.categoryId.isNotEmpty) {
+        _fetchRelatedServices(model.categoryId, model.id);
+      }
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Unable to connect to server. Please try again.';
+      });
+    }
+  }
+
+  Future<void> _fetchRelatedServices(String categoryId, String currentServiceId) async {
+    try {
+      final res = await _apiService.fetchServices(
+        categoryId: categoryId,
+        limit: 6,
+      );
+      final List rawItems = res['items'] as List? ?? [];
+      final list = rawItems
+          .map((e) => ServiceModel.fromJson(e as Map<String, dynamic>))
+          .where((s) => s.id != currentServiceId)
+          .take(4)
+          .toList();
+
+      if (mounted) {
+        setState(() {
+          _relatedServices = list;
+        });
+      }
+    } catch (_) {}
+  }
+
+  void _showPhase5Modal({required bool isInspection}) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: isInspection ? const Color(0xFFFEF3C7) : const Color(0xFFDBEAFE),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isInspection ? Icons.search_rounded : Icons.calendar_today_rounded,
+                  color: isInspection ? const Color(0xFFD97706) : AppColors.primary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isInspection ? 'Request Inspection (Phase 5)' : 'Book Service (Phase 5)',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isInspection
+                    ? 'In Phase 5, an expert will visit your doorstep for an on-site inspection and provide an exact job quote.'
+                    : 'In Phase 5, you will be able to select your preferred date, time slot, address, and place a direct booking.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                  ),
+                  child: const Text('Got It', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return _buildSkeletonLoader();
+    }
+
+    if (_errorMessage != null) {
+      return _buildErrorState();
+    }
+
+    final service = _service!;
+    final priceDisplay = service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}';
+    final durationDisplay = service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} min';
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // ── Scrollable Body Content ─────────────────────────────────
+          // Scrollable Body Content
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Service Hero Banner ────────────────────────────────
+                // Service Hero Image Banner
                 Stack(
                   children: [
                     Container(
                       height: 260,
                       width: double.infinity,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Positioned.fill(
-                            child: Opacity(
-                              opacity: 0.15,
-                              child: CustomPaint(painter: _GridBackgroundPainter()),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(28),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2563EB).withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.ac_unit_rounded,
-                              size: 72,
-                              color: Color(0xFF0EA5E9),
-                            ),
-                          ),
-                        ],
-                      ),
+                      color: const Color(0xFF0F172A),
+                      child: service.image.isNotEmpty
+                          ? Image.network(
+                              service.image,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _buildFallbackHeroBanner(service),
+                            )
+                          : _buildFallbackHeroBanner(service),
                     ),
 
-                    // Top Custom App Bar Overlay
+                    // App Bar Overlay
                     Positioned(
                       top: 44,
                       left: 16,
@@ -117,13 +233,17 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                             children: [
                               _buildCircleIconButton(
                                 icon: _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                                iconColor: _isBookmarked ? const Color(0xFF2563EB) : const Color(0xFF0F172A),
+                                iconColor: _isBookmarked ? AppColors.primary : AppColors.textPrimary,
                                 onTap: () => setState(() => _isBookmarked = !_isBookmarked),
                               ),
                               const SizedBox(width: 10),
                               _buildCircleIconButton(
                                 icon: Icons.share_outlined,
-                                onTap: () {},
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Service link copied to clipboard')),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -133,48 +253,75 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                   ],
                 ),
 
-                // ── Main Card Overlay Details ───────────────────────────
+                // Main Details Container
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'AC REPAIR & SERVICE',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Title
-                      Text(
-                        widget.serviceTitle,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Stats Row
+                      // Category & Featured Badges
                       Row(
                         children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.star_rounded, size: 18, color: Color(0xFFFBBF24)),
-                              const SizedBox(width: 4),
-                              const Text('4.8', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                              const Text(' (2.4k reviews)', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                            ],
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF6FF),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              service.categorySlug.replaceAll('-', ' ').toUpperCase(),
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
+                            ),
                           ),
+                          if (service.isFeatured) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF3C7),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.star_rounded, size: 12, color: Color(0xFFD97706)),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    'FEATURED',
+                                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFD97706)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Service Title
+                      Text(
+                        service.name,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                      ),
+                      if (service.shortDescription.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          service.shortDescription,
+                          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.4),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+
+                      // Rating & Reviews Stats Row
+                      Row(
+                        children: [
+                          const Icon(Icons.star_rounded, size: 18, color: Color(0xFFFBBF24)),
+                          const SizedBox(width: 4),
+                          Text('${service.rating}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                          Text(' (${service.reviewCount} reviews)', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                           const SizedBox(width: 16),
                           Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFFCBD5E1), shape: BoxShape.circle)),
                           const SizedBox(width: 16),
-                          const Text('1,800+ Jobs', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
+                          const Text('Verified Pros', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
                         ],
                       ),
 
@@ -186,30 +333,52 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: AppColors.divider),
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Starting Price', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                                SizedBox(height: 2),
-                                Text('₹499', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Base Market Price', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      priceDisplay,
+                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.primary),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const Text('Est. Duration', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.schedule_rounded, size: 16, color: AppColors.textPrimary),
+                                        const SizedBox(width: 4),
+                                        Text(durationDisplay, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            const SizedBox(height: 10),
+                            const Divider(height: 1, color: AppColors.divider),
+                            const SizedBox(height: 8),
+                            const Row(
                               children: [
-                                Text('Est. Duration', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(Icons.schedule_rounded, size: 16, color: Color(0xFF0F172A)),
-                                    SizedBox(width: 4),
-                                    Text('45 - 60 Mins', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                                  ],
+                                Icon(Icons.info_outline_rounded, size: 14, color: AppColors.textHint),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    'Final price may vary depending on actual work required.',
+                                    style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontStyle: FontStyle.italic),
+                                  ),
                                 ),
                               ],
                             ),
@@ -219,32 +388,35 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
                       const SizedBox(height: 28),
 
-                      // ── About Section ─────────────────────────────────────
-                      _buildSectionTitle('About Service'),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Complete foam & jet power service for split air conditioners. Cleans deep embedded dirt from cooling coils and improves cooling efficiency while reducing power consumption.',
-                        style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.6),
-                      ),
+                      // About Service Section
+                      if (service.description.isNotEmpty) ...[
+                        _buildSectionTitle('About Service'),
+                        const SizedBox(height: 8),
+                        Text(
+                          service.description,
+                          style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.6),
+                        ),
+                        const SizedBox(height: 28),
+                      ],
 
-                      const SizedBox(height: 28),
-
-                      // ── What's Included ───────────────────────────────────
+                      // What's Included
                       _buildSectionTitle('What\'s Included'),
                       const SizedBox(height: 12),
                       Column(
-                        children: _whatsIncluded.map((item) {
+                        children: service.whatsIncluded.map((item) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
+                                  margin: const EdgeInsets.only(top: 2),
                                   padding: const EdgeInsets.all(4),
                                   decoration: const BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
                                   child: const Icon(Icons.check_rounded, size: 14, color: Color(0xFF16A34A)),
                                 ),
                                 const SizedBox(width: 12),
-                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF334155)))),
+                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF334155), height: 1.4))),
                               ],
                             ),
                           );
@@ -253,22 +425,24 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
                       const SizedBox(height: 24),
 
-                      // ── What's Not Included ───────────────────────────────
+                      // What's Not Included
                       _buildSectionTitle('What\'s Not Included'),
                       const SizedBox(height: 12),
                       Column(
-                        children: _whatsNotIncluded.map((item) {
+                        children: service.whatsNotIncluded.map((item) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10.0),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
+                                  margin: const EdgeInsets.only(top: 2),
                                   padding: const EdgeInsets.all(4),
                                   decoration: const BoxDecoration(color: Color(0xFFFEE2E2), shape: BoxShape.circle),
                                   child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFDC2626)),
                                 ),
                                 const SizedBox(width: 12),
-                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)))),
+                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4))),
                               ],
                             ),
                           );
@@ -277,91 +451,47 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
                       const SizedBox(height: 28),
 
-                      // ── Why Choose Us ──────────────────────────────────────
+                      // Trust & Assurance Section
                       _buildSectionTitle('Why Choose KaamSetu?'),
                       const SizedBox(height: 14),
-                      Column(
-                        children: _whyChooseUs.map((feature) {
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF8FAFC),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2563EB).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(feature['icon'] as IconData, color: const Color(0xFF2563EB), size: 22),
-                                ),
-                                const SizedBox(width: 14),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(feature['title'] as String, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                                    const SizedBox(height: 2),
-                                    Text(feature['subtitle'] as String, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                      _buildTrustCard(Icons.shield_rounded, '30-Day Service Guarantee', 'Free re-service if any issue recurs within 30 days.'),
+                      _buildTrustCard(Icons.verified_user_rounded, 'Background Verified Pros', 'Every professional is ID verified and skill-certified.'),
+                      _buildTrustCard(Icons.receipt_long_rounded, 'Transparent Rate Card', 'No hidden charges. Standardized rate card upfront.'),
 
-                      const SizedBox(height: 28),
-
-                      // ── Customer Reviews ──────────────────────────────────
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildSectionTitle('Customer Reviews'),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('See All', style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ..._reviews.map((rev) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(rev['name']!, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.star_rounded, size: 14, color: Color(0xFFFBBF24)),
-                                      const SizedBox(width: 3),
-                                      Text(rev['rating']!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-                                    ],
-                                  ),
-                                ],
+                      // Related Services
+                      if (_relatedServices.isNotEmpty) ...[
+                        const SizedBox(height: 28),
+                        _buildSectionTitle('Related Services'),
+                        const SizedBox(height: 12),
+                        Column(
+                          children: _relatedServices.map((relSrv) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: ServiceCard(
+                                title: relSrv.name,
+                                category: relSrv.categorySlug.replaceAll('-', ' '),
+                                price: relSrv.priceRangeDisplay,
+                                imageUrl: relSrv.image,
+                                duration: relSrv.durationDisplay,
+                                shortDescription: relSrv.shortDescription,
+                                isFeatured: relSrv.isFeatured,
+                                onTap: () {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    AppRoutes.customerServiceDetail,
+                                    arguments: {
+                                      'service_title': relSrv.name,
+                                      'service_id': relSrv.id,
+                                    },
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 6),
-                              Text(rev['comment']!, style: const TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4)),
-                            ],
-                          ),
-                        );
-                      }),
+                            );
+                          }).toList(),
+                        ),
+                      ],
 
-                      const SizedBox(height: 100), // Bottom padding for sticky buttons
+                      const SizedBox(height: 140), // Spacing for sticky bottom CTA
                     ],
                   ),
                 ),
@@ -369,7 +499,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
             ),
           ),
 
-          // ── Sticky Bottom Action Bar ─────────────────────────────────
+          // Two Workflow Entry Sticky Bottom Bar
           Positioned(
             left: 0,
             right: 0,
@@ -380,48 +510,54 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 20,
                     offset: const Offset(0, -4),
                   ),
                 ],
               ),
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // Inspection Booking Placeholder
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: const Text(
-                        'Need Inspection',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
-                      ),
-                    ),
+                  const Text(
+                    'Do you know what work needs to be done?',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Direct Booking Flow Placeholder
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _showPhase5Modal(isInspection: true),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: const BorderSide(color: AppColors.primary, width: 1.5),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                          ),
+                          child: const Text(
+                            'Request Inspection',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          ),
+                        ),
                       ),
-                      child: const Text(
-                        'Book Service',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _showPhase5Modal(isInspection: false),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                          ),
+                          child: const Text(
+                            'Book Service',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -432,16 +568,82 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
     );
   }
 
+  Widget _buildFallbackHeroBanner(ServiceModel service) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned.fill(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.home_repair_service_rounded,
+            size: 64,
+            color: Color(0xFF38BDF8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTrustCard(IconData icon, String title, String subtitle) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A), letterSpacing: -0.4),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.4),
     );
   }
 
   Widget _buildCircleIconButton({
     required IconData icon,
-    Color iconColor = const Color(0xFF0F172A),
+    Color iconColor = AppColors.textPrimary,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -452,29 +654,63 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
           color: Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 10),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 10),
           ],
         ),
         child: Icon(icon, size: 20, color: iconColor),
       ),
     );
   }
-}
 
-class _GridBackgroundPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 1;
-    for (double i = 0; i < size.width; i += 30) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double j = 0; j < size.height; j += 30) {
-      canvas.drawLine(Offset(0, j), Offset(size.width, j), paint);
-    }
+  Widget _buildSkeletonLoader() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(backgroundColor: Colors.white, elevation: 0.5),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(height: 200, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(16))),
+            const SizedBox(height: 20),
+            Container(height: 24, width: 180, color: Colors.grey.shade200),
+            const SizedBox(height: 12),
+            Container(height: 16, width: 280, color: Colors.grey.shade200),
+            const SizedBox(height: 20),
+            Container(height: 80, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(16))),
+          ],
+        ),
+      ),
+    );
   }
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget _buildErrorState() {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.serviceTitle)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
+              const SizedBox(height: 16),
+              const Text('Failed to load service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(_errorMessage ?? 'Unexpected error', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_resolvedServiceId != null) {
+                    _fetchServiceDetails(_resolvedServiceId!);
+                  }
+                },
+                child: const Text('Try Again'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_dimensions.dart';
+
+class ServiceFilterData {
+  final double? minPrice;
+  final double? maxPrice;
+  final int? maxDuration;
+  final bool isFeatured;
+  final String sortBy;
+  final String? categoryId;
+
+  const ServiceFilterData({
+    this.minPrice,
+    this.maxPrice,
+    this.maxDuration,
+    this.isFeatured = false,
+    this.sortBy = 'display_order',
+    this.categoryId,
+  });
+
+  bool get hasActiveFilters =>
+      minPrice != null ||
+      maxPrice != null ||
+      maxDuration != null ||
+      isFeatured ||
+      (sortBy != 'display_order' && sortBy != 'relevance') ||
+      (categoryId != null && categoryId!.isNotEmpty);
+
+  int get activeFilterCount {
+    int count = 0;
+    if (minPrice != null || maxPrice != null) count++;
+    if (maxDuration != null) count++;
+    if (isFeatured) count++;
+    if (sortBy != 'display_order' && sortBy != 'relevance') count++;
+    if (categoryId != null && categoryId!.isNotEmpty) count++;
+    return count;
+  }
+
+  ServiceFilterData copyWith({
+    double? Function()? minPrice,
+    double? Function()? maxPrice,
+    int? Function()? maxDuration,
+    bool? isFeatured,
+    String? sortBy,
+    String? Function()? categoryId,
+  }) {
+    return ServiceFilterData(
+      minPrice: minPrice != null ? minPrice() : this.minPrice,
+      maxPrice: maxPrice != null ? maxPrice() : this.maxPrice,
+      maxDuration: maxDuration != null ? maxDuration() : this.maxDuration,
+      isFeatured: isFeatured ?? this.isFeatured,
+      sortBy: sortBy ?? this.sortBy,
+      categoryId: categoryId != null ? categoryId() : this.categoryId,
+    );
+  }
+}
+
+class ServiceFilterModal extends StatefulWidget {
+  final ServiceFilterData initialData;
+  final bool showCategoryFilter;
+  final Function(ServiceFilterData) onApply;
+
+  const ServiceFilterModal({
+    super.key,
+    required this.initialData,
+    required this.onApply,
+    this.showCategoryFilter = false,
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    required ServiceFilterData initialData,
+    required Function(ServiceFilterData) onApply,
+    bool showCategoryFilter = false,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ServiceFilterModal(
+        initialData: initialData,
+        onApply: onApply,
+        showCategoryFilter: showCategoryFilter,
+      ),
+    );
+  }
+
+  @override
+  State<ServiceFilterModal> createState() => _ServiceFilterModalState();
+}
+
+class _ServiceFilterModalState extends State<ServiceFilterModal> {
+  late double? _minPrice;
+  late double? _maxPrice;
+  late int? _maxDuration;
+  late bool _isFeatured;
+  late String _sortBy;
+  late String? _categoryId;
+
+  final Map<String, String> _sortOptions = {
+    'display_order': 'Popularity',
+    '-created_at': 'Newest First',
+    'price_asc': 'Price: Low to High',
+    'price_desc': 'Price: High to Low',
+    'title_asc': 'Alphabetical (A-Z)',
+    'title_desc': 'Alphabetical (Z-A)',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _minPrice = widget.initialData.minPrice;
+    _maxPrice = widget.initialData.maxPrice;
+    _maxDuration = widget.initialData.maxDuration;
+    _isFeatured = widget.initialData.isFeatured;
+    _sortBy = widget.initialData.sortBy;
+    _categoryId = widget.initialData.categoryId;
+  }
+
+  void _reset() {
+    setState(() {
+      _minPrice = null;
+      _maxPrice = null;
+      _maxDuration = null;
+      _isFeatured = false;
+      _sortBy = 'display_order';
+      _categoryId = null;
+    });
+  }
+
+  void _apply() {
+    widget.onApply(ServiceFilterData(
+      minPrice: _minPrice,
+      maxPrice: _maxPrice,
+      maxDuration: _maxDuration,
+      isFeatured: _isFeatured,
+      sortBy: _sortBy,
+      categoryId: _categoryId,
+    ));
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        top: 20,
+        left: 20,
+        right: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Filter & Sort Services',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const Divider(height: 1, color: AppColors.divider),
+            const SizedBox(height: 16),
+
+            // Sort By Section
+            const Text(
+              'Sort By',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _sortOptions.entries.map((entry) {
+                final isSelected = _sortBy == entry.key;
+                return ChoiceChip(
+                  label: Text(entry.value),
+                  selected: isSelected,
+                  onSelected: (_) => setState(() => _sortBy = entry.key),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.15),
+                  backgroundColor: const Color(0xFFF1F5F9),
+                  labelStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+                  ),
+                  showCheckmark: false,
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+
+            // Price Range Presets
+            const Text(
+              'Price Range',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _buildPriceChip('All Prices', null, null),
+                _buildPriceChip('Under ₹300', null, 300),
+                _buildPriceChip('₹300 – ₹800', 300, 800),
+                _buildPriceChip('₹800 – ₹1,500', 800, 1500),
+                _buildPriceChip('₹1,500+', 1500, null),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Estimated Duration Presets
+            const Text(
+              'Max Estimated Duration',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _buildDurationChip('Any Duration', null),
+                _buildDurationChip('< 45 Mins', 45),
+                _buildDurationChip('< 90 Mins', 90),
+                _buildDurationChip('< 3 Hours', 180),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Featured Switch
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Featured Services Only',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Show top-rated and admin highlighted services',
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    ),
+                  ],
+                ),
+                Switch.adaptive(
+                  value: _isFeatured,
+                  activeThumbColor: AppColors.primary,
+                  onChanged: (val) => setState(() => _isFeatured = val),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _reset,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: const BorderSide(color: AppColors.divider),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                    ),
+                    child: const Text('Reset All', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _apply,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                    ),
+                    child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriceChip(String label, double? min, double? max) {
+    final isSelected = _minPrice == min && _maxPrice == max;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (_) {
+        setState(() {
+          _minPrice = min;
+          _maxPrice = max;
+        });
+      },
+      selectedColor: AppColors.primary.withValues(alpha: 0.15),
+      backgroundColor: const Color(0xFFF1F5F9),
+      labelStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+      ),
+      showCheckmark: false,
+    );
+  }
+
+  Widget _buildDurationChip(String label, int? maxDur) {
+    final isSelected = _maxDuration == maxDur;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (_) {
+        setState(() {
+          _maxDuration = maxDur;
+        });
+      },
+      selectedColor: AppColors.primary.withValues(alpha: 0.15),
+      backgroundColor: const Color(0xFFF1F5F9),
+      labelStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+      ),
+      showCheckmark: false,
+    );
+  }
+}

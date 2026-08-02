@@ -5,6 +5,9 @@ import '../../app/routes/app_routes.dart';
 import '../../models/category_model.dart';
 import '../../models/service_model.dart';
 import '../../services/api_service.dart';
+import '../../shared/cards/service_card.dart';
+import '../../shared/modals/service_filter_modal.dart';
+import '../../shared/widgets/active_filter_chips_bar.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String categoryId;
@@ -35,8 +38,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final int _limit = 10;
   int _totalPages = 1;
   int _totalServices = 0;
-  String _selectedSortBy = 'display_order';
   String _searchQuery = '';
+  ServiceFilterData _filterData = const ServiceFilterData();
 
   @override
   void initState() {
@@ -70,7 +73,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     });
 
     try {
-      // 1. Fetch category meta if ID is provided
       if (widget.categoryId.isNotEmpty) {
         try {
           final catMeta = await ApiService.instance.getCategoryById(widget.categoryId);
@@ -78,7 +80,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
         } catch (_) {}
       }
 
-      // 2. Fetch page 1 services
       await _fetchPage(1, isInitial: true);
     } catch (e) {
       if (mounted) {
@@ -110,7 +111,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
         widget.categoryId,
         page: targetPage,
         limit: _limit,
-        sortBy: _selectedSortBy,
+        sortBy: _filterData.sortBy,
+        isFeatured: _filterData.isFeatured ? true : null,
+        minPrice: _filterData.minPrice,
+        maxPrice: _filterData.maxPrice,
+        maxDuration: _filterData.maxDuration,
       );
 
       final itemsRaw = res['items'] as List? ?? [];
@@ -143,7 +148,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           );
         }
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         if (isInitial) {
           setState(() {
@@ -161,6 +166,41 @@ class _CategoryScreenState extends State<CategoryScreen> {
     if (_searchQuery.trim().isEmpty) return _services;
     final q = _searchQuery.trim().toLowerCase();
     return _services.where((s) => s.name.toLowerCase().contains(q) || s.shortDescription.toLowerCase().contains(q)).toList();
+  }
+
+  void _openFilterModal() {
+    ServiceFilterModal.show(
+      context,
+      initialData: _filterData,
+      onApply: (newFilter) {
+        setState(() {
+          _filterData = newFilter;
+        });
+        _initialLoad();
+      },
+    );
+  }
+
+  void _removeFilter(String filterKey) {
+    setState(() {
+      if (filterKey == 'sort_by') {
+        _filterData = _filterData.copyWith(sortBy: 'display_order');
+      } else if (filterKey == 'price') {
+        _filterData = _filterData.copyWith(minPrice: () => null, maxPrice: () => null);
+      } else if (filterKey == 'max_duration') {
+        _filterData = _filterData.copyWith(maxDuration: () => null);
+      } else if (filterKey == 'is_featured') {
+        _filterData = _filterData.copyWith(isFeatured: false);
+      }
+    });
+    _initialLoad();
+  }
+
+  void _clearAllFilters() {
+    setState(() {
+      _filterData = const ServiceFilterData();
+    });
+    _initialLoad();
   }
 
   @override
@@ -181,71 +221,68 @@ class _CategoryScreenState extends State<CategoryScreen> {
           style: const TextStyle(color: Color(0xFF0F172A), fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.sort_rounded, color: Color(0xFF334155)),
-            onSelected: (val) {
-              if (val != _selectedSortBy) {
-                setState(() => _selectedSortBy = val);
-                _initialLoad();
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'display_order', child: Text('Default Order')),
-              PopupMenuItem(value: 'price_asc', child: Text('Price: Low to High')),
-              PopupMenuItem(value: 'price_desc', child: Text('Price: High to Low')),
-              PopupMenuItem(value: '-created_at', child: Text('Newest First')),
-            ],
+          IconButton(
+            icon: Icon(
+              Icons.tune_rounded,
+              color: _filterData.hasActiveFilters ? const Color(0xFF2563EB) : const Color(0xFF334155),
+            ),
+            onPressed: _openFilterModal,
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _initialLoad,
         color: const Color(0xFF2563EB),
-        child: _isLoadingInitial
-            ? _buildShimmerLoading()
-            : _errorMessage != null
-                ? _buildErrorView()
-                : CustomScrollView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                    slivers: [
-                      // Header Card Section
-                      SliverToBoxAdapter(child: _buildHeaderCard(title)),
-
-                      // Search Bar Section
-                      SliverToBoxAdapter(child: _buildSearchBarSection()),
-
-                      // Services Grid / List Section
-                      if (_filteredServices.isEmpty)
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: _buildEmptyState(),
-                        )
-                      else
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                if (index < _filteredServices.length) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 14),
-                                    child: _buildServiceRowCard(_filteredServices[index]),
-                                  );
-                                }
-                                return _buildBottomLoader();
-                              },
-                              childCount: _filteredServices.length + (_isFetchingMore ? 1 : 0),
-                            ),
-                          ),
+        child: Column(
+          children: [
+            ActiveFilterChipsBar(
+              filterData: _filterData,
+              onRemoveFilter: _removeFilter,
+              onClearAll: _clearAllFilters,
+            ),
+            Expanded(
+              child: _isLoadingInitial
+                  ? _buildShimmerLoading()
+                  : _errorMessage != null
+                      ? _buildErrorView()
+                      : CustomScrollView(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                          slivers: [
+                            SliverToBoxAdapter(child: _buildHeaderCard(title)),
+                            SliverToBoxAdapter(child: _buildSearchBarSection()),
+                            if (_filteredServices.isEmpty)
+                              SliverFillRemaining(
+                                hasScrollBody: false,
+                                child: _buildEmptyState(),
+                              )
+                            else
+                              SliverPadding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                                sliver: SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
+                                      if (index < _filteredServices.length) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 14),
+                                          child: _buildServiceRowCard(_filteredServices[index]),
+                                        );
+                                      }
+                                      return _buildBottomLoader();
+                                    },
+                                    childCount: _filteredServices.length + (_isFetchingMore ? 1 : 0),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // ── Header Card ────────────────────────────────────────────────────────────
   Widget _buildHeaderCard(String title) {
     return Container(
       width: double.infinity,
@@ -306,7 +343,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  // ── Search Bar Section ──────────────────────────────────────────────────────
   Widget _buildSearchBarSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -345,118 +381,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  // ── Service Row Card ───────────────────────────────────────────────────────
   Widget _buildServiceRowCard(ServiceModel service) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.serviceSelection,
-        arguments: {'service_id': service.id, 'service_name': service.name},
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Image
-            Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: service.image.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        service.image,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.build_rounded, color: Color(0xFF94A3B8), size: 36),
-                      ),
-                    )
-                  : const Icon(Icons.build_rounded, color: Color(0xFF94A3B8), size: 36),
-            ),
-            const SizedBox(width: 14),
+    final priceDisplay = service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}';
+    final durationDisplay = service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} min';
 
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          service.name,
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (service.isFeatured)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFDBEAFE),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'FEATURED',
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    service.shortDescription.isNotEmpty ? service.shortDescription : 'Professional home service',
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(Icons.access_time_rounded, size: 13, color: Color(0xFF64748B)),
-                          const SizedBox(width: 3),
-                          Text(
-                            service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} min',
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ServiceCard(
+      title: service.name,
+      category: service.categorySlug.replaceAll('-', ' '),
+      price: priceDisplay,
+      imageUrl: service.image,
+      duration: durationDisplay,
+      shortDescription: service.shortDescription,
+      isFeatured: service.isFeatured,
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.customerServiceDetail,
+          arguments: {
+            'service_title': service.name,
+            'service_id': service.id,
+          },
+        );
+      },
     );
   }
 
-  // ── Bottom Pagination Spinner ──────────────────────────────────────────────
   Widget _buildBottomLoader() {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
@@ -470,7 +419,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  // ── Shimmer Initial Loading State ──────────────────────────────────────────
   Widget _buildShimmerLoading() {
     return ListView.builder(
       padding: const EdgeInsets.all(20),
@@ -488,7 +436,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  // ── Empty State View ───────────────────────────────────────────────────────
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
@@ -506,22 +453,33 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'No Services Found',
+              'No Matching Services Found',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
             ),
             const SizedBox(height: 8),
             const Text(
-              'No services are available under this category at the moment. Please check back later.',
+              'No services match your active filter criteria under this category.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
+            if (_filterData.hasActiveFilters) ...[
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _clearAllFilters,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Clear All Filters'),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  // ── Error View with Retry ──────────────────────────────────────────────────
   Widget _buildErrorView() {
     return Center(
       child: Padding(

@@ -62,7 +62,11 @@ async def get_category_services(
     id: str,
     page: int = Query(default=1, ge=1, description="Page number"),
     limit: int = Query(default=10, ge=1, le=100, description="Items per page"),
-    sort_by: str = Query(default="display_order", description="Sort field (display_order, -created_at, price_asc, price_desc)"),
+    sort_by: str = Query(default="display_order", description="Sort field (display_order, -created_at, price_asc, price_desc, title_asc, title_desc)"),
+    is_featured: bool | None = Query(default=None, description="Filter featured services"),
+    min_price: float | None = Query(default=None, ge=0, description="Minimum price filter"),
+    max_price: float | None = Query(default=None, ge=0, description="Maximum price filter"),
+    max_duration: int | None = Query(default=None, ge=0, description="Maximum estimated duration in minutes"),
     user: OptionalUserDep = None,
 ) -> ServiceListResponse:
     """Get services by category ID with pagination."""
@@ -71,6 +75,10 @@ async def get_category_services(
         page=page,
         limit=limit,
         sort_by=sort_by,
+        is_featured=is_featured,
+        min_price=min_price,
+        max_price=max_price,
+        max_duration=max_duration,
         current_user=user,
     )
 

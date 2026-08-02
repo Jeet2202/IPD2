@@ -5,6 +5,8 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../services/api_service.dart';
 import '../../shared/cards/service_card.dart';
+import '../../shared/modals/service_filter_modal.dart';
+import '../../shared/widgets/active_filter_chips_bar.dart';
 
 class ServicesScreen extends StatefulWidget {
   const ServicesScreen({super.key});
@@ -14,7 +16,7 @@ class ServicesScreen extends StatefulWidget {
 }
 
 class _ServicesScreenState extends State<ServicesScreen> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService.instance;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   Timer? _searchDebounce;
@@ -24,17 +26,17 @@ class _ServicesScreenState extends State<ServicesScreen> {
   bool _isLoadingMore = false;
   bool _hasMorePages = true;
   int _currentPage = 1;
-  int _totalPages = 1;
   String? _errorMessage;
 
   String _searchQuery = '';
-  String _sortBy = 'display_order';
+  ServiceFilterData _filterData = const ServiceFilterData();
 
   final Map<String, String> _sortOptions = {
     'display_order': 'Popularity',
     'price_asc': 'Price: Low to High',
     'price_desc': 'Price: High to Low',
     '-created_at': 'Newest First',
+    'title_asc': 'A-Z',
   };
 
   @override
@@ -73,8 +75,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
       final res = await _apiService.fetchServices(
         page: page,
         limit: 10,
+        categoryId: _filterData.categoryId,
+        isFeatured: _filterData.isFeatured ? true : null,
+        minPrice: _filterData.minPrice,
+        maxPrice: _filterData.maxPrice,
+        maxDuration: _filterData.maxDuration,
         search: _searchQuery,
-        sortBy: _sortBy,
+        sortBy: _filterData.sortBy,
       );
 
       final List rawItems = res['items'] as List? ?? [];
@@ -90,7 +97,6 @@ class _ServicesScreenState extends State<ServicesScreen> {
           _services.addAll(items);
         }
         _currentPage = page;
-        _totalPages = totalPages;
         _hasMorePages = page < totalPages;
         _isLoading = false;
         _isLoadingMore = false;
@@ -105,7 +111,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           _errorMessage = e.message;
         }
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -143,9 +149,46 @@ class _ServicesScreenState extends State<ServicesScreen> {
   }
 
   void _onSortSelected(String sortBy) {
-    if (_sortBy == sortBy) return;
+    if (_filterData.sortBy == sortBy) return;
     setState(() {
-      _sortBy = sortBy;
+      _filterData = _filterData.copyWith(sortBy: sortBy);
+    });
+    _fetchServices(page: 1);
+  }
+
+  void _openFilterModal() {
+    ServiceFilterModal.show(
+      context,
+      initialData: _filterData,
+      onApply: (newFilter) {
+        setState(() {
+          _filterData = newFilter;
+        });
+        _fetchServices(page: 1);
+      },
+    );
+  }
+
+  void _removeFilter(String filterKey) {
+    setState(() {
+      if (filterKey == 'sort_by') {
+        _filterData = _filterData.copyWith(sortBy: 'display_order');
+      } else if (filterKey == 'price') {
+        _filterData = _filterData.copyWith(minPrice: () => null, maxPrice: () => null);
+      } else if (filterKey == 'max_duration') {
+        _filterData = _filterData.copyWith(maxDuration: () => null);
+      } else if (filterKey == 'is_featured') {
+        _filterData = _filterData.copyWith(isFeatured: false);
+      } else if (filterKey == 'category_id') {
+        _filterData = _filterData.copyWith(categoryId: () => null);
+      }
+    });
+    _fetchServices(page: 1);
+  }
+
+  void _clearAllFilters() {
+    setState(() {
+      _filterData = const ServiceFilterData();
     });
     _fetchServices(page: 1);
   }
@@ -166,7 +209,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
       ),
       body: Column(
         children: [
-          // ── Search Bar & Filter Strip ──────────────────────────────────────
+          // Search Bar & Filter Button
           Container(
             padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: AppDimensions.sm),
             color: Colors.white,
@@ -205,24 +248,46 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Filter Button
-                    IconButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Advanced category filters coming soon!'),
-                            duration: Duration(seconds: 2),
+                    // Filter Button with Badge
+                    Stack(
+                      children: [
+                        IconButton(
+                          onPressed: _openFilterModal,
+                          icon: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: _filterData.hasActiveFilters
+                                  ? AppColors.primary.withValues(alpha: 0.15)
+                                  : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                              border: Border.all(
+                                color: _filterData.hasActiveFilters ? AppColors.primary : Colors.transparent,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.tune_rounded,
+                              size: 20,
+                              color: _filterData.hasActiveFilters ? AppColors.primary : AppColors.textPrimary,
+                            ),
                           ),
-                        );
-                      },
-                      icon: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
                         ),
-                        child: const Icon(Icons.tune_rounded, size: 20, color: AppColors.textPrimary),
-                      ),
+                        if (_filterData.activeFilterCount > 0)
+                          Positioned(
+                            right: 4,
+                            top: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '${_filterData.activeFilterCount}',
+                                style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -232,7 +297,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: _sortOptions.entries.map((entry) {
-                      final isSelected = _sortBy == entry.key;
+                      final isSelected = _filterData.sortBy == entry.key;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
@@ -262,9 +327,17 @@ class _ServicesScreenState extends State<ServicesScreen> {
               ],
             ),
           ),
+
+          // Active Filter Chips Strip
+          ActiveFilterChipsBar(
+            filterData: _filterData,
+            onRemoveFilter: _removeFilter,
+            onClearAll: _clearAllFilters,
+          ),
+
           const Divider(height: 1, thickness: 1, color: AppColors.divider),
 
-          // ── Main Content ───────────────────────────────────────────────────
+          // Main Content
           Expanded(
             child: RefreshIndicator(
               onRefresh: _handleRefresh,
@@ -302,11 +375,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
         }
 
         final srv = _services[index];
-        final title = srv['title'] as String? ?? 'Service';
+        final title = srv['title'] as String? ?? srv['name'] as String? ?? 'Service';
         final catSlug = srv['category_slug'] as String? ?? 'General';
         final priceDisplay = srv['price_range_display'] as String? ?? '₹${srv['base_price']}';
         final durationDisplay = srv['duration_display'] as String?;
-        final imageUrl = srv['service_image_url'] as String?;
+        final imageUrl = srv['service_image_url'] as String? ?? srv['service_image'] as String?;
         final shortDesc = srv['short_description'] as String?;
         final isFeatured = (srv['is_featured'] as bool?) ?? false;
 
@@ -321,7 +394,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           onTap: () {
             Navigator.pushNamed(
               context,
-              AppRoutes.customerServices,
+              AppRoutes.customerServiceDetail,
               arguments: {
                 'service_title': title,
                 'service_id': srv['id'],
@@ -379,9 +452,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       alignment: Alignment.center,
-      child: Row(
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           SizedBox(
             width: 18,
             height: 18,
@@ -451,24 +524,24 @@ class _ServicesScreenState extends State<ServicesScreen> {
               const Icon(Icons.home_repair_service_outlined, size: 72, color: AppColors.textHint),
               const SizedBox(height: 16),
               const Text(
-                'No services available.',
+                'No matching services found.',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               const Text(
-                'We couldn\'t find any services matching your query.',
+                'We couldn\'t find any services matching your filter criteria.',
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
-              if (_searchQuery.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    _onSearchChanged('');
-                  },
-                  child: const Text('Clear Search Filter'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _clearAllFilters,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                 ),
-              ],
+                child: const Text('Clear All Filters'),
+              ),
             ],
           ),
         ),

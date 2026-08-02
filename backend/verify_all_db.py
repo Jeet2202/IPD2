@@ -14,10 +14,10 @@ from pymongo.errors import DuplicateKeyError
 from app.core.config import settings
 from app.database.connection import connect_to_database, close_database_connection, get_database
 
-# Import all 17 Phase 2 Document models
-from app.auth.models import User, UserRole, AccountStatus
+# Import all 17 Phase 2 Document models# Import all 17 Phase 2 Document models
+from app.auth.models import User, UserRole
 from app.customer.models import CustomerProfile
-from app.worker.models import WorkerProfile, Skill, GeoLocation as WorkerGeoLocation
+from app.worker.models import WorkerProfile
 from app.category.models import ServiceCategory, Service
 from app.pricing.models import ServicePriceGuide, PricingConfiguration, Currency
 from app.service_request.models import (
@@ -139,27 +139,26 @@ async def run_verification():
     # -----------------------------------------------------------------------
     # Step 3.4: Test unique index enforcement (User email & phone)
     # -----------------------------------------------------------------------
-    print("\n[3.4] Testing unique index enforcement on User.email & phone_number...")
+    print("\n[3.4] Testing unique index enforcement on User.email & phone...")
+    rnd1 = int(uuid4().hex[:8], 16) % 100000000
     test_user1 = User(
-        first_name="UniqueTest1",
-        last_name="Tester",
-        email="unique_index_test@kaamsetu.com",
-        phone_number="+919000000001",
+        full_name="UniqueTest1 Tester",
+        email=f"unique_index_test_{rnd1}@kaamsetu.com",
+        phone=f"+9190{rnd1:08d}",
         password_hash="hash123",
         role=UserRole.CUSTOMER,
-        account_status=AccountStatus.ACTIVE,
+        is_active=True,
     )
     await test_user1.insert()
     print("  - Inserted initial test user successfully.")
 
     test_user2 = User(
-        first_name="UniqueTest2",
-        last_name="Tester",
-        email="unique_index_test@kaamsetu.com",  # Duplicate email
-        phone_number="+919000000002",
+        full_name="UniqueTest2 Tester",
+        email=f"unique_index_test_{rnd1}@kaamsetu.com",  # Duplicate email
+        phone=f"+9190{rnd1+1:08d}",
         password_hash="hash456",
         role=UserRole.CUSTOMER,
-        account_status=AccountStatus.ACTIVE,
+        is_active=True,
     )
     try:
         await test_user2.insert()
@@ -196,69 +195,58 @@ async def run_verification():
     inserted_docs = []
     try:
         # P2.1 User
+        rnd_u = int(uuid4().hex[:8], 16) % 100000000
         u = User(
-            first_name="Round",
-            last_name="Trip",
-            email="roundtrip.user@kaamsetu.com",
-            phone_number="+919111111111",
+            full_name="Round Trip",
+            email=f"roundtrip.{rnd_u}@kaamsetu.com",
+            phone=f"+9191{rnd_u:08d}",
             password_hash="secret_hash",
             role=UserRole.CUSTOMER,
-            account_status=AccountStatus.ACTIVE,
+            is_active=True,
         )
         await u.insert()
         inserted_docs.append(u)
         u_fetched = await User.get(u.id)
-        assert u_fetched is not None and u_fetched.email == "roundtrip.user@kaamsetu.com"
+        assert u_fetched is not None and u_fetched.email == u.email
         print("[OK] [P2.1 User] Insert -> Fetch -> Verified")
 
         # P2.2 Customer Profile
         cp = CustomerProfile(
-            user_id=str(u.id),
+            user_id=u.id,
             preferred_language="hi",
         )
         await cp.insert()
         inserted_docs.append(cp)
         cp_fetched = await CustomerProfile.get(cp.id)
-        assert cp_fetched is not None and cp_fetched.user_id == str(u.id)
+        assert cp_fetched is not None and cp_fetched.user_id == u.id
         print("[OK] [P2.2 Customer Profile] Insert -> Fetch -> Verified")
 
-
         # P2.3 Worker Profile (with GeoJSON)
+        rnd_w = int(uuid4().hex[:8], 16) % 100000000
         wu = User(
-            first_name="Worker",
-            last_name="One",
-            email="roundtrip.worker@kaamsetu.com",
-            phone_number="+919222222222",
+            full_name="Worker One",
+            email=f"roundtrip.worker.{rnd_w}@kaamsetu.com",
+            phone=f"+9192{rnd_w:08d}",
             password_hash="secret_hash",
             role=UserRole.WORKER,
-            account_status=AccountStatus.ACTIVE,
+            is_active=True,
         )
         await wu.insert()
         inserted_docs.append(wu)
 
         wp = WorkerProfile(
-            user_id=str(wu.id),
+            user_id=wu.id,
             bio="Professional Electrician",
-            experience_years=5,
+            experience_years=5.0,
             hourly_rate=299.0,
-            service_categories=["electrical"],
-            skills=[
-                Skill(
-                    skill_name="wiring",
-                    experience_years=5,
-                    proficiency_level="expert",
-                )
-            ],
-            current_location=WorkerGeoLocation(
-                type="Point",
-                coordinates=[72.8777, 19.0760],
-            ),
+            skills=["wiring", "electrical"],
+            languages=["hi", "en"],
         )
         await wp.insert()
         inserted_docs.append(wp)
         wp_fetched = await WorkerProfile.get(wp.id)
-        assert wp_fetched is not None and wp_fetched.current_location.coordinates == [72.8777, 19.0760]
-        print("[OK] [P2.3 Worker Profile + GeoJSON] Insert -> Fetch -> Verified")
+        assert wp_fetched is not None and wp_fetched.skills == ["wiring", "electrical"]
+        print("[OK] [P2.3 Worker Profile] Insert -> Fetch -> Verified")
 
         # P2.4 Category & Service
         cat = ServiceCategory(

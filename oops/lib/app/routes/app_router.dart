@@ -20,6 +20,7 @@ import '../../customer/authentication/location_permission/location_permission_sc
 import '../../customer/home/home_screen.dart';
 import '../../customer/search/search_screen.dart';
 import '../../customer/categories/category_screen.dart';
+import '../../customer/services/services_screen.dart';
 import '../../customer/services/service_details_screen.dart';
 import '../../customer/services/service_faq_screen.dart';
 import '../../customer/address/select_address_screen.dart';
@@ -420,7 +421,12 @@ class AppRouter {
         return _build(CategoryScreen(categoryId: catId, categoryName: catName), settings);
 
       case AppRoutes.customerServices:
-        return _build(const ServiceDetailsScreen(), settings);
+        return _build(const ServicesScreen(), settings);
+
+      case AppRoutes.customerServiceDetail:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final title = args?['service_title'] as String? ?? args?['title'] as String? ?? 'Service Details';
+        return _build(ServiceDetailsScreen(serviceTitle: title), settings);
 
       case '/customer/services/faq':
         return _build(const ServiceFaqScreen(), settings);

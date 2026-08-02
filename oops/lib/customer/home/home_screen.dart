@@ -559,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: GestureDetector(
               onTap: () => Navigator.pushNamed(
                 context,
-                AppRoutes.customerServices,
+                AppRoutes.customerCategories,
                 arguments: {'category_id': cat.id, 'category_name': cat.name},
               ),
               child: SizedBox(

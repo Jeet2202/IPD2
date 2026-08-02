@@ -22,6 +22,7 @@ class AppRoutes {
   static const String customerSearch        = '/customer/search';
   static const String customerCategories    = '/customer/categories';
   static const String customerServices      = '/customer/services';
+  static const String customerServiceDetail  = '/customer/service-detail';
 
   // Normal Booking
   static const String serviceSelection      = '/customer/booking/service-selection';

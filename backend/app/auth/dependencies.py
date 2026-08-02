@@ -31,7 +31,7 @@ from app.auth.exceptions import (
     ProfileIncompleteError,
     TokenRevokedError,
 )
-from app.auth.models import AccountStatus, User, UserRole
+from app.auth.models import User, UserRole
 from app.auth.permissions import Permission, require_permission
 from app.auth.security import TokenPayload, decode_token
 from app.auth.utils import extract_bearer_token
@@ -101,7 +101,7 @@ async def get_current_user(
             error_code="USER_NOT_FOUND",
         )
 
-    if payload.ver is not None and payload.ver != user.refresh_token_version:
+    if payload.ver is not None and getattr(user, "refresh_token_version", 1) != payload.ver:
         raise TokenRevokedError()
 
     return user
@@ -128,12 +128,8 @@ async def get_current_active_user(
         AccountBlockedError: If account is suspended by admin.
         AccountPendingVerificationError: If verification is incomplete.
     """
-    if user.account_status == AccountStatus.INACTIVE:
+    if not user.is_active:
         raise AccountInactiveError()
-    if user.account_status == AccountStatus.BLOCKED:
-        raise AccountBlockedError()
-    if user.account_status == AccountStatus.PENDING_VERIFICATION:
-        raise AccountPendingVerificationError()
 
     return user
 
@@ -153,7 +149,7 @@ async def get_current_verified_user(
     Raises:
         EmailNotVerifiedError: If neither email nor phone is verified.
     """
-    if not user.email_verified and not user.phone_verified:
+    if not user.is_email_verified and not user.is_phone_verified:
         raise EmailNotVerifiedError(
             message="You must verify your email or phone number to perform this action",
             error_code="CONTACT_NOT_VERIFIED",
@@ -165,7 +161,7 @@ async def get_email_verified_user(
     user: User = Depends(get_current_active_user),
 ) -> User:
     """Ensure the user has specifically verified their email address."""
-    if not user.email_verified:
+    if not user.is_email_verified:
         raise EmailNotVerifiedError()
     return user
 
@@ -174,7 +170,7 @@ async def get_phone_verified_user(
     user: User = Depends(get_current_active_user),
 ) -> User:
     """Ensure the user has specifically verified their phone number."""
-    if not user.phone_verified:
+    if not user.is_phone_verified:
         raise PhoneNotVerifiedError()
     return user
 

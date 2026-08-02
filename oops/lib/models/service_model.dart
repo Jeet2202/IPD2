@@ -16,6 +16,8 @@ class ServiceModel {
   final int reviewCount;
   final bool isFeatured;
   final bool isActive;
+  final List<String> whatsIncluded;
+  final List<String> whatsNotIncluded;
 
   const ServiceModel({
     required this.id,
@@ -35,6 +37,8 @@ class ServiceModel {
     this.reviewCount = 120,
     this.isFeatured = false,
     this.isActive = true,
+    this.whatsIncluded = const [],
+    this.whatsNotIncluded = const [],
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +52,12 @@ class ServiceModel {
         json['image'] as String? ??
         '';
     final durationMin = json['estimated_duration_minutes'] as int? ?? 0;
+
+    final rawInc = json['whats_included'] as List? ?? json['whatsIncluded'] as List? ?? [];
+    final incList = rawInc.map((e) => e.toString()).toList();
+
+    final rawExc = json['whats_not_included'] as List? ?? json['whatsNotIncluded'] as List? ?? [];
+    final excList = rawExc.map((e) => e.toString()).toList();
 
     return ServiceModel(
       id: json['id'] as String? ?? json['_id'] as String? ?? '',
@@ -67,6 +77,8 @@ class ServiceModel {
       reviewCount: json['review_count'] as int? ?? json['reviewCount'] as int? ?? 120,
       isFeatured: json['is_featured'] as bool? ?? false,
       isActive: json['is_active'] as bool? ?? json['isActive'] as bool? ?? true,
+      whatsIncluded: incList,
+      whatsNotIncluded: excList,
     );
   }
 
@@ -88,5 +100,7 @@ class ServiceModel {
         'review_count': reviewCount,
         'is_featured': isFeatured,
         'is_active': isActive,
+        'whats_included': whatsIncluded,
+        'whats_not_included': whatsNotIncluded,
       };
 }

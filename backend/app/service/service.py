@@ -122,12 +122,15 @@ class ServiceManagementService:
         limit: int = 10,
         category_id: str | None = None,
         is_featured: bool | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        max_duration: int | None = None,
         search: str | None = None,
         sort_by: str = "display_order",
         include_inactive: bool = False,
         current_user: CurrentUser | None = None,
     ) -> ServiceListResponse:
-        """List services with pagination, optional category, featured, search and sort filters."""
+        """List services with pagination, optional category, featured, price range, duration, search and sort filters."""
         allow_inactive = include_inactive and (current_user is not None and getattr(current_user, "role", None) == UserRole.ADMIN)
 
         items, total = await ServiceRepository.list_services_paginated(
@@ -135,6 +138,9 @@ class ServiceManagementService:
             limit=limit,
             category_id=category_id,
             is_featured=is_featured,
+            min_price=min_price,
+            max_price=max_price,
+            max_duration=max_duration,
             search=search,
             sort_by=sort_by,
             include_inactive=allow_inactive,
@@ -148,6 +154,44 @@ class ServiceManagementService:
             total=total,
             page=page,
             limit=limit,
+            pages=pages,
+        )
+
+    @classmethod
+    async def search_services(
+        cls,
+        query: str | None = None,
+        page: int = 1,
+        page_size: int = 10,
+        category: str | None = None,
+        featured: bool | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        max_duration: int | None = None,
+        sort_by: str = "relevance",
+    ) -> ServiceListResponse:
+        """Search active services with relevance scoring ranking and filter parameters."""
+        items, total = await ServiceRepository.search_services_ranked(
+            query_str=query,
+            page=page,
+            limit=page_size,
+            category_id_or_slug=category,
+            is_featured=featured,
+            min_price=min_price,
+            max_price=max_price,
+            max_duration=max_duration,
+            sort_by=sort_by,
+            include_inactive=False,
+        )
+
+        pages = (total + page_size - 1) // page_size if total > 0 else 1
+        service_responses = [ServiceResponse.model_validate(srv) for srv in items]
+
+        return ServiceListResponse(
+            items=service_responses,
+            total=total,
+            page=page,
+            limit=page_size,
             pages=pages,
         )
 

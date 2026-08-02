@@ -214,6 +214,8 @@ class ServiceResponse(BaseModel):
     estimated_duration_minutes: int = Field(..., description="Duration in minutes")
     service_image_url: str | None = Field(None, description="Cloudinary image URL")
     service_image_public_id: str | None = Field(None, description="Cloudinary public ID")
+    whats_included: list[str] = Field(default_factory=list, description="Items included in service")
+    whats_not_included: list[str] = Field(default_factory=list, description="Items excluded from service")
     tags: list[str] = Field(default_factory=list, description="Search tags")
     keywords: list[str] = Field(default_factory=list, description="Search keywords")
     required_skills: list[str] = Field(default_factory=list, description="Required worker skills")
@@ -243,6 +245,21 @@ class ServiceResponse(BaseModel):
             # Map image URL
             if "service_image_url" not in data and "service_image" in data:
                 data["service_image_url"] = data["service_image"]
+
+            # Whats included / not included fallbacks if empty
+            if not data.get("whats_included"):
+                data["whats_included"] = [
+                    "Professional technician service & labor",
+                    "Standard inspection & diagnostic check",
+                    "Post-service operational testing",
+                    "Workplace cleanup after service completion",
+                ]
+            if not data.get("whats_not_included"):
+                data["whats_not_included"] = [
+                    "Spare parts & replacement materials (charged at MRP)",
+                    "Major structural modifications or masonry works",
+                    "Statutory taxes & third-party fees if applicable",
+                ]
 
             # Compute price range display
             min_p = data.get("minimum_price") or data.get("base_price", 0)
