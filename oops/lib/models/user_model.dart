@@ -6,6 +6,9 @@ class UserModel {
   final String role;
   final String? avatar;
   final bool isVerified;
+  final bool isEmailVerified;
+  final bool isPhoneVerified;
+  final String accountStatus;
   final DateTime createdAt;
 
   const UserModel({
@@ -16,43 +19,77 @@ class UserModel {
     required this.role,
     this.avatar,
     this.isVerified = false,
+    this.isEmailVerified = false,
+    this.isPhoneVerified = false,
+    this.accountStatus = 'active',
     required this.createdAt,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        id:         json['_id'] as String,
-        name:       json['name'] as String,
-        email:      json['email'] as String,
-        phone:      json['phone'] as String,
-        role:       json['role'] as String,
-        avatar:     json['avatar'] as String?,
-        isVerified: json['isVerified'] as bool? ?? false,
-        createdAt:  DateTime.parse(json['createdAt'] as String),
-      );
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    final String idVal = (json['id'] ?? json['_id'] ?? '') as String;
+    final String nameVal = (json['full_name'] ?? json['name'] ?? '') as String;
+    final String emailVal = (json['email'] ?? '') as String;
+    final String phoneVal = (json['phone'] ?? '') as String;
+    final String roleVal = (json['role'] is String
+        ? json['role']
+        : (json['role']?['value'] ?? json['role']?.toString() ?? 'customer')) as String;
+    final bool isEmailVer = json['is_email_verified'] as bool? ?? false;
+    final bool isPhoneVer = json['is_phone_verified'] as bool? ?? false;
+    final bool isVer = json['isVerified'] as bool? ?? (isEmailVer || isPhoneVer);
+
+    final String createdStr = (json['created_at'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()) as String;
+
+    return UserModel(
+      id: idVal,
+      name: nameVal,
+      email: emailVal,
+      phone: phoneVal,
+      role: roleVal,
+      avatar: json['avatar'] as String?,
+      isVerified: isVer,
+      isEmailVerified: isEmailVer,
+      isPhoneVerified: isPhoneVer,
+      accountStatus: json['account_status'] as String? ?? 'active',
+      createdAt: DateTime.parse(createdStr),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        '_id':        id,
-        'name':       name,
-        'email':      email,
-        'phone':      phone,
-        'role':       role,
-        'avatar':     avatar,
-        'isVerified': isVerified,
-        'createdAt':  createdAt.toIso8601String(),
+        'id': id,
+        'full_name': name,
+        'email': email,
+        'phone': phone,
+        'role': role,
+        'avatar': avatar,
+        'is_email_verified': isEmailVerified,
+        'is_phone_verified': isPhoneVerified,
+        'account_status': accountStatus,
+        'created_at': createdAt.toIso8601String(),
       };
 
   UserModel copyWith({
-    String? id, String? name, String? email,
-    String? phone, String? role, String? avatar, bool? isVerified,
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? role,
+    String? avatar,
+    bool? isVerified,
+    bool? isEmailVerified,
+    bool? isPhoneVerified,
+    String? accountStatus,
   }) =>
       UserModel(
-        id:         id ?? this.id,
-        name:       name ?? this.name,
-        email:      email ?? this.email,
-        phone:      phone ?? this.phone,
-        role:       role ?? this.role,
-        avatar:     avatar ?? this.avatar,
+        id: id ?? this.id,
+        name: name ?? this.name,
+        email: email ?? this.email,
+        phone: phone ?? this.phone,
+        role: role ?? this.role,
+        avatar: avatar ?? this.avatar,
         isVerified: isVerified ?? this.isVerified,
-        createdAt:  createdAt,
+        isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+        isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
+        accountStatus: accountStatus ?? this.accountStatus,
+        createdAt: createdAt,
       );
 }

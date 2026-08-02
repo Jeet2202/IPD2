@@ -16,47 +16,47 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.core.config import settings
+
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
     Injects security headers into every HTTP response.
 
-    Headers added:
-        X-Content-Type-Options: nosniff
-            Prevents browsers from MIME-sniffing the Content-Type.
-            Without this, a browser might treat a JSON response as HTML
-            and execute embedded scripts.
+    In development / debug mode, Content-Security-Policy (CSP) allows
+    necessary external assets (CDN scripts, stylesheets, fonts, and favicons)
+    so FastAPI's Swagger UI (/docs) and ReDoc (/redoc) render correctly.
 
-        X-Frame-Options: DENY
-            Prevents the page from being embedded in iframes.
-            Blocks clickjacking attacks where an attacker overlays
-            invisible iframes to hijack clicks.
-
-        X-XSS-Protection: 1; mode=block
-            Legacy XSS filter for older browsers (Chrome < 78, IE).
-            Modern browsers use Content-Security-Policy instead,
-            but this is a harmless fallback.
-
-        Strict-Transport-Security: max-age=31536000; includeSubDomains
-            Forces HTTPS for 1 year. Browsers will refuse to connect
-            over HTTP after seeing this header once. Only effective
-            when served over HTTPS (ignored over HTTP).
-
-        Referrer-Policy: strict-origin-when-cross-origin
-            Controls what URL info is sent in the Referer header.
-            Same-origin requests get the full URL; cross-origin
-            requests get only the origin (no path or query string).
-
-        Content-Security-Policy: default-src 'self'
-            Restricts where the browser can load resources from.
-            'self' means only from the same origin. APIs don't serve
-            HTML, so this is a safety net against accidental HTML
-            responses being exploited.
-
-        Permissions-Policy: camera=(), microphone=(), geolocation=()
-            Disables browser APIs that this API doesn't need.
-            Prevents embedded contexts from accessing device features.
+    In production mode, a strict CSP policy is enforced to protect against
+    XSS and data injection attacks.
     """
+
+    @staticmethod
+    def _get_csp_policy() -> str:
+        """
+        Generate Content-Security-Policy header value based on application environment.
+        """
+        if not settings.is_production or settings.DEBUG:
+            # Development / Staging mode: Allow minimum required sources for Swagger UI & ReDoc
+            return (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+                "img-src 'self' data: https://fastapi.tiangolo.com https://cdn.jsdelivr.net; "
+                "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
+                "connect-src 'self';"
+            )
+
+        # Production mode: Strict CSP policy
+        return (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self'; "
+            "img-src 'self' data:; "
+            "font-src 'self'; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none';"
+        )
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -70,7 +70,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "max-age=31536000; includeSubDomains"
         )
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        response.headers["Content-Security-Policy"] = self._get_csp_policy()
         response.headers["Permissions-Policy"] = (
             "camera=(), microphone=(), geolocation=()"
         )

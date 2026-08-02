@@ -3,8 +3,10 @@ Reusable FastAPI dependencies — shared across all feature modules.
 
 Architecture:
     - Database: re-exported from app.database for convenience.
-    - Auth placeholders: raise UnauthorizedException until auth is built.
-    - Role guards: compose on get_current_user, check user.role.
+    - Auth: extracts and validates JWT tokens from Authorization header.
+      Uses OAuth2PasswordBearer for Swagger integration.
+    - Role guards: compose on get_current_active_user, check user.role.
+    - Optional auth: returns None for unauthenticated requests.
     - Pagination: query parameter dependency with validation.
 
 Import convention:
@@ -12,6 +14,7 @@ Import convention:
         DatabaseDep,
         CurrentUserDep,
         AdminDep,
+        OptionalUserDep,
         PaginationDep,
     )
 
@@ -26,22 +29,27 @@ Import convention:
 Design decisions:
     - Uses Annotated[..., Depends()] (PEP 593) — the modern FastAPI
       pattern. Cleaner than default parameter syntax, reusable as types.
-    - Auth placeholders RAISE, not return stubs. Routes that depend on
+    - OAuth2PasswordBearer is pre-wired so Swagger UI shows the
+      Authorize button and lock icons on protected endpoints.
+    - Auth placeholder RAISES, not returns stubs. Routes that depend on
       auth will fail immediately until auth is implemented, preventing
       silent security holes.
     - CurrentUser is a DI contract schema (not a database model).
       Feature modules type-hint against this minimal interface.
+    - OptionalUserDep returns None for unauthenticated requests,
+      enabling endpoints that work for both anonymous and logged-in users.
 """
 
-from enum import Enum
 from typing import Annotated
 
 from fastapi import Depends, Query
+from fastapi.security import OAuth2PasswordBearer
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.database import get_database as _get_database
+from app.utils.enums import TokenType, UserRole
 
 
 # ---------------------------------------------------------------------------
@@ -60,19 +68,26 @@ DatabaseDep = Annotated[AsyncIOMotorDatabase, Depends(_get_database)]
 
 
 # ---------------------------------------------------------------------------
-# User Role Enum
+# OAuth2 Scheme
 # ---------------------------------------------------------------------------
+# Pre-wired OAuth2PasswordBearer for token extraction from the
+# Authorization header. FastAPI uses this to:
+#   1. Extract "Bearer <token>" from the Authorization header.
+#   2. Show the Authorize button in Swagger UI.
+#   3. Show lock icons on protected endpoints.
+#
+# auto_error=True: returns 401 if no token (protected endpoints).
+# auto_error=False: returns None if no token (optional auth endpoints).
 
-class UserRole(str, Enum):
-    """
-    User roles in the marketplace.
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/auth/login",
+    auto_error=True,
+)
 
-    Used by auth guards to restrict route access by role.
-    Maps directly to the role field stored in the user document.
-    """
-    CUSTOMER = "customer"
-    WORKER = "worker"
-    ADMIN = "admin"
+oauth2_scheme_optional = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/auth/login",
+    auto_error=False,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -91,39 +106,62 @@ class CurrentUser(BaseModel):
         id: User's MongoDB document ID (string).
         role: One of customer, worker, admin.
         phone: Phone number (primary identifier in blue-collar markets).
+        email: Email address (optional, for notifications and OTP).
+        name: Display name (optional, for personalized responses).
         is_active: Whether the account is enabled.
     """
     id: str
     role: UserRole
     phone: str
+    email: str | None = None
+    name: str | None = None
     is_active: bool = True
 
 
 # ---------------------------------------------------------------------------
-# Auth Placeholders
+# Auth Dependencies
 # ---------------------------------------------------------------------------
 # These raise UnauthorizedException until the auth module is built.
-# When auth is implemented:
-#   1. Create app/auth/dependencies.py with real JWT decode logic.
-#   2. Update get_current_user() below to call the real auth dependency.
-#   3. Role guards (get_current_admin, etc.) work unchanged.
+# When auth is implemented in Phase 3.2:
+#   1. Decode the JWT token using decode_token() from security.py.
+#   2. Validate the token type is "access" (not "refresh").
 
-async def get_current_user() -> CurrentUser:
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> CurrentUser:
     """
-    Extract and validate the current user from the request.
+    Extract and validate the current user from the JWT access token.
 
-    PLACEHOLDER — raises until auth module is implemented.
-
-    When implemented, this will:
-        1. Extract JWT from Authorization header.
-        2. Decode and validate the token.
-        3. Fetch user from database.
-        4. Set user_id_var in context for logging.
-        5. Return CurrentUser.
+    Decodes JWT, verifies access token type, retrieves User document,
+    sets user_id_var logging context, and returns CurrentUser interface.
     """
-    raise UnauthorizedException(
-        message="Authentication not implemented yet",
-        error_code="AUTH_NOT_IMPLEMENTED",
+    from app.auth.repository import AuthRepository
+    from app.core.context import user_id_var
+    from app.core.exceptions import TokenInvalidException, UnauthorizedException
+    from app.core.security import decode_token
+
+    payload = decode_token(token)
+
+    if payload.type != TokenType.ACCESS.value:
+        raise TokenInvalidException(message="Invalid token type. Expected access token.")
+
+    user = await AuthRepository.find_user_by_id(payload.sub)
+    if not user:
+        raise UnauthorizedException(
+            message="User account associated with this token no longer exists",
+            error_code="USER_NOT_FOUND",
+        )
+
+    # Set logger correlation context
+    user_id_var.set(str(user.id))
+
+    return CurrentUser(
+        id=str(user.id),
+        role=user.role,
+        phone=user.phone,
+        email=user.email,
+        name=user.full_name,
+        is_active=user.is_active,
     )
 
 
@@ -143,6 +181,26 @@ async def get_current_active_user(
             error_code="ACCOUNT_DEACTIVATED",
         )
     return user
+
+
+# ---------------------------------------------------------------------------
+# Optional Auth Dependency
+# ---------------------------------------------------------------------------
+
+async def get_optional_user(
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)],
+) -> CurrentUser | None:
+    """
+    Optionally extract the current user from the request.
+
+    Returns None if no token is present or if token is invalid.
+    """
+    if token is None:
+        return None
+    try:
+        return await get_current_user(token)
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +270,7 @@ CurrentUserDep = Annotated[CurrentUser, Depends(get_current_active_user)]
 AdminDep = Annotated[CurrentUser, Depends(get_current_admin)]
 WorkerDep = Annotated[CurrentUser, Depends(get_current_worker)]
 CustomerDep = Annotated[CurrentUser, Depends(get_current_customer)]
+OptionalUserDep = Annotated[CurrentUser | None, Depends(get_optional_user)]
 
 
 # ---------------------------------------------------------------------------

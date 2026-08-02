@@ -19,6 +19,8 @@ from enum import Enum
 from pydantic import Field, SecretStr, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.utils.constants import JWT_SECRET_MIN_LENGTH
+
 
 # ---------------------------------------------------------------------------
 # Environment Enum
@@ -75,11 +77,39 @@ class Settings(BaseSettings):
     MONGODB_MIN_POOL_SIZE: int = 0   # Pre-warmed connections (set 5-10 in production)
     MONGODB_MAX_POOL_SIZE: int = 100  # Max concurrent connections per process
 
-    # --- JWT Authentication (activate when auth module is built) ---
+    # --- JWT Authentication ---
     JWT_SECRET_KEY: SecretStr | None = None
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    JWT_ISSUER: str = "kaamsetu"
+    JWT_AUDIENCE: str = "kaamsetu-api"
+
+    # --- Password Security ---
+    BCRYPT_ROUNDS: int = 12  # Work factor: 4 for testing, 12 for production
+
+    # --- Email Provider (Gmail SMTP / Resend / SendGrid) ---
+    EMAIL_PROVIDER: str = "smtp"
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str | None = None
+    SMTP_PASSWORD: SecretStr | None = None
+    FROM_EMAIL: str = "noreply@kaamsetu.com"
+    FROM_NAME: str = "KaamSetu - AI Home Services"
+
+    # --- OTP Configuration ---
+    OTP_LENGTH: int = 6
+    OTP_EXPIRY_MINUTES: int = 5
+    OTP_MAX_ATTEMPTS: int = 5
+    OTP_MAX_RESEND: int = 3
+    OTP_RESEND_COOLDOWN_SECONDS: int = 60
+    REQUIRE_LOGIN_OTP: bool = False
+
+    # --- Security, Account Locking & Sessions ---
+    LOGIN_MAX_ATTEMPTS: int = 5
+    ACCOUNT_LOCK_DURATION_MINUTES: int = 15
+    MAX_ACTIVE_SESSIONS: int = 5
+    AUDIT_RETENTION_DAYS: int = 90
 
     # --- Cloudinary (activate when uploads module is built) ---
     CLOUDINARY_CLOUD_NAME: str | None = None
@@ -116,7 +146,7 @@ class Settings(BaseSettings):
     # --- Validation ---
 
     @model_validator(mode="after")
-    def validate_production_secrets(self) -> "Settings":
+    def validate_required_secrets(self) -> "Settings":
         """
         Enforce that critical secrets are set in production.
 
@@ -124,23 +154,40 @@ class Settings(BaseSettings):
         can boot without full infrastructure. In production, missing
         secrets cause an immediate startup crash — fail fast.
         """
-        if self.ENVIRONMENT != Environment.PRODUCTION:
-            return self
-
         missing: list[str] = []
 
-        # Database URI must not be the localhost default
-        if self.MONGODB_URI.get_secret_value() == "mongodb://localhost:27017":
-            missing.append("MONGODB_URI")
-
-        # JWT is mandatory in production (auth must work)
         if self.JWT_SECRET_KEY is None:
             missing.append("JWT_SECRET_KEY")
+        else:
+            jwt_secret = self.JWT_SECRET_KEY.get_secret_value().strip()
+            if not jwt_secret:
+                missing.append("JWT_SECRET_KEY")
+            elif len(jwt_secret) < JWT_SECRET_MIN_LENGTH:
+                missing.append(
+                    f"JWT_SECRET_KEY (minimum {JWT_SECRET_MIN_LENGTH} characters)"
+                )
+            else:
+                self.JWT_SECRET_KEY = SecretStr(jwt_secret)
 
         if missing:
             raise ValueError(
-                f"Production requires these environment variables: "
+                f"Authentication requires these environment variables: "
                 f"{', '.join(missing)}"
+            )
+
+        if self.ENVIRONMENT != Environment.PRODUCTION:
+            return self
+
+        production_missing: list[str] = []
+
+        # Database URI must not be the localhost default
+        if self.MONGODB_URI.get_secret_value() == "mongodb://localhost:27017":
+            production_missing.append("MONGODB_URI")
+
+        if production_missing:
+            raise ValueError(
+                f"Production requires these environment variables: "
+                f"{', '.join(production_missing)}"
             )
 
         return self

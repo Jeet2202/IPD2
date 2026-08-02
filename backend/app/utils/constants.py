@@ -100,3 +100,11 @@ REVIEW_WINDOW_DAYS = 30
 # Maximum radius in kilometers for location-based worker search
 MAX_SEARCH_RADIUS_KM = 50
 DEFAULT_SEARCH_RADIUS_KM = 10
+
+
+# ---------------------------------------------------------------------------
+# Security / Authentication
+# ---------------------------------------------------------------------------
+
+# Minimum length for JWT secret key (256 bits for HS256 security)
+JWT_SECRET_MIN_LENGTH = 32

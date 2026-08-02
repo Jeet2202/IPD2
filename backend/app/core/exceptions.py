@@ -120,6 +120,28 @@ class UnauthorizedException(AppException):
         super().__init__(message, error_code, 401, details)
 
 
+class TokenExpiredException(UnauthorizedException):
+    """401 — JWT token has expired. Client should refresh or re-authenticate."""
+
+    def __init__(
+        self,
+        message: str = "Token has expired",
+        details: list | None = None,
+    ) -> None:
+        super().__init__(message, "TOKEN_EXPIRED", details)
+
+
+class TokenInvalidException(UnauthorizedException):
+    """401 — JWT token is malformed, signature is invalid, or claims are wrong."""
+
+    def __init__(
+        self,
+        message: str = "Invalid or malformed token",
+        details: list | None = None,
+    ) -> None:
+        super().__init__(message, "TOKEN_INVALID", details)
+
+
 class ForbiddenException(AppException):
     """403 — Authenticated but not authorized for this action."""
 

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'app/routes/app_routes.dart';
 import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
-import 'app/config/app_config.dart';
+import 'config/app_config.dart';
+import 'config/environment.dart';
 import 'customer/splash/splash_screen.dart';
+import 'utils/token_storage.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables via flutter_dotenv
+  await EnvironmentConfig.initialize();
+
+  // Load persistent authentication session tokens
+  await TokenStorage.init();
 
   // Lock orientation to portrait
   SystemChrome.setPreferredOrientations([
@@ -35,7 +42,7 @@ class HireMeApp extends StatelessWidget {
     return MaterialApp(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
-      theme:     AppTheme.lightTheme,
+      theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       onGenerateRoute: AppRouter.generateRoute,

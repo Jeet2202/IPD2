@@ -1,6 +1,9 @@
 // File: lib/customer/splash/splash_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
+import '../../services/auth_service.dart';
+import '../../utils/token_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,8 +31,23 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _controller.forward();
 
-    // Auto-navigate to role selection after 2.5 s
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // Auto-login session persistence check
+    Future.delayed(const Duration(milliseconds: 1800), () async {
+      if (!mounted) return;
+      if (TokenStorage.hasToken) {
+        try {
+          final user = await AuthService.instance.getMe();
+          if (!mounted) return;
+          if (user.role == 'worker') {
+            Navigator.pushReplacementNamed(context, '/worker/dashboard');
+          } else {
+            Navigator.pushReplacementNamed(context, AppRoutes.customerHome);
+          }
+          return;
+        } catch (_) {
+          TokenStorage.clear();
+        }
+      }
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/role-selection');
       }

@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../services/api_service.dart';
+import '../../services/auth_service.dart';
+import '../../utils/validators.dart';
 
 class WorkerSettingsScreen extends StatefulWidget {
   const WorkerSettingsScreen({super.key});
@@ -81,6 +84,13 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
                 subtitle: 'Require TouchID / FaceID to open partner app',
                 value: _biometricLogin,
                 onChanged: (v) => setState(() => _biometricLogin = v),
+              ),
+              const SizedBox(height: 8),
+              _buildSettingTile(
+                title: 'Change Password',
+                subtitle: 'Update your partner account password',
+                icon: Icons.lock_outline_rounded,
+                onTap: () => _showChangePasswordDialog(context),
               ),
 
               const SizedBox(height: 24),
@@ -288,6 +298,148 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
         ),
         trailing: const Icon(Icons.chevron_right_rounded,
             color: Color(0xFF94A3B8), size: 18),
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final currentCtr = TextEditingController();
+    final newCtr = TextEditingController();
+    final confirmCtr = TextEditingController();
+    bool loading = false;
+    bool obscureCurrent = true;
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE2E8F0),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Change Partner Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                  const SizedBox(height: 6),
+                  const Text('Enter your current password and set a new password.', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                  const SizedBox(height: 20),
+
+                  TextFormField(
+                    controller: currentCtr,
+                    obscureText: obscureCurrent,
+                    decoration: InputDecoration(
+                      labelText: 'Current Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setModalState(() => obscureCurrent = !obscureCurrent),
+                      ),
+                    ),
+                    validator: (v) => (v == null || v.isEmpty) ? 'Current password is required' : null,
+                  ),
+                  const SizedBox(height: 14),
+
+                  TextFormField(
+                    controller: newCtr,
+                    obscureText: obscureNew,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setModalState(() => obscureNew = !obscureNew),
+                      ),
+                    ),
+                    validator: Validators.password,
+                  ),
+                  const SizedBox(height: 14),
+
+                  TextFormField(
+                    controller: confirmCtr,
+                    obscureText: obscureConfirm,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setModalState(() => obscureConfirm = !obscureConfirm),
+                      ),
+                    ),
+                    validator: (v) => Validators.confirmPassword(v, newCtr.text),
+                  ),
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      onPressed: loading
+                          ? null
+                          : () async {
+                              if (!formKey.currentState!.validate()) return;
+                              setModalState(() => loading = true);
+                              try {
+                                await AuthService.instance.changePassword(
+                                  currentPassword: currentCtr.text,
+                                  newPassword: newCtr.text,
+                                );
+                                if (!context.mounted) return;
+                                Navigator.pop(ctx);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Password changed successfully. Please log in again.'),
+                                    backgroundColor: Color(0xFF2563EB),
+                                  ),
+                                );
+                                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.workerAuth, (r) => false);
+                              } catch (e) {
+                                if (!context.mounted) return;
+                                final msg = e is ApiException ? e.message : 'Change password failed: $e';
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(msg), backgroundColor: Colors.red),
+                                );
+                              } finally {
+                                setModalState(() => loading = false);
+                              }
+                            },
+                      child: loading
+                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Update Password', style: TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

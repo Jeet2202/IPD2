@@ -13,6 +13,7 @@ class AppRoutes {
   static const String customerRegister      = '/customer/auth/register';
   static const String customerOtp           = '/customer/auth/otp';
   static const String customerForgotPwd     = '/customer/auth/forgot-password';
+  static const String customerResetPassword = '/customer/auth/reset-password';
   static const String customerCompleteProfile = '/customer/auth/complete-profile';
   static const String customerLocationPerm  = '/customer/auth/location-permission';
 

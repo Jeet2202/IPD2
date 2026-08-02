@@ -18,6 +18,14 @@ Thumbs.db
 .swiftpm/
 migrate_working_dir/
 
+# ── Environment Files ────────────────────────────────────────────────────────
+.env.development
+.env.local
+.env*.local
+!.env.example
+!.env.production
+
+
 # ── IDE / Editor ───────────────────────────────────────────────────────────────
 # IntelliJ / Android Studio
 *.iml

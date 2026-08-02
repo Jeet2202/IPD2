@@ -63,7 +63,21 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         settings.APP_VERSION,
         settings.ENVIRONMENT.value,
     )
-    await connect_to_database(document_models=[])
+    from app.auth.models import AuthAuditLog, RefreshToken, User
+    from app.customer.models import CustomerProfile
+    from app.otp.models import OTP
+    from app.worker.models import WorkerProfile
+
+    await connect_to_database(
+        document_models=[
+            User,
+            RefreshToken,
+            CustomerProfile,
+            WorkerProfile,
+            OTP,
+            AuthAuditLog,
+        ]
+    )
     yield
     # --- Shutdown ---
     await close_database_connection()

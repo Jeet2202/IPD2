@@ -13,6 +13,8 @@ import '../../customer/onboarding/onboarding_screen3.dart';
 import '../../customer/authentication/login/login_screen.dart';
 import '../../customer/authentication/register/register_screen.dart';
 import '../../customer/authentication/otp/otp_screen.dart';
+import '../../customer/authentication/forgot_password/forgot_password_screen.dart';
+import '../../customer/authentication/reset_password/reset_password_screen.dart';
 import '../../customer/authentication/complete_profile/complete_profile_screen.dart';
 import '../../customer/authentication/location_permission/location_permission_screen.dart';
 import '../../customer/home/home_screen.dart';
@@ -45,6 +47,8 @@ import '../../worker/onboarding/onboarding_page3.dart';
 import '../../worker/authentication/login/login_screen.dart';
 import '../../worker/authentication/register/register_screen.dart';
 import '../../worker/authentication/otp/otp_screen.dart';
+import '../../worker/authentication/forgot_password/forgot_password_screen.dart';
+import '../../worker/authentication/reset_password/reset_password_screen.dart';
 import '../../worker/profile/personal_information/personal_information_screen.dart';
 import '../../worker/profile/professional_information/professional_information_screen.dart';
 import '../../worker/profile/availability/availability_screen.dart';
@@ -200,6 +204,12 @@ class AppRouter {
 
       case '/worker/auth/otp':
         return _build(const WorkerOtpScreen(), settings);
+
+      case '/worker/auth/forgot-password':
+        return _build(const WorkerForgotPasswordScreen(), settings);
+
+      case '/worker/auth/reset-password':
+        return _build(const WorkerResetPasswordScreen(), settings);
 
       case '/worker/profile/personal-info':
         return _build(const WorkerPersonalInformationScreen(), settings);
@@ -383,6 +393,12 @@ class AppRouter {
 
       case AppRoutes.customerOtp:
         return _build(const OtpScreen(), settings);
+
+      case AppRoutes.customerForgotPwd:
+        return _build(const ForgotPasswordScreen(), settings);
+
+      case AppRoutes.customerResetPassword:
+        return _build(const CustomerResetPasswordScreen(), settings);
 
       case AppRoutes.customerCompleteProfile:
         return _build(const CompleteProfileScreen(), settings);

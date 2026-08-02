@@ -1,10 +1,11 @@
-// File:
-// lib/customer/authentication/otp/otp_screen.dart
+// File: lib/customer/authentication/otp/otp_screen.dart
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../services/api_service.dart';
+import '../../../services/auth_service.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -17,9 +18,25 @@ class _OtpScreenState extends State<OtpScreen> {
   final List<TextEditingController> _controllers = List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
-  int _resendCountdown = 30;
+  int _resendCountdown = 60;
   Timer? _timer;
   bool _canResend = false;
+  bool _isLoading = false;
+
+  String _targetEmail = '';
+  String _purpose = 'registration';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      _targetEmail = (args['email'] ?? '') as String;
+      _purpose = (args['purpose'] ?? 'registration') as String;
+    } else if (args is String) {
+      _targetEmail = args;
+    }
+  }
 
   @override
   void initState() {
@@ -29,7 +46,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void _startTimer() {
     setState(() {
-      _resendCountdown = 30;
+      _resendCountdown = 60;
       _canResend = false;
     });
     _timer?.cancel();
@@ -45,6 +62,98 @@ class _OtpScreenState extends State<OtpScreen> {
         timer.cancel();
       }
     });
+  }
+
+  Future<void> _handleResend() async {
+    if (!_canResend || _targetEmail.isEmpty) return;
+    try {
+      await AuthService.instance.resendEmailOtp(email: _targetEmail, purpose: _purpose);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('A new 6-digit OTP code has been sent to $_targetEmail.'),
+          backgroundColor: const Color(0xFF2563EB),
+        ),
+      );
+      _startTimer();
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is ApiException ? e.message : 'Resend failed: $e';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    final code = _controllers.map((c) => c.text).join();
+    if (code.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter the full 6-digit OTP code.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_targetEmail.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email address missing. Please register again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      if (_purpose == 'password_reset') {
+        final resetToken = await AuthService.instance.verifyPasswordResetOtp(
+          email: _targetEmail,
+          otpCode: code,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP verified! Please set your new password.'),
+            backgroundColor: Color(0xFF2563EB),
+          ),
+        );
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.customerResetPassword,
+          arguments: {'resetToken': resetToken, 'email': _targetEmail},
+        );
+      } else {
+        await AuthService.instance.verifyEmail(
+          email: _targetEmail,
+          code: code,
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email verified successfully! Welcome to KaamSetu.'),
+            backgroundColor: Color(0xFF2563EB),
+          ),
+        );
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.customerHome,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is ApiException ? e.message : 'OTP verification failed: $e';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -98,10 +207,9 @@ class _OtpScreenState extends State<OtpScreen> {
             children: [
               const SizedBox(height: 12),
 
-              // ── Illustration Placeholder ───────────────────────────
               Container(
-                width: 140,
-                height: 140,
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
@@ -111,7 +219,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2563EB).withOpacity(0.12),
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.12),
                       blurRadius: 24,
                       offset: const Offset(0, 8),
                     ),
@@ -119,14 +227,14 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(18),
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.mark_email_read_rounded,
-                      size: 54,
+                      size: 48,
                       color: Color(0xFF2563EB),
                     ),
                   ),
@@ -135,9 +243,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
               const SizedBox(height: 28),
 
-              // ── Heading ───────────────────────────────────────────
               const Text(
-                'OTP Verification',
+                'Email OTP Verification',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 26,
@@ -149,16 +256,15 @@ class _OtpScreenState extends State<OtpScreen> {
 
               const SizedBox(height: 8),
 
-              // ── Masked Phone Subtitle ──────────────────────────────
               RichText(
                 textAlign: TextAlign.center,
-                text: const TextSpan(
-                  style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
                   children: [
-                    TextSpan(text: 'Enter the 6-digit code sent to\n'),
+                    const TextSpan(text: 'Enter the 6-digit code sent to your email:\n'),
                     TextSpan(
-                      text: '+91 98765 *****',
-                      style: TextStyle(
+                      text: _targetEmail.isNotEmpty ? _targetEmail : 'your email address',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
                       ),
@@ -169,7 +275,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
               const SizedBox(height: 36),
 
-              // ── 6 OTP Input Boxes ─────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
@@ -210,7 +315,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
               const SizedBox(height: 32),
 
-              // ── Countdown Timer & Resend OTP ───────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -220,7 +324,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                   _canResend
                       ? GestureDetector(
-                          onTap: _startTimer,
+                          onTap: _handleResend,
                           child: const Text(
                             'Resend OTP',
                             style: TextStyle(
@@ -243,14 +347,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
               const SizedBox(height: 36),
 
-              // ── Verify Button ──────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.customerCompleteProfile);
-                  },
+                  onPressed: _isLoading ? null : _verifyOtp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
@@ -259,14 +360,20 @@ class _OtpScreenState extends State<OtpScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Verify & Continue',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Verify & Continue',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
                 ),
               ),
 

@@ -19,7 +19,7 @@ Design decisions:
 
 from enum import Enum
 
-from app.core.dependencies import UserRole
+from app.utils.enums import UserRole
 from app.core.exceptions import ForbiddenException
 
 

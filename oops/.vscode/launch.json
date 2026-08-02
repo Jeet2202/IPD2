@@ -2,25 +2,48 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "HireMe (Debug)",
+      "name": "KaamSetu (Dev Local)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "debug"
+      "flutterMode": "debug",
+      "args": [
+        "--dart-define=ENVIRONMENT=dev",
+        "--dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1"
+      ]
     },
     {
-      "name": "HireMe (Profile)",
+      "name": "KaamSetu (Dev Local iOS / Desktop)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "profile"
+      "flutterMode": "debug",
+      "args": [
+        "--dart-define=ENVIRONMENT=dev",
+        "--dart-define=API_BASE_URL=http://localhost:8000/api/v1"
+      ]
     },
     {
-      "name": "HireMe (Release)",
+      "name": "KaamSetu (Staging)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "release"
+      "flutterMode": "profile",
+      "args": [
+        "--dart-define=ENVIRONMENT=staging",
+        "--dart-define=API_BASE_URL=https://staging-api.kaamsetu.com/api/v1"
+      ]
+    },
+    {
+      "name": "KaamSetu (Production)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": [
+        "--dart-define=ENVIRONMENT=production",
+        "--dart-define=API_BASE_URL=https://api.kaamsetu.com/api/v1"
+      ]
     }
   ]
 }

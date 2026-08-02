@@ -1,6 +1,8 @@
 // File: lib/worker/splash/splash_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
+import '../../utils/token_storage.dart';
 
 class WorkerSplashScreen extends StatefulWidget {
   const WorkerSplashScreen({super.key});
@@ -28,8 +30,23 @@ class _WorkerSplashScreenState extends State<WorkerSplashScreen>
     );
     _controller.forward();
 
-    // Auto-navigate to worker onboarding after 2.5s
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // Auto-login session persistence check for Partner app
+    Future.delayed(const Duration(milliseconds: 1800), () async {
+      if (!mounted) return;
+      if (TokenStorage.hasToken) {
+        try {
+          final user = await AuthService.instance.getMe();
+          if (!mounted) return;
+          if (user.role == 'worker') {
+            Navigator.pushReplacementNamed(context, '/worker/dashboard');
+          } else {
+            Navigator.pushReplacementNamed(context, '/worker/auth/login');
+          }
+          return;
+        } catch (_) {
+          TokenStorage.clear();
+        }
+      }
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/worker/onboarding/1');
       }

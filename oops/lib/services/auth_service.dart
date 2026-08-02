@@ -1,49 +1,156 @@
-import '../models/user_model.dart';
 import '../constants/api_endpoints.dart';
-import 'api_service.dart';
+import '../models/user_model.dart';
 import '../utils/token_storage.dart';
+import 'api_service.dart';
 
 class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
 
-  Future<void> sendOtp(String phone) async {
-    await ApiService.instance.post(ApiEndpoints.sendOtp, {'phone': phone});
-  }
-
-  Future<UserModel> verifyOtpAndLogin({
+  /// Register a new Customer or Worker account
+  Future<Map<String, dynamic>> register({
+    required String email,
     required String phone,
-    required String otp,
-    required String role,
+    required String password,
+    required String firstName,
+    required String lastName,
+    String role = 'customer',
   }) async {
-    final res = await ApiService.instance.post(ApiEndpoints.verifyOtp, {
+    final res = await ApiService.instance.post(ApiEndpoints.register, {
+      'email': email,
       'phone': phone,
-      'otp':   otp,
-      'role':  role,
+      'password': password,
+      'first_name': firstName,
+      'last_name': lastName,
+      'role': role,
     });
+    return res;
+  }
+
+  /// Verify email OTP and complete authentication
+  Future<UserModel> verifyEmail({
+    required String email,
+    required String code,
+  }) async {
+    final res = await ApiService.instance.post(ApiEndpoints.verifyEmail, {
+      'email': email,
+      'code': code,
+    });
+
+    final data = res['data'] as Map<String, dynamic>;
+    final tokens = data['tokens'] as Map<String, dynamic>;
     TokenStorage.save(
-      access:  res['accessToken'] as String,
-      refresh: res['refreshToken'] as String,
+      access: tokens['access_token'] as String,
+      refresh: tokens['refresh_token'] as String,
     );
-    return UserModel.fromJson(res['user'] as Map<String, dynamic>);
+
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
 
-  Future<void> logout() async {
-    await ApiService.instance.post(ApiEndpoints.logout, {});
-    TokenStorage.clear();
+  /// Resend verification OTP code
+  Future<void> resendEmailOtp({
+    required String email,
+    String purpose = 'registration',
+  }) async {
+    await ApiService.instance.post(ApiEndpoints.resendEmailOtp, {
+      'email': email,
+      'purpose': purpose,
+    });
   }
 
-  Future<void> forgotPassword(String phone) async {
-    await ApiService.instance.post(ApiEndpoints.forgotPassword, {'phone': phone});
+  /// Authenticate existing user with Email/Phone & Password
+  Future<UserModel> login({
+    required String emailOrPhone,
+    required String password,
+    String? role,
+  }) async {
+    final bool isEmail = emailOrPhone.contains('@');
+    final res = await ApiService.instance.post(ApiEndpoints.login, {
+      if (isEmail) 'email': emailOrPhone else 'phone': emailOrPhone,
+      'password': password,
+      if (role != null) 'role': role,
+    });
+
+    final data = res['data'] as Map<String, dynamic>;
+    final tokens = data['tokens'] as Map<String, dynamic>;
+    TokenStorage.save(
+      access: tokens['access_token'] as String,
+      refresh: tokens['refresh_token'] as String,
+    );
+
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  /// Get current user profile
+  Future<UserModel> getMe() async {
+    final res = await ApiService.instance.get(ApiEndpoints.me);
+    final data = res['data'] as Map<String, dynamic>;
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  /// Refresh Access Token
+  Future<void> refresh() async {
+    final res = await ApiService.instance.post(ApiEndpoints.refreshToken, {
+      'refresh_token': TokenStorage.refreshToken,
+    });
+
+    final data = res['data'] as Map<String, dynamic>;
+    TokenStorage.save(
+      access: data['access_token'] as String,
+      refresh: data['refresh_token'] as String,
+    );
+  }
+
+  /// Request Password Reset OTP
+  Future<void> forgotPassword(String email) async {
+    await ApiService.instance.post(ApiEndpoints.forgotPassword, {'email': email});
+  }
+
+  /// Verify Password Reset OTP and get temporary reset_token
+  Future<String> verifyPasswordResetOtp({
+    required String email,
+    required String otpCode,
+  }) async {
+    final res = await ApiService.instance.post(
+      ApiEndpoints.verifyPasswordResetOtp,
+      {'email': email, 'otp_code': otpCode},
+    );
+    final data = res['data'] as Map<String, dynamic>;
+    return data['reset_token'] as String;
+  }
+
+  /// Reset Password using reset_token
   Future<void> resetPassword({
-    required String otp,
+    required String token,
     required String newPassword,
   }) async {
     await ApiService.instance.post(
       ApiEndpoints.resetPassword,
-      {'otp': otp, 'newPassword': newPassword},
+      {'token': token, 'new_password': newPassword},
     );
+  }
+
+  /// Change password for authenticated user
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await ApiService.instance.post(ApiEndpoints.changePassword, {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+    });
+    TokenStorage.clear();
+  }
+
+  /// Logout current device session
+  Future<void> logout() async {
+    try {
+      if (TokenStorage.refreshToken.isNotEmpty) {
+        await ApiService.instance.post(ApiEndpoints.logout, {
+          'refresh_token': TokenStorage.refreshToken,
+        });
+      }
+    } catch (_) {}
+    TokenStorage.clear();
   }
 }

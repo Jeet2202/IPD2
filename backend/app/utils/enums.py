@@ -5,9 +5,8 @@ These represent the possible states and categories for domain objects.
 Stored as string values in MongoDB for readability. Used in Pydantic
 schemas for validation and in service logic for state transitions.
 
-Note: UserRole lives in app/core/dependencies.py (it's part of the
-DI contract). Environment lives in app/core/config.py (it's config).
-This file holds domain/business enums only.
+Note: Environment lives in app/core/config.py (it's config).
+All other enums — domain, authentication, and business — live here.
 
 Naming convention:
     - Enum names: PascalCase, singular (JobStatus, not JobStatuses)
@@ -15,6 +14,28 @@ Naming convention:
 """
 
 from enum import Enum
+
+
+# ---------------------------------------------------------------------------
+# Authentication
+# ---------------------------------------------------------------------------
+
+class UserRole(str, Enum):
+    """
+    User roles in the marketplace.
+
+    Used by auth guards to restrict route access by role.
+    Maps directly to the role field stored in the user document.
+    """
+    CUSTOMER = "customer"
+    WORKER = "worker"
+    ADMIN = "admin"
+
+
+class TokenType(str, Enum):
+    """JWT token type identifiers embedded in the token payload."""
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 # ---------------------------------------------------------------------------
