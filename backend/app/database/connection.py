@@ -53,26 +53,43 @@ async def connect_to_database(document_models: list[type["Document"]] | None = N
     """
     global _client
 
-    _client = AsyncIOMotorClient(
-        settings.MONGODB_URI.get_secret_value(),
-        maxPoolSize=settings.MONGODB_MAX_POOL_SIZE,
-        minPoolSize=settings.MONGODB_MIN_POOL_SIZE,
-    )
+    try:
+        _client = AsyncIOMotorClient(
+            settings.MONGODB_URI.get_secret_value(),
+            maxPoolSize=settings.MONGODB_MAX_POOL_SIZE,
+            minPoolSize=settings.MONGODB_MIN_POOL_SIZE,
+            serverSelectionTimeoutMS=5000,
+        )
 
-    # Verify connectivity — fail fast if Atlas is unreachable.
-    await _client.admin.command("ping")
-    logger.info(
-        "MongoDB connected — database=%s, pool=%d-%d",
-        settings.MONGODB_DATABASE,
-        settings.MONGODB_MIN_POOL_SIZE,
-        settings.MONGODB_MAX_POOL_SIZE,
-    )
+        # Verify connectivity — fail fast if Atlas is unreachable.
+        await _client.admin.command("ping")
+        logger.info(
+            "MongoDB connected — database=%s, pool=%d-%d",
+            settings.MONGODB_DATABASE,
+            settings.MONGODB_MIN_POOL_SIZE,
+            settings.MONGODB_MAX_POOL_SIZE,
+        )
 
-    await init_beanie(
-        database=_client[settings.MONGODB_DATABASE],
-        document_models=document_models or [],
-    )
-    logger.info("Beanie ODM initialized with %d document model(s).", len(document_models or []))
+        await init_beanie(
+            database=_client[settings.MONGODB_DATABASE],
+            document_models=document_models or [],
+        )
+        logger.info("Beanie ODM initialized with %d document model(s).", len(document_models or []))
+    except Exception as exc:
+        logger.error(
+            "MongoDB connection failed! Check MONGODB_URI, credentials, and IP allowlist in Atlas.\n"
+            "Error detail: %s",
+            exc,
+        )
+        if _client is not None:
+            _client.close()
+            _client = None
+        raise RuntimeError(
+            f"Failed to connect to MongoDB Atlas [{settings.MONGODB_DATABASE}]: {exc}. "
+            "Please verify that MONGODB_URI is well-formed, credentials are correct, "
+            "and your IP address is whitelisted in MongoDB Atlas Network Access."
+        ) from exc
+
 
 
 async def close_database_connection() -> None:

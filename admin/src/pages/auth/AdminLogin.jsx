@@ -27,7 +27,8 @@ export default function AdminLogin() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      // Demo navigation to admin dashboard
+      // Demo navigation to admin dashboard with local token storage
+      localStorage.setItem('admin_auth_token', 'kaamsetu_demo_token');
       navigate('/admin/dashboard');
     }
   };
