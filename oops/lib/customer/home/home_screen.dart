@@ -205,6 +205,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+      // ── AI Assistant Floating Button ──────────────────────────────────
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: FloatingActionButton(
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.customerAIAssistant),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF7C3AED), Color(0xFF2563EB)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF7C3AED).withOpacity(0.35),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

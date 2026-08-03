@@ -22,6 +22,8 @@ import {
   ScrollText,
   ShieldCheck,
   Settings,
+  Brain,
+  Sparkles,
 } from 'lucide-react';
 
 export const NAVIGATION_ITEMS = [
@@ -157,6 +159,17 @@ export const NAVIGATION_ITEMS = [
         name: 'Notifications',
         path: '/admin/notifications',
         icon: Bell,
+      },
+    ],
+  },
+  {
+    section: 'AI INTELLIGENCE',
+    items: [
+      {
+        name: 'AI Hub',
+        path: '/admin/ai',
+        icon: Brain,
+        badge: 'LIVE',
       },
     ],
   },

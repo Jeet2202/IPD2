@@ -4,6 +4,7 @@ import '../../app/routes/app_routes.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../services/api_service.dart';
+import '../../services/ai_service.dart';
 import '../../shared/cards/service_card.dart';
 import '../../shared/utils/category_helper.dart';
 import '../../shared/modals/service_filter_modal.dart';
@@ -21,6 +22,11 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Timer? _debounceTimer;
+
+  // AI-powered suggestions
+  List<dynamic> _aiSuggestions = [];
+  List<String> _aiTrending = [];
+  bool _showAISuggestions = false;
 
   List<Map<String, dynamic>> _searchResults = [];
   final List<String> _recentSearches = [

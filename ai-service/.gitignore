@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Pytest
+.pytest_cache/
+coverage.xml
+*.cover
+.coverage
+
+# Logs
+logs/
+*.log
+
+# VS Code / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# MacOS
+.DS_Store
+
+# Datasets and Trained Models (for AI service specifically)
+trained_models/
+datasets/
+!datasets/.gitkeep

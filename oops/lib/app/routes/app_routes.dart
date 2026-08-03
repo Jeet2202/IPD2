@@ -103,6 +103,12 @@ class AppRoutes {
   static const String customerChat          = '/customer/chat';
   static const String customerReviews       = '/customer/reviews';
 
+  // AI Features (Phase 5.3–5.5)
+  static const String customerAIAssistant   = '/customer/ai-assistant';
+  static const String customerAISearch      = '/customer/ai-search';
+  static const String customerPriceEstimate = '/customer/ai-price-estimate';
+
+
   // ── Worker ────────────────────────────────────────────
   static const String workerSplash          = '/worker/splash';
   static const String workerAuth            = '/worker/auth';

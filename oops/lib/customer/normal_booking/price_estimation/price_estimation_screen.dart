@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../services/ai_service.dart';
 
 class PriceEstimationScreen extends StatefulWidget {
   const PriceEstimationScreen({super.key});
@@ -14,6 +15,29 @@ class PriceEstimationScreen extends StatefulWidget {
 class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
   final TextEditingController _promoController = TextEditingController(text: 'KAAMSETU50');
   bool _isCouponApplied = true;
+
+  // AI Smart Pricing
+  Map<String, dynamic>? _aiEstimate;
+  bool _isLoadingAI = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAIEstimate();
+  }
+
+  Future<void> _fetchAIEstimate() async {
+    setState(() => _isLoadingAI = true);
+    try {
+      final res = await AIService.instance.getPriceEstimate(
+        bookingId: 'current_booking',
+        city: 'Mumbai',
+      );
+      if (mounted) setState(() { _aiEstimate = res; _isLoadingAI = false; });
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingAI = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -61,7 +85,70 @@ class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ── AI Smart Price Card ───────────────────────────────
+                if (_isLoadingAI)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F3FF),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFDDD6FE)),
+                    ),
+                    child: const Row(
+                      children: [
+                        SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF7C3AED))),
+                        SizedBox(width: 10),
+                        Text('Getting AI Price Recommendation...', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF7C3AED))),
+                      ],
+                    ),
+                  )
+                else if (_aiEstimate != null)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7C3AED), Color(0xFF6D28D9)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(color: const Color(0xFF7C3AED).withOpacity(0.25), blurRadius: 12, offset: const Offset(0, 4)),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('AI Smart Price', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFEDE9FE))),
+                              const SizedBox(height: 2),
+                              Text(
+                                '₹${(_aiEstimate!['estimated_price'] as num?)?.toStringAsFixed(0) ?? 'N/A'} — ₹${(_aiEstimate!['price_range_max'] as num?)?.toStringAsFixed(0) ?? 'N/A'}',
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            '${(_aiEstimate!['confidence_score'] as num? ?? 0.0) * 100 >= 1 ? ((_aiEstimate!['confidence_score'] as num) * 100).toStringAsFixed(0) : '85'}% Conf.',
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 // ── Estimated Total Price Banner Card ─────────────────
+
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(

@@ -19,7 +19,12 @@ export default function SidebarItem({ item, isCollapsed, onItemClick }) {
     >
       <Icon className={`w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110`} />
       {!isCollapsed && (
-        <span className="truncate tracking-wide">{item.name}</span>
+        <span className="truncate tracking-wide flex-1">{item.name}</span>
+      )}
+      {!isCollapsed && item.badge && (
+        <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-[#7C3AED] text-white animate-pulse shrink-0">
+          {item.badge}
+        </span>
       )}
 
       {/* Tooltip for collapsed desktop view */}

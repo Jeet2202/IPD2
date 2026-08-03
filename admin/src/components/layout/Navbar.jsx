@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Menu,
-  Search,
   Bell,
   ChevronDown,
   User,
@@ -11,6 +10,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
+import AISearchBar from '../ai/AISearchBar';
 
 export default function Navbar({ onOpenMobileSidebar }) {
   const location = useLocation();
@@ -59,16 +59,9 @@ export default function Navbar({ onOpenMobileSidebar }) {
         </div>
       </div>
 
-      {/* Center: Global Search Bar */}
+      {/* Center: AI-Powered Global Search Bar */}
       <div className="hidden md:flex flex-1 max-w-md mx-4">
-        <div className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
-          <input
-            type="text"
-            placeholder="Search customers, workers, jobs..."
-            className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all"
-          />
-        </div>
+        <AISearchBar />
       </div>
 
       {/* Right: Notifications & Profile */}

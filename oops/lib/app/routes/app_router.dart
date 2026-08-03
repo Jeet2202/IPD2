@@ -163,6 +163,7 @@ import '../../customer/legal/terms_conditions/terms_conditions_screen.dart';
 import '../../customer/legal/privacy_policy/privacy_policy_screen.dart';
 import '../../customer/system/no_internet/no_internet_screen.dart';
 import '../../customer/system/system_status/system_status_screen.dart';
+import '../../customer/ai_assistant/ai_assistant_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -643,6 +644,10 @@ class AppRouter {
 
       case AppRoutes.workInProgress:
         return _build(const BookingStatusScreen(), settings);
+
+      // ── AI Assistant (Phase 5.5) ──────────────────────────────────────
+      case AppRoutes.customerAIAssistant:
+        return _build(const AIAssistantScreen(), settings);
 
       // ── Fallback ────────────────────────────────────────────────────────────
       default:

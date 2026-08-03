@@ -66,6 +66,9 @@ import Settings from '../pages/settings/Settings';
 // Fallback Placeholder Page
 import PlaceholderPage from '../pages/common/PlaceholderPage';
 
+// AI Intelligence Hub
+import AIDashboard from '../pages/ai/AIDashboard';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -140,6 +143,9 @@ export default function AppRoutes() {
         <Route path="admins" element={<AdminUsers />} />
         <Route path="admin-users" element={<AdminUsers />} />
         <Route path="settings" element={<Settings />} />
+
+        {/* AI Intelligence Hub (Phase 5.1–5.6) */}
+        <Route path="ai" element={<AIDashboard />} />
 
         {/* Catch-all sub-route fallback */}
         <Route path="*" element={<PlaceholderPage />} />

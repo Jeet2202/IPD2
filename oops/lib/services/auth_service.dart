@@ -39,12 +39,14 @@ class AuthService {
 
     final data = res['data'] as Map<String, dynamic>;
     final tokens = data['tokens'] as Map<String, dynamic>;
+    final user = data['user'] as Map<String, dynamic>;
     TokenStorage.save(
       access: tokens['access_token'] as String,
       refresh: tokens['refresh_token'] as String,
+      userId: (user['id'] ?? user['_id'])?.toString(),
     );
 
-    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+    return UserModel.fromJson(user);
   }
 
   /// Resend verification OTP code
@@ -73,12 +75,14 @@ class AuthService {
 
     final data = res['data'] as Map<String, dynamic>;
     final tokens = data['tokens'] as Map<String, dynamic>;
+    final user = data['user'] as Map<String, dynamic>;
     TokenStorage.save(
       access: tokens['access_token'] as String,
       refresh: tokens['refresh_token'] as String,
+      userId: (user['id'] ?? user['_id'])?.toString(),
     );
 
-    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+    return UserModel.fromJson(user);
   }
 
   /// Get current user profile

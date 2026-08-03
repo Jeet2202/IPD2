@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import Navbar from '../../components/layout/Navbar';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
+import AIAssistantWidget from '../../components/ai/AIAssistantWidget';
 
 export default function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,6 +34,9 @@ export default function AdminLayout() {
             <Outlet />
           </main>
         </div>
+
+        {/* AI Assistant — persists across all pages */}
+        <AIAssistantWidget />
       </div>
     </ProtectedRoute>
   );
