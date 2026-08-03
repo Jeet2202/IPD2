@@ -727,13 +727,16 @@ class QuotationService:
         # 2. Check and apply auto expiry
         q = await self._check_and_apply_auto_expiry(q)
 
-        # 3. Booking Status Validation
+        # 3. Booking Status Validation & Immutability Check
+        from app.booking.service import BookingService
+        BookingService.validate_booking_mutable(booking)
+
         if booking.status == BookingStatus.CANCELLED:
             raise BadRequestException(
                 message="Cannot accept quotation for a cancelled booking",
                 error_code="BOOKING_CANCELLED",
             )
-        if booking.status == BookingStatus.ACCEPTED or booking.worker_id is not None:
+        if booking.status in (BookingStatus.ACCEPTED, BookingStatus.ASSIGNED) or booking.worker_id is not None:
             raise ConflictException(
                 message="A quotation has already been accepted for this booking",
                 error_code="QUOTATION_ALREADY_ACCEPTED",

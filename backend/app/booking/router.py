@@ -137,3 +137,246 @@ async def get_booking(
 ) -> BookingResponse:
     """Get a single booking by ID for the current customer."""
     return await BookingService.get_booking(current_user.id, booking_id)
+
+
+# ---------------------------------------------------------------------------
+# Status Lifecycle Endpoints (Phase 4.7.1)
+# ---------------------------------------------------------------------------
+
+from app.auth.dependencies import ActiveUserDep, WorkerUserDep
+from app.booking.schemas import BookingStatusResponse, UpdateBookingStatusRequest
+
+
+@router.get(
+    "/bookings/{booking_id}/status",
+    response_model=BookingStatusResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get booking status and next valid transitions",
+    description="Inspect current booking status, allowed next statuses, and timestamp milestones.",
+)
+@router.get(
+    "/customer/bookings/{booking_id}/status",
+    response_model=BookingStatusResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def get_booking_status(
+    booking_id: str,
+    current_user: ActiveUserDep,
+) -> BookingStatusResponse:
+    """Get status inspection for a booking."""
+    return await BookingService.get_booking_status(current_user, booking_id)
+
+
+@router.put(
+    "/worker/bookings/{booking_id}/status",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update booking execution status (Worker only)",
+    description="Assigned worker progresses the booking to the next valid execution status.",
+)
+@router.put(
+    "/bookings/{booking_id}/status",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def update_booking_status_by_worker(
+    booking_id: str,
+    payload: UpdateBookingStatusRequest,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Update execution status for a booking."""
+    return await BookingService.update_booking_status_by_worker(
+        worker_user=current_user,
+        booking_id=booking_id,
+        new_status=payload.status,
+        notes=payload.notes,
+    )
+
+
+
+# ---------------------------------------------------------------------------
+# Worker Job Execution Specific Actions (Phase 4.7.2)
+# ---------------------------------------------------------------------------
+
+from app.booking.schemas import CompleteJobRequest
+
+
+@router.get(
+    "/worker/bookings",
+    response_model=BookingListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List assigned bookings for worker",
+    description=(
+        "Return all bookings assigned to the authenticated worker (worker_id matches). "
+        "Optionally filter by status. Supports pagination."
+    ),
+)
+async def list_worker_bookings(
+    current_user: WorkerUserDep,
+    status_filter: str | None = Query(
+        default=None,
+        alias="status",
+        description="Filter by booking status (e.g., assigned, in_progress).",
+    ),
+    page: int = Query(default=1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(default=20, ge=1, le=50, description="Items per page (max 50)"),
+) -> BookingListResponse:
+    """List all bookings assigned to the authenticated worker."""
+    return await BookingService.list_worker_bookings(
+        current_user,
+        status=status_filter,
+        page=page,
+        page_size=page_size,
+    )
+
+
+@router.get(
+    "/worker/bookings/{booking_id}",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get assigned booking for worker",
+    description="Retrieve full details for an assigned booking (Worker only).",
+)
+async def get_worker_booking(
+    booking_id: str,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Get single assigned booking for worker."""
+    return await BookingService.get_worker_booking(current_user, booking_id)
+
+
+@router.put(
+    "/worker/bookings/{booking_id}/start-travel",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Start travel to customer location (ASSIGNED -> WORKER_EN_ROUTE)",
+)
+async def start_travel(
+    booking_id: str,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Mark journey started."""
+    return await BookingService.start_travel(current_user, booking_id)
+
+
+@router.put(
+    "/worker/bookings/{booking_id}/arrive",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Mark arrival at customer location (WORKER_EN_ROUTE -> ARRIVED)",
+)
+async def mark_arrived(
+    booking_id: str,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Mark arrival at site."""
+    return await BookingService.mark_arrived(current_user, booking_id)
+
+
+@router.put(
+    "/worker/bookings/{booking_id}/start-work",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Start service work execution (ARRIVED -> IN_PROGRESS)",
+)
+async def start_work(
+    booking_id: str,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Mark work execution started."""
+    return await BookingService.start_work(current_user, booking_id)
+
+
+@router.put(
+    "/worker/bookings/{booking_id}/complete",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Complete service work execution (IN_PROGRESS -> WORK_COMPLETED)",
+)
+async def complete_work(
+    booking_id: str,
+    payload: CompleteJobRequest,
+    current_user: WorkerUserDep,
+) -> BookingResponse:
+    """Mark work execution completed with optional photos & notes."""
+    return await BookingService.complete_work(current_user, booking_id, payload)
+
+
+# ---------------------------------------------------------------------------
+# Customer Confirmation & Acceptance Endpoints (Phase 4.7.3)
+# ---------------------------------------------------------------------------
+
+from app.booking.schemas import ConfirmCompletionRequest, CustomerCompletionReviewResponse
+
+
+@router.get(
+    "/customer/bookings/{booking_id}/completion",
+    response_model=CustomerCompletionReviewResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get completed work review payload for customer",
+    description="Fetch before/after photos, completion notes, work summary, and actual duration for customer review.",
+)
+async def get_customer_completion_review(
+    booking_id: str,
+    current_user: CustomerDep,
+) -> CustomerCompletionReviewResponse:
+    """Fetch completed job review for customer."""
+    return await BookingService.get_customer_completion_review(current_user, booking_id)
+
+
+@router.put(
+    "/customer/bookings/{booking_id}/confirm",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Confirm service completion (WORK_COMPLETED -> CUSTOMER_CONFIRMED)",
+    description="Customer reviews and accepts the completed service work.",
+)
+async def confirm_booking_completion(
+    booking_id: str,
+    payload: ConfirmCompletionRequest | None = None,
+    current_user: CustomerDep = None,  # CustomerDep dependency
+) -> BookingResponse:
+    """Customer confirms service work completion."""
+    notes = payload.notes if payload else None
+    return await BookingService.confirm_booking_completion(current_user, booking_id, notes=notes)
+
+
+# ---------------------------------------------------------------------------
+# Timeline Audit Endpoints (Phase 4.7.4)
+# ---------------------------------------------------------------------------
+
+from app.booking.schemas import BookingTimelineResponse
+
+
+@router.get(
+    "/bookings/{booking_id}/timeline",
+    response_model=BookingTimelineResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get chronologically ordered booking timeline audit log",
+    description="Fetch paginated timeline events logged for a booking (Customer, Assigned Worker, Admin).",
+)
+@router.get(
+    "/customer/bookings/{booking_id}/timeline",
+    response_model=BookingTimelineResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def get_booking_timeline(
+    booking_id: str,
+    current_user: ActiveUserDep,
+    page: int = Query(default=1, ge=1, description="Page number (1-indexed)"),
+    page_size: int = Query(default=50, ge=1, le=100, description="Events per page (max 100)"),
+) -> BookingTimelineResponse:
+    """Fetch timeline audit events for a booking."""
+    return await BookingService.get_booking_timeline(
+        user=current_user,
+        booking_id=booking_id,
+        page=page,
+        page_size=page_size,
+    )
+
+
+
+

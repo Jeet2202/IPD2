@@ -36,6 +36,18 @@ class WorkerProfile(Document):
     hourly_rate: float | None = Field(default=None, ge=0.0, le=50000.0, description="Base rate in INR")
     rating: float = Field(default=0.0, ge=0.0, le=5.0, description="Average customer rating")
     review_count: int = Field(default=0, ge=0, description="Total number of reviews")
+    rating_average: float = Field(default=0.0, ge=0.0, le=5.0, description="Overall average rating")
+    total_reviews: int = Field(default=0, ge=0, description="Total number of reviews submitted")
+    rating_distribution: dict[int, int] = Field(
+        default_factory=lambda: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+        description="Frequency count of ratings 1 to 5",
+    )
+    punctuality_avg: float = Field(default=0.0, ge=0.0, le=5.0, description="Average punctuality rating")
+    quality_avg: float = Field(default=0.0, ge=0.0, le=5.0, description="Average quality rating")
+    professionalism_avg: float = Field(default=0.0, ge=0.0, le=5.0, description="Average professionalism rating")
+    communication_avg: float = Field(default=0.0, ge=0.0, le=5.0, description="Average communication rating")
+    recommendation_percentage: float = Field(default=0.0, ge=0.0, le=100.0, description="Percentage of customers who would recommend")
+    would_recommend_count: int = Field(default=0, ge=0, description="Total count of positive recommendations")
     profile_completed: bool = Field(default=False, description="True if profile completion threshold is reached")
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

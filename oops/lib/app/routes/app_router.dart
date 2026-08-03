@@ -67,6 +67,7 @@ import '../../worker/verification/under_review/under_review_screen.dart';
 import '../../worker/dashboard/dashboard_screen.dart' hide WorkerDashboardScreen;
 import '../../worker/dashboard/worker_dashboard_screen.dart';
 import '../../worker/marketplace/marketplace_screen.dart';
+import '../../worker/work/worker_work_screen.dart';
 import '../../worker/jobs/incoming_jobs/incoming_jobs_screen.dart';
 import '../../worker/jobs/job_details/job_details_screen.dart';
 import '../../worker/jobs/accept_reject/accept_reject_screen.dart';
@@ -248,6 +249,10 @@ class AppRouter {
       case AppRoutes.workerDashboard:
       case '/worker/dashboard':
         return _build(const WorkerDashboardScreen(), settings);
+
+      case AppRoutes.workerWork:
+      case '/worker/work':
+        return _build(const WorkerWorkScreen(), settings);
 
       case AppRoutes.workerMarketplace:
       case '/worker/marketplace':

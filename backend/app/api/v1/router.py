@@ -47,6 +47,7 @@ from app.marketplace.router import router as marketplace_router
 from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
 from app.quotation.router import router as quotation_router
+from app.review.router import router as review_domain_router
 from app.reviews.router import router as reviews_router
 from app.service.router import router as service_router
 from app.uploads.router import router as uploads_router
@@ -122,6 +123,12 @@ v1_router.include_router(
     booking_router,
     prefix="/customer",
     tags=["Bookings"],
+)
+v1_router.include_router(
+    booking_router,
+    prefix="",
+    tags=["Bookings"],
+    include_in_schema=False,
 )
 
 # --- Worker Marketplace & Applications ---
@@ -207,6 +214,11 @@ v1_router.include_router(
 
 # --- Reviews ---
 # Worker reviews and ratings from customers.
+v1_router.include_router(
+    review_domain_router,
+    prefix="",
+    tags=["Ratings & Reviews"],
+)
 v1_router.include_router(
     reviews_router,
     prefix="/reviews",

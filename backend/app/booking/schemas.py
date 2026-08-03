@@ -203,17 +203,25 @@ class BookingResponse(BaseModel):
     problem_description: str | None = None
     problem_photos: list[str] = Field(default_factory=list)
 
-    # Future stubs — always None in Phase 4.4.1
-    worker_id: str | None = Field(default=None, description="[Phase 4.4.x] Assigned worker ObjectId")
-    assigned_at: str | None = Field(default=None, description="[Phase 4.4.x] Worker assignment timestamp")
-    started_at: str | None = Field(default=None, description="[Phase 4.4.x] Job started timestamp")
-    completed_at: str | None = Field(default=None, description="[Phase 4.4.x] Job completed timestamp")
-    cancelled_at: str | None = Field(default=None, description="[Phase 4.4.1] Cancellation timestamp")
-    cancellation_reason: str | None = Field(default=None, description="[Phase 4.4.1] Cancellation reason")
-    final_price: float | None = Field(default=None, description="[Phase 4.6] Final confirmed price (INR)")
-    inspection_id: str | None = Field(default=None, description="[Phase 4.5] Inspection ObjectId")
-    quotation_id: str | None = Field(default=None, description="[Phase 4.6] Quotation ObjectId")
-    payment_id: str | None = Field(default=None, description="[Phase 4.7] Payment ObjectId")
+    # Execution & Completion (Phase 4.7.2)
+    worker_id: str | None = Field(default=None, description="Assigned worker ObjectId")
+    assigned_at: str | None = Field(default=None, description="Worker assignment timestamp")
+    en_route_at: str | None = Field(default=None, description="Worker en route timestamp")
+    arrived_at: str | None = Field(default=None, description="Worker arrival timestamp")
+    started_at: str | None = Field(default=None, description="Job started timestamp")
+    completed_at: str | None = Field(default=None, description="Job completed timestamp")
+    cancelled_at: str | None = Field(default=None, description="Cancellation timestamp")
+    cancellation_reason: str | None = Field(default=None, description="Cancellation reason")
+    final_price: float | None = Field(default=None, description="Final confirmed price (INR)")
+    inspection_id: str | None = Field(default=None, description="Inspection ObjectId")
+    quotation_id: str | None = Field(default=None, description="Quotation ObjectId")
+    payment_id: str | None = Field(default=None, description="Payment ObjectId")
+
+    completion_notes: str | None = Field(default=None, description="Worker completion notes")
+    work_summary: str | None = Field(default=None, description="Worker summary of work performed")
+    before_photos: list[str] = Field(default_factory=list, description="Before work photo URLs")
+    after_photos: list[str] = Field(default_factory=list, description="After work photo URLs")
+    timeline: list["BookingTimelineEventResponse"] = Field(default_factory=list, description="Audit timeline events")
 
     created_at: str = Field(..., description="ISO 8601 creation timestamp")
     updated_at: str = Field(..., description="ISO 8601 last-update timestamp")
@@ -221,8 +229,143 @@ class BookingResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class BookingTimelineEventResponse(BaseModel):
+    """Timeline event response schema (Phase 4.7.4)."""
+
+    event_id: str
+    event_type: str = "STATUS_CHANGE"
+    status: str
+    previous_status: str | None = None
+    new_status: str | None = None
+    title: str
+    description: str | None = None
+    actor_id: str
+    actor_role: str
+    timestamp: str
+    metadata: dict = Field(default_factory=dict)
+
+    model_config = {"from_attributes": True}
+
+
+class BookingTimelineResponse(BaseModel):
+    """Paginated timeline response for GET /bookings/{id}/timeline."""
+
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    booking_number: str = Field(..., description="Human-readable booking reference number")
+    current_status: str = Field(..., description="Current booking status string")
+    total_events: int = Field(..., description="Total count of timeline events recorded")
+    page: int = Field(default=1, description="Current page number (1-indexed)")
+    page_size: int = Field(default=50, description="Items per page")
+    events: list[BookingTimelineEventResponse] = Field(
+        default_factory=list,
+        description="Chronologically ordered list of timeline event objects",
+    )
+
+
+class CompleteJobRequest(BaseModel):
+    """
+    Payload for PUT /worker/bookings/{id}/complete — mark job as WORK_COMPLETED.
+    """
+
+    completion_notes: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Optional worker notes recorded upon completion.",
+    )
+    work_summary: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Optional summary of work completed.",
+    )
+    before_photos: list[str] = Field(
+        default_factory=list,
+        description="List of Cloudinary image URLs taken before work execution.",
+    )
+    after_photos: list[str] = Field(
+        default_factory=list,
+        description="List of Cloudinary image URLs taken after work completion.",
+    )
+
+
 class BookingListResponse(BaseModel):
     """Response for listing customer bookings."""
 
     total: int = Field(..., description="Total number of bookings matching the filter")
     bookings: list[BookingResponse] = Field(..., description="List of booking DTOs")
+
+
+# ---------------------------------------------------------------------------
+# Status Lifecycle Schemas (Phase 4.7.1)
+# ---------------------------------------------------------------------------
+
+class UpdateBookingStatusRequest(BaseModel):
+    """
+    Payload for PUT /worker/bookings/{id}/status — worker updates booking execution status.
+    """
+
+    status: BookingStatus = Field(
+        ...,
+        description="Target lifecycle status (e.g. worker_en_route, arrived, in_progress, work_completed).",
+    )
+    notes: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Optional worker note for status transition.",
+    )
+
+
+class BookingStatusResponse(BaseModel):
+    """
+    Response DTO for GET /bookings/{id}/status — detailed status inspection.
+    """
+
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    booking_number: str = Field(..., description="Human-readable booking reference number")
+    current_status: str = Field(..., description="Current booking lifecycle status string")
+    next_allowed_statuses: list[str] = Field(..., description="List of valid next status strings")
+    assigned_worker_id: str | None = Field(default=None, description="Assigned worker ObjectId string if assigned")
+    timestamps: dict[str, str | None] = Field(
+        default_factory=dict,
+        description="Lifecycle milestone timestamps (assigned_at, started_at, completed_at, cancelled_at, etc.)",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Customer Confirmation Schemas (Phase 4.7.3)
+# ---------------------------------------------------------------------------
+
+class ConfirmCompletionRequest(BaseModel):
+    """
+    Payload for PUT /customer/bookings/{id}/confirm — customer confirms job completion.
+    """
+
+    notes: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Optional customer note or feedback upon confirmation.",
+    )
+
+
+class CustomerCompletionReviewResponse(BaseModel):
+    """
+    Response for GET /customer/bookings/{id}/completion — customer reviews completed work.
+    """
+
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    booking_number: str = Field(..., description="Human-readable booking reference number")
+    service_name: str = Field(..., description="Service display name")
+    status: str = Field(..., description="Current booking status")
+    worker_id: str | None = Field(default=None, description="Assigned worker ObjectId string")
+    estimated_duration_minutes: int | None = Field(default=None, description="Estimated duration (minutes)")
+    started_at: str | None = Field(default=None, description="ISO timestamp when work started")
+    completed_at: str | None = Field(default=None, description="ISO timestamp when work was completed")
+    actual_duration_minutes: int | None = Field(default=None, description="Actual duration calculated in minutes")
+    completion_notes: str | None = Field(default=None, description="Worker completion notes")
+    work_summary: str | None = Field(default=None, description="Summary of work completed")
+    before_photos: list[str] = Field(default_factory=list, description="Before photos Cloudinary URLs")
+    after_photos: list[str] = Field(default_factory=list, description="After photos Cloudinary URLs")
+    timeline: list[BookingTimelineEventResponse] = Field(default_factory=list, description="Audit timeline events")
+
+    model_config = {"from_attributes": True}
+
+

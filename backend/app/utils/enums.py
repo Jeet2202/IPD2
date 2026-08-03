@@ -68,25 +68,23 @@ class JobType(str, Enum):
 
 class BookingStatus(str, Enum):
     """
-    Booking lifecycle states.
+    Booking lifecycle states (Phase 4.7.1 Foundation).
 
-    Initial states implemented in Phase 4.4.1:
-        PENDING   — Customer created booking, awaiting worker assignment.
-        CANCELLED — Customer cancelled before worker was assigned.
-
-    Future states (Phase 4.4.x):
-        ACCEPTED       — Worker accepted the booking.
-        IN_PROGRESS    — Worker is on-site / working.
-        COMPLETED      — Job finished and confirmed.
-        PAYMENT_PENDING — Job done, payment not yet received.
+    Flow:
+        PENDING -> ASSIGNED / ACCEPTED -> WORKER_EN_ROUTE -> ARRIVED -> IN_PROGRESS -> WORK_COMPLETED -> CUSTOMER_CONFIRMED
+               \-> CANCELLED
     """
-    PENDING = "pending"                     # Phase 4.4.1 — created, no worker yet
-    CANCELLED = "cancelled"                 # Phase 4.4.1 — cancelled by customer
-    # --- Reserved for future phases ---
-    ACCEPTED = "accepted"                   # Phase 4.4.x — worker accepted
-    IN_PROGRESS = "in_progress"             # Phase 4.4.x — worker on-site
-    COMPLETED = "completed"                 # Phase 4.4.x — job done
-    PAYMENT_PENDING = "payment_pending"     # Phase 4.4.x — awaiting payment
+    PENDING = "pending"                     # Created by customer, awaiting worker assignment
+    ASSIGNED = "assigned"                   # Worker assigned / quotation accepted
+    ACCEPTED = "accepted"                   # Alias for assigned (legacy compatibility)
+    WORKER_EN_ROUTE = "worker_en_route"     # Worker traveling to customer location
+    ARRIVED = "arrived"                     # Worker arrived at customer location
+    IN_PROGRESS = "in_progress"             # Service execution in progress
+    WORK_COMPLETED = "work_completed"       # Worker marked work as finished
+    CUSTOMER_CONFIRMED = "customer_confirmed"# Customer confirmed work completion
+    COMPLETED = "completed"                 # Legacy alias for completed
+    CANCELLED = "cancelled"                 # Booking cancelled
+
 
 
 class BookingType(str, Enum):

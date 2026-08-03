@@ -119,6 +119,43 @@ class ServiceSnapshot(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Embedded Timeline Event Snapshot (Phase 4.7.2)
+# ---------------------------------------------------------------------------
+
+class BookingTimelineEvent(BaseModel):
+    """
+    Audit trail event entry for booking status progression and domain tracking (Phase 4.7.4).
+    """
+
+    event_id: str = Field(
+        default_factory=lambda: str(PydanticObjectId()),
+        description="Unique event ID string",
+    )
+    event_type: str = Field(
+        default="STATUS_CHANGE",
+        description="Event discriminator type (STATUS_CHANGE, BOOKING_CREATED, WORKER_ASSIGNED, GPS_UPDATE, ETA_UPDATE, PAYMENT, DISPUTE)",
+    )
+    status: BookingStatus = Field(..., description="Booking status at event time")
+    previous_status: BookingStatus | None = Field(
+        default=None,
+        description="Booking status prior to transition",
+    )
+    new_status: BookingStatus | None = Field(
+        default=None,
+        description="Booking status resulting from transition",
+    )
+    title: str = Field(..., description="Short human-readable event title")
+    description: str | None = Field(default=None, description="Optional event notes/description")
+    actor_id: PydanticObjectId = Field(..., description="User ObjectId of actor who triggered event")
+    actor_role: str = Field(..., description="Role of actor (customer, worker, admin, system)")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="UTC timestamp of event occurrence",
+    )
+    metadata: dict = Field(default_factory=dict, description="Arbitrary event metadata (GPS, ETA, notifications, payment info)")
+
+
+# ---------------------------------------------------------------------------
 # Booking Document
 # ---------------------------------------------------------------------------
 
@@ -299,6 +336,39 @@ class Booking(Document):
     payment_id: PydanticObjectId | None = Field(
         default=None,
         description="[Phase 4.7] Payment ObjectId — set when payment is initiated.",
+    )
+
+    # ── Job Execution & Completion (Phase 4.7.2) ──────────────────────────────
+
+    en_route_at: datetime | None = Field(
+        default=None,
+        description="Timestamp when worker marked en route to location.",
+    )
+    arrived_at: datetime | None = Field(
+        default=None,
+        description="Timestamp when worker arrived at location.",
+    )
+    completion_notes: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Worker notes recorded upon job completion.",
+    )
+    work_summary: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Optional work summary submitted by worker.",
+    )
+    before_photos: list[str] = Field(
+        default_factory=list,
+        description="Cloudinary photo URLs taken before work execution.",
+    )
+    after_photos: list[str] = Field(
+        default_factory=list,
+        description="Cloudinary photo URLs taken after work completion.",
+    )
+    timeline: list["BookingTimelineEvent"] = Field(
+        default_factory=list,
+        description="Full audit trail of lifecycle timeline events.",
     )
 
     # ── Timestamps ────────────────────────────────────────────────────────────

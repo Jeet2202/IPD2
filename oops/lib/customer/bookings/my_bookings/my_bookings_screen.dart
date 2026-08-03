@@ -19,7 +19,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   final BookingService _bookingService = BookingService.instance;
 
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'];
+  final List<String> _filters = ['All', 'Pending', 'Assigned', 'In Progress', 'Work Completed', 'Completed', 'Cancelled'];
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -50,10 +50,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     switch (filter) {
       case 'Pending':
         return 'pending';
-      case 'Accepted':
-        return 'accepted';
+      case 'Assigned':
+        return 'assigned';
       case 'In Progress':
         return 'in_progress';
+      case 'Work Completed':
+        return 'work_completed';
       case 'Completed':
         return 'completed';
       case 'Cancelled':
@@ -107,10 +109,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     switch (status.toLowerCase()) {
       case 'pending':
         return const Color(0xFFD97706); // Amber
+      case 'assigned':
       case 'accepted':
         return const Color(0xFF2563EB); // Blue
+      case 'worker_en_route':
+        return const Color(0xFF6366F1); // Indigo
+      case 'arrived':
+        return const Color(0xFF8B5CF6); // Purple
       case 'in_progress':
         return const Color(0xFF4F46E5); // Indigo
+      case 'work_completed':
+        return const Color(0xFF0D9488); // Teal
+      case 'customer_confirmed':
       case 'completed':
         return const Color(0xFF16A34A); // Green
       case 'cancelled':
@@ -426,7 +436,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        b.status.toUpperCase(),
+                        b.isWorkCompleted
+                            ? 'AWAITING CONFIRMATION'
+                            : b.status.toUpperCase().replaceAll('_', ' '),
                         style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: statusColor),
                       ),
                     ),
@@ -459,6 +471,29 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                     ),
                   ],
                 ),
+                if (b.isWorkCompleted) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0FDF4),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFF86EFAC)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.verified_rounded, size: 16, color: Color(0xFF0D9488)),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Work completed by worker. Tap to review & confirm.',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF115E59)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 const Divider(color: Color(0xFFF1F5F9), height: 1),
                 const SizedBox(height: 12),
@@ -475,15 +510,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                           context,
                           AppRoutes.bookingDetails,
                           arguments: {'booking': b, 'booking_id': b.id},
-                        );
+                        ).then((_) => _fetchBookings());
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEFF6FF),
-                        foregroundColor: AppColors.primary,
+                        backgroundColor: b.isWorkCompleted ? const Color(0xFF0D9488) : const Color(0xFFEFF6FF),
+                        foregroundColor: b.isWorkCompleted ? Colors.white : AppColors.primary,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                      child: Text(
+                        b.isWorkCompleted ? 'Confirm Work' : 'View Details',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                      ),
                     ),
                   ],
                 ),

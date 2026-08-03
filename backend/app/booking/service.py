@@ -17,20 +17,27 @@ Future phases will add rules for:
     - Payment lifecycle (Phase 4.7)
 """
 
-from datetime import date
+from datetime import date, datetime, timezone
 import logging
 
 from beanie import PydanticObjectId
 
 from app.address.models import Address
 from app.auth.models import User
-from app.booking.models import AddressSnapshot, Booking, ServiceSnapshot
+from app.booking.config import BookingLifecycleConfig
+from app.booking.models import AddressSnapshot, Booking, BookingTimelineEvent, ServiceSnapshot
 from app.booking.repository import BookingRepository
 from app.booking.schemas import (
     AddressSnapshotResponse,
     BookingListResponse,
     BookingResponse,
+    BookingStatusResponse,
+    BookingTimelineEventResponse,
+    BookingTimelineResponse,
+    CompleteJobRequest,
+    ConfirmCompletionRequest,
     CreateBookingRequest,
+    CustomerCompletionReviewResponse,
     ServiceSnapshotResponse,
 )
 from app.booking.scheduling import (
@@ -98,6 +105,29 @@ def _to_response(booking: Booking) -> BookingResponse:
         is_inspection_required=svc.is_inspection_required,
     )
 
+    timeline_dtos = [
+        BookingTimelineEventResponse(
+            event_id=e.event_id,
+            event_type=getattr(e, "event_type", "STATUS_CHANGE"),
+            status=e.status.value if hasattr(e.status, "value") else str(e.status),
+            previous_status=(
+                e.previous_status.value if hasattr(e.previous_status, "value") else str(e.previous_status)
+            ) if e.previous_status else None,
+            new_status=(
+                e.new_status.value if hasattr(e.new_status, "value") else str(e.new_status)
+            ) if e.new_status else (
+                e.status.value if hasattr(e.status, "value") else str(e.status)
+            ),
+            title=e.title,
+            description=e.description,
+            actor_id=str(e.actor_id),
+            actor_role=e.actor_role,
+            timestamp=e.timestamp.isoformat() if e.timestamp else "",
+            metadata=e.metadata or {},
+        )
+        for e in (booking.timeline or [])
+    ]
+
     return BookingResponse(
         id=str(booking.id),
         booking_number=booking.booking_number,
@@ -119,6 +149,8 @@ def _to_response(booking: Booking) -> BookingResponse:
         problem_photos=booking.problem_photos,
         worker_id=str(booking.worker_id) if booking.worker_id else None,
         assigned_at=booking.assigned_at.isoformat() if booking.assigned_at else None,
+        en_route_at=booking.en_route_at.isoformat() if booking.en_route_at else None,
+        arrived_at=booking.arrived_at.isoformat() if booking.arrived_at else None,
         started_at=booking.started_at.isoformat() if booking.started_at else None,
         completed_at=booking.completed_at.isoformat() if booking.completed_at else None,
         cancelled_at=booking.cancelled_at.isoformat() if booking.cancelled_at else None,
@@ -127,6 +159,11 @@ def _to_response(booking: Booking) -> BookingResponse:
         inspection_id=str(booking.inspection_id) if booking.inspection_id else None,
         quotation_id=str(booking.quotation_id) if booking.quotation_id else None,
         payment_id=str(booking.payment_id) if booking.payment_id else None,
+        completion_notes=booking.completion_notes,
+        work_summary=booking.work_summary,
+        before_photos=booking.before_photos or [],
+        after_photos=booking.after_photos or [],
+        timeline=timeline_dtos,
         created_at=booking.created_at.isoformat(),
         updated_at=booking.updated_at.isoformat(),
     )
@@ -286,10 +323,23 @@ class BookingService:
             scheduled_time=payload.scheduled_time,
             estimated_price=service.base_market_price,
             estimated_duration_minutes=service.estimated_duration_minutes,
-            customer_notes=payload.customer_notes,
-            problem_description=payload.problem_description,
             problem_photos=payload.problem_photos,
         )
+
+        now_utc = datetime.now(timezone.utc)
+        initial_event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type="BOOKING_CREATED",
+            status=BookingStatus.PENDING,
+            previous_status=None,
+            new_status=BookingStatus.PENDING,
+            title="Booking Created",
+            description=f"Service booking created for {service.name}",
+            actor_id=PydanticObjectId(customer_id),
+            actor_role="customer",
+            timestamp=now_utc,
+        )
+        booking.timeline = [initial_event]
 
         booking = await BookingRepository.create(booking)
         logger.info(
@@ -353,6 +403,31 @@ class BookingService:
         dtos = [_to_response(b) for b in bookings]
         return BookingListResponse(total=total, bookings=dtos)
 
+    @classmethod
+    async def list_worker_bookings(
+        cls,
+        worker_user: User,
+        *,
+        status: str | None = None,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> BookingListResponse:
+        """
+        Return paginated bookings assigned to the authenticated worker.
+
+        Excludes PENDING bookings (not yet assigned to anyone).
+        Filters to only bookings where worker_id == current worker.
+        """
+        skip = (page - 1) * page_size
+        bookings = await BookingRepository.list_by_worker(
+            worker_user.id, status=status, skip=skip, limit=page_size
+        )
+        total = await BookingRepository.count_by_worker(
+            worker_user.id, status=status
+        )
+        dtos = [_to_response(b) for b in bookings]
+        return BookingListResponse(total=total, bookings=dtos)
+
     # ── Available Slots ───────────────────────────────────────────────────────
 
     @classmethod
@@ -364,3 +439,662 @@ class BookingService:
         max advance days, and same-day buffer rules.
         """
         return generate_time_slots_for_date(target_date)
+
+    # ── Status Lifecycle Management (Phase 4.7.1) ────────────────────────────
+
+    ALLOWED_TRANSITIONS = BookingLifecycleConfig.ALLOWED_TRANSITIONS
+
+    @classmethod
+    def validate_booking_mutable(cls, booking: Booking) -> None:
+        """
+        Ensure booking is not in a terminal state (CUSTOMER_CONFIRMED, COMPLETED, CANCELLED).
+        Raises BadRequestException(BOOKING_TERMINATED) if terminal.
+        """
+        if booking.status in BookingLifecycleConfig.TERMINAL_STATUSES:
+            raise BadRequestException(
+                message=f"Operation rejected. Booking is in terminal status '{booking.status.value}'.",
+                error_code="BOOKING_TERMINATED",
+            )
+
+    @classmethod
+    def validate_status_transition(
+        cls, current_status: BookingStatus, target_status: BookingStatus
+    ) -> None:
+        """
+        Validate whether transitioning from current_status to target_status is allowed.
+
+        Raises:
+            BadRequestException: invalid, retrograde, skipping, or same status transition.
+        """
+        if current_status == target_status:
+            raise BadRequestException(
+                message=f"Booking is already in status '{current_status.value}'.",
+                error_code="SAME_STATUS_TRANSITION",
+            )
+
+        if current_status in BookingLifecycleConfig.TERMINAL_STATUSES:
+            raise BadRequestException(
+                message=f"Cannot update status for a {current_status.value} booking.",
+                error_code="BOOKING_TERMINATED",
+            )
+
+        allowed = cls.ALLOWED_TRANSITIONS.get(current_status, [])
+        if target_status not in allowed:
+            allowed_names = [s.value for s in allowed]
+            raise BadRequestException(
+                message=(
+                    f"Invalid status transition from '{current_status.value}' to '{target_status.value}'. "
+                    f"Allowed next statuses: {allowed_names}"
+                ),
+                error_code="INVALID_STATUS_TRANSITION",
+            )
+
+    @classmethod
+    async def update_booking_status_by_worker(
+        cls,
+        worker_user: User,
+        booking_id: str,
+        new_status: BookingStatus,
+        notes: str | None = None,
+    ) -> BookingResponse:
+        """
+        Worker status progression endpoint.
+
+        Rules:
+            1. Booking must exist.
+            2. Worker user must be active and have worker role (or admin).
+            3. Worker must be the assigned worker for this booking.
+            4. Transition must be valid according to state machine.
+            5. Timestamps update automatically based on milestone reach.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Worker role guard
+        if worker_user.role not in ("worker", "admin"):
+            raise ForbiddenException(
+                message="Only assigned workers can update booking execution status.",
+                error_code="WORKER_ROLE_REQUIRED",
+            )
+
+        # Check worker assignment
+        is_assigned_worker = (
+            booking.worker_id is not None
+            and str(booking.worker_id) == str(worker_user.id)
+        )
+        if not is_assigned_worker and worker_user.role != "admin":
+            raise ForbiddenException(
+                message="You are not authorized to update status for a booking assigned to another worker.",
+                error_code="UNAUTHORIZED_WORKER",
+            )
+
+        # Enforce transition rules
+        cls.validate_status_transition(booking.status, new_status)
+
+        prev_status = booking.status
+
+        # Update status & timestamps
+        booking.status = new_status
+        now_utc = datetime.now(timezone.utc)
+
+        if new_status in (BookingStatus.ASSIGNED, BookingStatus.ACCEPTED) and not booking.assigned_at:
+            booking.assigned_at = now_utc
+        elif new_status == BookingStatus.WORKER_EN_ROUTE and not booking.en_route_at:
+            booking.en_route_at = now_utc
+        elif new_status == BookingStatus.ARRIVED and not booking.arrived_at:
+            booking.arrived_at = now_utc
+        elif new_status == BookingStatus.IN_PROGRESS and not booking.started_at:
+            booking.started_at = now_utc
+        elif new_status in (BookingStatus.WORK_COMPLETED, BookingStatus.CUSTOMER_CONFIRMED, BookingStatus.COMPLETED) and not booking.completed_at:
+            booking.completed_at = now_utc
+        elif new_status == BookingStatus.CANCELLED and not booking.cancelled_at:
+            booking.cancelled_at = now_utc
+
+        # Record timeline event
+        title_map = {
+            BookingStatus.WORKER_EN_ROUTE: "Worker Started Journey",
+            BookingStatus.ARRIVED: "Worker Arrived on Site",
+            BookingStatus.IN_PROGRESS: "Work Started",
+            BookingStatus.WORK_COMPLETED: "Work Completed",
+            BookingStatus.CUSTOMER_CONFIRMED: "Customer Confirmed Work",
+            BookingStatus.CANCELLED: "Booking Cancelled",
+        }
+        event_title = title_map.get(new_status, f"Status updated to {new_status.value.upper()}")
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type=new_status.value.upper(),
+            status=new_status,
+            previous_status=prev_status,
+            new_status=new_status,
+            title=event_title,
+            description=notes or f"Booking status changed to {new_status.value}",
+            actor_id=worker_user.id,
+            actor_role=worker_user.role,
+            timestamp=now_utc,
+        )
+        if booking.timeline is None:
+            booking.timeline = []
+        booking.timeline.append(event)
+
+        await booking.save()
+        logger.info(
+            "Booking status updated: id=%s number=%s new_status=%s worker_id=%s",
+            booking_id,
+            booking.booking_number,
+            new_status.value,
+            worker_user.id,
+        )
+        return _to_response(booking)
+
+    # ── Job Execution Flow Actions (Phase 4.7.2) ─────────────────────────────
+
+    @classmethod
+    async def start_travel(
+        cls, worker_user: User, booking_id: str
+    ) -> BookingResponse:
+        """Worker marks journey started -> WORKER_EN_ROUTE."""
+        return await cls.update_booking_status_by_worker(
+            worker_user=worker_user,
+            booking_id=booking_id,
+            new_status=BookingStatus.WORKER_EN_ROUTE,
+            notes="Worker is en route to customer location.",
+        )
+
+    @classmethod
+    async def mark_arrived(
+        cls, worker_user: User, booking_id: str
+    ) -> BookingResponse:
+        """Worker marks arrival at site -> ARRIVED."""
+        return await cls.update_booking_status_by_worker(
+            worker_user=worker_user,
+            booking_id=booking_id,
+            new_status=BookingStatus.ARRIVED,
+            notes="Worker arrived at customer site.",
+        )
+
+    @classmethod
+    async def start_work(
+        cls, worker_user: User, booking_id: str
+    ) -> BookingResponse:
+        """Worker marks work execution started -> IN_PROGRESS."""
+        return await cls.update_booking_status_by_worker(
+            worker_user=worker_user,
+            booking_id=booking_id,
+            new_status=BookingStatus.IN_PROGRESS,
+            notes="Worker began service execution.",
+        )
+
+    @classmethod
+    async def complete_work(
+        cls,
+        worker_user: User,
+        booking_id: str,
+        payload: CompleteJobRequest,
+    ) -> BookingResponse:
+        """
+        Worker marks work completed -> WORK_COMPLETED.
+
+        Stores optional before_photos, after_photos, completion_notes, work_summary.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Worker role guard
+        if worker_user.role not in ("worker", "admin"):
+            raise ForbiddenException(
+                message="Only assigned workers can complete booking execution.",
+                error_code="WORKER_ROLE_REQUIRED",
+            )
+
+        # Check worker assignment
+        is_assigned_worker = (
+            booking.worker_id is not None
+            and str(booking.worker_id) == str(worker_user.id)
+        )
+        if not is_assigned_worker and worker_user.role != "admin":
+            raise ForbiddenException(
+                message="You are not authorized to update status for a booking assigned to another worker.",
+                error_code="UNAUTHORIZED_WORKER",
+            )
+
+        # Save completion payload details prior to status validation & save
+        if payload.completion_notes:
+            booking.completion_notes = payload.completion_notes
+        if payload.work_summary:
+            booking.work_summary = payload.work_summary
+        if payload.before_photos:
+            booking.before_photos = payload.before_photos
+        if payload.after_photos:
+            booking.after_photos = payload.after_photos
+
+        await booking.save()
+
+        return await cls.update_booking_status_by_worker(
+            worker_user=worker_user,
+            booking_id=booking_id,
+            new_status=BookingStatus.WORK_COMPLETED,
+            notes=payload.completion_notes or "Work completed successfully by worker.",
+        )
+
+    @classmethod
+    async def get_worker_booking(
+        cls, worker_user: User, booking_id: str
+    ) -> BookingResponse:
+        """Fetch assigned booking details for worker."""
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Guard: worker must be assigned worker or admin
+        is_assigned_worker = (
+            booking.worker_id is not None
+            and str(booking.worker_id) == str(worker_user.id)
+        )
+        if not is_assigned_worker and worker_user.role != "admin":
+            raise ForbiddenException(
+                message="You do not have permission to access this booking.",
+                error_code="BOOKING_ACCESS_DENIED",
+            )
+
+        return _to_response(booking)
+
+    @classmethod
+    async def get_booking_status(
+        cls,
+        user: User,
+        booking_id: str,
+    ) -> BookingStatusResponse:
+        """
+        Inspect current status, allowed next statuses, and timestamps for a booking.
+
+        Accessible by customer owner, assigned worker, or admin.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Ownership guard
+        is_customer_owner = str(booking.customer_id) == str(user.id)
+        is_assigned_worker = booking.worker_id is not None and str(booking.worker_id) == str(user.id)
+        is_admin = user.role == "admin"
+
+        if not (is_customer_owner or is_assigned_worker or is_admin):
+            raise ForbiddenException(
+                message="You are not authorized to view the status of this booking.",
+                error_code="BOOKING_ACCESS_DENIED",
+            )
+
+        allowed = cls.ALLOWED_TRANSITIONS.get(booking.status, [])
+        next_statuses = [s.value for s in allowed]
+
+        timestamps = {
+            "created_at": booking.created_at.isoformat() if booking.created_at else None,
+            "assigned_at": booking.assigned_at.isoformat() if booking.assigned_at else None,
+            "started_at": booking.started_at.isoformat() if booking.started_at else None,
+            "completed_at": booking.completed_at.isoformat() if booking.completed_at else None,
+            "cancelled_at": booking.cancelled_at.isoformat() if booking.cancelled_at else None,
+        }
+
+        return BookingStatusResponse(
+            booking_id=str(booking.id),
+            booking_number=booking.booking_number,
+            current_status=booking.status.value,
+            next_allowed_statuses=next_statuses,
+            assigned_worker_id=str(booking.worker_id) if booking.worker_id else None,
+            timestamps=timestamps,
+        )
+
+    # ── Customer Confirmation & Acceptance (Phase 4.7.3) ──────────────────────
+
+    @classmethod
+    async def get_customer_completion_review(
+        cls,
+        customer_user: User,
+        booking_id: str,
+    ) -> CustomerCompletionReviewResponse:
+        """
+        Fetch completed work review payload for customer before confirmation.
+
+        Rules:
+            1. Booking must exist.
+            2. Customer must be the booking owner.
+            3. Booking must be in WORK_COMPLETED or CUSTOMER_CONFIRMED status.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        _verify_ownership(booking, str(customer_user.id))
+
+        if booking.status not in (
+            BookingStatus.WORK_COMPLETED,
+            BookingStatus.CUSTOMER_CONFIRMED,
+            BookingStatus.COMPLETED,
+        ):
+            raise BadRequestException(
+                message=f"Completion review unavailable. Booking status is '{booking.status.value}'.",
+                error_code="BOOKING_NOT_WORK_COMPLETED",
+            )
+
+        actual_duration: int | None = None
+        if booking.started_at and booking.completed_at:
+            diff_sec = (booking.completed_at - booking.started_at).total_seconds()
+            actual_duration = max(1, int(diff_sec // 60))
+
+        timeline_dtos = [
+            BookingTimelineEventResponse(
+                event_id=e.event_id,
+                status=e.status.value if hasattr(e.status, "value") else str(e.status),
+                title=e.title,
+                description=e.description,
+                actor_id=str(e.actor_id),
+                actor_role=e.actor_role,
+                timestamp=e.timestamp.isoformat() if e.timestamp else "",
+                metadata=e.metadata or {},
+            )
+            for e in (booking.timeline or [])
+        ]
+
+        return CustomerCompletionReviewResponse(
+            booking_id=str(booking.id),
+            booking_number=booking.booking_number,
+            service_name=booking.service_snapshot.name,
+            status=booking.status.value,
+            worker_id=str(booking.worker_id) if booking.worker_id else None,
+            estimated_duration_minutes=booking.estimated_duration_minutes,
+            started_at=booking.started_at.isoformat() if booking.started_at else None,
+            completed_at=booking.completed_at.isoformat() if booking.completed_at else None,
+            actual_duration_minutes=actual_duration,
+            completion_notes=booking.completion_notes,
+            work_summary=booking.work_summary,
+            before_photos=booking.before_photos or [],
+            after_photos=booking.after_photos or [],
+            timeline=timeline_dtos,
+        )
+
+    @classmethod
+    async def confirm_booking_completion(
+        cls,
+        customer_user: User,
+        booking_id: str,
+        notes: str | None = None,
+    ) -> BookingResponse:
+        """
+        Customer confirms completed service -> CUSTOMER_CONFIRMED.
+
+        Rules:
+            1. Booking must exist.
+            2. Customer must be the booking owner.
+            3. Booking status MUST be WORK_COMPLETED.
+            4. Automatically logs timeline event "Customer Confirmed Completion".
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        _verify_ownership(booking, str(customer_user.id))
+
+        if booking.status in (BookingStatus.CUSTOMER_CONFIRMED, BookingStatus.COMPLETED):
+            raise BadRequestException(
+                message="Booking has already been confirmed by customer.",
+                error_code="SAME_STATUS_TRANSITION",
+            )
+
+        if booking.status != BookingStatus.WORK_COMPLETED:
+            raise BadRequestException(
+                message=f"Cannot confirm completion for a booking in status '{booking.status.value}'. Worker must mark WORK_COMPLETED first.",
+                error_code="BOOKING_NOT_WORK_COMPLETED",
+            )
+
+        booking.status = BookingStatus.CUSTOMER_CONFIRMED
+        now_utc = datetime.now(timezone.utc)
+        if not booking.completed_at:
+            booking.completed_at = now_utc
+
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            status=BookingStatus.CUSTOMER_CONFIRMED,
+            title="Customer Confirmed Completion",
+            description=notes or "Customer reviewed and accepted the completed service.",
+            actor_id=customer_user.id,
+            actor_role=customer_user.role,
+            timestamp=now_utc,
+        )
+        if booking.timeline is None:
+            booking.timeline = []
+        booking.timeline.append(event)
+
+        await booking.save()
+        logger.info(
+            "Booking completion confirmed by customer: id=%s number=%s customer_id=%s",
+            booking_id,
+            booking.booking_number,
+            customer_user.id,
+        )
+        return _to_response(booking)
+
+    # ── Timeline Audit Log (Phase 4.7.4) ─────────────────────────────────────
+
+    @classmethod
+    async def get_booking_timeline(
+        cls,
+        user: User,
+        booking_id: str,
+        page: int = 1,
+        page_size: int = 50,
+    ) -> BookingTimelineResponse:
+        """
+        Fetch chronologically ordered, paginated timeline audit log for a booking.
+
+        Rules:
+            1. Booking must exist.
+            2. User must be customer owner, assigned worker, or admin.
+            3. Chronological sorting (timestamp ascending).
+            4. Paginated result.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Ownership guard
+        is_customer_owner = str(booking.customer_id) == str(user.id)
+        is_assigned_worker = booking.worker_id is not None and str(booking.worker_id) == str(user.id)
+        is_admin = user.role == "admin"
+
+        if not (is_customer_owner or is_assigned_worker or is_admin):
+            raise ForbiddenException(
+                message="You are not authorized to view the timeline for this booking.",
+                error_code="BOOKING_ACCESS_DENIED",
+            )
+
+        raw_events = booking.timeline or []
+        sorted_events = sorted(raw_events, key=lambda e: e.timestamp or datetime.min.replace(tzinfo=timezone.utc))
+
+        total_events = len(sorted_events)
+        start_idx = (page - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_events = sorted_events[start_idx:end_idx]
+
+        event_dtos = [
+            BookingTimelineEventResponse(
+                event_id=e.event_id,
+                event_type=getattr(e, "event_type", "STATUS_CHANGE"),
+                status=e.status.value if hasattr(e.status, "value") else str(e.status),
+                previous_status=(
+                    e.previous_status.value if hasattr(e.previous_status, "value") else str(e.previous_status)
+                ) if e.previous_status else None,
+                new_status=(
+                    e.new_status.value if hasattr(e.new_status, "value") else str(e.new_status)
+                ) if e.new_status else (
+                    e.status.value if hasattr(e.status, "value") else str(e.status)
+                ),
+                title=e.title,
+                description=e.description,
+                actor_id=str(e.actor_id),
+                actor_role=e.actor_role,
+                timestamp=e.timestamp.isoformat() if e.timestamp else "",
+                metadata=e.metadata or {},
+            )
+            for e in paginated_events
+        ]
+
+        return BookingTimelineResponse(
+            booking_id=str(booking.id),
+            booking_number=booking.booking_number,
+            current_status=booking.status.value,
+            total_events=total_events,
+            page=page,
+            page_size=page_size,
+            events=event_dtos,
+        )
+
+    # ── Cancellation Governance (Phase 4.7.5) ─────────────────────────────────
+
+    @classmethod
+    async def cancel_booking(
+        cls,
+        user: User,
+        booking_id: str,
+        reason: str | None = None,
+    ) -> BookingResponse:
+        """
+        Cancel a booking (Customer owner, Assigned Worker, or Admin).
+
+        Rules:
+            1. Booking must exist.
+            2. User must be customer owner, assigned worker, or admin.
+            3. Booking status MUST be in CANCELLATION_ALLOWED_STATUSES.
+            4. Automatically records "Booking Cancelled" timeline event.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Ownership guard
+        is_customer_owner = str(booking.customer_id) == str(user.id)
+        is_assigned_worker = booking.worker_id is not None and str(booking.worker_id) == str(user.id)
+        is_admin = user.role == "admin"
+
+        if not (is_customer_owner or is_assigned_worker or is_admin):
+            raise ForbiddenException(
+                message="You are not authorized to cancel this booking.",
+                error_code="BOOKING_ACCESS_DENIED",
+            )
+
+        cls.validate_booking_mutable(booking)
+
+        if booking.status not in BookingLifecycleConfig.CANCELLATION_ALLOWED_STATUSES:
+            raise BadRequestException(
+                message=f"Cannot cancel booking in current status '{booking.status.value}'.",
+                error_code="INVALID_STATUS_TRANSITION",
+            )
+
+        prev_status = booking.status
+        booking.status = BookingStatus.CANCELLED
+        now_utc = datetime.now(timezone.utc)
+        booking.cancelled_at = now_utc
+        booking.cancellation_reason = reason
+
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type="CANCELLED",
+            status=BookingStatus.CANCELLED,
+            previous_status=prev_status,
+            new_status=BookingStatus.CANCELLED,
+            title="Booking Cancelled",
+            description=reason or f"Booking cancelled by {user.role}.",
+            actor_id=user.id,
+            actor_role=user.role,
+            timestamp=now_utc,
+        )
+        if booking.timeline is None:
+            booking.timeline = []
+        booking.timeline.append(event)
+
+        await booking.save()
+        logger.info(
+            "Booking cancelled: id=%s number=%s user_id=%s role=%s",
+            booking_id,
+            booking.booking_number,
+            user.id,
+            user.role,
+        )
+        return _to_response(booking)
+
+
+
+

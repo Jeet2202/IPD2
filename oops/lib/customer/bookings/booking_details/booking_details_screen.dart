@@ -1,11 +1,16 @@
 // File: lib/customer/bookings/booking_details/booking_details_screen.dart
 
 import 'package:flutter/material.dart';
-import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../models/booking_model.dart';
+import '../../../models/review_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../../services/review_service.dart';
+import '../../../widgets/booking_lifecycle_stepper.dart';
+import '../../../widgets/booking_timeline_widget.dart';
+import '../../../widgets/review_dialog.dart';
+import '../../../widgets/review_display_card.dart';
 import '../../quotations/customer_quotations_screen.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
@@ -26,8 +31,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   final BookingService _bookingService = BookingService.instance;
 
   BookingModel? _booking;
+  ReviewModel? _existingReview;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _isConfirming = false;
 
   @override
   void initState() {
@@ -39,6 +46,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _extractArgsAndFetch();
       } else {
         setState(() => _isLoading = false);
+        _fetchReviewIfCompleted(_booking!.id);
       }
     });
   }
@@ -47,10 +55,12 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map<String, dynamic>) {
       if (args['booking'] is BookingModel) {
+        final b = args['booking'] as BookingModel;
         setState(() {
-          _booking = args['booking'] as BookingModel;
+          _booking = b;
           _isLoading = false;
         });
+        _fetchReviewIfCompleted(b.id);
         return;
       }
       final id = args['booking_id'] as String?;
@@ -63,6 +73,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _booking = args;
         _isLoading = false;
       });
+      _fetchReviewIfCompleted(args.id);
       return;
     } else if (widget.bookingId != null) {
       _fetchBookingById(widget.bookingId!);
@@ -75,6 +86,16 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     });
   }
 
+  Future<void> _fetchReviewIfCompleted(String bookingId) async {
+    if (_booking == null) return;
+    if (_booking!.isCustomerConfirmed || _booking!.status == 'completed') {
+      final rev = await ReviewService().getReviewByBooking(bookingId);
+      if (mounted && rev != null) {
+        setState(() => _existingReview = rev);
+      }
+    }
+  }
+
   Future<void> _fetchBookingById(String id) async {
     setState(() {
       _isLoading = true;
@@ -83,9 +104,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     try {
       final b = await _bookingService.getBookingById(id);
+      ReviewModel? rev;
+      if (b.isCustomerConfirmed || b.status == 'completed') {
+        rev = await ReviewService().getReviewByBooking(b.id);
+      }
       if (!mounted) return;
       setState(() {
         _booking = b;
+        _existingReview = rev;
         _isLoading = false;
       });
     } on ApiException catch (e) {
@@ -103,14 +129,133 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     }
   }
 
+  Future<void> _handleConfirmCompletion() async {
+    if (_booking == null || _isConfirming) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Confirm Service Completion', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text(
+          'Are you satisfied with the completed work? Confirming will mark the service as officially accepted.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D9488),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Confirm & Accept', style: TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _isConfirming = true);
+
+    try {
+      final updated = await _bookingService.confirmCompletion(_booking!.id);
+      if (!mounted) return;
+
+      setState(() {
+        _booking = updated;
+        _isConfirming = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Service completion accepted successfully!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+
+      _promptReviewDialog();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isConfirming = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to confirm completion: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
+  }
+
+  void _promptReviewDialog() {
+    if (_booking == null) return;
+    ReviewDialog.show(
+      context,
+      bookingId: _booking!.id,
+      onSubmit: (overall, punctuality, quality, professionalism, communication, title, comment, recommend) async {
+        try {
+          final review = await ReviewService().createReview(
+            bookingId: _booking!.id,
+            overallRating: overall,
+            punctualityRating: punctuality,
+            qualityRating: quality,
+            professionalismRating: professionalism,
+            communicationRating: communication,
+            title: title,
+            comment: comment,
+            wouldRecommend: recommend,
+          );
+          if (!mounted) return;
+          setState(() {
+            _existingReview = review;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Thank you for rating your service experience!'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to submit review: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'pending':
         return const Color(0xFFD97706);
+      case 'assigned':
       case 'accepted':
         return const Color(0xFF2563EB);
+      case 'worker_en_route':
+        return const Color(0xFF6366F1);
+      case 'arrived':
+        return const Color(0xFF8B5CF6);
       case 'in_progress':
         return const Color(0xFF4F46E5);
+      case 'work_completed':
+        return const Color(0xFF0D9488);
+      case 'customer_confirmed':
       case 'completed':
         return const Color(0xFF16A34A);
       case 'cancelled':
@@ -136,6 +281,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
+            onPressed: () {
+              if (_booking != null) _fetchBookingById(_booking!.id);
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: _isLoading
@@ -153,7 +306,30 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                             // ── Status Banner Card ─────────────────────────
                             _buildStatusBanner(),
 
+                            const SizedBox(height: 16),
+
+                            // ── Booking Lifecycle Stepper ───────────────────
+                            BookingLifecycleStepper(booking: _booking!),
+
                             const SizedBox(height: 20),
+
+                            // ── Work Completion Review Card (If Work Completed) ──
+                            if (_booking!.isWorkCompleted) ...[
+                              _buildCompletionReviewCard(),
+                              const SizedBox(height: 20),
+                            ],
+
+                            // ── Submitted Review Display (If Review Exists) ────
+                            if (_existingReview != null) ...[
+                              ReviewDisplayCard(
+                                review: _existingReview!,
+                                titleText: 'Your Submitted Rating & Review',
+                              ),
+                              const SizedBox(height: 20),
+                            ] else if (_booking!.isCustomerConfirmed || _booking!.status == 'completed') ...[
+                              _buildConfirmedBanner(),
+                              const SizedBox(height: 20),
+                            ],
 
                             // ── Service Details Card ───────────────────────
                             _buildServiceCard(),
@@ -190,11 +366,92 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                             // ── Worker Quotations Button Card ───────────────
                             _buildViewQuotationsCard(),
 
-                            const SizedBox(height: 28),
+                            const SizedBox(height: 20),
+
+                            // ── Timeline Audit Log ──────────────────────────
+                            if (_booking!.timeline.isNotEmpty) ...[
+                              BookingTimelineWidget(events: _booking!.timeline),
+                              const SizedBox(height: 20),
+                            ],
+
+                            const SizedBox(height: 80),
                           ],
                         ),
                       ),
       ),
+      bottomNavigationBar: (_booking != null && _booking!.isWorkCompleted)
+          ? Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, -4))],
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: _isConfirming ? null : _handleConfirmCompletion,
+                  icon: _isConfirming
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.verified_rounded, size: 20),
+                  label: Text(
+                    _isConfirming ? 'Confirming...' : 'Confirm Service Completion',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D9488),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            )
+          : (_booking != null && (_booking!.isCustomerConfirmed || _booking!.status == 'completed'))
+              ? Container(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, -4))],
+                  ),
+                  child: _existingReview != null
+                      ? Container(
+                          height: 52,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Review Submitted (Thank You!)',
+                                style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF334155), fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        )
+                      : SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: OutlinedButton.icon(
+                            onPressed: _promptReviewDialog,
+                            icon: const Icon(Icons.star_rounded, size: 20, color: Colors.amber),
+                            label: const Text(
+                              'Rate & Review Worker',
+                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Color(0xFF0F172A)),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                          ),
+                        ),
+                )
+              : null,
     );
   }
 
@@ -240,9 +497,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.15), shape: BoxShape.circle),
             child: Icon(
-              _booking!.status == 'completed'
+              _booking!.isCustomerConfirmed || _booking!.status == 'completed'
                   ? Icons.check_circle_rounded
-                  : _booking!.status == 'cancelled'
+                  : _booking!.isCancelled
                       ? Icons.cancel_rounded
                       : Icons.sync_rounded,
               color: statusColor,
@@ -261,9 +518,16 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                       _booking!.bookingNumber,
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: statusColor),
                     ),
-                    Text(
-                      _booking!.status.toUpperCase(),
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: statusColor),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _booking!.status.toUpperCase().replaceAll('_', ' '),
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: statusColor),
+                      ),
                     ),
                   ],
                 ),
@@ -274,6 +538,178 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompletionReviewCard() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0FDF4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF86EFAC), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF16A34A).withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDCFCE7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.assignment_turned_in_rounded, color: Color(0xFF15803D), size: 22),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Work Marked Completed!',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF166534)),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Worker finished execution. Please review and confirm.',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF15803D)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Divider(color: Color(0xFFBBF7D0), height: 1),
+          const SizedBox(height: 12),
+
+          if (_booking!.completionNotes != null && _booking!.completionNotes!.isNotEmpty) ...[
+            const Text(
+              'Worker Completion Notes:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF166534)),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _booking!.completionNotes!,
+              style: const TextStyle(fontSize: 13, color: Color(0xFF14532D)),
+            ),
+            const SizedBox(height: 10),
+          ],
+
+          if (_booking!.workSummary != null && _booking!.workSummary!.isNotEmpty) ...[
+            const Text(
+              'Work Summary:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF166534)),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _booking!.workSummary!,
+              style: const TextStyle(fontSize: 13, color: Color(0xFF14532D)),
+            ),
+            const SizedBox(height: 10),
+          ],
+
+          if (_booking!.afterPhotos.isNotEmpty) ...[
+            const Text(
+              'Completion Photos:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF166534)),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 80,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _booking!.afterPhotos.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (_, i) => ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    _booking!.afterPhotos[i],
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image_outlined),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+          ],
+
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: _isConfirming ? null : _handleConfirmCompletion,
+              icon: _isConfirming
+                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Icon(Icons.verified_rounded, size: 20),
+              label: Text(
+                _isConfirming ? 'Confirming...' : 'Confirm Service Completion',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0D9488),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfirmedBanner() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0FDF4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF86EFAC)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 24),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Service Officially Confirmed',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF166534)),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'You have verified and accepted the completed work.',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF15803D)),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.star_rounded, color: Colors.amber, size: 28),
+            onPressed: _promptReviewDialog,
+            tooltip: 'Rate & Review',
           ),
         ],
       ),

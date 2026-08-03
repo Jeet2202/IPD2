@@ -22,9 +22,12 @@ class WorkerBottomNavigationBar extends StatelessWidget {
         Navigator.pushReplacementNamed(context, AppRoutes.workerMarketplace);
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, AppRoutes.workerEarnings);
+        Navigator.pushReplacementNamed(context, AppRoutes.workerWork);
         break;
       case 3:
+        Navigator.pushReplacementNamed(context, AppRoutes.workerEarnings);
+        break;
+      case 4:
         Navigator.pushReplacementNamed(context, AppRoutes.workerProfile);
         break;
     }
@@ -48,6 +51,10 @@ class WorkerBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.storefront_rounded),
           label: 'Marketplace',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.work_rounded),
+          label: 'Work',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_rounded),

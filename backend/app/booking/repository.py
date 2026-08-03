@@ -157,6 +157,56 @@ class BookingRepository:
     # ── Update ────────────────────────────────────────────────────────────────
 
     @staticmethod
+    async def list_by_worker(
+        worker_id: str | PydanticObjectId,
+        *,
+        status: str | None = None,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> list[Booking]:
+        """
+        Return bookings assigned to a worker, newest first.
+
+        Args:
+            worker_id: Worker's User ObjectId.
+            status:    Optional status filter (e.g., 'assigned').
+            skip:      Pagination offset.
+            limit:     Maximum results.
+        """
+        wid = (
+            PydanticObjectId(str(worker_id))
+            if isinstance(worker_id, str)
+            else worker_id
+        )
+        query = Booking.find(Booking.worker_id == wid)
+        if status:
+            query = query.find({"status": status})
+        return (
+            await query
+            .sort("-created_at")
+            .skip(skip)
+            .limit(limit)
+            .to_list()
+        )
+
+    @staticmethod
+    async def count_by_worker(
+        worker_id: str | PydanticObjectId,
+        *,
+        status: str | None = None,
+    ) -> int:
+        """Count bookings assigned to a worker, optionally filtered by status."""
+        wid = (
+            PydanticObjectId(str(worker_id))
+            if isinstance(worker_id, str)
+            else worker_id
+        )
+        query = Booking.find(Booking.worker_id == wid)
+        if status:
+            query = query.find({"status": status})
+        return await query.count()
+
+    @staticmethod
     async def save(booking: Booking) -> Booking:
         """Persist changes to an existing booking document."""
         await booking.save()

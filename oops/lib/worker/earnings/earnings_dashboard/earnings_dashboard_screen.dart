@@ -381,7 +381,7 @@ class _WorkerEarningsDashboardScreenState
           ),
         ),
       ),
-      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 2),
+      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 3),
     );
   }
 

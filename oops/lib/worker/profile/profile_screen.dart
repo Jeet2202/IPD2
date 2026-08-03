@@ -176,7 +176,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     ),
         ),
       ),
-      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 3),
+      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 4),
     );
   }
 

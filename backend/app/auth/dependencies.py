@@ -320,5 +320,6 @@ EmailVerifiedUserDep = Annotated[User, Depends(get_email_verified_user)]
 PhoneVerifiedUserDep = Annotated[User, Depends(get_phone_verified_user)]
 ProfileCompletedUserDep = Annotated[User, Depends(get_current_profile_completed_user)]
 CustomerUserDep = Annotated[User, Depends(get_current_customer)]
+CustomerDep = CustomerUserDep
 WorkerUserDep = Annotated[User, Depends(get_current_worker)]
 AdminUserDep = Annotated[User, Depends(get_current_admin)]

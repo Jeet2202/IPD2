@@ -118,6 +118,50 @@ class AddressSnapshotModel {
   }
 }
 
+class BookingTimelineEventModel {
+  final String eventId;
+  final String eventType;
+  final String status;
+  final String? previousStatus;
+  final String? newStatus;
+  final String title;
+  final String? description;
+  final String actorId;
+  final String actorRole;
+  final String timestamp;
+  final Map<String, dynamic> metadata;
+
+  const BookingTimelineEventModel({
+    required this.eventId,
+    this.eventType = 'STATUS_CHANGE',
+    required this.status,
+    this.previousStatus,
+    this.newStatus,
+    required this.title,
+    this.description,
+    required this.actorId,
+    required this.actorRole,
+    required this.timestamp,
+    this.metadata = const {},
+  });
+
+  factory BookingTimelineEventModel.fromJson(Map<String, dynamic> json) {
+    return BookingTimelineEventModel(
+      eventId: json['event_id'] as String? ?? '',
+      eventType: json['event_type'] as String? ?? 'STATUS_CHANGE',
+      status: json['status'] as String? ?? '',
+      previousStatus: json['previous_status'] as String?,
+      newStatus: json['new_status'] as String?,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String?,
+      actorId: json['actor_id'] as String? ?? '',
+      actorRole: json['actor_role'] as String? ?? '',
+      timestamp: json['timestamp'] as String? ?? '',
+      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+    );
+  }
+}
+
 class BookingModel {
   final String id;
   final String bookingNumber;
@@ -137,6 +181,8 @@ class BookingModel {
   final List<String> problemPhotos;
   final String? workerId;
   final String? assignedAt;
+  final String? enRouteAt;
+  final String? arrivedAt;
   final String? startedAt;
   final String? completedAt;
   final String? cancelledAt;
@@ -145,6 +191,11 @@ class BookingModel {
   final String? inspectionId;
   final String? quotationId;
   final String? paymentId;
+  final String? completionNotes;
+  final String? workSummary;
+  final List<String> beforePhotos;
+  final List<String> afterPhotos;
+  final List<BookingTimelineEventModel> timeline;
   final String createdAt;
   final String updatedAt;
 
@@ -167,6 +218,8 @@ class BookingModel {
     this.problemPhotos = const [],
     this.workerId,
     this.assignedAt,
+    this.enRouteAt,
+    this.arrivedAt,
     this.startedAt,
     this.completedAt,
     this.cancelledAt,
@@ -175,12 +228,25 @@ class BookingModel {
     this.inspectionId,
     this.quotationId,
     this.paymentId,
+    this.completionNotes,
+    this.workSummary,
+    this.beforePhotos = const [],
+    this.afterPhotos = const [],
+    this.timeline = const [],
     required this.createdAt,
     required this.updatedAt,
   });
 
+  bool get isPending => status == 'pending';
+  bool get isAssigned => status == 'assigned' || status == 'accepted';
+  bool get isWorkerEnRoute => status == 'worker_en_route';
+  bool get isArrived => status == 'arrived';
+  bool get isInProgress => status == 'in_progress';
+  bool get isWorkCompleted => status == 'work_completed';
+  bool get isCustomerConfirmed => status == 'customer_confirmed' || status == 'completed';
+  bool get isCancelled => status == 'cancelled';
+
   factory BookingModel.fromJson(Map<String, dynamic> json) {
-    // If wrapped in 'data', unwrap
     final raw = (json['data'] is Map<String, dynamic>) ? json['data'] as Map<String, dynamic> : json;
 
     return BookingModel(
@@ -202,6 +268,8 @@ class BookingModel {
       problemPhotos: (raw['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       workerId: raw['worker_id'] as String?,
       assignedAt: raw['assigned_at'] as String?,
+      enRouteAt: raw['en_route_at'] as String?,
+      arrivedAt: raw['arrived_at'] as String?,
       startedAt: raw['started_at'] as String?,
       completedAt: raw['completed_at'] as String?,
       cancelledAt: raw['cancelled_at'] as String?,
@@ -210,6 +278,14 @@ class BookingModel {
       inspectionId: raw['inspection_id'] as String?,
       quotationId: raw['quotation_id'] as String?,
       paymentId: raw['payment_id'] as String?,
+      completionNotes: raw['completion_notes'] as String?,
+      workSummary: raw['work_summary'] as String?,
+      beforePhotos: (raw['before_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      afterPhotos: (raw['after_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      timeline: (raw['timeline'] as List<dynamic>?)
+              ?.map((e) => BookingTimelineEventModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       createdAt: raw['created_at'] as String? ?? '',
       updatedAt: raw['updated_at'] as String? ?? '',
     );
@@ -234,6 +310,8 @@ class BookingModel {
         'problem_photos': problemPhotos,
         'worker_id': workerId,
         'assigned_at': assignedAt,
+        'en_route_at': enRouteAt,
+        'arrived_at': arrivedAt,
         'started_at': startedAt,
         'completed_at': completedAt,
         'cancelled_at': cancelledAt,
@@ -242,6 +320,10 @@ class BookingModel {
         'inspection_id': inspectionId,
         'quotation_id': quotationId,
         'payment_id': paymentId,
+        'completion_notes': completionNotes,
+        'work_summary': workSummary,
+        'before_photos': beforePhotos,
+        'after_photos': afterPhotos,
         'created_at': createdAt,
         'updated_at': updatedAt,
       };
