@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../widgets/worker_bottom_navigation_bar.dart';
 
 class WorkerProfileScreen extends StatefulWidget {
   const WorkerProfileScreen({super.key});
@@ -175,6 +176,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     ),
         ),
       ),
+      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 3),
     );
   }
 

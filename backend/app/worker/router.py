@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, File, UploadFile, status
 from app.auth.repository import AuthRepository
 from app.core.dependencies import WorkerDep
 from app.core.exceptions import NotFoundException
+from app.worker.dashboard_schemas import WorkerDashboardResponse
 from app.worker.schemas import UpdateWorkerProfileRequest, WorkerProfileResponse
 from app.worker.service import WorkerService
 
@@ -23,6 +24,20 @@ async def _get_worker_user(current_user: WorkerDep):
     if not user:
         raise NotFoundException(message="Worker user profile not found", error_code="USER_NOT_FOUND")
     return user
+
+
+@router.get(
+    "/dashboard",
+    response_model=WorkerDashboardResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get worker dashboard data",
+    description="Retrieve aggregated payload for worker dashboard landing page.",
+)
+async def get_worker_dashboard(
+    user=Depends(_get_worker_user),
+) -> WorkerDashboardResponse:
+    """Get current authenticated worker's aggregated dashboard payload."""
+    return await WorkerService.get_worker_dashboard_data(user)
 
 
 @router.get(

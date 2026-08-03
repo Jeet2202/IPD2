@@ -205,3 +205,73 @@ class WorkerService:
         logger.info("Deleted profile photo for worker user_id=%s", user.id)
 
         return cls._build_response_dto(user, profile, completion_pct, is_completed)
+
+    @classmethod
+    async def get_worker_dashboard_data(cls, user: User):
+        """
+        Aggregate worker profile availability, marketplace statistics, top recommendations,
+        recent open jobs, and application summary counts into a single dashboard payload.
+        """
+        from app.application.service import JobApplicationService
+        from app.marketplace.schemas import MarketplaceSortOption
+        from app.marketplace.service import MarketplaceService
+        from app.utils.enums import ApplicationStatus
+        from app.worker.dashboard_schemas import (
+            ApplicationsSummaryDTO,
+            MarketplaceStatsDTO,
+            WorkerDashboardResponse,
+        )
+
+        profile = await cls.get_or_create_profile(user)
+        completion_pct, is_completed = cls.calculate_completion_percentage(user, profile)
+
+        # 1. Fetch marketplace jobs
+        mp_service = MarketplaceService()
+        recent_res = await mp_service.list_marketplace_bookings(
+            worker_profile=profile,
+            sort_by=MarketplaceSortOption.NEWEST,
+            page=1,
+            page_size=5,
+        )
+
+        rec_res = await mp_service.list_marketplace_bookings(
+            worker_profile=profile,
+            sort_by=MarketplaceSortOption.RECOMMENDED,
+            page=1,
+            page_size=3,
+        )
+
+        # 2. Fetch worker applications counts
+        app_service = JobApplicationService()
+        w_apps = await app_service.list_worker_applications(
+            worker_user=user, page=1, page_size=100
+        )
+
+        pending_count = sum(1 for a in w_apps.items if a.application_status == ApplicationStatus.PENDING)
+        accepted_count = sum(1 for a in w_apps.items if a.application_status == ApplicationStatus.ACCEPTED)
+        rejected_count = sum(1 for a in w_apps.items if a.application_status == ApplicationStatus.REJECTED)
+
+        stats = MarketplaceStatsDTO(
+            available_jobs=recent_res.total,
+            recommended_jobs=sum(1 for item in rec_res.items if item.is_recommended),
+            active_applications=pending_count,
+        )
+
+        app_summary = ApplicationsSummaryDTO(
+            total=w_apps.total,
+            pending=pending_count,
+            accepted=accepted_count,
+            rejected=rejected_count,
+        )
+
+        return WorkerDashboardResponse(
+            worker_id=str(user.id),
+            worker_name=user.full_name,
+            availability=profile.availability,
+            working_radius_km=profile.working_radius_km,
+            profile_completed=is_completed,
+            stats=stats,
+            applications_summary=app_summary,
+            recommended_jobs=rec_res.items,
+            recent_jobs=recent_res.items,
+        )

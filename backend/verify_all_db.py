@@ -50,6 +50,8 @@ from app.admin.models import (
     SupportTicket,
 )
 
+from app.application.models import JobApplication
+
 ALL_MODELS = [
     User,
     CustomerProfile,
@@ -68,6 +70,7 @@ ALL_MODELS = [
     AppSettings,
     Banner,
     SupportTicket,
+    JobApplication,
 ]
 
 EXPECTED_COLLECTIONS_CHECKLIST = {

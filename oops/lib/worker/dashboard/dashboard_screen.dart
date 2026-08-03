@@ -396,10 +396,12 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         onTap: (index) {
           if (index == 0) return;
           if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
+            Navigator.pushNamed(context, '/worker/marketplace');
           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
+            Navigator.pushReplacementNamed(context, '/worker/jobs/incoming');
           } else if (index == 3) {
+            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
+          } else if (index == 4) {
             Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
@@ -407,6 +409,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_rounded),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront_rounded),
+            label: 'Marketplace',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.work_history_rounded),

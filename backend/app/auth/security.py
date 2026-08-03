@@ -214,6 +214,7 @@ def decode_token(
             token,
             get_jwt_secret_key(),
             algorithms=[DEFAULT_JWT_ALGORITHM],
+            options={"verify_aud": False},
         )
         payload = TokenPayload.model_validate(raw_payload)
 

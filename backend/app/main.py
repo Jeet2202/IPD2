@@ -64,6 +64,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         settings.ENVIRONMENT.value,
     )
     from app.address.models import Address
+    from app.application.models import JobApplication
     from app.auth.models import AuthAuditLog, RefreshToken, User
     from app.booking.models import Booking
     from app.category.models import Service, ServiceCategory
@@ -83,6 +84,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             Service,
             Address,
             Booking,
+            JobApplication,
         ]
     )
     yield

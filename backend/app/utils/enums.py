@@ -207,6 +207,21 @@ class WorkerAvailability(str, Enum):
     OFFLINE = "offline"
 
 
+class ApplicationStatus(str, Enum):
+    """
+    Worker job application states.
+
+    PENDING   — Application submitted, awaiting customer/system review.
+    ACCEPTED  — Application accepted for assignment.
+    REJECTED  — Application rejected.
+    WITHDRAWN — Application withdrawn by worker.
+    """
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    WITHDRAWN = "withdrawn"
+
+
 class Gender(str, Enum):
     """Gender options for user profiles."""
     MALE = "male"

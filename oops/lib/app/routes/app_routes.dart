@@ -107,6 +107,7 @@ class AppRoutes {
   static const String workerLogin           = '/worker/auth/login';
   static const String workerKyc             = '/worker/kyc';
   static const String workerDashboard       = '/worker/dashboard';
+  static const String workerMarketplace       = '/worker/marketplace';
   static const String workerIncomingJobs    = '/worker/incoming-jobs';
   static const String workerInspectionReqs  = '/worker/inspection-requests';
   static const String workerActiveJobs      = '/worker/active-jobs';

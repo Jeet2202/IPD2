@@ -63,7 +63,9 @@ import '../../worker/profile/bank_details/bank_details_screen.dart';
 import '../../worker/verification/kyc_verification/kyc_verification_screen.dart';
 import '../../worker/verification/verification_status/verification_status_screen.dart';
 import '../../worker/verification/under_review/under_review_screen.dart';
-import '../../worker/dashboard/dashboard_screen.dart';
+import '../../worker/dashboard/dashboard_screen.dart' hide WorkerDashboardScreen;
+import '../../worker/dashboard/worker_dashboard_screen.dart';
+import '../../worker/marketplace/marketplace_screen.dart';
 import '../../worker/jobs/incoming_jobs/incoming_jobs_screen.dart';
 import '../../worker/jobs/job_details/job_details_screen.dart';
 import '../../worker/jobs/accept_reject/accept_reject_screen.dart';
@@ -245,6 +247,10 @@ class AppRouter {
       case AppRoutes.workerDashboard:
       case '/worker/dashboard':
         return _build(const WorkerDashboardScreen(), settings);
+
+      case AppRoutes.workerMarketplace:
+      case '/worker/marketplace':
+        return _build(const WorkerMarketplaceScreen(), settings);
 
       case AppRoutes.workerIncomingJobs:
       case '/worker/jobs/incoming':
@@ -617,6 +623,9 @@ class AppRouter {
 
       case '/customer/booking/work-completed':
         return _build(const WorkCompletedScreen(), settings);
+
+      case AppRoutes.workerDashboard:
+        return _build(const WorkerDashboardScreen(), settings);
 
       case AppRoutes.workInProgress:
         return _build(const BookingStatusScreen(), settings);

@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/incoming_jobs/incoming_jobs_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../widgets/worker_bottom_navigation_bar.dart';
 
 class WorkerIncomingJobsScreen extends StatefulWidget {
   const WorkerIncomingJobsScreen({super.key});
@@ -411,42 +412,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: const Color(0xFF2563EB),
-        unselectedItemColor: const Color(0xFF94A3B8),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        elevation: 12,
-        onTap: (idx) {
-          if (idx == 1) return;
-          if (idx == 0) {
-            Navigator.pushReplacementNamed(context, '/worker/dashboard');
-          } else if (idx == 2) {
-            Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard');
-          } else if (idx == 3) {
-            Navigator.pushReplacementNamed(context, '/worker/profile');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work_history_rounded),
-            label: 'Jobs',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_rounded),
-            label: 'Earnings',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 1),
     );
   }
 }

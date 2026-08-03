@@ -35,6 +35,7 @@ from fastapi import APIRouter
 # ---------------------------------------------------------------------------
 from app.address.router import router as address_router
 from app.admin.router import router as admin_router
+from app.application.router import router as application_router
 from app.auth.router import router as auth_router
 from app.booking.router import router as booking_router
 from app.category.router import router as category_router
@@ -42,6 +43,7 @@ from app.customer.router import router as customer_router
 from app.home.router import router as home_router
 from app.inspection.router import router as inspection_router
 from app.jobs.router import router as jobs_router
+from app.marketplace.router import router as marketplace_router
 from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
 from app.reviews.router import router as reviews_router
@@ -118,6 +120,20 @@ v1_router.include_router(
     booking_router,
     prefix="/customer",
     tags=["Bookings"],
+)
+
+# --- Worker Marketplace & Applications ---
+# Marketplace booking discovery for workers and job application submission.
+# Requires authenticated worker role.
+v1_router.include_router(
+    marketplace_router,
+    prefix="/worker/marketplace",
+    tags=["Worker Marketplace"],
+)
+v1_router.include_router(
+    application_router,
+    prefix="/worker/applications",
+    tags=["Worker Applications"],
 )
 
 # --- Workers ---
