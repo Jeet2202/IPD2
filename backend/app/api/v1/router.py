@@ -46,6 +46,7 @@ from app.jobs.router import router as jobs_router
 from app.marketplace.router import router as marketplace_router
 from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
+from app.quotation.router import router as quotation_router
 from app.reviews.router import router as reviews_router
 from app.service.router import router as service_router
 from app.uploads.router import router as uploads_router
@@ -89,6 +90,16 @@ v1_router.include_router(
     tags=["Authentication"],
 )
 
+# --- Addresses ---
+# IMPORTANT: Must be registered BEFORE quotation_router at /customer prefix.
+# The quotation router has a GET /{quotation_id} catch-all that would shadow
+# /customer/addresses if registered first.
+v1_router.include_router(
+    address_router,
+    prefix="/customer",
+    tags=["Addresses"],
+)
+
 # --- Customers ---
 # Customer profile management and booking history.
 # Requires authenticated customer role.
@@ -102,15 +113,6 @@ v1_router.include_router(
     prefix="/customers",
     tags=["Customers"],
     include_in_schema=False,
-)
-
-# --- Addresses ---
-# Customer address management (CRUD + default management).
-# Requires authenticated customer role.
-v1_router.include_router(
-    address_router,
-    prefix="/customer",
-    tags=["Addresses"],
 )
 
 # --- Bookings ---
@@ -134,6 +136,17 @@ v1_router.include_router(
     application_router,
     prefix="/worker/applications",
     tags=["Worker Applications"],
+)
+v1_router.include_router(
+    quotation_router,
+    prefix="",
+    tags=["Quotations"],
+)
+v1_router.include_router(
+    quotation_router,
+    prefix="/worker/quotations",
+    tags=["Quotations"],
+    include_in_schema=False,
 )
 
 # --- Workers ---

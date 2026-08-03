@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../models/job_application_model.dart';
 import '../../services/job_application_service.dart';
+import '../quotations/quotation_form_screen.dart';
 
 class WorkerApplicationsScreen extends StatefulWidget {
   const WorkerApplicationsScreen({super.key});
@@ -212,7 +213,7 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
     if (item.isAccepted) {
       statusBg = const Color(0xFFD1FAE5);
       statusFg = const Color(0xFF059669);
-      statusText = 'Accepted';
+      statusText = 'Selected';
     } else if (item.isRejected) {
       statusBg = const Color(0xFFFEE2E2);
       statusFg = const Color(0xFFDC2626);
@@ -287,6 +288,35 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
           const SizedBox(height: 12),
           const Divider(height: 1, color: Color(0xFFF1F5F9)),
           const SizedBox(height: 12),
+
+          if (item.isAccepted) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFECFDF5),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFA7F3D0)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.emoji_events_rounded, color: Color(0xFF059669), size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Congratulations! You have been selected for this booking.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF047857),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
 
           // Info Grid: Applied Date & Scheduled Date
           Row(
@@ -366,6 +396,39 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
               ),
             ),
           ],
+
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final refresh = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QuotationFormScreen(
+                      bookingId: item.bookingId,
+                      applicationId: item.id,
+                      bookingNumber: item.bookingNumber,
+                      serviceName: item.serviceName,
+                    ),
+                  ),
+                );
+                if (refresh == true) {
+                  _loadApplications();
+                }
+              },
+              icon: const Icon(Icons.request_quote_rounded, size: 18),
+              label: const Text('Manage Quotation'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0F172A),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -166,6 +166,17 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     }
   }
 
+  Future<void> _changeAddress() async {
+    final selected = await Navigator.pushNamed(context, AppRoutes.selectAddress);
+    if (selected is AddressModel && mounted) {
+      setState(() {
+        _selectedAddress = selected;
+      });
+    } else if (mounted) {
+      _fetchSavedAddresses();
+    }
+  }
+
   void _showAddressPickerModal() {
     showModalBottomSheet(
       context: context,
@@ -674,7 +685,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     if (addr == null) return const SizedBox.shrink();
 
     return GestureDetector(
-      onTap: _showAddressPickerModal,
+      onTap: _changeAddress,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

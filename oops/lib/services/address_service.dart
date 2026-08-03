@@ -26,9 +26,20 @@ class AddressService {
   /// Default address is first in the list (backend-sorted).
   Future<List<AddressModel>> listAddresses() async {
     final res = await ApiService.instance.get(ApiEndpoints.customerAddresses);
-    final addressList = res['addresses'] as List<dynamic>? ?? [];
+    final List addressList;
+    if (res['addresses'] is List) {
+      addressList = res['addresses'] as List;
+    } else if (res['data'] is List) {
+      addressList = res['data'] as List;
+    } else if (res['data'] is Map && res['data']['addresses'] is List) {
+      addressList = res['data']['addresses'] as List;
+    } else {
+      addressList = [];
+    }
+
     return addressList
-        .map((e) => AddressModel.fromJson(e as Map<String, dynamic>))
+        .whereType<Map>()
+        .map((e) => AddressModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();
   }
 
@@ -39,7 +50,8 @@ class AddressService {
     final res = await ApiService.instance.get(
       '${ApiEndpoints.customerAddresses}/$addressId',
     );
-    return AddressModel.fromJson(res);
+    final mapData = (res['data'] is Map) ? Map<String, dynamic>.from(res['data']) : res;
+    return AddressModel.fromJson(mapData);
   }
 
   // ── Create address ────────────────────────────────────────────────────────
@@ -51,7 +63,8 @@ class AddressService {
       ApiEndpoints.customerAddresses,
       payload,
     );
-    return AddressModel.fromJson(res);
+    final mapData = (res['data'] is Map) ? Map<String, dynamic>.from(res['data']) : res;
+    return AddressModel.fromJson(mapData);
   }
 
   // ── Update address ────────────────────────────────────────────────────────
@@ -65,7 +78,8 @@ class AddressService {
       '${ApiEndpoints.customerAddresses}/$addressId',
       payload,
     );
-    return AddressModel.fromJson(res);
+    final mapData = (res['data'] is Map) ? Map<String, dynamic>.from(res['data']) : res;
+    return AddressModel.fromJson(mapData);
   }
 
   // ── Delete address ────────────────────────────────────────────────────────
@@ -87,6 +101,7 @@ class AddressService {
     final res = await ApiService.instance.patch(
       '${ApiEndpoints.customerAddresses}/$addressId/default',
     );
-    return AddressModel.fromJson(res);
+    final mapData = (res['data'] is Map) ? Map<String, dynamic>.from(res['data']) : res;
+    return AddressModel.fromJson(mapData);
   }
 }

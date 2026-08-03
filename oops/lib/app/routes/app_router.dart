@@ -33,7 +33,8 @@ import '../../customer/payment/payment_screen.dart';
 import '../../customer/payment/invoice_screen.dart';
 import '../../customer/reviews/review_screen.dart';
 import '../../customer/normal_booking/service_selection/service_selection_screen.dart';
-import '../../customer/normal_booking/booking_details/booking_details_screen.dart';
+import '../../customer/normal_booking/booking_details/booking_details_screen.dart' as create_booking;
+import '../../customer/bookings/booking_details/booking_details_screen.dart' as view_booking;
 import '../../customer/normal_booking/schedule/schedule_screen.dart';
 import '../../customer/normal_booking/price_estimation/price_estimation_screen.dart';
 import '../../customer/normal_booking/booking_summary/booking_summary_screen.dart';
@@ -429,7 +430,10 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>?;
         final catId = args?['category_id'] as String? ?? args?['id'] as String? ?? '';
         final catName = args?['category_name'] as String? ?? args?['name'] as String? ?? 'Category Details';
-        return _build(CategoryScreen(categoryId: catId, categoryName: catName), settings);
+        if (catId.isNotEmpty) {
+          return _build(CategoryScreen(categoryId: catId, categoryName: catName), settings);
+        }
+        return _build(const ServicesScreen(), settings);
 
       case AppRoutes.customerServices:
         return _build(const ServicesScreen(), settings);
@@ -515,6 +519,7 @@ class AppRouter {
         return _build(const WalletScreen(), settings);
 
       // ── Address & Chat & Payment & Review ──────────────────────────────────
+      case AppRoutes.selectAddress:
       case AppRoutes.bookingAddress:
         return _build(const SelectAddressScreen(), settings);
 
@@ -532,6 +537,7 @@ class AppRouter {
         return _build(const ReviewScreen(), settings);
 
       // ── Bookings Management Flow ──────────────────────────────────────────
+      case AppRoutes.customerBookings:
       case AppRoutes.myBookings:
         return _build(const MyBookingsScreen(), settings);
 
@@ -594,8 +600,11 @@ class AppRouter {
       case AppRoutes.serviceSelection:
         return _build(const ServicesScreen(), settings);
 
+      case AppRoutes.createBookingDetails:
+        return _build(const create_booking.BookingDetailsScreen(), settings);
+
       case AppRoutes.bookingDetails:
-        return _build(const BookingDetailsScreen(), settings);
+        return _build(const view_booking.BookingDetailsScreen(), settings);
 
       case AppRoutes.bookingSchedule:
         return _build(const ScheduleScreen(), settings);

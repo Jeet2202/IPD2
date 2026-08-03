@@ -52,25 +52,57 @@ class AddressModel {
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
+    final idVal = (json['id'] ?? json['_id'] ?? '').toString();
+    final customerIdVal = (json['customer_id'] ?? json['customerId'] ?? '').toString();
+    final labelVal = (json['label'] ?? 'Home').toString();
+    final fullNameVal = (json['full_name'] ?? json['fullName'] ?? json['name'] ?? '').toString();
+    final phoneVal = (json['phone'] ?? '').toString();
+    final addressLine1Val = (json['address_line_1'] ?? json['addressLine1'] ?? json['address_line'] ?? json['address'] ?? '').toString();
+    final addressLine2Val = json['address_line_2'] as String? ?? json['addressLine2'] as String?;
+    final landmarkVal = json['landmark'] as String?;
+    final cityVal = (json['city'] ?? '').toString();
+    final stateVal = (json['state'] ?? '').toString();
+    final countryVal = (json['country'] ?? 'India').toString();
+    final postalCodeVal = (json['postal_code'] ?? json['postalCode'] ?? json['pincode'] ?? json['pin_code'] ?? '').toString();
+
+    double? lat;
+    if (json['latitude'] != null) {
+      lat = double.tryParse(json['latitude'].toString());
+    } else if (json['lat'] != null) {
+      lat = double.tryParse(json['lat'].toString());
+    }
+
+    double? lng;
+    if (json['longitude'] != null) {
+      lng = double.tryParse(json['longitude'].toString());
+    } else if (json['lng'] != null) {
+      lng = double.tryParse(json['lng'].toString());
+    }
+
+    final isDefaultVal = json['is_default'] == true || json['isDefault'] == true;
+    final isDeletedVal = json['is_deleted'] == true || json['isDeleted'] == true;
+    final createdAtVal = (json['created_at'] ?? json['createdAt'] ?? DateTime.now().toIso8601String()).toString();
+    final updatedAtVal = (json['updated_at'] ?? json['updatedAt'] ?? DateTime.now().toIso8601String()).toString();
+
     return AddressModel(
-      id: json['id'] as String,
-      customerId: json['customer_id'] as String,
-      label: json['label'] as String,
-      fullName: json['full_name'] as String,
-      phone: json['phone'] as String,
-      addressLine1: json['address_line_1'] as String,
-      addressLine2: json['address_line_2'] as String?,
-      landmark: json['landmark'] as String?,
-      city: json['city'] as String,
-      state: json['state'] as String,
-      country: json['country'] as String? ?? 'India',
-      postalCode: json['postal_code'] as String,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
-      isDefault: json['is_default'] as bool,
-      isDeleted: json['is_deleted'] as bool,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
+      id: idVal,
+      customerId: customerIdVal,
+      label: labelVal,
+      fullName: fullNameVal,
+      phone: phoneVal,
+      addressLine1: addressLine1Val,
+      addressLine2: addressLine2Val,
+      landmark: landmarkVal,
+      city: cityVal,
+      state: stateVal,
+      country: countryVal,
+      postalCode: postalCodeVal,
+      latitude: lat,
+      longitude: lng,
+      isDefault: isDefaultVal,
+      isDeleted: isDeletedVal,
+      createdAt: createdAtVal,
+      updatedAt: updatedAtVal,
     );
   }
 

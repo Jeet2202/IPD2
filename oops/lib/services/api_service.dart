@@ -62,7 +62,7 @@ class ApiService {
     return false;
   }
 
-  Future<Map<String, dynamic>> _send(
+  Future<dynamic> _send(
     String method,
     String path,
     Future<http.Response> Function(Uri uri) request, {
@@ -131,7 +131,7 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> get(
+  Future<dynamic> get(
     String path, {
     Map<String, String>? params,
   }) async {
@@ -148,7 +148,7 @@ class ApiService {
     return HomeModel.fromJson(res);
   }
 
-  Future<Map<String, dynamic>> getCategoryServices(
+  Future<dynamic> getCategoryServices(
     String categoryId, {
     int page = 1,
     int limit = 10,
@@ -175,11 +175,11 @@ class ApiService {
   }
 
   Future<CategoryModel> getCategoryById(String categoryId) async {
-    final res = await get('/categories/$categoryId');
+    final res = await get('/categories/$categoryId') as Map<String, dynamic>;
     return CategoryModel.fromJson(res);
   }
 
-  Future<Map<String, dynamic>> fetchServices({
+  Future<dynamic> fetchServices({
     int page = 1,
     int limit = 10,
     String? categoryId,
@@ -218,11 +218,11 @@ class ApiService {
     return get('/services?$queryString');
   }
 
-  Future<Map<String, dynamic>> getServiceById(String serviceId) async {
+  Future<dynamic> getServiceById(String serviceId) async {
     return get('/services/$serviceId');
   }
 
-  Future<Map<String, dynamic>> searchServices({
+  Future<dynamic> searchServices({
     String? query,
     int page = 1,
     int pageSize = 10,
@@ -261,7 +261,7 @@ class ApiService {
     return get('/services/search?$queryString');
   }
 
-  Future<Map<String, dynamic>> post(
+  Future<dynamic> post(
     String path,
     Map<String, dynamic> body,
   ) async {
@@ -272,7 +272,7 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> put(
+  Future<dynamic> put(
     String path,
     Map<String, dynamic> body,
   ) async {
@@ -283,7 +283,7 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> delete(String path, {Map<String, dynamic>? body}) async {
+  Future<dynamic> delete(String path, {Map<String, dynamic>? body}) async {
     return _send(
       'DELETE',
       path,
@@ -291,7 +291,7 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> patch(String path, [Map<String, dynamic>? body]) async {
+  Future<dynamic> patch(String path, [Map<String, dynamic>? body]) async {
     return _send(
       'PATCH',
       path,
@@ -299,7 +299,7 @@ class ApiService {
     );
   }
 
-  Future<Map<String, dynamic>> uploadMultipart(
+  Future<dynamic> uploadMultipart(
     String path,
     String filePath, {
     String fileField = 'file',
@@ -371,12 +371,12 @@ class ApiService {
     }
   }
 
-  Map<String, dynamic> _handle(http.Response res) {
-    Map<String, dynamic> body = {};
+  dynamic _handle(http.Response res) {
+    dynamic body = {};
     try {
       if (res.body.isNotEmpty) {
         final decoded = jsonDecode(res.body);
-        if (decoded is Map<String, dynamic>) {
+        if (decoded is Map<String, dynamic> || decoded is List) {
           body = decoded;
         }
       }
@@ -386,7 +386,8 @@ class ApiService {
 
     if (res.statusCode >= 200 && res.statusCode < 300) return body;
 
-    throw ApiException.fromResponse(statusCode: res.statusCode, body: body);
+    final errMap = (body is Map<String, dynamic>) ? body : <String, dynamic>{};
+    throw ApiException.fromResponse(statusCode: res.statusCode, body: errMap);
   }
 }
 

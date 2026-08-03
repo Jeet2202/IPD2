@@ -6,6 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../models/booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../quotations/customer_quotations_screen.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   final BookingModel? booking;
@@ -183,6 +184,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                             // ── Estimated Price Summary Card ───────────────
                             _buildPriceSummaryCard(),
+
+                            const SizedBox(height: 20),
+
+                            // ── Worker Quotations Button Card ───────────────
+                            _buildViewQuotationsCard(),
 
                             const SizedBox(height: 28),
                           ],
@@ -498,6 +504,67 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           Text(
             '₹${_booking!.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.primary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildViewQuotationsCard() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFBFDBFE)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.request_quote_rounded, color: Color(0xFF2563EB), size: 22),
+              SizedBox(width: 10),
+              Text(
+                'Worker Quotations',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1E40AF)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Review, compare, and inspect custom price quotations submitted by interested workers.',
+            style: TextStyle(fontSize: 12, color: Color(0xFF3B82F6), height: 1.3),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final accepted = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CustomerQuotationsScreen(
+                      bookingId: _booking!.id,
+                      bookingNumber: _booking!.bookingNumber,
+                    ),
+                  ),
+                );
+                if (accepted == true && mounted) {
+                  _fetchBookingById(_booking!.id);
+                }
+              },
+              icon: const Icon(Icons.list_alt_rounded, size: 18),
+              label: const Text('View Received Quotations'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -67,10 +67,11 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('SavedAddressesScreen _loadAddresses error: $e\n$stack');
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load addresses. Please try again.';
+          _errorMessage = 'Failed to load addresses: ${e.toString()}';
           _isLoading = false;
         });
       }

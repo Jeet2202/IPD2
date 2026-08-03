@@ -93,31 +93,34 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   Future<void> _fetchPage(int targetPage, {bool isInitial = false}) async {
-    if (widget.categoryId.isEmpty) {
-      if (mounted) {
-        setState(() {
-          _isLoadingInitial = false;
-          _isFetchingMore = false;
-        });
-      }
-      return;
-    }
-
     if (!isInitial) {
       setState(() => _isFetchingMore = true);
     }
 
     try {
-      final res = await ApiService.instance.getCategoryServices(
-        widget.categoryId,
-        page: targetPage,
-        limit: _limit,
-        sortBy: _filterData.sortBy,
-        isFeatured: _filterData.isFeatured ? true : null,
-        minPrice: _filterData.minPrice,
-        maxPrice: _filterData.maxPrice,
-        maxDuration: _filterData.maxDuration,
-      );
+      final Map<String, dynamic> res;
+      if (widget.categoryId.isNotEmpty) {
+        res = await ApiService.instance.getCategoryServices(
+          widget.categoryId,
+          page: targetPage,
+          limit: _limit,
+          sortBy: _filterData.sortBy,
+          isFeatured: _filterData.isFeatured ? true : null,
+          minPrice: _filterData.minPrice,
+          maxPrice: _filterData.maxPrice,
+          maxDuration: _filterData.maxDuration,
+        );
+      } else {
+        res = await ApiService.instance.fetchServices(
+          page: targetPage,
+          limit: _limit,
+          sortBy: _filterData.sortBy,
+          isFeatured: _filterData.isFeatured ? true : null,
+          minPrice: _filterData.minPrice,
+          maxPrice: _filterData.maxPrice,
+          maxDuration: _filterData.maxDuration,
+        );
+      }
 
       final itemsRaw = res['items'] as List? ?? [];
       final newServices = itemsRaw.map((e) => ServiceModel.fromJson(e as Map<String, dynamic>)).toList();

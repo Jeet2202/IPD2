@@ -124,6 +124,13 @@ class Settings(BaseSettings):
     BOOKING_MAX_ADVANCE_DAYS: int = 60          # 60 days max booking window
     BOOKING_SAME_DAY_BUFFER_HOURS: int = 1     # 1 hour minimum lead time for today's slots
 
+    # --- Quotation Configuration ---
+    QUOTATION_DEFAULT_VALIDITY_DAYS: int = 14
+    QUOTATION_MAX_VALIDITY_DAYS: int = 90
+    QUOTATION_MIN_PRICE: float = 0.0
+    QUOTATION_MAX_PRICE: float = 500000.0
+    QUOTATION_DEFAULT_TAX_RATE: float = 0.0
+
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None
 

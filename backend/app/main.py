@@ -70,6 +70,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     from app.category.models import Service, ServiceCategory
     from app.customer.models import CustomerProfile
     from app.otp.models import OTP
+    from app.quotation.models import Quotation, QuotationHistory
     from app.worker.models import WorkerProfile
 
     await connect_to_database(
@@ -85,6 +86,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             Address,
             Booking,
             JobApplication,
+            Quotation,
+            QuotationHistory,
         ]
     )
     yield

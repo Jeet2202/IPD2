@@ -530,7 +530,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
-                              AppRoutes.bookingDetails,
+                              AppRoutes.createBookingDetails,
                               arguments: {
                                 'service': service,
                                 'booking_type': 'inspection_request',
@@ -554,7 +554,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
-                              AppRoutes.bookingDetails,
+                              AppRoutes.createBookingDetails,
                               arguments: {
                                 'service': service,
                                 'booking_type': 'normal_service',

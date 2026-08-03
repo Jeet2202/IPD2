@@ -228,3 +228,36 @@ class Gender(str, Enum):
     FEMALE = "female"
     OTHER = "other"
     PREFER_NOT_TO_SAY = "prefer_not_to_say"
+
+
+class QuotationStatus(str, Enum):
+    """
+    Quotation lifecycle states.
+
+    DRAFT     — Created by worker, not yet submitted.
+    SUBMITTED — Submitted by worker, awaiting customer review.
+    ACCEPTED  — Accepted by customer.
+    REJECTED  — Rejected by customer.
+    EXPIRED   — Passed validity_date without acceptance.
+    CANCELLED — Cancelled by worker or system before acceptance.
+    """
+    DRAFT = "draft"
+    SUBMITTED = "submitted"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    EXPIRED = "expired"
+    CANCELLED = "cancelled"
+
+
+class QuotationEventType(str, Enum):
+    """
+    Audit trail event types for quotation lifecycle.
+    """
+    CREATED = "created"
+    UPDATED = "updated"
+    SUBMITTED = "submitted"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    EXPIRED = "expired"
+    CANCELLED = "cancelled"
+    WORKER_ASSIGNED = "worker_assigned"

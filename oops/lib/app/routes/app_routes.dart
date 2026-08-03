@@ -26,6 +26,7 @@ class AppRoutes {
 
   // Normal Booking
   static const String serviceSelection      = '/customer/booking/service-selection';
+  static const String createBookingDetails  = '/customer/booking/create-details';
   static const String bookingDetails        = '/customer/booking/details';
   static const String bookingAddress        = '/customer/booking/address';
   static const String bookingSchedule       = '/customer/booking/schedule';
@@ -72,6 +73,7 @@ class AppRoutes {
   static const String customerProfile       = '/customer/profile';
   static const String editProfile           = '/customer/profile/edit';
   static const String savedAddresses        = '/customer/profile/saved-addresses';
+  static const String selectAddress         = '/customer/address/select';
   static const String addAddress            = '/customer/profile/saved-addresses/add';
   static const String editAddress           = '/customer/profile/saved-addresses/edit';
   static const String mapPicker             = '/customer/address/map-picker';
