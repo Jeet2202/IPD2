@@ -87,6 +87,19 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         RecommendationHistory,
         SavedSearch,
     )
+    from app.referral.models import (
+        Referral,
+        Reward,
+        RewardHistory,
+    )
+    from app.support.models import (
+        FAQ,
+        HelpArticle,
+        SupportTicket,
+        SupportFeedback,
+        SupportContact,
+        SOSConfiguration,
+    )
     from app.fraud.models import (
         AbuseReport,
         FraudAlert,
@@ -174,6 +187,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             RecentlyViewed,
             SavedSearch,
             RecommendationHistory,
+            Referral,
+            Reward,
+            RewardHistory,
+            FAQ,
+            HelpArticle,
+            SupportTicket,
+            SupportFeedback,
+            SupportContact,
+            SOSConfiguration,
             DeviceToken,
             Notification,
             NotificationPreference,

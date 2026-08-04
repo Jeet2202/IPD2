@@ -14,6 +14,7 @@ from app.auth.dependencies import get_current_user
 from app.auth.models import User
 from app.uploads.service import CloudinaryService
 from app.booking.models import Booking
+from app.utils.enums import UserRole
 
 router = APIRouter()
 
