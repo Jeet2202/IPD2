@@ -18,7 +18,7 @@ class PushNotificationService {
   PushNotificationService._();
   static final PushNotificationService instance = PushNotificationService._();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  FirebaseMessaging get _fcm => FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
@@ -111,6 +111,7 @@ class PushNotificationService {
   }
 
   Future<void> removeDeviceToken() async {
+    if (!_isInitialized) return;
     try {
       final token = await _fcm.getToken();
       if (token != null) {

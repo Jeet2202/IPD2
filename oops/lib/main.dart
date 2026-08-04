@@ -18,9 +18,13 @@ Future<void> main() async {
   // Load persistent authentication session tokens
   await TokenStorage.init();
 
-  // Initialize push notifications if token exists
+  // Initialize push notifications safely if token exists
   if (TokenStorage.accessToken.isNotEmpty) {
-    await PushNotificationService.instance.initialize();
+    try {
+      await PushNotificationService.instance.initialize();
+    } catch (e) {
+      debugPrint('FCM init ignored during startup: $e');
+    }
   }
 
   // Lock orientation to portrait

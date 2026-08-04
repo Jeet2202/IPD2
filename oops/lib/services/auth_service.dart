@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../constants/api_endpoints.dart';
 import '../models/user_model.dart';
 import '../utils/token_storage.dart';
@@ -48,8 +49,12 @@ class AuthService {
       userRole: user['role'] as String?,
     );
 
-    // Initialize push notifications
-    await PushNotificationService.instance.initialize();
+    // Initialize push notifications safely
+    try {
+      await PushNotificationService.instance.initialize();
+    } catch (e) {
+      debugPrint('FCM init ignored during verifyEmailOtp: $e');
+    }
 
     return UserModel.fromJson(user);
   }
@@ -88,8 +93,12 @@ class AuthService {
       userRole: user['role'] as String?,
     );
 
-    // Initialize push notifications
-    await PushNotificationService.instance.initialize();
+    // Initialize push notifications safely
+    try {
+      await PushNotificationService.instance.initialize();
+    } catch (e) {
+      debugPrint('FCM init ignored during login: $e');
+    }
 
     return UserModel.fromJson(user);
   }
