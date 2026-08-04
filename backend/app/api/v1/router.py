@@ -55,10 +55,12 @@ from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
 from app.privacy.router import router as privacy_router
 from app.quotation.router import router as quotation_router
+from app.referral.router import router as referral_router
 from app.review.router import router as review_domain_router
 from app.reviews.router import router as reviews_router
 from app.security_center.router import router as security_router
 from app.service.router import router as service_router
+from app.support.router import router as support_router
 from app.trust.router import router as trust_router
 from app.trust_intelligence.router import router as trust_intelligence_router
 from app.uploads.router import router as uploads_router
@@ -303,6 +305,22 @@ v1_router.include_router(
     engagement_router,
     prefix="/engagement",
     tags=["Customer Engagement"],
+)
+
+# --- Referrals & Rewards ---
+# Referral code management, friend invitations, tracking, reward points ledger, and achievement badges.
+v1_router.include_router(
+    referral_router,
+    prefix="",
+    tags=["Referrals & Rewards"],
+)
+
+# --- Help Center & Customer Support ---
+# FAQs, Knowledge Base articles, support tickets, feedback, SOS, and React Admin support management.
+v1_router.include_router(
+    support_router,
+    prefix="",
+    tags=["Help Center & Customer Support"],
 )
 
 # --- Admin ---

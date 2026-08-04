@@ -164,6 +164,21 @@ OPENAPI_TAGS: list[dict[str, str]] = [
         ),
     },
     {
+        "name": "Referrals & Rewards",
+        "description": (
+            "Referral code management, friend invitations, tracking, reward points ledger, "
+            "achievement milestone badges, and platform referral leaderboard."
+        ),
+    },
+    {
+        "name": "Help Center & Customer Support",
+        "description": (
+            "Frequently Asked Questions (FAQs), Knowledge Base articles & troubleshooting guides, "
+            "customer/worker support ticket management, app feedback, SOS emergency helplines, "
+            "support contact information, and React Admin support management."
+        ),
+    },
+    {
         "name": "Admin",
         "description": (
             "Platform administration — user management, job oversight, "
