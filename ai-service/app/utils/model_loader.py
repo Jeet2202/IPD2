@@ -31,6 +31,7 @@ class ModelLoader:
             logger.info(f"Loading Joblib model from {path}")
             model = joblib.load(path)
             cls._cache[model_filename] = model
+            logger.info(f"Audit: [MODEL_LOADED] entity_id={model_filename} details=joblib")
             return model
         except Exception as e:
             logger.error(f"Failed to load Joblib model {model_filename}: {str(e)}")
@@ -52,6 +53,7 @@ class ModelLoader:
             with open(path, 'rb') as f:
                 model = pickle.load(f)
             cls._cache[model_filename] = model
+            logger.info(f"Audit: [MODEL_LOADED] entity_id={model_filename} details=pickle")
             return model
         except Exception as e:
             logger.error(f"Failed to load Pickle model {model_filename}: {str(e)}")
@@ -67,6 +69,7 @@ class ModelLoader:
             logger.info(f"Loading SentenceTransformer model: {model_name}")
             model = SentenceTransformer(model_name)
             cls._cache[model_name] = model
+            logger.info(f"Audit: [MODEL_LOADED] entity_id={model_name} details=sentence-transformer")
             return model
         except Exception as e:
             logger.error(f"Failed to load SentenceTransformer model {model_name}: {str(e)}")
@@ -75,6 +78,8 @@ class ModelLoader:
     @classmethod
     def clear_cache(cls):
         """Clear the model cache"""
+        for model_name in cls._cache.keys():
+            logger.info(f"Audit: [MODEL_UNLOADED] entity_id={model_name}")
         cls._cache.clear()
         logger.info("Model cache cleared")
 
