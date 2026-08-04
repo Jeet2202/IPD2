@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from typing import Dict, Any
 
 from app.sockets import connection_manager, presence_manager
-from app.api.dependencies.auth import get_current_user, get_current_admin
+from app.auth.dependencies import get_current_user, get_current_admin
 from app.auth.models import User
 
 router = APIRouter()

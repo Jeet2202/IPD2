@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
 from typing import Any
 
 from app.auth.models import User
-from app.api.dependencies.auth import get_current_user, get_current_admin
+from app.auth.dependencies import get_current_user, get_current_admin
 from .schemas import (
     DeviceTokenRequest, DeviceTokenUpdate, DeviceTokenRemove,
     NotificationListResponse, NotificationResponse,
