@@ -127,7 +127,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            'KaamSetu',
+                            'Ally',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,

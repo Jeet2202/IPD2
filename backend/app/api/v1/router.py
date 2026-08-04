@@ -313,3 +313,12 @@ v1_router.include_router(
     prefix="/admin",
     tags=["Admin"],
 )
+
+# --- Real-Time Sockets ---
+# Socket.IO infrastructure health and connection status
+from app.api.v1.endpoints.sockets import router as sockets_router
+v1_router.include_router(
+    sockets_router,
+    prefix="/sockets",
+    tags=["Real-Time"],
+)

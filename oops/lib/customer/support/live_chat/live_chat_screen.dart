@@ -16,7 +16,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
   final List<Map<String, dynamic>> _messages = [
     {
       'isAgent': true,
-      'text': 'Hello Rahul! I am Priya from KaamSetu Care. How can I assist you today with #BK-90214?',
+      'text': 'Hello Rahul! I am Priya from Ally Care. How can I assist you today with #BK-90214?',
       'time': '11:02 AM',
     },
     {
@@ -26,7 +26,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     },
     {
       'isAgent': true,
-      'text': 'Yes absolutely! All electrical spare parts supplied by KaamSetu verified technicians carry an automatic 30-day free warranty & replacement guarantee.',
+      'text': 'Yes absolutely! All electrical spare parts supplied by Ally verified technicians carry an automatic 30-day free warranty & replacement guarantee.',
       'time': '11:05 AM',
     },
   ];
@@ -59,7 +59,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Priya (KaamSetu Care)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                Text('Priya (Ally Care)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                 Text('Active Now • Typically replies in 1 min', style: TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
               ],
             ),

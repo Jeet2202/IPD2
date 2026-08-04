@@ -299,7 +299,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               // OSM Tile Layer — free, no API key
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.kaamsetu.app',
+                userAgentPackageName: 'com.ally.app',
                 maxZoom: 19,
                 // Tile provider uses default caching
               ),

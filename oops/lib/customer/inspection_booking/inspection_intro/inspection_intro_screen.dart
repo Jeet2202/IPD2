@@ -164,9 +164,9 @@ class InspectionIntroScreen extends StatelessWidget {
 
                 const SizedBox(height: 28),
 
-                // ── KaamSetu Guarantees ───────────────────────────────
+                // ── Ally Guarantees ───────────────────────────────
                 const Text(
-                  'Why Choose KaamSetu Inspection?',
+                  'Why Choose Ally Inspection?',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                 ),
                 const SizedBox(height: 14),

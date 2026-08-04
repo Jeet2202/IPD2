@@ -7,7 +7,7 @@
 
 
     <application
-        android:label="KaamSetu"
+        android:label="Ally"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

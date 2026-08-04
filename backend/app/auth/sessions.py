@@ -1,5 +1,5 @@
 """
-Session Management & Brute Force Protection Service — KaamSetu Auth Module (Phase 3.3).
+Session Management & Brute Force Protection Service — Ally Auth Module (Phase 3.3).
 
 Implements:
   - Brute Force Account Lockout (5 failed attempts locks account for 15 minutes).

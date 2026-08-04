@@ -82,7 +82,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                 const SizedBox(height: 24),
 
-                // ── KaamSetu Wallet Card ──────────────────────────────
+                // ── Ally Wallet Card ──────────────────────────────
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -102,7 +102,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('KaamSetu Wallet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('Ally Wallet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
                             Text('Available Balance: ₹150.00', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           ],

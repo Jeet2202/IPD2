@@ -135,7 +135,7 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Email verified successfully! Welcome to KaamSetu Partner Network.'),
+            content: Text('Email verified successfully! Welcome to Ally Partner Network.'),
             backgroundColor: Color(0xFF2563EB),
           ),
         );

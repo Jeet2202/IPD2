@@ -1,5 +1,5 @@
 """
-KaamSetu Phase 3.3 — Authentication Security End-to-End Verification Suite.
+Ally Phase 3.3 — Authentication Security End-to-End Verification Suite.
 
 Validates against live MongoDB Atlas:
   1. OTP Verification System (generation, bcrypt hashing, rate limit, retry counts, email/phone verify, OTP login).
@@ -49,7 +49,7 @@ from app.worker.models import WorkerProfile
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger("verify_auth_security")
 
-TEST_EMAIL = "sec_test_user_p33@kaamsetu.com"
+TEST_EMAIL = "sec_test_user_p33@ally.com"
 TEST_PHONE = "+919876000333"
 TEST_PASSWORD = "SecPassword@2026"
 
@@ -163,7 +163,7 @@ async def test_4_login_history_and_audit_logs(service: AuthService) -> None:
 async def run_security_verification() -> None:
     """Run all Phase 3.3 verification tests."""
     logger.info("=========================================================")
-    logger.info(" KAAMSETU PHASE 3.3 — SECURITY & SESSION VERIFICATION")
+    logger.info(" ALLY PHASE 3.3 — SECURITY & SESSION VERIFICATION")
     logger.info("=========================================================")
 
     await setup_test_db()

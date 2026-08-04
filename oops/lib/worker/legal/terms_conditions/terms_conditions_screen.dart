@@ -71,17 +71,17 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
                     _buildLegalSection(
                       title: '2. Inspection & Quotation Standards',
                       content:
-                          'When accepting pre-repair inspection jobs, partners must conduct honest diagnostics, generate itemized quotations using the KaamSetu app, and strictly honor approved estimates.',
+                          'When accepting pre-repair inspection jobs, partners must conduct honest diagnostics, generate itemized quotations using the Ally app, and strictly honor approved estimates.',
                     ),
                     _buildLegalSection(
                       title: '3. Payments & Weekly Escrow Settlements',
                       content:
-                          'Payments for completed jobs are credited to KaamSetu wallet upon customer sign-off. Weekly payouts are processed every Monday directly to registered bank accounts.',
+                          'Payments for completed jobs are credited to Ally wallet upon customer sign-off. Weekly payouts are processed every Monday directly to registered bank accounts.',
                     ),
                     _buildLegalSection(
                       title: '4. Code of Conduct & Customer Safety',
                       content:
-                          'Partners must maintain professional decorum, arrive punctually at customer premises, wear proper safety gear, and adhere to KaamSetu safety protocols.',
+                          'Partners must maintain professional decorum, arrive punctually at customer premises, wear proper safety gear, and adhere to Ally safety protocols.',
                     ),
                     _buildLegalSection(
                       title: '5. Cancellation & Deactivation Policy',

@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.4: Booking Timeline & Status Tracking Automated Verification
+Ally — Phase 4.7.4: Booking Timeline & Status Tracking Automated Verification
 
 Verifies:
 1. Timeline generation across all lifecycle milestones (BOOKING_CREATED -> WORKER_ASSIGNED -> WORKER_EN_ROUTE -> ARRIVED -> IN_PROGRESS -> WORK_COMPLETED -> CUSTOMER_CONFIRMED).
@@ -27,7 +27,7 @@ from app.core.exceptions import BadRequestException, ForbiddenException, NotFoun
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — BOOKING TIMELINE & STATUS TRACKING (PHASE 4.7.4) VERIFICATION")
+    print("ALLY — BOOKING TIMELINE & STATUS TRACKING (PHASE 4.7.4) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation])

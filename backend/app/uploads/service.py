@@ -46,7 +46,7 @@ class CloudinaryService:
         user_id: str,
     ) -> tuple[str, str]:
         """
-        Upload profile photo bytes to Cloudinary under kaamsetu/profile_pictures folder.
+        Upload profile photo bytes to Cloudinary under ally/profile_pictures folder.
 
         Returns:
             tuple[secure_url, public_id]
@@ -89,6 +89,65 @@ class CloudinaryService:
             raise InternalServerErrorException(
                 message="Failed to upload image. Please try again later.",
                 error_code="IMAGE_UPLOAD_ERROR",
+            )
+
+    @classmethod
+    def upload_booking_media(
+        cls,
+        file_bytes: bytes,
+        filename: str,
+        user_id: str,
+        booking_id: str,
+    ) -> tuple[str, str, str, int]:
+        """
+        Upload media (image or pdf) to Cloudinary under ally/bookings/{booking_id} folder.
+
+        Returns:
+            tuple[secure_url, public_id, resource_type, file_size]
+
+        Raises:
+            InternalServerErrorException on Cloudinary failure.
+        """
+        cls._configure()
+
+        folder = f"{settings.CLOUDINARY_FOLDER.strip('/')}/bookings/{booking_id}"
+        unique_suffix = uuid.uuid4().hex[:8]
+        filename_public_id = f"user_{user_id}_{unique_suffix}"
+        
+        # Determine resource type
+        is_pdf = filename.lower().endswith(".pdf")
+        resource_type = "raw" if is_pdf else "image"
+
+        try:
+            upload_result = cloudinary.uploader.upload(
+                file_bytes,
+                folder=folder,
+                public_id=filename_public_id,
+                overwrite=True,
+                resource_type=resource_type,
+                format="pdf" if is_pdf else None,
+                # No face-cropping transformation, just compress
+                transformation=[
+                    {"quality": "auto", "fetch_format": "auto"},
+                ] if not is_pdf else [],
+            )
+            secure_url = upload_result.get("secure_url")
+            result_public_id = upload_result.get("public_id")
+            size = upload_result.get("bytes", len(file_bytes))
+            
+            logger.info("Successfully uploaded booking media to Cloudinary for booking_id=%s", booking_id)
+            return secure_url, result_public_id, resource_type, size
+        except CloudinaryError as e:
+            logger.error("Cloudinary upload failed for booking_id=%s: %s", booking_id, str(e))
+            raise InternalServerErrorException(
+                message=f"Media upload failed: {str(e)}",
+                error_code="CLOUDINARY_UPLOAD_FAILED",
+            )
+        except Exception as e:
+            logger.error("Unexpected error during Cloudinary upload for booking_id=%s: %s", booking_id, str(e))
+            raise InternalServerErrorException(
+                message="Failed to upload media. Please try again later.",
+                error_code="MEDIA_UPLOAD_ERROR",
             )
 
     @classmethod
@@ -140,14 +199,14 @@ class CloudinaryService:
         service_id: str,
     ) -> tuple[str, str]:
         """
-        Upload service photo bytes to Cloudinary under kaamsetu/service_images folder.
+        Upload service photo bytes to Cloudinary under ally/service_images folder.
 
         Returns:
             tuple[secure_url, public_id]
         """
         cls._configure()
 
-        base_folder = settings.CLOUDINARY_FOLDER.strip("/").split("/")[0] if settings.CLOUDINARY_FOLDER else "kaamsetu"
+        base_folder = settings.CLOUDINARY_FOLDER.strip("/").split("/")[0] if settings.CLOUDINARY_FOLDER else "ally"
         folder = f"{base_folder}/service_images"
         unique_suffix = uuid.uuid4().hex[:8]
         filename_public_id = f"service_{service_id}_{unique_suffix}"

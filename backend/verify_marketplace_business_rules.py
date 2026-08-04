@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Complete Marketplace Business Rules (Phase 4.5.6).
+Verification script for Ally Complete Marketplace Business Rules (Phase 4.5.6).
 
 Tests end-to-end against MongoDB Atlas:
   1. Setup: Customer, Worker (incomplete profile), Open Booking.
@@ -44,7 +44,7 @@ from app.worker.models import WorkerProfile
 
 async def run_marketplace_business_rules_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — MARKETPLACE BUSINESS RULES (PHASE 4.5.6) VERIFICATION")
+    print("ALLY — MARKETPLACE BUSINESS RULES (PHASE 4.5.6) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

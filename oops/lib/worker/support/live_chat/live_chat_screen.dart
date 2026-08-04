@@ -15,7 +15,7 @@ class _WorkerLiveChatScreenState extends State<WorkerLiveChatScreen> {
   final List<Map<String, dynamic>> _messages = [
     {
       'isSystem': true,
-      'text': 'Connected with KaamSetu Partner Desk (Ticket #TCK-9902)',
+      'text': 'Connected with Ally Partner Desk (Ticket #TCK-9902)',
       'time': '10:15 AM',
     },
     {

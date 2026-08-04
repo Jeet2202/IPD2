@@ -12,7 +12,7 @@ class BookingRepository:
 
     async def get_booking_by_id(self, booking_id: str) -> Optional[BookingModel]:
         try:
-            # KaamSetu might be using ObjectIds for bookings
+            # Ally might be using ObjectIds for bookings
             query_id = ObjectId(booking_id) if ObjectId.is_valid(booking_id) else booking_id
             doc = await self.collection.find_one({"_id": query_id})
             

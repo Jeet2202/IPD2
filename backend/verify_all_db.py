@@ -1,5 +1,5 @@
 """
-KaamSetu Phase 2 — Comprehensive MongoDB Atlas Connection, Index & Round-Trip Verification Script.
+Ally Phase 2 — Comprehensive MongoDB Atlas Connection, Index & Round-Trip Verification Script.
 
 Executes Step 3 (Live Verification Against Atlas) and Step 4 (Sanity Round-Trip Test)
 for all 11 feature modules and 17 Beanie Document models.
@@ -96,7 +96,7 @@ EXPECTED_COLLECTIONS_CHECKLIST = {
 
 async def run_verification():
     print("=" * 70)
-    print("KAAMSETU PHASE 2 -- MONGODB ATLAS VERIFICATION")
+    print("ALLY PHASE 2 -- MONGODB ATLAS VERIFICATION")
     print("=" * 70)
 
     # -----------------------------------------------------------------------
@@ -146,7 +146,7 @@ async def run_verification():
     rnd1 = int(uuid4().hex[:8], 16) % 100000000
     test_user1 = User(
         full_name="UniqueTest1 Tester",
-        email=f"unique_index_test_{rnd1}@kaamsetu.com",
+        email=f"unique_index_test_{rnd1}@ally.com",
         phone=f"+9190{rnd1:08d}",
         password_hash="hash123",
         role=UserRole.CUSTOMER,
@@ -157,7 +157,7 @@ async def run_verification():
 
     test_user2 = User(
         full_name="UniqueTest2 Tester",
-        email=f"unique_index_test_{rnd1}@kaamsetu.com",  # Duplicate email
+        email=f"unique_index_test_{rnd1}@ally.com",  # Duplicate email
         phone=f"+9190{rnd1+1:08d}",
         password_hash="hash456",
         role=UserRole.CUSTOMER,
@@ -201,7 +201,7 @@ async def run_verification():
         rnd_u = int(uuid4().hex[:8], 16) % 100000000
         u = User(
             full_name="Round Trip",
-            email=f"roundtrip.{rnd_u}@kaamsetu.com",
+            email=f"roundtrip.{rnd_u}@ally.com",
             phone=f"+9191{rnd_u:08d}",
             password_hash="secret_hash",
             role=UserRole.CUSTOMER,
@@ -228,7 +228,7 @@ async def run_verification():
         rnd_w = int(uuid4().hex[:8], 16) % 100000000
         wu = User(
             full_name="Worker One",
-            email=f"roundtrip.worker.{rnd_w}@kaamsetu.com",
+            email=f"roundtrip.worker.{rnd_w}@ally.com",
             phone=f"+9192{rnd_w:08d}",
             password_hash="secret_hash",
             role=UserRole.WORKER,
@@ -435,8 +435,8 @@ async def run_verification():
 
         # P2.11 Admin & System Models
         app_set = AppSettings(
-            platform_name="KaamSetu Test",
-            support_email="support@kaamsetu.com",
+            platform_name="Ally Test",
+            support_email="support@ally.com",
             support_phone="+911800111222",
         )
         await app_set.insert()

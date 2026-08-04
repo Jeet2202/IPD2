@@ -1,5 +1,5 @@
 """
-Notification module models — centralized communication system for KaamSetu.
+Notification module models — centralized communication system for Ally.
 
 Architecture:
     - Single Beanie Document: Notification.

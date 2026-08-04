@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Worker Dashboard System (Phase 4.5.7).
+Verification script for Ally Worker Dashboard System (Phase 4.5.7).
 
 Tests end-to-end against MongoDB Atlas:
   1. Setup: Customer, Worker User, Worker Profile, open marketplace bookings.
@@ -36,7 +36,7 @@ from app.worker.service import WorkerService
 
 async def run_worker_dashboard_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — WORKER DASHBOARD SYSTEM (PHASE 4.5.7) VERIFICATION")
+    print("ALLY — WORKER DASHBOARD SYSTEM (PHASE 4.5.7) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

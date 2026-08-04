@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.6: Ratings & Reviews System Automated Verification
+Ally — Phase 4.7.6: Ratings & Reviews System Automated Verification
 
 Verifies:
 1. Review creation POST /customer/reviews for CUSTOMER_CONFIRMED booking.
@@ -32,7 +32,7 @@ from app.core.exceptions import BadRequestException, ForbiddenException, NotFoun
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — RATINGS & REVIEWS SYSTEM (PHASE 4.7.6) VERIFICATION")
+    print("ALLY — RATINGS & REVIEWS SYSTEM (PHASE 4.7.6) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation, Review, WorkerProfile])

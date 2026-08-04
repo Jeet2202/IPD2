@@ -18,7 +18,7 @@ class AboutScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'About KaamSetu',
+          'About Ally',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -46,7 +46,7 @@ class AboutScreen extends StatelessWidget {
                       child: const Icon(Icons.handyman_rounded, color: Colors.white, size: 48),
                     ),
                     const SizedBox(height: 14),
-                    const Text('KaamSetu', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                    const Text('Ally', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                     const SizedBox(height: 2),
                     const Text('Bridging Skill & Service Across India', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
@@ -81,7 +81,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'KaamSetu is India\'s premier hyper-local home services platform, empowering local skilled tradespeople while delivering transparent, inspection-first, professional home repairs to millions of households.',
+                      'Ally is India\'s premier hyper-local home services platform, empowering local skilled tradespeople while delivering transparent, inspection-first, professional home repairs to millions of households.',
                       style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5),
                     ),
                   ],

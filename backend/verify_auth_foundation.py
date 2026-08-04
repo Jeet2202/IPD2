@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Authentication Foundation.
+Verification script for Ally Authentication Foundation.
 
 Tests:
   1. Bcrypt password hashing and verification.
@@ -54,7 +54,7 @@ from app.auth.utils import (
 
 def run_tests() -> None:
     print("=" * 70)
-    print("KAAMSETU — AUTHENTICATION FOUNDATION VERIFICATION")
+    print("ALLY — AUTHENTICATION FOUNDATION VERIFICATION")
     print("=" * 70)
 
     # [Test 1] Bcrypt Password Hashing
@@ -71,7 +71,7 @@ def run_tests() -> None:
     weak_short = "short1!"
     weak_no_upper = "alllower123!"
     weak_no_digit = "NoDigitHere!"
-    strong_pwd = "StrongKaamSetu2026!#"
+    strong_pwd = "StrongAlly2026!#"
 
     assert len(validate_password_strength(weak_short)) > 0, "Failed to catch short password"
     assert len(validate_password_strength(weak_no_upper)) > 0, "Failed to catch missing uppercase"

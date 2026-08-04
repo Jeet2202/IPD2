@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # MongoDB — env vars are MONGODB_URI / MONGODB_DATABASE (matching .env)
     MONGODB_URI: str = Field(default="mongodb://localhost:27017", alias="MONGODB_URI")
-    MONGODB_DATABASE: str = Field(default="kaamsetu_db", alias="MONGODB_DATABASE")
+    MONGODB_DATABASE: str = Field(default="ally_db", alias="MONGODB_DATABASE")
 
     # Backwards-compat aliases used throughout the existing codebase
     # These just read from the same env vars

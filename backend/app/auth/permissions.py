@@ -1,5 +1,5 @@
 """
-Role-Based Access Control (RBAC) & Permissions — KaamSetu Service Marketplace.
+Role-Based Access Control (RBAC) & Permissions — Ally Service Marketplace.
 
 Defines granular operational permissions across all 11 feature modules,
 maps platform roles (customer/worker/admin) to their allowed action sets,

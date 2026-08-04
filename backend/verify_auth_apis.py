@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Authentication APIs (Phase 3.2).
+Verification script for Ally Authentication APIs (Phase 3.2).
 
 Tests end-to-end against live MongoDB Atlas:
   1. POST /auth/register (Customer & Worker profiles created in MongoDB Atlas).
@@ -46,13 +46,13 @@ from app.database import close_database_connection, connect_to_database
 from app.worker.models import WorkerProfile
 
 # Test user credentials
-TEST_CUSTOMER_EMAIL = "verify_customer_api@kaamsetu.com"
+TEST_CUSTOMER_EMAIL = "verify_customer_api@ally.com"
 TEST_CUSTOMER_PHONE = "+919800000101"
-TEST_WORKER_EMAIL = "verify_worker_api@kaamsetu.com"
+TEST_WORKER_EMAIL = "verify_worker_api@ally.com"
 TEST_WORKER_PHONE = "+919800000102"
-INITIAL_PASSWORD = "KaamSetuAuth2026!#"
-CHANGED_PASSWORD = "KaamSetuChanged2026!#"
-RECOVERED_PASSWORD = "KaamSetuRecovered2026!#"
+INITIAL_PASSWORD = "AllyAuth2026!#"
+CHANGED_PASSWORD = "AllyChanged2026!#"
+RECOVERED_PASSWORD = "AllyRecovered2026!#"
 
 
 async def cleanup_test_data(repo: AuthRepository) -> None:
@@ -73,7 +73,7 @@ async def cleanup_test_data(repo: AuthRepository) -> None:
 
 async def run_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — AUTHENTICATION APIS (PHASE 3.2) VERIFICATION")
+    print("ALLY — AUTHENTICATION APIS (PHASE 3.2) VERIFICATION")
     print("=" * 75)
 
     from app.auth.models import AuthAuditLog, RefreshToken, User

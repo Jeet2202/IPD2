@@ -46,7 +46,7 @@ class RoleSelectionScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               const Text(
-                'KaamSetu',
+                'Ally',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,

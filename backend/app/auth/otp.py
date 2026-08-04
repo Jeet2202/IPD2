@@ -1,5 +1,5 @@
 """
-Secure OTP Verification Service — KaamSetu Auth Module (Phase 3.3).
+Secure OTP Verification Service — Ally Auth Module (Phase 3.3).
 
 Implements end-to-end OTP lifecycle management:
   - Cryptographically secure 6-digit numeric OTP generation.
@@ -41,7 +41,7 @@ MAX_OTP_RESEND_ATTEMPTS = 3
 
 class OTPService:
     """
-    Business logic and security invariants for KaamSetu's OTP Verification System.
+    Business logic and security invariants for Ally's OTP Verification System.
     """
 
     @staticmethod

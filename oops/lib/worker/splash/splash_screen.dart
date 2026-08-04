@@ -106,7 +106,7 @@ class _WorkerSplashScreenState extends State<WorkerSplashScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        'KaamSetu',
+                        'Ally',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w800,

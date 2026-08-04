@@ -2,7 +2,7 @@
 Marketplace Database Seeding Utility — Development Environment Only.
 
 Populates MongoDB Atlas with realistic categories and services for testing
-the KaamSetu AI-Powered Home Services Marketplace.
+the Ally AI-Powered Home Services Marketplace.
 
 Features:
     - 100% Idempotent: Can be run repeatedly without creating duplicate records.
@@ -1476,7 +1476,7 @@ async def seed_marketplace() -> None:
     Main idempotent seeding runner for Categories and Services.
     """
     logger.info("======================================================================")
-    logger.info("  KAAMSETU MARKETPLACE SEEDING UTILITY (DEVELOPMENT ONLY)")
+    logger.info("  ALLY MARKETPLACE SEEDING UTILITY (DEVELOPMENT ONLY)")
     logger.info("======================================================================")
 
     # 1. Initialize MongoDB connection with Beanie Document Models

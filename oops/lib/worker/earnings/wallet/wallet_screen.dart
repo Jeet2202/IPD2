@@ -53,7 +53,7 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'KaamSetu Wallet',
+          'Ally Wallet',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,

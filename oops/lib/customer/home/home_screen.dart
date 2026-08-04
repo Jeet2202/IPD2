@@ -7,6 +7,10 @@ import '../../shared/utils/category_helper.dart';
 import '../../models/home_model.dart';
 import '../../models/service_model.dart';
 import '../../services/api_service.dart';
+import '../../services/ai_service.dart';
+import '../../services/location_service.dart';
+import '../../widgets/notification_bell.dart';
+import '../search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -298,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 2),
                   const Text(
-                    'Welcome to KaamSetu',
+                    'Welcome to Ally',
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -906,7 +910,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Icon(Icons.wifi_off_rounded, size: 48, color: Color(0xFFEF4444)),
           const SizedBox(height: 12),
           const Text(
-            'Unable to connect to KaamSetu',
+            'Unable to connect to Ally',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ import 'environment.dart';
 class AppConfig {
   AppConfig._();
 
-  static const String appName = 'KaamSetu';
+  static const String appName = 'Ally';
   static const String appVersion = '1.0.0';
 
   /// Centralized API Base URL obtained from EnvironmentConfig / flutter_dotenv

@@ -21,20 +21,20 @@ from app.utils.model_loader import ModelLoader
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup Events
-    logger.info("Starting up KaamSetu AI Service...")
+    logger.info("Starting up Ally AI Service...")
     await Database.connect_db()
     
     yield
     
     # Shutdown Events
-    logger.info("Shutting down KaamSetu AI Service...")
+    logger.info("Shutting down Ally AI Service...")
     await Database.close_db()
     await BackendClient.close()
     ModelLoader.clear_cache()
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="KaamSetu AI Service",
+        title="Ally AI Service",
         description="AI Microservice — Recommendations, Search, Pricing, AI Assistants",
         version="2.0.0",
         lifespan=lifespan

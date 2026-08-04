@@ -26,8 +26,8 @@ class _OffersScreenState extends State<OffersScreen> {
       'color': const Color(0xFF2563EB),
     },
     {
-      'title': '20% Instant Cashback via KaamSetu Pay',
-      'desc': 'Pay via KaamSetu Pay wallet & get up to ₹250 instant cashback.',
+      'title': '20% Instant Cashback via Ally Pay',
+      'desc': 'Pay via Ally Pay wallet & get up to ₹250 instant cashback.',
       'code': 'WALLETSAVE',
       'valid': 'Valid till 31 Aug 2026',
       'tag': 'CASHBACK',

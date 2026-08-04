@@ -1,5 +1,5 @@
 """
-KaamSetu — Booking Module Tests (Phase 4.4.1)
+Ally — Booking Module Tests (Phase 4.4.1)
 
 Follows exactly the same pattern as test_addresses.py:
     - first_name / last_name for registration
@@ -118,7 +118,7 @@ def H(token: str) -> dict:
 
 async def run_tests():
     print("=" * 60)
-    print("  KaamSetu - Booking Module Tests (Phase 4.4.1)")
+    print("  Ally - Booking Module Tests (Phase 4.4.1)")
     print("=" * 60)
     print(f"  Base URL: {BASE_URL}")
 

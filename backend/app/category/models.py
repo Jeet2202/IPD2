@@ -1,5 +1,5 @@
 """
-Service Catalog models — Categories and Services for the KaamSetu marketplace.
+Service Catalog models — Categories and Services for the Ally marketplace.
 
 Architecture:
     - TWO separate Beanie Documents: ServiceCategory and Service.
@@ -94,7 +94,7 @@ def generate_slug(name: str) -> str:
 
 class ServiceCategory(Document):
     """
-    Top-level service category in the KaamSetu marketplace.
+    Top-level service category in the Ally marketplace.
 
     Categories are the primary navigation structure in the app.
     Each category groups related services (e.g., "Electrical" contains
@@ -427,7 +427,7 @@ class Service(Document):
         default=None,
         max_length=1024,
         description="Hero image URL for service detail page",
-        examples=["https://res.cloudinary.com/kaamsetu/image/upload/v1/services/fan.jpg"],
+        examples=["https://res.cloudinary.com/ally/image/upload/v1/services/fan.jpg"],
     )
     service_image_url: str | None = Field(
         default=None,

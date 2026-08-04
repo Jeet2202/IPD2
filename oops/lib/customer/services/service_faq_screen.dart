@@ -25,8 +25,8 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
   final List<Map<String, String>> _faqs = [
     {
       'category': 'General',
-      'question': 'How are KaamSetu service professionals verified?',
-      'answer': 'All professionals undergo background checks, government ID verification, and practical skills test before joining KaamSetu.',
+      'question': 'How are Ally service professionals verified?',
+      'answer': 'All professionals undergo background checks, government ID verification, and practical skills test before joining Ally.',
     },
     {
       'category': 'Pricing & Payment',

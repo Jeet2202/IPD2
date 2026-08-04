@@ -162,7 +162,7 @@ class ReferEarnScreen extends StatelessWidget {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Sharing KaamSetu invite link...'),
+                        content: Text('Sharing Ally invite link...'),
                         backgroundColor: Color(0xFF16A34A),
                       ),
                     );

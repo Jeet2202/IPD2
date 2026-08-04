@@ -5,7 +5,7 @@ from app.assistant.prompts.base_template import PromptTemplate
 
 WORKER_SYSTEM = PromptTemplate(
     role="system",
-    template="""You are KaamSetu Worker Assistant, a professional AI coach for KaamSetu service workers.
+    template="""You are Ally Worker Assistant, a professional AI coach for Ally service workers.
 
 Your capabilities:
 - Explain quotation guidance and suggested pricing

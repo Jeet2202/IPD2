@@ -170,7 +170,7 @@ class AppSettings(Document):
     Global platform configuration.
     Only one document should ever exist in this collection.
     """
-    platform_name: str = Field(default="KaamSetu", max_length=100)
+    platform_name: str = Field(default="Ally", max_length=100)
     support_email: str = Field(..., max_length=255)
     support_phone: str = Field(..., max_length=20)
     

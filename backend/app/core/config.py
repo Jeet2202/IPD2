@@ -82,8 +82,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    JWT_ISSUER: str = "kaamsetu"
-    JWT_AUDIENCE: str = "kaamsetu-api"
+    JWT_ISSUER: str = "ally"
+    JWT_AUDIENCE: str = "ally-api"
 
     # --- Password Security ---
     BCRYPT_ROUNDS: int = 12  # Work factor: 4 for testing, 12 for production
@@ -94,8 +94,8 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USERNAME: str | None = None
     SMTP_PASSWORD: SecretStr | None = None
-    FROM_EMAIL: str = "noreply@kaamsetu.com"
-    FROM_NAME: str = "KaamSetu - AI Home Services"
+    FROM_EMAIL: str = "noreply@ally.com"
+    FROM_NAME: str = "Ally - AI Home Services"
 
     # --- OTP Configuration ---
     OTP_LENGTH: int = 6
@@ -115,7 +115,7 @@ class Settings(BaseSettings):
     CLOUDINARY_CLOUD_NAME: str | None = None
     CLOUDINARY_API_KEY: SecretStr | None = None
     CLOUDINARY_API_SECRET: SecretStr | None = None
-    CLOUDINARY_FOLDER: str = "kaamsetu/profile_pictures"
+    CLOUDINARY_FOLDER: str = "ally/profile_pictures"
 
     # --- Booking & Scheduling Configuration ---
     BOOKING_BUSINESS_START_HOUR: int = 8       # 08:00 AM
@@ -133,6 +133,10 @@ class Settings(BaseSettings):
 
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None
+
+    # --- Socket.IO Configuration ---
+    SOCKET_CORS_ALLOWED_ORIGINS: list[str] = ["*"]
+    SOCKET_MESSAGE_QUEUE: str | None = None  # e.g., "redis://localhost:6379/0"
 
     # --- Computed Properties ---
 
@@ -198,6 +202,24 @@ class Settings(BaseSettings):
         # Database URI must not be the localhost default
         if self.MONGODB_URI.get_secret_value() == "mongodb://localhost:27017":
             production_missing.append("MONGODB_URI")
+
+        # Cloudinary is required for media uploads in production
+        if not self.CLOUDINARY_CLOUD_NAME:
+            production_missing.append("CLOUDINARY_CLOUD_NAME")
+        if not self.CLOUDINARY_API_KEY:
+            production_missing.append("CLOUDINARY_API_KEY")
+        if not self.CLOUDINARY_API_SECRET:
+            production_missing.append("CLOUDINARY_API_SECRET")
+
+        # Firebase is required for push notifications in production
+        if not self.FIREBASE_CREDENTIALS_PATH:
+            production_missing.append("FIREBASE_CREDENTIALS_PATH")
+
+        # CORS origins must be restricted (not open wildcard) in production
+        if "*" in self.ALLOWED_ORIGINS:
+            production_missing.append(
+                "ALLOWED_ORIGINS (must not be ['*'] in production — set to your domain list)"
+            )
 
         if production_missing:
             raise ValueError(

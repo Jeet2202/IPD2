@@ -38,7 +38,7 @@ class _SystemStatusScreenState extends State<SystemStatusScreen> {
           'icon': Icons.engineering_rounded,
           'color': const Color(0xFFD97706),
           'title': 'Scheduled Maintenance',
-          'desc': 'KaamSetu is currently undergoing scheduled platform upgrades to serve you better. We will be back online shortly!',
+          'desc': 'Ally is currently undergoing scheduled platform upgrades to serve you better. We will be back online shortly!',
           'primary': 'Check Status',
           'secondary': 'Contact Support',
         };
@@ -74,7 +74,7 @@ class _SystemStatusScreenState extends State<SystemStatusScreen> {
           'icon': Icons.system_update_rounded,
           'color': const Color(0xFF16A34A),
           'title': 'App Update Required',
-          'desc': 'A brand new version of KaamSetu is available with enhanced safety features & faster technician dispatch.',
+          'desc': 'A brand new version of Ally is available with enhanced safety features & faster technician dispatch.',
           'primary': 'Update Now',
           'secondary': null,
         };

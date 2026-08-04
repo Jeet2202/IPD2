@@ -108,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // App name
                   const Text(
-                    'KaamSetu',
+                    'Ally',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,

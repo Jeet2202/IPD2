@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Quotation Foundation (Phase 4.6.1).
+Verification script for Ally Quotation Foundation (Phase 4.6.1).
 
 Tests end-to-end against MongoDB Atlas:
   1. Setup: Customer, Worker 1, Worker 2, Booking, and Job Applications.
@@ -47,7 +47,7 @@ from app.worker.models import WorkerProfile
 
 async def run_quotation_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — QUOTATION FOUNDATION (PHASE 4.6.1) VERIFICATION")
+    print("ALLY — QUOTATION FOUNDATION (PHASE 4.6.1) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

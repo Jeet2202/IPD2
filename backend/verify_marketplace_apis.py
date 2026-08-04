@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Worker Marketplace Foundation (Phase 4.5.1).
+Verification script for Ally Worker Marketplace Foundation (Phase 4.5.1).
 
 Tests end-to-end against MongoDB Atlas:
   1. Setup: Customer address, service, and open bookings creation.
@@ -43,7 +43,7 @@ from app.application.models import JobApplication
 
 async def run_marketplace_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — WORKER MARKETPLACE FOUNDATION (PHASE 4.5.1) VERIFICATION")
+    print("ALLY — WORKER MARKETPLACE FOUNDATION (PHASE 4.5.1) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

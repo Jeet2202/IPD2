@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.5: Centralized Booking Lifecycle Business Rules Automated Verification
+Ally — Phase 4.7.5: Centralized Booking Lifecycle Business Rules Automated Verification
 
 Verifies:
 1. Centralized state machine rules (Forward-only, non-skipping, non-retrograde, non-repeating transitions).
@@ -28,7 +28,7 @@ from app.core.exceptions import BadRequestException, ForbiddenException, NotFoun
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — LIFECYCLE BUSINESS RULES (PHASE 4.7.5) VERIFICATION")
+    print("ALLY — LIFECYCLE BUSINESS RULES (PHASE 4.7.5) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation])

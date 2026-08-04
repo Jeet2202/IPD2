@@ -451,7 +451,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                       const SizedBox(height: 28),
 
                       // Trust & Assurance Section
-                      _buildSectionTitle('Why Choose KaamSetu?'),
+                      _buildSectionTitle('Why Choose Ally?'),
                       const SizedBox(height: 14),
                       _buildTrustCard(Icons.shield_rounded, '30-Day Service Guarantee', 'Free re-service if any issue recurs within 30 days.'),
                       _buildTrustCard(Icons.verified_user_rounded, 'Background Verified Pros', 'Every professional is ID verified and skill-certified.'),

@@ -21,7 +21,7 @@ _PRICE_PATTERN = re.compile(r"(?:₹|Rs\.?\s*|INR\s*)(\d[\d,]*)|(\d[\d,]*)\s+rup
 
 _GROUNDING_FAILURE_MSG = (
     "I'm sorry, I couldn't verify that information from the available data. "
-    "Please contact KaamSetu support for accurate details."
+    "Please contact Ally support for accurate details."
 )
 
 

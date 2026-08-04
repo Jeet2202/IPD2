@@ -2,7 +2,7 @@
 Booking Beanie document model — bookings collection.
 
 Design:
-    - Booking is the central transaction record in KaamSetu.
+    - Booking is the central transaction record in Ally.
     - Each booking links: Customer → Service → Address (snapshot) → Worker (future).
     - Address is snapshotted at booking creation: changes to the address after
       booking do not affect the active job (same pattern as e-commerce orders).

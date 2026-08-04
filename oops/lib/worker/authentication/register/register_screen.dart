@@ -189,7 +189,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            'KaamSetu',
+                            'Ally',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,

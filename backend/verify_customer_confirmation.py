@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.3: Customer Confirmation & Service Acceptance Automated Verification
+Ally — Phase 4.7.3: Customer Confirmation & Service Acceptance Automated Verification
 
 Verifies:
 1. Customer completion review endpoint GET /customer/bookings/{id}/completion.
@@ -28,7 +28,7 @@ from app.core.exceptions import BadRequestException, ForbiddenException, NotFoun
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — CUSTOMER CONFIRMATION (PHASE 4.7.3) VERIFICATION")
+    print("ALLY — CUSTOMER CONFIRMATION (PHASE 4.7.3) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation])
@@ -119,8 +119,8 @@ async def main():
     await BookingService.mark_arrived(w1, str(booking.id))
     await BookingService.start_work(w1, str(booking.id))
 
-    b_photos = ["https://res.cloudinary.com/kaamsetu/pipe_before.jpg"]
-    a_photos = ["https://res.cloudinary.com/kaamsetu/pipe_after.jpg"]
+    b_photos = ["https://res.cloudinary.com/ally/pipe_before.jpg"]
+    a_photos = ["https://res.cloudinary.com/ally/pipe_after.jpg"]
     comp_res = await BookingService.complete_work(
         worker_user=w1,
         booking_id=str(booking.id),

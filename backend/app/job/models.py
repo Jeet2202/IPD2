@@ -1,5 +1,5 @@
 """
-Job module models — the central execution entity in KaamSetu.
+Job module models — the central execution entity in Ally.
 
 Architecture:
     - Single Beanie Document: Job.
@@ -129,7 +129,7 @@ class JobPricingSnapshot(BaseModel):
     base_price: float = Field(..., ge=0.0, description="Core service cost")
     inspection_charge: float = Field(default=0.0, ge=0.0, description="Pre-visit fee")
     worker_charge: float = Field(..., ge=0.0, description="Worker payout portion")
-    platform_fee: float = Field(default=0.0, ge=0.0, description="KaamSetu commission")
+    platform_fee: float = Field(default=0.0, ge=0.0, description="Ally commission")
     tax: float = Field(default=0.0, ge=0.0, description="Calculated tax (GST)")
     discount: float = Field(default=0.0, ge=0.0, description="Applied discount")
     final_amount: float = Field(..., ge=0.0, description="Total payable by customer")

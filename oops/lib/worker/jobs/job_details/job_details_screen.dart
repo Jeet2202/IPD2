@@ -374,7 +374,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                               Text('Payment Method:',
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xFF64748B))),
-                              Text('Online Prepaid (KaamSetu Escrow)',
+                              Text('Online Prepaid (Ally Escrow)',
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,

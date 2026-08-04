@@ -86,7 +86,7 @@ async def verify_email(payload: VerifyEmailRequest) -> SuccessResponse:
     user, tokens = await AuthService.verify_email(payload)
     return SuccessResponse(
         success=True,
-        message="Email address verified successfully. Welcome to KaamSetu!",
+        message="Email address verified successfully. Welcome to Ally!",
         data={
             "user": user.model_dump(mode="json"),
             "tokens": tokens.model_dump(mode="json"),

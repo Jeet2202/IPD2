@@ -97,7 +97,7 @@ class WorkerHelpCenterScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Connect with KaamSetu Partner Desk 24/7',
+                      'Connect with Ally Partner Desk 24/7',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white70,

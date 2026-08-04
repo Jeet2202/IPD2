@@ -198,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Join KaamSetu to book trusted home services',
+                  'Join Ally to book trusted home services',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,

@@ -1,7 +1,7 @@
 // lib/customer/ai_assistant/ai_assistant_screen.dart
 //
 // Full-screen AI Assistant for Customer role — Phase 5.5
-// Grounded in live KaamSetu platform data via RAG pipeline
+// Grounded in live Ally platform data via RAG pipeline
 
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
@@ -29,7 +29,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     super.initState();
     _messages.add(_ChatMessage(
       role: 'assistant',
-      content: 'Hi! I\'m your KaamSetu AI Assistant. I can help you with your bookings, check service prices, find workers, and answer any platform questions.\n\nHow can I help you today?',
+      content: 'Hi! I\'m your Ally AI Assistant. I can help you with your bookings, check service prices, find workers, and answer any platform questions.\n\nHow can I help you today?',
       grounded: false,
     ));
   }
@@ -127,7 +127,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('KaamSetu AI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                Text('Ally AI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
                 Text('Grounded AI Assistant', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
               ],
             ),

@@ -155,7 +155,7 @@ enum LocationPermissionStatus {
 ///   and set LocationService.instance = GoogleLocationService().
 class OsmLocationService implements LocationService {
   static const _nominatimBase = 'https://nominatim.openstreetmap.org';
-  static const _userAgent = 'KaamSetu/1.0 (student project; contact@kaamsetu.app)';
+  static const _userAgent = 'Ally/1.0 (student project; contact@ally.app)';
   static const _timeout = Duration(seconds: 10);
 
   final http.Client _httpClient;

@@ -489,7 +489,7 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.info_outline_rounded,
-                      title: 'About KaamSetu Partner',
+                      title: 'About Ally Partner',
                       subtitle: 'Version 1.0.0 (Build 2026.08)',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.workerAbout),
                     ),

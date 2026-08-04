@@ -151,7 +151,7 @@ class RevisedQuotationScreen extends StatelessWidget {
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Includes full 30-Day KaamSetu Service Guarantee.',
+                          'Includes full 30-Day Ally Service Guarantee.',
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1E40AF)),
                         ),
                       ),

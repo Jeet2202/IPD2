@@ -170,4 +170,11 @@ OPENAPI_TAGS: list[dict[str, str]] = [
             "analytics, and pricing configuration. Requires admin role."
         ),
     },
+    {
+        "name": "Real-Time",
+        "description": (
+            "Socket.IO infrastructure endpoints for managing real-time connections, "
+            "presence, and health status."
+        ),
+    },
 ]

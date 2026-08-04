@@ -13,7 +13,7 @@ class PriceEstimationScreen extends StatefulWidget {
 }
 
 class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
-  final TextEditingController _promoController = TextEditingController(text: 'KAAMSETU50');
+  final TextEditingController _promoController = TextEditingController(text: 'ALLY50');
   bool _isCouponApplied = true;
 
   // AI Smart Pricing
@@ -255,7 +255,7 @@ class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
                   const Padding(
                     padding: EdgeInsets.only(left: 4.0),
                     child: Text(
-                      '🎉 KAAMSETU50 applied: Saved ₹100!',
+                      '🎉 ALLY50 applied: Saved ₹100!',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A)),
                     ),
                   ),
@@ -288,7 +288,7 @@ class _PriceEstimationScreenState extends State<PriceEstimationScreen> {
                       _buildPriceRow('Taxes & GST (18%)', '₹$taxes'),
                       if (_isCouponApplied) ...[
                         const SizedBox(height: 12),
-                        _buildPriceRow('Promo Discount (KAAMSETU50)', '-₹$discount', isDiscount: true),
+                        _buildPriceRow('Promo Discount (ALLY50)', '-₹$discount', isDiscount: true),
                       ],
                       const SizedBox(height: 14),
                       const Divider(color: Color(0xFFF1F5F9), height: 1),

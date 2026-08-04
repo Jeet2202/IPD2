@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../models/worker_dashboard_model.dart';
 import '../../services/worker_dashboard_service.dart';
+import '../../widgets/notification_bell.dart';
 import '../applications/worker_applications_screen.dart';
 import '../marketplace/widgets/marketplace_booking_card.dart';
 import '../marketplace/widgets/marketplace_booking_detail_modal.dart';
@@ -118,6 +119,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             onPressed: _loadDashboardData,
             tooltip: 'Refresh Dashboard',
           ),
+          const NotificationBell(),
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(

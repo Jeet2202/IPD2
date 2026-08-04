@@ -17,7 +17,7 @@ class WorkerAboutScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'About KaamSetu Partner',
+          'About Ally Partner',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -65,7 +65,7 @@ class WorkerAboutScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'KaamSetu',
+                    'Ally',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
@@ -125,7 +125,7 @@ class WorkerAboutScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'KaamSetu connects verified skilled technicians—electricians, plumbers, carpenters, painters & AC experts—directly with verified customers for fair earnings and transparent work.',
+                      'Ally connects verified skilled technicians—electricians, plumbers, carpenters, painters & AC experts—directly with verified customers for fair earnings and transparent work.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
@@ -202,10 +202,10 @@ class WorkerAboutScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildContactItem(
-                        Icons.language_rounded, 'Website', 'www.kaamsetu.in'),
+                        Icons.language_rounded, 'Website', 'www.ally.in'),
                     const SizedBox(height: 10),
                     _buildContactItem(
-                        Icons.email_outlined, 'Partner Support', 'partners@kaamsetu.in'),
+                        Icons.email_outlined, 'Partner Support', 'partners@ally.in'),
                     const SizedBox(height: 10),
                     _buildContactItem(
                         Icons.phone_outlined, 'Toll Free Desk', '1800-123-KAAM (5226)'),
@@ -246,7 +246,7 @@ class WorkerAboutScreen extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Sharing KaamSetu Partner App link...'),
+                            content: Text('Sharing Ally Partner App link...'),
                             backgroundColor: Color(0xFF0EA5E9),
                           ),
                         );

@@ -21,7 +21,7 @@ from app.review.schemas import (
 from app.utils.enums import BookingStatus
 from app.worker.models import WorkerProfile
 
-logger = logging.getLogger("kaamsetu.review")
+logger = logging.getLogger("ally.review")
 
 
 def _to_response(review: Review) -> ReviewResponse:

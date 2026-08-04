@@ -19,13 +19,17 @@ class NotificationModel {
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       NotificationModel(
-        id:        json['_id'] as String,
+        // Backend NotificationResponse schema uses 'id' (not '_id')
+        id:        json['id'] as String? ?? json['_id'] as String? ?? '',
         title:     json['title'] as String,
         body:      json['body'] as String,
         type:      json['type'] as String,
         data:      json['data'] as Map<String, dynamic>?,
-        isRead:    json['isRead'] as bool? ?? false,
-        createdAt: DateTime.parse(json['createdAt'] as String),
+        // Backend uses 'is_read' (snake_case), not 'isRead'
+        isRead:    json['is_read'] as bool? ?? json['isRead'] as bool? ?? false,
+        createdAt: DateTime.parse(
+          json['created_at'] as String? ?? json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+        ),
       );
 
   Map<String, dynamic> toJson() => {

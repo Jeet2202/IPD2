@@ -303,6 +303,7 @@ class ApiService {
     String path,
     String filePath, {
     String fileField = 'file',
+    Map<String, String>? fields,
   }) async {
     final uri = _uri(path);
     final stopwatch = Stopwatch()..start();
@@ -312,6 +313,10 @@ class ApiService {
       request.headers.addAll({
         'Authorization': 'Bearer ${TokenStorage.accessToken}',
       });
+
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
 
       final file = await http.MultipartFile.fromPath(
         fileField,
@@ -331,6 +336,9 @@ class ApiService {
           retryRequest.headers.addAll({
             'Authorization': 'Bearer ${TokenStorage.accessToken}',
           });
+          if (fields != null) {
+            retryRequest.fields.addAll(fields);
+          }
           final retryFile = await http.MultipartFile.fromPath(
             fileField,
             filePath,

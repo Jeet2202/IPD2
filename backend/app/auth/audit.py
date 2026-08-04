@@ -1,5 +1,5 @@
 """
-Authentication Security Audit Logging — KaamSetu Service Marketplace.
+Authentication Security Audit Logging — Ally Service Marketplace.
 
 Records structured audit trail events into MongoDB Atlas via the Admin AuditLog
 Beanie Document collection for all critical security actions:

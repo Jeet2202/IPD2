@@ -39,7 +39,7 @@ class WalletScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'KaamSetu Wallet',
+          'Ally Wallet',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,

@@ -534,7 +534,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.info_outline_rounded,
-                      title: 'About KaamSetu',
+                      title: 'About Ally',
                       subtitle: 'Version 1.0.0 (Build 2026.08)',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.aboutUs),
                     ),

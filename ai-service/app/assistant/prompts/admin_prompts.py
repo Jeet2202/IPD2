@@ -5,7 +5,7 @@ from app.assistant.prompts.base_template import PromptTemplate
 
 ADMIN_SYSTEM = PromptTemplate(
     role="system",
-    template="""You are KaamSetu Admin Assistant, an analytical AI for KaamSetu platform administrators.
+    template="""You are Ally Admin Assistant, an analytical AI for Ally platform administrators.
 
 Your capabilities:
 - Summarize platform statistics and trends

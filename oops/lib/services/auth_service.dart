@@ -2,6 +2,7 @@ import '../constants/api_endpoints.dart';
 import '../models/user_model.dart';
 import '../utils/token_storage.dart';
 import 'api_service.dart';
+import 'push_notification_service.dart';
 
 class AuthService {
   AuthService._();
@@ -44,7 +45,11 @@ class AuthService {
       access: tokens['access_token'] as String,
       refresh: tokens['refresh_token'] as String,
       userId: (user['id'] ?? user['_id'])?.toString(),
+      userRole: user['role'] as String?,
     );
+
+    // Initialize push notifications
+    await PushNotificationService.instance.initialize();
 
     return UserModel.fromJson(user);
   }
@@ -80,7 +85,11 @@ class AuthService {
       access: tokens['access_token'] as String,
       refresh: tokens['refresh_token'] as String,
       userId: (user['id'] ?? user['_id'])?.toString(),
+      userRole: user['role'] as String?,
     );
+
+    // Initialize push notifications
+    await PushNotificationService.instance.initialize();
 
     return UserModel.fromJson(user);
   }
@@ -143,6 +152,7 @@ class AuthService {
       'current_password': currentPassword,
       'new_password': newPassword,
     });
+    await PushNotificationService.instance.removeDeviceToken();
     TokenStorage.clear();
   }
 
@@ -150,6 +160,7 @@ class AuthService {
   Future<void> logout() async {
     try {
       if (TokenStorage.refreshToken.isNotEmpty) {
+        await PushNotificationService.instance.removeDeviceToken();
         await ApiService.instance.post(ApiEndpoints.logout, {
           'refresh_token': TokenStorage.refreshToken,
         });
@@ -161,6 +172,7 @@ class AuthService {
   /// Logout from all devices
   Future<void> logoutAll() async {
     try {
+      await PushNotificationService.instance.removeDeviceToken();
       await ApiService.instance.post(ApiEndpoints.logoutAll, {});
     } catch (_) {}
     TokenStorage.clear();
@@ -168,6 +180,7 @@ class AuthService {
 
   /// Delete current user account permanently
   Future<void> deleteAccount(String password) async {
+    await PushNotificationService.instance.removeDeviceToken();
     await ApiService.instance.delete(
       ApiEndpoints.deleteAccount,
       body: {'password': password},

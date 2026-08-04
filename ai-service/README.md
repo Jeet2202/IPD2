@@ -1,6 +1,6 @@
-# KaamSetu AI Infrastructure Service
+# Ally AI Infrastructure Service
 
-This is the AI service microservice for KaamSetu, built with FastAPI. It handles all AI models, training, dataset loading, and integrations with the main backend.
+This is the AI service microservice for Ally, built with FastAPI. It handles all AI models, training, dataset loading, and integrations with the main backend.
 
 ## Setup
 

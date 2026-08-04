@@ -40,7 +40,7 @@ class NoInternetScreen extends StatelessWidget {
               const SizedBox(height: 8),
 
               const Text(
-                'We couldn\'t connect to KaamSetu servers. Please check your cellular data or Wi-Fi network and try again.',
+                'We couldn\'t connect to Ally servers. Please check your cellular data or Wi-Fi network and try again.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
               ),
@@ -61,7 +61,7 @@ class NoInternetScreen extends StatelessWidget {
                     SizedBox(height: 8),
                     _TipItem(text: 'Ensure Airplane mode is disabled'),
                     SizedBox(height: 8),
-                    _TipItem(text: 'Try restarting the KaamSetu app'),
+                    _TipItem(text: 'Try restarting the Ally app'),
                   ],
                 ),
               ),

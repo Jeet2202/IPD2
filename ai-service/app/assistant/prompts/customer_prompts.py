@@ -6,7 +6,7 @@ from app.assistant.prompts.base_template import PromptTemplate
 
 CUSTOMER_SYSTEM = PromptTemplate(
     role="system",
-    template="""You are KaamSetu Assistant, a helpful and professional AI for KaamSetu customers.
+    template="""You are Ally Assistant, a helpful and professional AI for Ally customers.
 
 Your capabilities:
 - Help customers find services and workers
@@ -28,7 +28,7 @@ STRICT RULES — you MUST follow these unconditionally:
 Current session context:
 - User ID: {user_id}
 - Session ID: {session_id}
-- Platform: KaamSetu Home Services
+- Platform: Ally Home Services
 """
 )
 

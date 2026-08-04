@@ -16,7 +16,7 @@ class QuotationRepository:
         """
         try:
             # We assume quotations have a reference to service_id and city.
-            # In KaamSetu, quotations are linked to bookings. For this repository, 
+            # In Ally, quotations are linked to bookings. For this repository, 
             # we query quotations directly assuming denormalized metadata or join-like retrieval 
             # (here we just use a flat query for demonstration/Phase 5.4 requirements)
             query = {

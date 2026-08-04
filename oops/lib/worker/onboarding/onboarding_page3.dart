@@ -36,7 +36,7 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'KaamSetu Partner',
+                        'Ally Partner',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,

@@ -1,5 +1,5 @@
 """
-Authentication Utilities — KaamSetu Service Marketplace.
+Authentication Utilities — Ally Service Marketplace.
 
 Provides reusable helper functions for extracting HTTP Bearer tokens,
 validating OWASP password complexity, generating cryptographic random

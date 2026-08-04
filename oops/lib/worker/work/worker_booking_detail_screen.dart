@@ -8,7 +8,11 @@ import '../../services/booking_service.dart';
 import '../../services/review_service.dart';
 import '../../widgets/booking_lifecycle_stepper.dart';
 import '../../widgets/booking_timeline_widget.dart';
+import 'dart:async';
+import 'package:geolocator/geolocator.dart';
 import '../../widgets/review_display_card.dart';
+import '../../widgets/booking_communication_section.dart';
+import '../../services/socket_service.dart';
 import 'worker_complete_job_dialog.dart';
 
 class WorkerBookingDetailScreen extends StatefulWidget {
@@ -26,12 +30,112 @@ class _WorkerBookingDetailScreenState
   late BookingModel _booking;
   ReviewModel? _customerReview;
   bool _isActionLoading = false;
+  final SocketService _socketService = SocketService();
+
+  StreamSubscription<Position>? _positionStream;
+  bool _isLocationSharing = false;
+  double? _distanceMeters;
+  int? _etaMinutes;
 
   @override
   void initState() {
     super.initState();
     _booking = widget.booking;
+    _setupTracking();
     _fetchReviewIfCompleted();
+  }
+
+  void _setupTracking() {
+    _socketService.joinBookingTracking(_booking.id);
+    _socketService.onBookingStatusUpdated(_onBookingStatusUpdated);
+    _checkLocationSharing();
+  }
+
+  void _checkLocationSharing() {
+    final shouldShare = _booking.isWorkerEnRoute || _booking.isArrived || _booking.isInProgress;
+    if (shouldShare && !_isLocationSharing) {
+      _startLocationSharing();
+    } else if (!shouldShare && _isLocationSharing) {
+      _stopLocationSharing();
+    }
+  }
+
+  Future<void> _startLocationSharing() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+    if (permission == LocationPermission.deniedForever) return;
+
+    setState(() => _isLocationSharing = true);
+
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((Position position) {
+      if (!mounted || _booking.addressSnapshot.latitude == null || _booking.addressSnapshot.longitude == null) return;
+
+      final customerLat = _booking.addressSnapshot.latitude!;
+      final customerLng = _booking.addressSnapshot.longitude!;
+      
+      final distance = Geolocator.distanceBetween(
+        position.latitude, position.longitude, customerLat, customerLng
+      );
+      
+      // Assume 30 km/h average speed (8.33 m/s)
+      final eta = (distance / 8.33 / 60).round();
+
+      setState(() {
+        _distanceMeters = distance;
+        _etaMinutes = eta;
+      });
+
+      _socketService.emitWorkerLocation(
+        _booking.id,
+        position.latitude,
+        position.longitude,
+        distance,
+        eta,
+      );
+    });
+  }
+
+  void _stopLocationSharing() {
+    _positionStream?.cancel();
+    _positionStream = null;
+    if (mounted) setState(() => _isLocationSharing = false);
+  }
+
+  void _onBookingStatusUpdated(dynamic data) async {
+    if (data is Map && data['booking_id'] == _booking.id) {
+      // Re-fetch to get latest status (e.g., customer confirmation)
+      try {
+        final updated = await BookingService.instance.getWorkerBooking(_booking.id);
+        if (mounted) {
+          setState(() {
+            _booking = updated;
+          });
+          _checkLocationSharing();
+          _fetchReviewIfCompleted();
+        }
+      } catch (e) {
+        // Handle error silently or log
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _stopLocationSharing();
+    _socketService.leaveBookingTracking(_booking.id);
+    _socketService.offBookingStatusUpdated(_onBookingStatusUpdated);
+    super.dispose();
   }
 
   Future<void> _fetchReviewIfCompleted() async {
@@ -52,7 +156,9 @@ class _WorkerBookingDetailScreenState
         _booking = updated;
         _isActionLoading = false;
       });
+      _checkLocationSharing();
       _fetchReviewIfCompleted();
+      _socketService.emitBookingStatusUpdate(updated.id, updated.status);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Status updated to ${updated.status.toUpperCase().replaceAll('_', ' ')}'),
@@ -175,6 +281,20 @@ class _WorkerBookingDetailScreenState
             _buildCustomerAddressCard(),
             const SizedBox(height: 16),
 
+            // ── Location Sharing Status ────────────────────────────
+            if (_booking.isWorkerEnRoute || _booking.isArrived || _booking.isInProgress) ...[
+              _buildLocationSharingCard(),
+              const SizedBox(height: 16),
+            ],
+
+            // ── Communication Section ────────────────────────────
+            BookingCommunicationSection(
+              booking: _booking,
+              currentUserId: _booking.workerId ?? '',
+              isWorker: true,
+            ),
+            const SizedBox(height: 16),
+
             // ── Service & Price Card ──────────────────────────────
             _buildServiceCard(),
             const SizedBox(height: 16),
@@ -235,6 +355,62 @@ class _WorkerBookingDetailScreenState
             if (addr.landmark != null && addr.landmark!.isNotEmpty) ...[
               const SizedBox(height: 4),
               _infoRow(Icons.flag_outlined, 'Landmark: ${addr.landmark}'),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationSharingCard() {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  _isLocationSharing ? Icons.gps_fixed_rounded : Icons.gps_off_rounded,
+                  color: _isLocationSharing ? Colors.green : const Color(0xFF94A3B8),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Location Sharing',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _isLocationSharing ? Colors.green.shade50 : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _isLocationSharing ? 'Enabled' : 'Disabled',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: _isLocationSharing ? Colors.green.shade700 : const Color(0xFF64748B),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_isLocationSharing) ...[
+              const Divider(height: 24),
+              if (_distanceMeters != null)
+                _infoRow(Icons.route_outlined, 'Distance to Customer: ${(_distanceMeters! / 1000).toStringAsFixed(1)} km'),
+              const SizedBox(height: 8),
+              if (_etaMinutes != null)
+                _infoRow(Icons.timer_outlined, 'Estimated Time of Arrival: $_etaMinutes min'),
             ],
           ],
         ),

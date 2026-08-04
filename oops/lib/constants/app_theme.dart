@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized Color System for KaamSetu
+/// Centralized Color System for Ally
 class AppColors {
   AppColors._();
 
@@ -51,7 +51,7 @@ class AppSpacing {
   static const double radiusLg = 16.0;
 }
 
-/// Material ThemeData for KaamSetu App
+/// Material ThemeData for Ally App
 class AppTheme {
   AppTheme._();
 
@@ -71,12 +71,12 @@ class AppTheme {
         onError: Colors.white,
       ),
       fontFamily: 'Inter',
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         color: AppColors.cardBg,
         elevation: 0.5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          side: const BorderSide(color: AppColors.border, width: 1.0),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          side: BorderSide(color: AppColors.border, width: 1.0),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

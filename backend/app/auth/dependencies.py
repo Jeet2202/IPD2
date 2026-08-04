@@ -1,5 +1,5 @@
 """
-FastAPI Authentication & Authorization Dependencies — KaamSetu Service Marketplace.
+FastAPI Authentication & Authorization Dependencies — Ally Service Marketplace.
 
 Provides composable, asynchronous dependency guards for JWT validation,
 user document resolution, account lifecycle state enforcement, verification
@@ -36,7 +36,7 @@ from app.auth.permissions import Permission, require_permission
 from app.auth.security import TokenPayload, decode_token
 from app.auth.utils import extract_bearer_token
 
-# OAuth2 bearer token extractor (auto_error=False to allow custom KaamSetu exception handling)
+# OAuth2 bearer token extractor (auto_error=False to allow custom Ally exception handling)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 

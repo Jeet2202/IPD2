@@ -1,5 +1,5 @@
 """
-Pricing engine models — configurable, database-driven pricing for KaamSetu.
+Pricing engine models — configurable, database-driven pricing for Ally.
 
 Architecture:
     - TWO separate Beanie Documents: ServicePriceGuide and PricingConfiguration.
@@ -390,7 +390,7 @@ class PricingConfiguration(Document):
         gst_percentage: Goods & Services Tax rate. Currently 18% in
                         India for home services. Applied to the final
                         invoice amount.
-        platform_commission_percentage: KaamSetu's commission on each
+        platform_commission_percentage: Ally's commission on each
                                          booking. Deducted from the
                                          worker's earnings.
         worker_commission_percentage: Worker's share of the booking

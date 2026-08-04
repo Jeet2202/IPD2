@@ -61,7 +61,7 @@ class InvoiceScreen extends StatelessWidget {
                           children: [
                             Icon(Icons.handyman_rounded, color: Color(0xFF2563EB), size: 26),
                             SizedBox(width: 8),
-                            Text('KaamSetu', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                            Text('Ally', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                           ],
                         ),
                         Container(
@@ -123,7 +123,7 @@ class InvoiceScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     _buildLineItem('Taxes & GST (18%)', '₹47.00'),
                     const SizedBox(height: 8),
-                    _buildLineItem('Discount (KAAMSETU50)', '-₹100.00', isDiscount: true),
+                    _buildLineItem('Discount (ALLY50)', '-₹100.00', isDiscount: true),
 
                     const SizedBox(height: 16),
                     const Divider(color: Color(0xFFE2E8F0), height: 1),

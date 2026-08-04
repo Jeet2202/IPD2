@@ -1,5 +1,5 @@
 """
-Production-Ready Swappable Email Architecture — KaamSetu Auth Module.
+Production-Ready Swappable Email Architecture — Ally Auth Module.
 
 Provides an Abstract Base Class (EmailProvider) with concrete implementations:
   1. SMTPEmailProvider: Sends real emails via SMTP using asyncio threadpool executor.
@@ -70,7 +70,7 @@ class SMTPEmailProvider(EmailProvider):
         port: int,
         username: str | None = None,
         password: str | None = None,
-        from_email: str = "no-reply@kaamsetu.com",
+        from_email: str = "no-reply@ally.com",
         use_tls: bool = True,
     ) -> None:
         self.host = host
@@ -175,7 +175,7 @@ def get_email_provider() -> EmailProvider:
             port=int(os.getenv("SMTP_PORT", "587")),
             username=os.getenv("SMTP_USER"),
             password=os.getenv("SMTP_PASSWORD"),
-            from_email=os.getenv("SMTP_FROM_EMAIL", "no-reply@kaamsetu.com"),
+            from_email=os.getenv("SMTP_FROM_EMAIL", "no-reply@ally.com"),
             use_tls=os.getenv("SMTP_TLS", "true").lower() == "true",
         )
     return ConsoleMockEmailProvider()
@@ -204,27 +204,27 @@ def get_otp_email_template(
     expires_minutes = max(1, expires_in_seconds // 60)
 
     purpose_titles = {
-        OTPPurpose.REGISTRATION: "Welcome to KaamSetu — Verify Your Account",
-        OTPPurpose.LOGIN: "Your KaamSetu Login Code",
-        OTPPurpose.PASSWORD_RESET: "Reset Your KaamSetu Password",
+        OTPPurpose.REGISTRATION: "Welcome to Ally — Verify Your Account",
+        OTPPurpose.LOGIN: "Your Ally Login Code",
+        OTPPurpose.PASSWORD_RESET: "Reset Your Ally Password",
         OTPPurpose.EMAIL_VERIFY: "Verify Your Email Address",
         OTPPurpose.PHONE_VERIFY: "Verify Your Contact Information",
     }
     purpose_messages = {
-        OTPPurpose.REGISTRATION: "Thank you for registering on KaamSetu! Please use the OTP below to complete your registration.",
-        OTPPurpose.LOGIN: "We received a login request for your KaamSetu account. Use the OTP below to sign in.",
-        OTPPurpose.PASSWORD_RESET: "We received a request to reset your KaamSetu password. Use the OTP below to set a new password.",
+        OTPPurpose.REGISTRATION: "Thank you for registering on Ally! Please use the OTP below to complete your registration.",
+        OTPPurpose.LOGIN: "We received a login request for your Ally account. Use the OTP below to sign in.",
+        OTPPurpose.PASSWORD_RESET: "We received a request to reset your Ally password. Use the OTP below to set a new password.",
         OTPPurpose.EMAIL_VERIFY: "Please verify your email address by entering the OTP below.",
         OTPPurpose.PHONE_VERIFY: "Please verify your phone number by entering the OTP below.",
     }
 
-    subject = purpose_titles.get(purpose, "Your KaamSetu Verification Code")
+    subject = purpose_titles.get(purpose, "Your Ally Verification Code")
     message_text = purpose_messages.get(
         purpose, "Please use the OTP code below to verify your account."
     )
 
     text_content = (
-        f"KaamSetu — AI Powered Home Services Marketplace\n\n"
+        f"Ally — AI Powered Home Services Marketplace\n\n"
         f"{message_text}\n\n"
         f"Your Verification Code: {otp}\n\n"
         f"This code will expire in {expires_minutes} minutes. Do not share this OTP with anyone.\n"
@@ -250,7 +250,7 @@ def get_otp_email_template(
 </head>
 <body>
     <div class="container">
-        <div class="brand">KaamSetu</div>
+        <div class="brand">Ally</div>
         <div class="title">{subject}</div>
         <p class="text">{message_text}</p>
         <div class="otp-box">
@@ -258,7 +258,7 @@ def get_otp_email_template(
         </div>
         <p class="text">This code will expire in <strong>{expires_minutes} minutes</strong>. For your security, never share this OTP with anyone.</p>
         <div class="footer">
-            &copy; 2026 KaamSetu Technologies. All rights reserved.
+            &copy; 2026 Ally Technologies. All rights reserved.
         </div>
     </div>
 </body>

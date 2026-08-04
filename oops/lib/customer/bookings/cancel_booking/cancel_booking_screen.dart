@@ -103,7 +103,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                           children: [
                             Text('100% REFUND ELIGIBLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
                             SizedBox(height: 2),
-                            Text('Full ₹4,850 credited to KaamSetu Pay', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
+                            Text('Full ₹4,850 credited to Ally Pay', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
                           ],
                         ),
                       ),

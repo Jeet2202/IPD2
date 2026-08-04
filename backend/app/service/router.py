@@ -192,7 +192,7 @@ async def delete_service(
     response_model=ServiceResponse,
     status_code=status.HTTP_200_OK,
     summary="Upload or replace service image (Admin only)",
-    description="Upload or replace a service image on Cloudinary under kaamsetu/service_images.",
+    description="Upload or replace a service image on Cloudinary under ally/service_images.",
 )
 async def upload_service_image(
     service_id: str,

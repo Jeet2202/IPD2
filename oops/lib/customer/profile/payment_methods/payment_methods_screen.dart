@@ -12,7 +12,7 @@ class PaymentMethodsScreen extends StatefulWidget {
 }
 
 class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
-  String _preferredMethod = 'KaamSetu Wallet';
+  String _preferredMethod = 'Ally Wallet';
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── KaamSetu Wallet Banner ───────────────────────────────
+              // ── Ally Wallet Banner ───────────────────────────────
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -58,7 +58,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('KAAMSETU PAY WALLET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                        Text('ALLY PAY WALLET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                         SizedBox(height: 4),
                         Text('₹1,450.00', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white)),
                         SizedBox(height: 2),

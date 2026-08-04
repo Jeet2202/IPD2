@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 async def test_root(async_client):
     response = await async_client.get("/")
     assert response.status_code == 200
-    assert response.json()["service"] == "KaamSetu AI Service"
+    assert response.json()["service"] == "Ally AI Service"
 
 @pytest.mark.asyncio
 async def test_ready(async_client):

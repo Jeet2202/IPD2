@@ -118,7 +118,7 @@ class _WorkerCreateQuotationScreenState
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
-                            'KaamSetu Verified',
+                            'Ally Verified',
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
@@ -264,7 +264,7 @@ class _WorkerCreateQuotationScreenState
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Fair Price Indicator: This estimate matches KaamSetu benchmark for AC Water Leak Repair (₹1,100 – ₹1,400)',
+                        'Fair Price Indicator: This estimate matches Ally benchmark for AC Water Leak Repair (₹1,100 – ₹1,400)',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

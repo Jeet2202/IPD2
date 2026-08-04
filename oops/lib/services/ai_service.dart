@@ -1,6 +1,6 @@
 // lib/services/ai_service.dart
 //
-// KaamSetu AI Microservice client — Phase 5.1 to 5.6
+// Ally AI Microservice client — Phase 5.1 to 5.6
 // Covers: Recommendations, Search, Pricing, Assistant, Analytics
 
 import 'dart:convert';

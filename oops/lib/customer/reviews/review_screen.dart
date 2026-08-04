@@ -208,7 +208,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Would you recommend KaamSetu?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    const Text('Would you recommend Ally?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                     Row(
                       children: [
                         ChoiceChip(

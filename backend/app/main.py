@@ -29,6 +29,7 @@ from app.database import (
 from app.middleware import register_middleware
 from app.api.v1.router import v1_router
 from app.api.tags import OPENAPI_TAGS
+from app.sockets import socket_app
 
 # ---------------------------------------------------------------------------
 # 1. Logging — BEFORE anything else logs
@@ -121,6 +122,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         WorkerVerification,
     )
     from app.worker.models import WorkerProfile
+    from app.notifications.models import DeviceToken, Notification, NotificationPreference
 
     await connect_to_database(
         document_models=[
@@ -172,6 +174,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             RecentlyViewed,
             SavedSearch,
             RecommendationHistory,
+            DeviceToken,
+            Notification,
+            NotificationPreference,
         ]
     )
     yield
@@ -284,3 +289,6 @@ async def health_check() -> dict:
 # One line to include all 10 feature modules.
 # When v2 is needed: app.include_router(v2_router)
 app.include_router(v1_router)
+
+# --- Socket.IO (Real-Time Infrastructure) ---
+app.mount("/socket.io", socket_app)

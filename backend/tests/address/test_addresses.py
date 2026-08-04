@@ -321,7 +321,7 @@ async def test_validation(token: str, client: httpx.AsyncClient) -> None:
 
 async def run_tests() -> None:
     print("=" * 60)
-    print("  KaamSetu - Address Management Tests (Phase 4.3.1)")
+    print("  Ally - Address Management Tests (Phase 4.3.1)")
     print("=" * 60)
     print(f"  Base URL: {BASE_URL}")
     print()

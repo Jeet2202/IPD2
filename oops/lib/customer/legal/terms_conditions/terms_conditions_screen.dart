@@ -9,7 +9,7 @@ class TermsConditionsScreen extends StatelessWidget {
   final List<Map<String, String>> _terms = const [
     {
       'title': '1. Acceptance of Terms & Platform Use',
-      'body': 'By downloading, accessing, or using the KaamSetu application, you agree to be bound by these legal terms. KaamSetu acts as an intermediary platform connecting users with verified independent service professionals across India.',
+      'body': 'By downloading, accessing, or using the Ally application, you agree to be bound by these legal terms. Ally acts as an intermediary platform connecting users with verified independent service professionals across India.',
     },
     {
       'title': '2. Diagnostic Inspection & Quotation Policy',
@@ -17,11 +17,11 @@ class TermsConditionsScreen extends StatelessWidget {
     },
     {
       'title': '3. Payments, Wallet Credits & Cancellations',
-      'body': 'Payments can be made via UPI, cards, net banking, or KaamSetu Wallet. Cancellations made prior to technician dispatch incur 0 cancellation penalty. Instant refunds are processed to your KaamSetu Pay Wallet within 15 minutes.',
+      'body': 'Payments can be made via UPI, cards, net banking, or Ally Wallet. Cancellations made prior to technician dispatch incur 0 cancellation penalty. Instant refunds are processed to your Ally Pay Wallet within 15 minutes.',
     },
     {
       'title': '4. 30-Day Service Warranty & Liability',
-      'body': 'Services completed by verified technicians carry an official 30-day KaamSetu warranty covering labor defects and verified spare parts replacements.',
+      'body': 'Services completed by verified technicians carry an official 30-day Ally warranty covering labor defects and verified spare parts replacements.',
     },
   ];
 
@@ -64,7 +64,7 @@ class TermsConditionsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('KaamSetu Legal Agreement', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1E3A8A))),
+                          Text('Ally Legal Agreement', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1E3A8A))),
                           SizedBox(height: 2),
                           Text('Last Updated: July 15, 2026 • Effective Worldwide', style: TextStyle(fontSize: 11, color: Color(0xFF1E40AF))),
                         ],

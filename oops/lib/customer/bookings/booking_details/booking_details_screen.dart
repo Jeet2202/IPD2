@@ -11,6 +11,9 @@ import '../../../widgets/booking_lifecycle_stepper.dart';
 import '../../../widgets/booking_timeline_widget.dart';
 import '../../../widgets/review_dialog.dart';
 import '../../../widgets/review_display_card.dart';
+import '../../../widgets/booking_communication_section.dart';
+import '../../../widgets/live_tracking_map_widget.dart';
+import '../../../services/socket_service.dart';
 import '../../quotations/customer_quotations_screen.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
@@ -35,6 +38,14 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   bool _isConfirming = false;
+  final SocketService _socketService = SocketService();
+
+  // Tracking data
+  double? _workerLat;
+  double? _workerLng;
+  int? _etaMinutes;
+  double? _distanceMeters;
+  String? _lastUpdated;
 
   @override
   void initState() {
@@ -46,9 +57,53 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _extractArgsAndFetch();
       } else {
         setState(() => _isLoading = false);
+        _setupTracking();
         _fetchReviewIfCompleted(_booking!.id);
       }
     });
+  }
+
+  void _setupTracking() {
+    if (_booking == null) return;
+    _socketService.joinBookingTracking(_booking!.id);
+    _socketService.onBookingStatusUpdated(_onBookingStatusUpdated);
+    _socketService.onWorkerLocationUpdated(_onWorkerLocationUpdated);
+  }
+
+  void _onWorkerLocationUpdated(dynamic data) {
+    if (data is Map && data['booking_id'] == _booking?.id) {
+      if (!mounted) return;
+      setState(() {
+        _workerLat = (data['lat'] as num?)?.toDouble();
+        _workerLng = (data['lng'] as num?)?.toDouble();
+        _distanceMeters = (data['distance'] as num?)?.toDouble();
+        _etaMinutes = (data['eta'] as num?)?.toInt();
+        
+        if (data['timestamp'] != null) {
+          final dt = DateTime.tryParse(data['timestamp']);
+          if (dt != null) {
+            _lastUpdated = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+          }
+        }
+      });
+    }
+  }
+
+  void _onBookingStatusUpdated(dynamic data) {
+    if (data is Map && data['booking_id'] == _booking?.id) {
+      // Re-fetch booking from backend to get fresh timeline and status
+      _fetchBookingById(_booking!.id, isSilentRefresh: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_booking != null) {
+      _socketService.leaveBookingTracking(_booking!.id);
+      _socketService.offBookingStatusUpdated(_onBookingStatusUpdated);
+      _socketService.offWorkerLocationUpdated(_onWorkerLocationUpdated);
+    }
+    super.dispose();
   }
 
   void _extractArgsAndFetch() {
@@ -60,6 +115,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           _booking = b;
           _isLoading = false;
         });
+        _setupTracking();
         _fetchReviewIfCompleted(b.id);
         return;
       }
@@ -73,6 +129,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _booking = args;
         _isLoading = false;
       });
+      _setupTracking();
       _fetchReviewIfCompleted(args.id);
       return;
     } else if (widget.bookingId != null) {
@@ -96,11 +153,13 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     }
   }
 
-  Future<void> _fetchBookingById(String id) async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  Future<void> _fetchBookingById(String id, {bool isSilentRefresh = false}) async {
+    if (!isSilentRefresh) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final b = await _bookingService.getBookingById(id);
@@ -109,11 +168,17 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         rev = await ReviewService().getReviewByBooking(b.id);
       }
       if (!mounted) return;
+      
+      final bool isFirstLoad = _booking == null;
       setState(() {
         _booking = b;
         _existingReview = rev;
         _isLoading = false;
       });
+      
+      if (isFirstLoad) {
+        _setupTracking();
+      }
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {
@@ -170,6 +235,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _booking = updated;
         _isConfirming = false;
       });
+
+      _socketService.emitBookingStatusUpdate(updated.id, updated.status);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -328,6 +395,27 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               const SizedBox(height: 20),
                             ] else if (_booking!.isCustomerConfirmed || _booking!.status == 'completed') ...[
                               _buildConfirmedBanner(),
+                              const SizedBox(height: 20),
+                            ],
+
+                            // ── Communication Section ──────────────────────────
+                            BookingCommunicationSection(
+                              booking: _booking!,
+                              currentUserId: _booking!.customerId,
+                            ),
+                            const SizedBox(height: 20),
+
+                            // ── Live Worker Location ───────────────────────────
+                            if (_booking!.isWorkerEnRoute || _booking!.isInProgress || _booking!.isArrived) ...[
+                              LiveTrackingMapWidget(
+                                customerLat: _booking!.addressSnapshot.latitude ?? 0.0,
+                                customerLng: _booking!.addressSnapshot.longitude ?? 0.0,
+                                workerLat: _workerLat,
+                                workerLng: _workerLng,
+                                distanceMeters: _distanceMeters,
+                                etaMinutes: _etaMinutes,
+                                lastUpdated: _lastUpdated,
+                              ),
                               const SizedBox(height: 20),
                             ],
 

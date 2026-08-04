@@ -46,3 +46,9 @@ logs/
 
 # --- Docker ---
 docker-compose.override.yml
+
+# --- Credentials ---
+credentials/
+*.json
+!package.json
+!tsconfig.json

@@ -142,7 +142,7 @@ class WorkerSystemStatusScreen extends StatelessWidget {
         return _StatusConfig(
           title: 'Scheduled System Maintenance',
           description:
-              'KaamSetu Partner Desk is currently undergoing scheduled server upgrades. Services will resume shortly.',
+              'Ally Partner Desk is currently undergoing scheduled server upgrades. Services will resume shortly.',
           icon: Icons.engineering_rounded,
           iconBgColor: const Color(0xFFEFF6FF),
           iconColor: const Color(0xFF2563EB),
@@ -152,7 +152,7 @@ class WorkerSystemStatusScreen extends StatelessWidget {
         return _StatusConfig(
           title: 'App Update Required',
           description:
-              'A critical new version of KaamSetu Partner App is available with new job dispatch features.',
+              'A critical new version of Ally Partner App is available with new job dispatch features.',
           icon: Icons.system_update_rounded,
           iconBgColor: const Color(0xFFD1FAE5),
           iconColor: const Color(0xFF10B981),
@@ -181,7 +181,7 @@ class WorkerSystemStatusScreen extends StatelessWidget {
       default:
         return _StatusConfig(
           title: 'System Notice',
-          description: 'Temporary system status notice for KaamSetu Partner.',
+          description: 'Temporary system status notice for Ally Partner.',
           icon: Icons.info_outline_rounded,
           iconBgColor: const Color(0xFFEFF6FF),
           iconColor: const Color(0xFF2563EB),

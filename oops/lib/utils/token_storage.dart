@@ -8,10 +8,12 @@ class TokenStorage {
   static String? _access;
   static String? _refresh;
   static String? _userId;
+  static String? _userRole;
 
-  static const String _keyAccess = 'kaamsetu_access_token';
-  static const String _keyRefresh = 'kaamsetu_refresh_token';
-  static const String _keyUserId = 'kaamsetu_user_id';
+  static const String _keyAccess = 'ally_access_token';
+  static const String _keyRefresh = 'ally_refresh_token';
+  static const String _keyUserId = 'ally_user_id';
+  static const String _keyUserRole = 'ally_user_role';
 
   /// Initialize persistent storage and load saved tokens at app startup
   static Future<void> init() async {
@@ -20,6 +22,7 @@ class TokenStorage {
       _access = _prefs?.getString(_keyAccess);
       _refresh = _prefs?.getString(_keyRefresh);
       _userId = _prefs?.getString(_keyUserId);
+      _userRole = _prefs?.getString(_keyUserRole);
     } catch (_) {
       // Fallback if shared_preferences fails
     }
@@ -28,12 +31,14 @@ class TokenStorage {
   static String get accessToken => _access ?? '';
   static String get refreshToken => _refresh ?? '';
   static String get userId => _userId ?? '';
+  static String get userRole => _userRole ?? '';
   static bool get hasToken => _access != null && _access!.isNotEmpty;
 
   static void save({
     required String access,
     required String refresh,
     String? userId,
+    String? userRole,
   }) {
     _access = access;
     _refresh = refresh;
@@ -43,14 +48,20 @@ class TokenStorage {
       _userId = userId;
       _prefs?.setString(_keyUserId, userId);
     }
+    if (userRole != null) {
+      _userRole = userRole;
+      _prefs?.setString(_keyUserRole, userRole);
+    }
   }
 
   static void clear() {
     _access = null;
     _refresh = null;
     _userId = null;
+    _userRole = null;
     _prefs?.remove(_keyAccess);
     _prefs?.remove(_keyRefresh);
     _prefs?.remove(_keyUserId);
+    _prefs?.remove(_keyUserRole);
   }
 }

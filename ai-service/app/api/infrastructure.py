@@ -12,7 +12,7 @@ router = APIRouter(tags=["Infrastructure"])
 @router.get("/")
 async def root() -> Dict[str, str]:
     return {
-        "service": "KaamSetu AI Service",
+        "service": "Ally AI Service",
         "status": "running",
         "environment": settings.ENVIRONMENT
     }

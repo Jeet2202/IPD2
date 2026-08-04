@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Centralized Quotation Business Rules & Validation (Phase 4.6.5).
+Verification script for Ally Centralized Quotation Business Rules & Validation (Phase 4.6.5).
 
 Tests end-to-end against MongoDB Atlas:
   1. Configurable Settings: Validate config settings in app/core/config.py.
@@ -50,7 +50,7 @@ from app.worker.models import WorkerProfile
 
 async def run_quotation_business_rules_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — QUOTATION BUSINESS RULES & VALIDATION (PHASE 4.6.5) VERIFICATION")
+    print("ALLY — QUOTATION BUSINESS RULES & VALIDATION (PHASE 4.6.5) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

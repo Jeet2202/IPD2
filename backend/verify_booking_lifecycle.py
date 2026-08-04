@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.1: Booking Lifecycle Foundation Automated Verification
+Ally — Phase 4.7.1: Booking Lifecycle Foundation Automated Verification
 
 Verifies:
 1. Valid sequential status transitions by assigned worker.
@@ -33,7 +33,7 @@ from app.database import connect_to_database, close_database_connection
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — BOOKING LIFECYCLE FOUNDATION (PHASE 4.7.1) VERIFICATION")
+    print("ALLY — BOOKING LIFECYCLE FOUNDATION (PHASE 4.7.1) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation])

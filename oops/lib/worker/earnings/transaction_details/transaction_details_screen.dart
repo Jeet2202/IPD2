@@ -105,7 +105,7 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     _buildRowItem('Customer Tip', '₹ 100.00'),
                     const SizedBox(height: 8),
-                    _buildRowItem('KaamSetu Platform Fee (0%)', '₹ 0.00'),
+                    _buildRowItem('Ally Platform Fee (0%)', '₹ 0.00'),
                     const SizedBox(height: 8),
                     _buildRowItem('TDS / Tax Deducted (0%)', '₹ 0.00'),
                     const SizedBox(height: 10),

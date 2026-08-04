@@ -20,7 +20,7 @@ class ServiceSearchTool(AssistantTool):
 
     @property
     def description(self) -> str:
-        return "Search for available services and workers on the KaamSetu platform using a natural language query."
+        return "Search for available services and workers on the Ally platform using a natural language query."
 
     @property
     def parameters_schema(self) -> Dict[str, Any]:
@@ -180,7 +180,7 @@ class FAQTool(AssistantTool):
 
     @property
     def description(self) -> str:
-        return "Search the KaamSetu FAQ knowledge base for answers to common customer questions."
+        return "Search the Ally FAQ knowledge base for answers to common customer questions."
 
     @property
     def parameters_schema(self) -> Dict[str, Any]:

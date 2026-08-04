@@ -449,7 +449,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
             ),
             const SizedBox(height: 6),
             const Text(
-              'Payment credited to KaamSetu Wallet.',
+              'Payment credited to Ally Wallet.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,

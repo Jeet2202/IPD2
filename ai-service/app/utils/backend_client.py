@@ -34,7 +34,7 @@ class BackendClient:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None
     ) -> httpx.Response:
-        """Make an asynchronous HTTP request to the main KaamSetu backend"""
+        """Make an asynchronous HTTP request to the main Ally backend"""
         client = cls.get_client()
         
         # Prepare headers (e.g. inject generic auth if needed later)

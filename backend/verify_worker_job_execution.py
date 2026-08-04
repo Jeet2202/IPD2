@@ -1,5 +1,5 @@
 """
-KaamSetu — Phase 4.7.2: Worker Job Execution Automated Verification
+Ally — Phase 4.7.2: Worker Job Execution Automated Verification
 
 Verifies:
 1. Assigned worker job execution endpoints:
@@ -32,7 +32,7 @@ from app.core.exceptions import BadRequestException, ForbiddenException, NotFoun
 
 async def main():
     print("===========================================================================")
-    print("KAAMSETU — WORKER JOB EXECUTION (PHASE 4.7.2) VERIFICATION")
+    print("ALLY — WORKER JOB EXECUTION (PHASE 4.7.2) VERIFICATION")
     print("===========================================================================\n")
 
     await connect_to_database(document_models=[User, Booking, JobApplication, Quotation])
@@ -177,8 +177,8 @@ async def main():
     # TEST 7: Step 4 — Complete Work with Photos & Notes (IN_PROGRESS -> WORK_COMPLETED)
     # -------------------------------------------------------------------------
     print("\n[7] Testing complete_work with photos and notes (IN_PROGRESS -> WORK_COMPLETED)...")
-    b_photos = ["https://res.cloudinary.com/kaamsetu/before1.jpg"]
-    a_photos = ["https://res.cloudinary.com/kaamsetu/after1.jpg", "https://res.cloudinary.com/kaamsetu/after2.jpg"]
+    b_photos = ["https://res.cloudinary.com/ally/before1.jpg"]
+    a_photos = ["https://res.cloudinary.com/ally/after1.jpg", "https://res.cloudinary.com/ally/after2.jpg"]
     c_notes = "Cleaned AC filters, refilled R32 refrigerant, tested cooling output."
     w_summary = "Full AC deep servicing and refrigerant top-up completed."
 

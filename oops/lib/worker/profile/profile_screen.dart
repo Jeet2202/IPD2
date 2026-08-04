@@ -540,7 +540,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text('Are you sure you want to logout from your KaamSetu Partner account?'),
+        content: const Text('Are you sure you want to logout from your Ally Partner account?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

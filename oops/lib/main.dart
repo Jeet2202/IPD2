@@ -7,6 +7,7 @@ import 'config/app_config.dart';
 import 'config/environment.dart';
 import 'customer/splash/splash_screen.dart';
 import 'utils/token_storage.dart';
+import 'services/push_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +17,11 @@ Future<void> main() async {
 
   // Load persistent authentication session tokens
   await TokenStorage.init();
+
+  // Initialize push notifications if token exists
+  if (TokenStorage.accessToken.isNotEmpty) {
+    await PushNotificationService.instance.initialize();
+  }
 
   // Lock orientation to portrait
   SystemChrome.setPreferredOrientations([
@@ -42,6 +48,7 @@ class HireMeApp extends StatelessWidget {
     return MaterialApp(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
+      navigatorKey: AppRouter.navigatorKey,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,

@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 _NO_INFO_RESPONSE = (
     "I'm sorry, I don't have information about that topic. "
-    "Please contact KaamSetu support for further assistance."
+    "Please contact Ally support for further assistance."
 )
 
 
@@ -82,7 +82,7 @@ class AssistantPipeline:
 
         # ── Step 5: Build tools registry + prompt ─────────────────────────
         registry = build_registry(role)
-        prompt_context = {**exec_context, "platform": "KaamSetu Home Services"}
+        prompt_context = {**exec_context, "platform": "Ally Home Services"}
         messages = PromptBuilder.build_initial_messages(
             role=role,
             history=history,

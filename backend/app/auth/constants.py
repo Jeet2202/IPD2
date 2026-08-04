@@ -1,5 +1,5 @@
 """
-Authentication and Authorization Constants — KaamSetu Service Marketplace.
+Authentication and Authorization Constants — Ally Service Marketplace.
 
 Single source of truth for token type identifiers, HTTP header formatting,
 JWT claim names, expiration fallbacks, and OWASP password security bounds.
@@ -40,7 +40,7 @@ DEFAULT_JWT_ALGORITHM: Final[str] = "HS256"
 
 # Deterministic development fallback secret — raises RuntimeError in production
 DEV_FALLBACK_SECRET_KEY: Final[str] = (
-    "kaamsetu-dev-insecure-jwt-secret-key-do-not-use-in-production-2026"
+    "ally-dev-insecure-jwt-secret-key-do-not-use-in-production-2026"
 )
 
 # ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 """
-Authentication and Authorization Exceptions — KaamSetu Service Marketplace.
+Authentication and Authorization Exceptions — Ally Service Marketplace.
 
 Provides domain-specific exception classes for authentication failures (401),
 authorization / RBAC violations (403), and password policy violations (400).
-All classes inherit from KaamSetu's core AppException hierarchy so that
+All classes inherit from Ally's core AppException hierarchy so that
 exception_handlers.py serializes them into standardized ErrorResponse JSON.
 """
 

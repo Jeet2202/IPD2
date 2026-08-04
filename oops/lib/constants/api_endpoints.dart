@@ -23,7 +23,6 @@ class ApiEndpoints {
   static const String customerAddresses     = '/customer/addresses';
   static const String customerBookings      = '/customer/bookings';
   static const String customerWallet        = '/customer/wallet';
-  static const String customerNotifications = '/customer/notifications';
 
   // ── Services / Categories ─────────────────────────────
   static const String categories      = '/categories';

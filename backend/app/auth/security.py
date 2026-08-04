@@ -1,5 +1,5 @@
 """
-Authentication Security Module — KaamSetu Service Marketplace.
+Authentication Security Module — Ally Service Marketplace.
 
 Implements bcrypt password hashing, JWT access and refresh token lifecycle
 management, cryptographic signature verification, and typed Pydantic v2

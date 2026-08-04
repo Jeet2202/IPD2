@@ -1,5 +1,5 @@
 """
-Verification script for KaamSetu Worker Job Application System (Phase 4.5.4).
+Verification script for Ally Worker Job Application System (Phase 4.5.4).
 
 Tests end-to-end against MongoDB Atlas:
   1. Setup: Customer, Worker 1, Worker 2 users, and open PENDING booking.
@@ -43,7 +43,7 @@ from app.worker.models import WorkerProfile
 
 async def run_job_application_verification() -> None:
     print("=" * 75)
-    print("KAAMSETU — WORKER JOB APPLICATION SYSTEM (PHASE 4.5.4) VERIFICATION")
+    print("ALLY — WORKER JOB APPLICATION SYSTEM (PHASE 4.5.4) VERIFICATION")
     print("=" * 75)
 
     print("\n[0] Connecting to MongoDB Atlas...")

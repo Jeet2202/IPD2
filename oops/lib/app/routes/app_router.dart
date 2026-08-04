@@ -45,6 +45,7 @@ import '../../customer/normal_booking/live_tracking/live_tracking_screen.dart';
 import '../../customer/normal_booking/booking_status/booking_status_screen.dart';
 import '../../customer/normal_booking/work_in_progress/work_in_progress_screen.dart';
 import '../../customer/normal_booking/work_completed/work_completed_screen.dart';
+import '../../customer/notifications/notification_center_screen.dart';
 
 // Worker Module Imports
 import '../../worker/splash/splash_screen.dart';
@@ -144,7 +145,7 @@ import '../../customer/profile/payment_methods/payment_methods_screen.dart';
 import '../../customer/profile/wallet/wallet_screen.dart';
 
 // Engagement & Retention Imports
-import '../../customer/notifications/notifications_screen.dart';
+import '../../customer/notifications/notification_center_screen.dart' show NotificationCenterScreen;
 import '../../customer/offers/offers_screen.dart';
 import '../../customer/refer_earn/refer_earn_screen.dart';
 import '../../customer/favorites/favorite_professionals_screen.dart';
@@ -167,6 +168,10 @@ import '../../customer/ai_assistant/ai_assistant_screen.dart';
 
 class AppRouter {
   AppRouter._();
+
+  /// Global navigator key — used for programmatic navigation from outside widget tree
+  /// (e.g. push notification deep links, background socket events).
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -483,7 +488,7 @@ class AppRouter {
 
       // ── Engagement & Retention Module ──────────────────────────────────────
       case AppRoutes.notifications:
-        return _build(const NotificationsScreen(), settings);
+        return _build(const NotificationCenterScreen(), settings);
 
       case AppRoutes.offers:
         return _build(const OffersScreen(), settings);
@@ -556,7 +561,7 @@ class AppRouter {
       case AppRoutes.bookingHistory:
         return _build(const BookingHistoryScreen(), settings);
 
-      // ── Inspection Booking Flow (USP of KaamSetu) ────────────────────────────
+      // ── Inspection Booking Flow (USP of Ally) ────────────────────────────
       case '/customer/inspection/intro':
         return _build(const InspectionIntroScreen(), settings);
 
@@ -648,6 +653,10 @@ class AppRouter {
       // ── AI Assistant (Phase 5.5) ──────────────────────────────────────
       case AppRoutes.customerAIAssistant:
         return _build(const AIAssistantScreen(), settings);
+
+      // ── Engagement & Support ────────────────────────────────────────────────
+      case AppRoutes.notifications:
+        return _build(const NotificationCenterScreen(), settings);
 
       // ── Fallback ────────────────────────────────────────────────────────────
       default:
