@@ -4,6 +4,7 @@
 // segmented by lifecycle status, with lifecycle action capabilities.
 
 import 'package:flutter/material.dart';
+import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
@@ -72,36 +73,35 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         title: const Row(
           children: [
-            Icon(Icons.work_rounded, color: Color(0xFF2563EB), size: 22),
+            Icon(Icons.work_rounded, color: AppColors.primary, size: 22),
             SizedBox(width: 8),
             Text(
-              'My Work',
+              'My Jobs',
               style: TextStyle(
-                fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
+                color: AppColors.textPrimary,
               ),
             ),
           ],
         ),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.textSecondary),
             onPressed: _loadBookings,
             tooltip: 'Refresh',
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFF2563EB),
-          unselectedLabelColor: const Color(0xFF94A3B8),
-          indicatorColor: const Color(0xFF2563EB),
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.textHint,
+          indicatorColor: AppColors.primary,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
           tabs: [
             Tab(text: 'Active (${_activeBookings.length})'),
@@ -111,11 +111,39 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _error != null
-              ? _buildError()
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.error),
+                      const SizedBox(height: 12),
+                      Text(
+                        _error!,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Pull to refresh or try again.',
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: _loadBookings,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('Retry'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               : RefreshIndicator(
-                  color: const Color(0xFF2563EB),
+                  color: AppColors.primary,
                   onRefresh: _loadBookings,
                   child: TabBarView(
                     controller: _tabController,
@@ -127,44 +155,6 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
                   ),
                 ),
       bottomNavigationBar: const WorkerBottomNavigationBar(currentIndex: 2),
-    );
-  }
-
-  Widget _buildError() {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.25),
-        Center(
-          child: Column(
-            children: [
-              const Icon(Icons.cloud_off_rounded, size: 48, color: Color(0xFFEF4444)),
-              const SizedBox(height: 12),
-              const Text(
-                'Failed to Load Work',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _loadBookings,
-                icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

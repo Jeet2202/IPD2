@@ -39,6 +39,10 @@ class RegisterRequest(BaseModel):
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str) -> str:
+        if v:
+            v = v.strip()
+            if len(v) == 10 and v.isdigit():
+                v = f"+91{v}"
         if not PHONE_REGEX.match(v):
             raise ValueError("Invalid Indian phone number format. Must start with +91 followed by 10 digits.")
         return v
@@ -62,7 +66,7 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     """Request payload for authentication via email or phone."""
 
-    email: EmailStr | None = None
+    email: str | None = None
     phone: str | None = None
     password: str = Field(..., description="User password")
     role: UserRole | None = Field(default=None, description="Target role for strict login validation")
@@ -73,10 +77,25 @@ class LoginRequest(BaseModel):
     operating_system: str | None = None
     browser: str | None = None
 
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str | None) -> str | None:
+        if v is None or not v.strip():
+            return None
+        v = v.strip().lower()
+        if "@" not in v:
+            raise ValueError("Invalid email address format.")
+        return v
+
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: str | None) -> str | None:
-        if v is not None and not PHONE_REGEX.match(v):
+        if v is None or not v.strip():
+            return None
+        v = v.strip()
+        if len(v) == 10 and v.isdigit():
+            v = f"+91{v}"
+        if not PHONE_REGEX.match(v):
             raise ValueError("Invalid Indian phone number format. Must start with +91 followed by 10 digits.")
         return v
 

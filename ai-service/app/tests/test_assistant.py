@@ -221,6 +221,7 @@ class TestToolRegistry:
         assert "get_platform_stats" not in schema_names
         assert "get_worker_schedule" not in schema_names
         assert "search_services" in schema_names
+        assert "get_recent_bookings" in schema_names
 
 
 # ══════════════════════════════════════════════════════════════════════════════

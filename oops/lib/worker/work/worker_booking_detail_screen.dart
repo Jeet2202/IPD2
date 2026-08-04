@@ -1,6 +1,7 @@
 // File: lib/worker/work/worker_booking_detail_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
 import '../../models/review_model.dart';
 import '../../services/booking_service.dart';
@@ -122,12 +123,12 @@ class _WorkerBookingDetailScreenState
         if (!didPop) Navigator.of(context).pop(true);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
             onPressed: () => Navigator.of(context).pop(true),
           ),
           title: Column(

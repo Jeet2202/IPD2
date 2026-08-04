@@ -13,6 +13,12 @@ class AppColors {
 
   static const Color accent         = Color(0xFFF59E0B);
 
+  // AI Feature Accent (Dedicated Indigo/Violet scale)
+  static const Color aiAccent         = Color(0xFF6366F1);
+  static const Color aiSubtleBg       = Color(0xFFEEF2FF);
+  static const Color aiBorder         = Color(0xFFC7D2FE);
+  static const Color aiSurface        = Color(0xFFF5F3FF);
+
   static const Color background     = Color(0xFFF8FAFC);
   static const Color surface        = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFF1F5F9);

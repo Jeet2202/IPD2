@@ -1,6 +1,7 @@
 // File: lib/worker/verification/verification_status/verification_status_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/theme/app_colors.dart';
 
 class WorkerVerificationStatusScreen extends StatelessWidget {
   const WorkerVerificationStatusScreen({super.key});
@@ -8,18 +9,18 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Verification Progress',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
@@ -38,13 +39,13 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
+                    colors: [AppColors.primarySurface, Color(0xFFDBEAFE)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
+                      color: AppColors.primary.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -52,14 +53,14 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
                       width: 64,
                       height: 64,
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         shape: BoxShape.circle,
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.verified_user_rounded,
                           size: 36,
-                          color: Color(0xFF2563EB),
+                          color: AppColors.primary,
                         ),
                       ),
                     ),

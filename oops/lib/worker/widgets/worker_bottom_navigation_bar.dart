@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../app/theme/app_colors.dart';
 
 class WorkerBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -37,10 +38,10 @@ class WorkerBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      selectedItemColor: const Color(0xFF2563EB),
-      unselectedItemColor: const Color(0xFF94A3B8),
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.slate400,
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       elevation: 12,
       onTap: (index) => _onTabTapped(context, index),
       items: const [

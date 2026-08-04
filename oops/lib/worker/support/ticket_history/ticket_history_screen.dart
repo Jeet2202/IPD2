@@ -1,6 +1,7 @@
 // File: lib/worker/support/ticket_history/ticket_history_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../app/theme/app_colors.dart';
 
 class WorkerTicketHistoryScreen extends StatefulWidget {
   const WorkerTicketHistoryScreen({super.key});
@@ -53,18 +54,18 @@ class _WorkerTicketHistoryScreenState extends State<WorkerTicketHistoryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Support Tickets History',
+          'Support Tickets',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),

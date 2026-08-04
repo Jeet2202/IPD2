@@ -70,7 +70,7 @@ class BookingStatusTool(AssistantTool):
             headers = {"Authorization": f"Bearer {auth_token}"} if auth_token else {}
             response = await BackendClient.request(
                 "GET",
-                f"/api/bookings/{arguments['booking_id']}",
+                f"/api/v1/customer/bookings/{arguments['booking_id']}",
                 headers=headers,
             )
             data = response.json()
@@ -225,10 +225,76 @@ class PolicyTool(AssistantTool):
         return {"policies": policies, "topic": arguments["topic"]}
 
 
+class CustomerBookingsTool(AssistantTool):
+    @property
+    def name(self) -> str:
+        return "get_recent_bookings"
+
+    @property
+    def description(self) -> str:
+        return "List the authenticated customer's recent bookings, including booking IDs, service names, status, scheduled date, and total price."
+
+    @property
+    def parameters_schema(self) -> Dict[str, Any]:
+        return {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Optional status filter: 'pending', 'accepted', 'completed', 'cancelled'",
+                },
+                "limit": {
+                    "type": "integer",
+                    "default": 5,
+                    "description": "Number of recent bookings to return (default 5)",
+                },
+            },
+            "required": [],
+        }
+
+    async def execute(self, arguments: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            auth_token = context.get("auth_token", "")
+            headers = {"Authorization": f"Bearer {auth_token}"} if auth_token else {}
+            params = {
+                "page": 1,
+                "page_size": arguments.get("limit", 5),
+            }
+            if arguments.get("status"):
+                params["status"] = arguments["status"]
+
+            response = await BackendClient.request(
+                "GET",
+                "/api/v1/customer/bookings",
+                params=params,
+                headers=headers,
+            )
+            data = response.json()
+            items = data.get("data", {}).get("items", []) or data.get("items", []) or data.get("bookings", [])
+            if not isinstance(items, list) and isinstance(data, list):
+                items = data
+
+            clean_bookings = []
+            for b in items:
+                clean_bookings.append({
+                    "booking_id": b.get("id") or b.get("_id") or b.get("booking_id"),
+                    "service": b.get("service_name") or (b.get("service", {}).get("name") if isinstance(b.get("service"), dict) else b.get("service")),
+                    "status": b.get("status"),
+                    "scheduled_date": b.get("scheduled_date") or b.get("preferred_date"),
+                    "final_price": b.get("final_price") or b.get("total_amount") or b.get("estimated_price"),
+                    "created_at": b.get("created_at"),
+                })
+            return {"bookings": clean_bookings, "total_count": len(clean_bookings)}
+        except Exception as e:
+            logger.error(f"CustomerBookingsTool error: {e}")
+            return {"error": str(e), "bookings": []}
+
+
 def get_customer_tools() -> List[AssistantTool]:
     return [
         ServiceSearchTool(),
         BookingStatusTool(),
+        CustomerBookingsTool(),
         PriceEstimateTool(),
         RecommendationExplanationTool(),
         FAQTool(),

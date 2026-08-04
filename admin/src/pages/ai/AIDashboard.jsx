@@ -23,7 +23,7 @@ const TABS = [
   { id: 'pricing', label: 'Pricing', icon: IndianRupee },
 ];
 
-const CHART_COLORS = ['#7C3AED', '#2563EB', '#10B981', '#F59E0B', '#EF4444', '#EC4899'];
+const CHART_COLORS = ['#6366F1', '#2563EB', '#10B981', '#F59E0B', '#3B82F6', '#8B5CF6'];
 
 function InsightCard({ insight }) {
   const config = {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../app/theme/app_colors.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_service.dart';
 
@@ -302,17 +303,17 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
     final completion = (data?['profile_completion_percentage'] as num?)?.toInt() ?? 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Partner Settings',
-          style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
+          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),
