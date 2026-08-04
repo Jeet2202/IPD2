@@ -40,17 +40,29 @@ from app.auth.router import router as auth_router
 from app.booking.router import router as booking_router
 from app.category.router import router as category_router
 from app.customer.router import router as customer_router
+from app.engagement.router import router as engagement_router
+from app.fraud.router import router as fraud_router
 from app.home.router import router as home_router
 from app.inspection.router import router as inspection_router
 from app.jobs.router import router as jobs_router
 from app.marketplace.router import router as marketplace_router
+from app.moderation.router import (
+    disputes_router,
+    moderation_router,
+    reports_router,
+)
 from app.notifications.router import router as notifications_router
 from app.pricing.router import router as pricing_router
+from app.privacy.router import router as privacy_router
 from app.quotation.router import router as quotation_router
 from app.review.router import router as review_domain_router
 from app.reviews.router import router as reviews_router
+from app.security_center.router import router as security_router
 from app.service.router import router as service_router
+from app.trust.router import router as trust_router
+from app.trust_intelligence.router import router as trust_intelligence_router
 from app.uploads.router import router as uploads_router
+from app.verification.router import router as verification_router
 from app.worker.router import router as worker_router
 
 # ---------------------------------------------------------------------------
@@ -223,6 +235,74 @@ v1_router.include_router(
     reviews_router,
     prefix="/reviews",
     tags=["Reviews"],
+)
+
+# --- Trust & Safety ---
+# Core trust, risk assessment, policy configuration, and audit logging.
+v1_router.include_router(
+    trust_router,
+    prefix="/trust",
+    tags=["Trust & Safety"],
+)
+
+# --- Worker Verification ---
+# Worker document upload, verification workflow, admin review, and trust badges.
+v1_router.include_router(
+    verification_router,
+    prefix="/verification",
+    tags=["Worker Verification"],
+)
+
+# --- Fraud Detection & Abuse Prevention ---
+# Rule-based fraud detection, risk assessment, alert management, and abuse reporting.
+v1_router.include_router(
+    fraud_router,
+    prefix="/fraud",
+    tags=["Fraud Detection & Abuse Prevention"],
+)
+
+# --- Reporting, Moderation & Dispute Resolution ---
+# User reports, evidence files, moderation reviews, escalations, and formal dispute cases.
+v1_router.include_router(
+    reports_router,
+)
+v1_router.include_router(
+    moderation_router,
+)
+v1_router.include_router(
+    disputes_router,
+)
+
+# --- Privacy & Compliance ---
+# User privacy controls, consent management, JSON/CSV exports, grace period deletion, retention rules.
+v1_router.include_router(
+    privacy_router,
+    prefix="/privacy",
+    tags=["Privacy & Compliance"],
+)
+
+# --- Security Monitoring & Audit Center ---
+# Centralized security event logs, auth monitoring, API health, security alerts, and dashboard summaries.
+v1_router.include_router(
+    security_router,
+    prefix="/security",
+    tags=["Security Monitoring & Audit Center"],
+)
+
+# --- Trust Intelligence & Risk Assessment ---
+# Centralized trust intelligence, department risk scoring, trend analytics, and metric recommendations.
+v1_router.include_router(
+    trust_intelligence_router,
+    prefix="/trust/intelligence",
+    tags=["Trust Intelligence & Risk Assessment"],
+)
+
+# --- Customer Engagement ---
+# Favorites, Recently Viewed, Saved Searches, Personalization & Home Feed.
+v1_router.include_router(
+    engagement_router,
+    prefix="/engagement",
+    tags=["Customer Engagement"],
 )
 
 # --- Admin ---

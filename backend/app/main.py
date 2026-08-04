@@ -72,6 +72,54 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     from app.otp.models import OTP
     from app.quotation.models import Quotation, QuotationHistory
     from app.review.models import Review
+    from app.trust.models import (
+        RiskEvent,
+        SafetyFlag,
+        TrustAuditLog,
+        TrustPolicy,
+        TrustProfile,
+        VerificationHistory,
+    )
+    from app.engagement.models import (
+        Favorite,
+        RecentlyViewed,
+        RecommendationHistory,
+        SavedSearch,
+    )
+    from app.fraud.models import (
+        AbuseReport,
+        FraudAlert,
+        FraudEvent,
+        FraudRule,
+    )
+    from app.moderation.models import (
+        CaseNote,
+        Dispute,
+        EvidenceFile,
+        ModerationCase,
+        PlatformReport,
+    )
+    from app.privacy.models import (
+        ComplianceRecord,
+        DataExport,
+        PrivacyRequest,
+        RetentionPolicy,
+        UserConsent,
+    )
+    from app.security_center.models import (
+        APIMonitoringRecord,
+        LoginHistory,
+        SecurityAlert,
+        SecurityDashboardCache,
+        SecurityEvent,
+    )
+    from app.trust_intelligence.models import TrustIntelligenceSnapshot
+    from app.verification.models import (
+        VerificationBadge,
+        VerificationDocument,
+        VerificationReview,
+        WorkerVerification,
+    )
     from app.worker.models import WorkerProfile
 
     await connect_to_database(
@@ -90,6 +138,40 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             Quotation,
             QuotationHistory,
             Review,
+            TrustProfile,
+            TrustPolicy,
+            RiskEvent,
+            TrustAuditLog,
+            SafetyFlag,
+            VerificationHistory,
+            WorkerVerification,
+            VerificationDocument,
+            VerificationReview,
+            VerificationBadge,
+            FraudEvent,
+            FraudRule,
+            FraudAlert,
+            AbuseReport,
+            PlatformReport,
+            Dispute,
+            ModerationCase,
+            EvidenceFile,
+            CaseNote,
+            UserConsent,
+            PrivacyRequest,
+            DataExport,
+            RetentionPolicy,
+            ComplianceRecord,
+            SecurityEvent,
+            SecurityAlert,
+            LoginHistory,
+            APIMonitoringRecord,
+            SecurityDashboardCache,
+            TrustIntelligenceSnapshot,
+            Favorite,
+            RecentlyViewed,
+            SavedSearch,
+            RecommendationHistory,
         ]
     )
     yield

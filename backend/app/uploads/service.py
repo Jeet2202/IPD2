@@ -197,3 +197,107 @@ class CloudinaryService:
         if old_public_id:
             cls.delete_image(old_public_id)
         return secure_url, new_public_id
+
+    @classmethod
+    def upload_verification_document(
+        cls,
+        file_bytes: bytes,
+        filename: str,
+        worker_id: str,
+        document_type: str,
+    ) -> tuple[str, str]:
+        """
+        Upload verification document bytes (PDF, Image, etc.) to Cloudinary under kaamsetu/verification_documents folder.
+
+        Returns:
+            tuple[secure_url, public_id]
+        """
+        cls._configure()
+
+        base_folder = settings.CLOUDINARY_FOLDER.strip("/").split("/")[0] if settings.CLOUDINARY_FOLDER else "kaamsetu"
+        folder = f"{base_folder}/verification_documents"
+        unique_suffix = uuid.uuid4().hex[:8]
+        filename_public_id = f"worker_{worker_id}_{document_type}_{unique_suffix}"
+        expected_full_public_id = f"{folder}/{filename_public_id}"
+
+        # Determine resource type (raw for PDF/docs, image for images)
+        ext = filename.split(".")[-1].lower() if "." in filename else ""
+        resource_type = "raw" if ext in ["pdf", "doc", "docx", "txt"] else "auto"
+
+        try:
+            upload_result = cloudinary.uploader.upload(
+                file_bytes,
+                folder=folder,
+                public_id=filename_public_id,
+                overwrite=True,
+                resource_type=resource_type,
+            )
+            secure_url = upload_result.get("secure_url")
+            result_public_id = upload_result.get("public_id", expected_full_public_id)
+            logger.info(
+                "Successfully uploaded verification document to Cloudinary for worker_id=%s doc_type=%s (public_id=%s)",
+                worker_id,
+                document_type,
+                result_public_id,
+            )
+            return secure_url, result_public_id
+        except CloudinaryError as e:
+            logger.error("Cloudinary document upload failed for worker_id=%s: %s", worker_id, str(e))
+            raise InternalServerErrorException(
+                message=f"Document upload to Cloudinary failed: {str(e)}",
+                error_code="CLOUDINARY_UPLOAD_FAILED",
+            )
+        except Exception as e:
+            logger.error("Unexpected error during Cloudinary document upload for worker_id=%s: %s", worker_id, str(e))
+            raise InternalServerErrorException(
+                message="Failed to upload verification document. Please try again later.",
+                error_code="DOCUMENT_UPLOAD_ERROR",
+            )
+
+    @classmethod
+    def upload_moderation_evidence(
+        cls,
+        file_bytes: bytes,
+        filename: str,
+        case_id: str,
+        uploader_id: str,
+    ) -> tuple[str, str]:
+        """
+        Upload moderation evidence file (Image, PDF, Document) to Cloudinary under kaamsetu/moderation_evidence.
+
+        Returns:
+            tuple[secure_url, public_id]
+        """
+        cls._configure()
+
+        base_folder = settings.CLOUDINARY_FOLDER.strip("/").split("/")[0] if settings.CLOUDINARY_FOLDER else "kaamsetu"
+        folder = f"{base_folder}/moderation_evidence"
+        unique_suffix = uuid.uuid4().hex[:8]
+        filename_public_id = f"evidence_{case_id[:8]}_{uploader_id[:8]}_{unique_suffix}"
+        expected_full_public_id = f"{folder}/{filename_public_id}"
+
+        ext = filename.split(".")[-1].lower() if "." in filename else ""
+        resource_type = "raw" if ext in ["pdf", "doc", "docx", "txt", "zip"] else "auto"
+
+        try:
+            upload_result = cloudinary.uploader.upload(
+                file_bytes,
+                folder=folder,
+                public_id=filename_public_id,
+                overwrite=True,
+                resource_type=resource_type,
+            )
+            secure_url = upload_result.get("secure_url")
+            result_public_id = upload_result.get("public_id", expected_full_public_id)
+            logger.info(
+                "Successfully uploaded moderation evidence to Cloudinary for case_id=%s (public_id=%s)",
+                case_id,
+                result_public_id,
+            )
+            return secure_url, result_public_id
+        except Exception as e:
+            logger.warning("Cloudinary upload failed for evidence case_id=%s: %s", case_id, str(e))
+            raise InternalServerErrorException(
+                message=f"Evidence file upload failed: {str(e)}",
+                error_code="EVIDENCE_UPLOAD_FAILED",
+            )

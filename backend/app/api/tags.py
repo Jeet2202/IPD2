@@ -101,6 +101,69 @@ OPENAPI_TAGS: list[dict[str, str]] = [
         ),
     },
     {
+        "name": "Trust & Safety",
+        "description": (
+            "Trust profiles, risk level management, configurable policy engine, "
+            "immutable audit log tracking, and safety event handling."
+        ),
+    },
+    {
+        "name": "Worker Verification",
+        "description": (
+            "Worker identity and document verification workflows, Cloudinary document management, "
+            "admin review & approval processing, and configurable trust badges."
+        ),
+    },
+    {
+        "name": "Fraud Detection & Abuse Prevention",
+        "description": (
+            "Rule-based fraud detection engine, explainable risk scoring, "
+            "administrative alert management, abuse reporting, and automated risk actions."
+        ),
+    },
+    {
+        "name": "Reporting & Moderation",
+        "description": (
+            "User reporting of policy violations and poor service, Cloudinary evidence file storage, "
+            "moderator investigation reviews, and senior admin case escalations."
+        ),
+    },
+    {
+        "name": "Dispute Resolution",
+        "description": (
+            "Formal dispute resolution cases, participant timeline case notes, "
+            "evidence review, and enforceable administrative resolution actions."
+        ),
+    },
+    {
+        "name": "Privacy & Compliance",
+        "description": (
+            "User consent management, privacy profile controls, JSON/CSV personal data exports, "
+            "grace-period account deletion workflow, data retention rules, and compliance records."
+        ),
+    },
+    {
+        "name": "Security Monitoring & Audit Center",
+        "description": (
+            "Centralized security event logs, authentication monitoring, API traffic and latency metrics, "
+            "security alert management, and administrative security dashboard status."
+        ),
+    },
+    {
+        "name": "Trust Intelligence & Risk Assessment",
+        "description": (
+            "Backend trust intelligence aggregation across all Phase 8 subsystems, weighted department risk scoring, "
+            "historical risk trend analytics, and metric-referenced administrative recommendations."
+        ),
+    },
+    {
+        "name": "Customer Engagement",
+        "description": (
+            "Favorites management for workers and services, recently viewed item tracking, "
+            "saved search presets, personalized home feed, continue browsing, and quick rebooking recommendations."
+        ),
+    },
+    {
         "name": "Admin",
         "description": (
             "Platform administration — user management, job oversight, "
