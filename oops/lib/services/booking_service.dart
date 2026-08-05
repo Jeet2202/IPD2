@@ -190,4 +190,24 @@ class BookingService {
     );
     return res as Map<String, dynamic>;
   }
+
+  /// Worker accepts an inspection visit request via POST /bookings/{id}/inspection/accept
+  Future<BookingModel> acceptInspection(String bookingId) async {
+    final res = await _apiService.post('/bookings/$bookingId/inspection/accept', {});
+    return BookingModel.fromJson(res as Map<String, dynamic>);
+  }
+
+  /// Worker schedules inspection visit date/time via POST /bookings/{id}/inspection/schedule
+  Future<BookingModel> scheduleInspection(String bookingId, DateTime scheduledAt) async {
+    final res = await _apiService.post('/bookings/$bookingId/inspection/schedule', {
+      'scheduled_at': scheduledAt.toUtc().toIso8601String(),
+    });
+    return BookingModel.fromJson(res as Map<String, dynamic>);
+  }
+
+  /// Worker marks inspection visit as completed via POST /bookings/{id}/inspection/complete
+  Future<BookingModel> completeInspection(String bookingId) async {
+    final res = await _apiService.post('/bookings/$bookingId/inspection/complete', {});
+    return BookingModel.fromJson(res as Map<String, dynamic>);
+  }
 }

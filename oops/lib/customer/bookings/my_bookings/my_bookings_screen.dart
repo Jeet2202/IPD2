@@ -405,30 +405,47 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          b.bookingNumber,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: b.bookingType == 'inspection_request' ? const Color(0xFFFEF3C7) : const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(6),
+                    Expanded(
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            b.bookingNumber,
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
                           ),
-                          child: Text(
-                            b.bookingType == 'inspection_request' ? 'Inspection' : 'Direct',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: b.bookingType == 'inspection_request' ? const Color(0xFFD97706) : AppColors.textSecondary,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: b.bookingType == 'inspection_request'
+                                  ? const Color(0xFFFEF3C7)
+                                  : b.bookingType == 'custom_service'
+                                      ? const Color(0xFFFFF7ED)
+                                      : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              b.bookingType == 'inspection_request'
+                                  ? 'Inspection'
+                                  : b.bookingType == 'custom_service'
+                                      ? 'Custom'
+                                      : 'Direct',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: b.bookingType == 'inspection_request'
+                                    ? const Color(0xFFD97706)
+                                    : b.bookingType == 'custom_service'
+                                        ? const Color(0xFFEA580C)
+                                        : AppColors.textSecondary,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(

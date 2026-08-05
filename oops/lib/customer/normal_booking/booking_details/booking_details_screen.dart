@@ -28,6 +28,21 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   final AddressService _addressService = AddressService.instance;
   final TextEditingController _notesController = TextEditingController();
   final TextEditingController _problemDescController = TextEditingController();
+  final TextEditingController _customTitleController = TextEditingController();
+  final TextEditingController _customDescController = TextEditingController();
+  final TextEditingController _customBudgetController = TextEditingController();
+
+  String _selectedCategorySlug = 'plumbing';
+
+  final List<Map<String, String>> _categories = const [
+    {'name': 'Plumbing', 'slug': 'plumbing'},
+    {'name': 'Electrical', 'slug': 'electrical'},
+    {'name': 'Cleaning', 'slug': 'cleaning'},
+    {'name': 'AC & Appliance Repair', 'slug': 'appliance-repair'},
+    {'name': 'Painting', 'slug': 'painting'},
+    {'name': 'Carpentry', 'slug': 'carpentry'},
+    {'name': 'General Maintenance', 'slug': 'general'},
+  ];
 
   ServiceModel? _service;
   List<AddressModel> _savedAddresses = [];
@@ -36,7 +51,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   bool _isLoadingAddresses = true;
   String? _addressError;
 
-  late String _bookingType; // 'normal_service' or 'inspection_request'
+  late String _bookingType; // 'normal_service', 'custom_service', or 'inspection_request'
   late DateTime _selectedDate;
   String _selectedTimeSlot = '';
   bool _isLoadingSlots = false;
@@ -274,16 +289,26 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   }
 
   void _proceedToSummary() {
-    if (_service == null) {
+    if (_selectedAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select or add a service address.')),
+      );
+      return;
+    }
+
+    if (_bookingType == 'normal_service' && _service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a valid service.')),
       );
       return;
     }
 
-    if (_selectedAddress == null) {
+    if (_bookingType == 'custom_service' && _customTitleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select or add a service address.')),
+        const SnackBar(
+          content: Text('Please enter a service title for your custom booking.'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -311,6 +336,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         'scheduled_time': _selectedTimeSlot,
         'customer_notes': _notesController.text.trim(),
         'problem_description': _problemDescController.text.trim(),
+        'custom_title': _customTitleController.text.trim(),
+        'custom_description': _customDescController.text.trim(),
+        'custom_budget': double.tryParse(_customBudgetController.text.trim()),
+        'category_slug': _selectedCategorySlug,
       },
     );
   }
@@ -318,6 +347,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   @override
   void dispose() {
     _notesController.dispose();
+    _problemDescController.dispose();
+    _customTitleController.dispose();
+    _customDescController.dispose();
+    _customBudgetController.dispose();
     super.dispose();
   }
 
@@ -419,33 +452,159 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                 // ── Booking Type Selector ──────────────────────────────
                 _buildSectionHeader(
-                  title: 'Booking Type',
+                  title: 'Choose Booking Type',
                   icon: Icons.category_rounded,
                 ),
                 const SizedBox(height: 10),
-                Row(
+                Column(
                   children: [
-                    Expanded(
-                      child: _buildBookingTypeTile(
-                        typeKey: 'normal_service',
-                        title: 'Normal Service',
-                        subtitle: 'Fixed price job dispatch',
-                        icon: Icons.flash_on_rounded,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildBookingTypeTile(
+                            typeKey: 'normal_service',
+                            title: 'Predefined Service',
+                            subtitle: 'Fixed catalog booking',
+                            icon: Icons.flash_on_rounded,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildBookingTypeTile(
+                            typeKey: 'custom_service',
+                            title: 'Custom Service',
+                            subtitle: 'Your custom requirements',
+                            icon: Icons.edit_attributes_rounded,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildBookingTypeTile(
-                        typeKey: 'inspection_request',
-                        title: 'Inspection Visit',
-                        subtitle: 'On-site estimate first',
-                        icon: Icons.search_rounded,
-                      ),
+                    const SizedBox(height: 10),
+                    _buildBookingTypeTile(
+                      typeKey: 'inspection_request',
+                      title: 'Request Inspection Visit',
+                      subtitle: 'On-site diagnostic before quotation',
+                      icon: Icons.search_rounded,
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 24),
+
+                // ── Category Selector for Custom / Standalone Inspection ─────
+                if (_bookingType != 'normal_service' || _service == null) ...[
+                  _buildSectionHeader(
+                    title: 'Select Service Category',
+                    icon: Icons.grid_view_rounded,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedCategorySlug,
+                        isExpanded: true,
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary),
+                        items: _categories.map((c) {
+                          return DropdownMenuItem<String>(
+                            value: c['slug'],
+                            child: Text(
+                              c['name']!,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() => _selectedCategorySlug = val);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+
+                // ── Custom Service Requirements Form ──────────────────────
+                if (_bookingType == 'custom_service') ...[
+                  _buildSectionHeader(
+                    title: 'Custom Service Details',
+                    icon: Icons.edit_document,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Service Title *',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _customTitleController,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                          decoration: InputDecoration(
+                            hintText: 'e.g., Fix leaking underground pipe & replace tap',
+                            hintStyle: const TextStyle(fontSize: 13, color: AppColors.textHint),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'Detailed Requirements (Optional)',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _customDescController,
+                          maxLines: 3,
+                          style: const TextStyle(fontSize: 14),
+                          decoration: InputDecoration(
+                            hintText: 'Provide details on what needs to be repaired or installed...',
+                            hintStyle: const TextStyle(fontSize: 13, color: AppColors.textHint),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'Estimated Budget (Optional - INR)',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _customBudgetController,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                          decoration: InputDecoration(
+                            prefixText: '₹ ',
+                            hintText: '500',
+                            hintStyle: const TextStyle(fontSize: 13, color: AppColors.textHint),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.all(12),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
 
                 // ── Date Selector ──────────────────────────────────────
                 _buildSectionHeader(

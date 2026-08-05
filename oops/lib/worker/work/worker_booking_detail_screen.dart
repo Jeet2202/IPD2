@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../widgets/review_display_card.dart';
 import '../../widgets/booking_communication_section.dart';
 import '../../services/socket_service.dart';
+import '../quotations/quotation_form_screen.dart';
 import 'worker_complete_job_dialog.dart';
 
 class WorkerBookingDetailScreen extends StatefulWidget {
@@ -251,6 +252,8 @@ class _WorkerBookingDetailScreenState
               Text(
                 _booking.serviceSnapshot.name,
                 style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -419,6 +422,9 @@ class _WorkerBookingDetailScreenState
   }
 
   Widget _buildServiceCard() {
+    final isCustom = _booking.isCustomService;
+    final isInspection = _booking.isInspectionRequest;
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -429,26 +435,71 @@ class _WorkerBookingDetailScreenState
           children: [
             Row(
               children: [
-                const Icon(Icons.build_rounded, color: Color(0xFF2563EB), size: 18),
+                Icon(
+                  isInspection
+                      ? Icons.search_rounded
+                      : isCustom
+                          ? Icons.edit_note_rounded
+                          : Icons.build_rounded,
+                  color: isInspection
+                      ? Colors.purple
+                      : isCustom
+                          ? Colors.orange.shade800
+                          : const Color(0xFF2563EB),
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Service Details',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
+                Text(
+                  isInspection
+                      ? 'Inspection Request Details'
+                      : isCustom
+                          ? 'Custom Service Scope'
+                          : 'Service Details',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
                 ),
               ],
             ),
             const Divider(height: 16),
-            _infoRow(Icons.home_repair_service_outlined, _booking.serviceSnapshot.name),
-            const SizedBox(height: 6),
-            _infoRow(
-              Icons.attach_money_rounded,
-              'Est. Price: ₹${(_booking.estimatedPrice ?? _booking.serviceSnapshot.baseMarketPrice).toStringAsFixed(0)}',
-            ),
-            const SizedBox(height: 6),
-            _infoRow(
-              Icons.timer_outlined,
-              'Est. Duration: ${_booking.serviceSnapshot.estimatedDurationMinutes} min',
-            ),
+            if (isCustom) ...[
+              _infoRow(Icons.title_rounded, 'Title: ${_booking.customTitle ?? _booking.serviceSnapshot.name}'),
+              const SizedBox(height: 6),
+              if (_booking.customDescription != null && _booking.customDescription!.isNotEmpty) ...[
+                _infoRow(Icons.description_outlined, 'Requirements: ${_booking.customDescription}'),
+                const SizedBox(height: 6),
+              ],
+              _infoRow(
+                Icons.payments_outlined,
+                'Estimated Budget: ${_booking.customBudget != null ? "₹${_booking.customBudget!.toStringAsFixed(0)}" : "Flexible"}',
+              ),
+              const SizedBox(height: 6),
+              _infoRow(Icons.grid_view_rounded, 'Category: ${(_booking.categorySlug ?? "general").toUpperCase()}'),
+            ] else if (isInspection) ...[
+              _infoRow(Icons.category_outlined, 'Category: ${(_booking.categorySlug ?? _booking.serviceSnapshot.categorySlug).toUpperCase()}'),
+              const SizedBox(height: 6),
+              _infoRow(
+                Icons.assignment_late_outlined,
+                'Problem Description: ${_booking.problemDescription ?? "Site diagnostic requested"}',
+              ),
+              if (_booking.inspectionStatus != null) ...[
+                const SizedBox(height: 6),
+                _infoRow(
+                  Icons.timeline_rounded,
+                  'Inspection Status: ${_booking.inspectionStatus!.replaceAll('_', ' ').toUpperCase()}',
+                ),
+              ],
+            ] else ...[
+              _infoRow(Icons.home_repair_service_outlined, _booking.serviceSnapshot.name),
+              const SizedBox(height: 6),
+              _infoRow(
+                Icons.attach_money_rounded,
+                'Est. Price: ₹${(_booking.estimatedPrice ?? _booking.serviceSnapshot.baseMarketPrice).toStringAsFixed(0)}',
+              ),
+              const SizedBox(height: 6),
+              _infoRow(
+                Icons.timer_outlined,
+                'Est. Duration: ${_booking.serviceSnapshot.estimatedDurationMinutes} min',
+              ),
+            ],
             if (_booking.customerNotes != null && _booking.customerNotes!.isNotEmpty) ...[
               const SizedBox(height: 6),
               _infoRow(Icons.notes_rounded, 'Customer Note: ${_booking.customerNotes}'),
@@ -456,6 +507,22 @@ class _WorkerBookingDetailScreenState
           ],
         ),
       ),
+    );
+  }
+
+  Widget _infoRow(IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 15, color: const Color(0xFF64748B)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF334155)),
+          ),
+        ),
+      ],
     );
   }
 
@@ -523,23 +590,141 @@ class _WorkerBookingDetailScreenState
     );
   }
 
-  Widget _infoRow(IconData icon, String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 15, color: const Color(0xFF64748B)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF334155)),
-          ),
-        ),
-      ],
+  Future<void> _handleAcceptInspection() async {
+    setState(() => _isActionLoading = true);
+    try {
+      final updated = await BookingService.instance.acceptInspection(_booking.id);
+      if (mounted) setState(() => _booking = updated);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to accept inspection: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
+    }
+  }
+
+  Future<void> _handleScheduleInspection() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 30)),
     );
+    if (picked == null || !mounted) return;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (time == null || !mounted) return;
+
+    final scheduledAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+
+    setState(() => _isActionLoading = true);
+    try {
+      final updated = await BookingService.instance.scheduleInspection(_booking.id, scheduledAt);
+      if (mounted) setState(() => _booking = updated);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to schedule inspection: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
+    }
+  }
+
+  Future<void> _handleCompleteInspection() async {
+    setState(() => _isActionLoading = true);
+    try {
+      final updated = await BookingService.instance.completeInspection(_booking.id);
+      if (mounted) setState(() => _booking = updated);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to complete inspection: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
+    }
   }
 
   Widget _buildActionFooter() {
+    if (_booking.isInspectionRequest) {
+      String label;
+      IconData icon;
+      Color color;
+      VoidCallback action;
+
+      if (_booking.inspectionStatus == null || _booking.inspectionStatus == 'pending') {
+        label = 'Accept Inspection Visit';
+        icon = Icons.check_circle_rounded;
+        color = const Color(0xFF059669);
+        action = _handleAcceptInspection;
+      } else if (_booking.inspectionStatus == 'accepted') {
+        label = 'Schedule Visit Date/Time';
+        icon = Icons.calendar_month_rounded;
+        color = const Color(0xFF2563EB);
+        action = _handleScheduleInspection;
+      } else if (_booking.inspectionStatus == 'scheduled') {
+        label = 'Mark Inspection Completed';
+        icon = Icons.task_alt_rounded;
+        color = Colors.purple;
+        action = _handleCompleteInspection;
+      } else {
+        label = 'Convert to Service Quotation';
+        icon = Icons.request_quote_rounded;
+        color = const Color(0xFF0F172A);
+        action = () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QuotationFormScreen(
+                bookingId: _booking.id,
+                applicationId: _booking.id,
+                bookingNumber: _booking.bookingNumber,
+                serviceName: _booking.serviceSnapshot.name,
+              ),
+            ),
+          );
+        };
+      }
+
+      return Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, -4))],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: _isActionLoading ? null : action,
+            icon: _isActionLoading
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : Icon(icon, size: 20),
+            label: Text(
+              _isActionLoading ? 'Updating...' : label,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              elevation: 0,
+            ),
+          ),
+        ),
+      );
+    }
+
     String label;
     IconData icon;
     Color color;

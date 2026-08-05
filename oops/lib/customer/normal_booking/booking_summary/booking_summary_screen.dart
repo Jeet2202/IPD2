@@ -43,6 +43,11 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   String? _customerNotes;
   String? _problemDescription;
 
+  String? _customTitle;
+  String? _customDescription;
+  double? _customBudget;
+  String? _categorySlug;
+
   bool _isSubmitting = false;
   String? _submitError;
 
@@ -65,6 +70,10 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         _scheduledTime = args['scheduled_time'] as String?;
         _customerNotes = args['customer_notes'] as String?;
         _problemDescription = args['problem_description'] as String?;
+        _customTitle = args['custom_title'] as String?;
+        _customDescription = args['custom_description'] as String?;
+        _customBudget = (args['custom_budget'] as num?)?.toDouble();
+        _categorySlug = args['category_slug'] as String?;
       });
     } else {
       setState(() {
@@ -79,9 +88,16 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   }
 
   Future<void> _confirmAndBook() async {
-    if (_service == null || _address == null) {
+    if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing booking details. Please go back and select.')),
+        const SnackBar(content: Text('Missing address details. Please go back and select.')),
+      );
+      return;
+    }
+
+    if (_bookingType == 'normal_service' && _service == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Missing service selection. Please go back and select a service.')),
       );
       return;
     }
@@ -93,13 +109,17 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
     try {
       final payload = CreateBookingPayload(
-        serviceId: _service!.id,
+        serviceId: _service?.id,
         addressId: _address!.id,
         bookingType: _bookingType,
         scheduledDate: _scheduledDate,
         scheduledTime: _scheduledTime,
         customerNotes: _customerNotes,
         problemDescription: _problemDescription,
+        customTitle: _customTitle,
+        customDescription: _customDescription,
+        customBudget: _customBudget,
+        categorySlug: _categorySlug,
       );
 
       final bookingResult = await _bookingService.createBooking(payload);
@@ -147,7 +167,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     final service = _service;
     final address = _address;
 
-    if (service == null || address == null) {
+    if (address == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Booking Summary')),
         body: Center(
@@ -168,10 +188,10 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       );
     }
 
-    final estimatedPrice = service.basePrice;
-    final priceDisplay = service.priceRangeDisplay.isNotEmpty
-        ? service.priceRangeDisplay
-        : '₹${estimatedPrice.toStringAsFixed(0)}';
+    final displayTitle = service?.name ?? _customTitle ?? 'Inspection Visit (${_categorySlug ?? "General"})';
+    final priceDisplay = service != null
+        ? (service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}')
+        : (_customBudget != null ? '₹${_customBudget!.toStringAsFixed(0)} (Estimated)' : 'Free Visit / Quote Pending');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -240,11 +260,19 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                           width: 50,
                           height: 50,
                           color: const Color(0xFFF1F5F9),
-                          child: Image.network(
-                            service.resolvedImage,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.handyman_rounded, color: AppColors.primary, size: 24),
-                          ),
+                          child: service != null
+                              ? Image.network(
+                                  service.resolvedImage,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => const Icon(Icons.handyman_rounded, color: AppColors.primary, size: 24),
+                                )
+                              : Icon(
+                                  _bookingType == 'inspection_request'
+                                      ? Icons.search_rounded
+                                      : Icons.assignment_rounded,
+                                  color: AppColors.primary,
+                                  size: 24,
+                                ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -253,12 +281,12 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              service.name,
+                              displayTitle,
                               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Category: ${service.categorySlug.replaceAll('-', ' ').toUpperCase()}',
+                              'Category: ${(service?.categorySlug ?? _categorySlug ?? "general").replaceAll('-', ' ').toUpperCase()}',
                               style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                             ),
                           ],
@@ -341,13 +369,23 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   icon: Icons.receipt_long_rounded,
                   content: Column(
                     children: [
-                      _buildRow('Base Market Price', '₹${estimatedPrice.toStringAsFixed(0)}'),
+                      _buildRow(
+                        'Base / Estimated Price',
+                        service != null
+                            ? '₹${service.basePrice.toStringAsFixed(0)}'
+                            : (_customBudget != null ? '₹${_customBudget!.toStringAsFixed(0)}' : 'To be quoted'),
+                      ),
                       const SizedBox(height: 6),
-                      _buildRow('Estimated Duration', service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} mins'),
+                      _buildRow(
+                        'Estimated Duration',
+                        service != null
+                            ? (service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} mins')
+                            : 'Site visit / Quote dependent',
+                      ),
                       const SizedBox(height: 8),
                       const Divider(color: AppColors.divider, height: 1),
                       const SizedBox(height: 8),
-                      _buildRow('Total Estimated Pay', '₹${estimatedPrice.toStringAsFixed(0)}', isBold: true),
+                      _buildRow('Total Estimated Pay', priceDisplay, isBold: true),
                     ],
                   ),
                 ),
@@ -383,8 +421,8 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                       const Text('Total Estimated', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                       const SizedBox(height: 2),
                       Text(
-                        '₹${estimatedPrice.toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.primary),
+                        priceDisplay,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
                       ),
                     ],
                   ),

@@ -16,7 +16,7 @@ import logging
 
 from fastapi import APIRouter, Query, status
 
-from datetime import date
+from datetime import date, datetime
 
 from app.booking.scheduling import AvailableSlotsResponse
 from app.booking.schemas import BookingListResponse, BookingResponse, CreateBookingRequest
@@ -410,6 +410,56 @@ async def get_booking_messages(
     )
 
 
+# ---------------------------------------------------------------------------
+# Inspection Workflow Endpoints (Worker)
+# ---------------------------------------------------------------------------
+
+from app.auth.dependencies import WorkerUserDep
+from pydantic import BaseModel
 
 
+class ScheduleInspectionRequest(BaseModel):
+    scheduled_at: datetime
 
+
+@router.post(
+    "/bookings/{booking_id}/inspection/accept",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Accept inspection visit",
+    description="Worker accepts a site inspection request.",
+)
+async def accept_inspection(
+    booking_id: str,
+    worker: WorkerUserDep,
+) -> BookingResponse:
+    return await BookingService.accept_inspection(booking_id, worker)
+
+
+@router.post(
+    "/bookings/{booking_id}/inspection/schedule",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Schedule inspection visit date/time",
+    description="Worker schedules the date and time for the site inspection visit.",
+)
+async def schedule_inspection(
+    booking_id: str,
+    payload: ScheduleInspectionRequest,
+    worker: WorkerUserDep,
+) -> BookingResponse:
+    return await BookingService.schedule_inspection(booking_id, payload.scheduled_at, worker)
+
+
+@router.post(
+    "/bookings/{booking_id}/inspection/complete",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Complete inspection visit",
+    description="Worker marks site inspection visit as finished.",
+)
+async def complete_inspection(
+    booking_id: str,
+    worker: WorkerUserDep,
+) -> BookingResponse:
+    return await BookingService.complete_inspection(booking_id, worker)
