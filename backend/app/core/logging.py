@@ -163,6 +163,7 @@ def setup_logging(*, log_level: str = "INFO", json_logs: bool = False) -> None:
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("motor").setLevel(logging.WARNING)
     logging.getLogger("pymongo").setLevel(logging.WARNING)
+    logging.getLogger("passlib.handlers.bcrypt").setLevel(logging.ERROR)
 
     logging.getLogger(__name__).info(
         "Logging configured — level=%s, json=%s", log_level, json_logs
