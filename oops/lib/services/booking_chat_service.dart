@@ -111,7 +111,23 @@ class BookingChatService extends ChangeNotifier {
     _messages.add(msg);
     notifyListeners();
 
-    socket.emit('send_message', data);
+    socket.emitWithAck('send_message', data, ack: (response) {
+      if (response != null && response['status'] == 'delivered') {
+        final realId = response['id'];
+        final idx = _messages.indexWhere((m) => m.id == msgId);
+        if (idx != -1 && realId != null) {
+          _messages[idx] = ChatMessage(
+            id: realId,
+            bookingId: _messages[idx].bookingId,
+            senderId: _messages[idx].senderId,
+            content: _messages[idx].content,
+            timestamp: _messages[idx].timestamp,
+            isRead: _messages[idx].isRead,
+          );
+          notifyListeners();
+        }
+      }
+    });
   }
 
   Future<void> sendMediaMessage(File file, String mediaType) async {
@@ -149,7 +165,27 @@ class BookingChatService extends ChangeNotifier {
       _messages.add(msg);
       notifyListeners();
 
-      socket.emit('send_message', data);
+      socket.emitWithAck('send_message', data, ack: (response) {
+        if (response != null && response['status'] == 'delivered') {
+          final realId = response['id'];
+          final idx = _messages.indexWhere((m) => m.id == msgId);
+          if (idx != -1 && realId != null) {
+            _messages[idx] = ChatMessage(
+              id: realId,
+              bookingId: _messages[idx].bookingId,
+              senderId: _messages[idx].senderId,
+              content: _messages[idx].content,
+              timestamp: _messages[idx].timestamp,
+              isRead: _messages[idx].isRead,
+              mediaUrl: _messages[idx].mediaUrl,
+              mediaType: _messages[idx].mediaType,
+              mediaName: _messages[idx].mediaName,
+              mediaSize: _messages[idx].mediaSize,
+            );
+            notifyListeners();
+          }
+        }
+      });
     } catch (e) {
       debugPrint('Failed to send media: $e');
       rethrow;

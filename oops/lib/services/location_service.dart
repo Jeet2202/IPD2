@@ -67,6 +67,29 @@ class ReverseGeocodeResult {
       postalCode != null;
 }
 
+/// Result of an autocomplete location search query.
+class SearchResultLocation {
+  final double latitude;
+  final double longitude;
+  final String displayName;
+  final String? addressLine;
+  final String? city;
+  final String? state;
+  final String? postalCode;
+  final String? country;
+
+  const SearchResultLocation({
+    required this.latitude,
+    required this.longitude,
+    required this.displayName,
+    this.addressLine,
+    this.city,
+    this.state,
+    this.postalCode,
+    this.country,
+  });
+}
+
 /// Structured permission/location error codes.
 enum LocationErrorCode {
   serviceDisabled,
@@ -127,6 +150,12 @@ abstract class LocationService {
   /// Returns [ReverseGeocodeResult] with as many fields as the provider returns.
   /// Never throws — returns empty result on failure.
   Future<ReverseGeocodeResult> reverseGeocode(LatLng location);
+
+  /// Search for locations by query text (autocomplete).
+  ///
+  /// Returns a list of [SearchResultLocation].
+  /// Returns an empty list on failure or no results.
+  Future<List<SearchResultLocation>> searchLocations(String query);
 }
 
 /// Permission status enumeration (provider-agnostic).
@@ -329,10 +358,73 @@ class OsmLocationService implements LocationService {
     if (value != null && value.isNotEmpty) parts.add(value);
   }
 
-  String? _firstNonNull(List<String?> values) {
-    for (final v in values) {
-      if (v != null && v.isNotEmpty) return v;
+  /// Returns the first non-null string in a list, or null.
+  String? _firstNonNull(List<String?> items) {
+    for (final item in items) {
+      if (item != null && item.trim().isNotEmpty) return item.trim();
     }
     return null;
+  }
+
+  // ── Address Search (Nominatim) ──────────────────────────────────────────
+
+  @override
+  Future<List<SearchResultLocation>> searchLocations(String query) async {
+    if (query.trim().isEmpty) return [];
+
+    try {
+      final uri = Uri.parse(
+        '$_nominatimBase/search'
+        '?q=${Uri.encodeComponent(query)}'
+        '&format=json'
+        '&addressdetails=1'
+        '&limit=5'
+      );
+
+      final response = await _httpClient
+          .get(uri, headers: {'User-Agent': _userAgent})
+          .timeout(_timeout);
+
+      if (response.statusCode != 200) {
+        return [];
+      }
+
+      final data = jsonDecode(response.body) as List<dynamic>;
+      return data.map((item) {
+        final map = item as Map<String, dynamic>;
+        final addr = map['address'] as Map<String, dynamic>? ?? {};
+        
+        final lat = double.tryParse(map['lat']?.toString() ?? '') ?? 0.0;
+        final lon = double.tryParse(map['lon']?.toString() ?? '') ?? 0.0;
+        
+        // Build address line
+        final addressParts = <String>[];
+        _addIfPresent(addressParts, addr['house_number'] as String?);
+        _addIfPresent(addressParts, addr['road'] as String?);
+        _addIfPresent(addressParts, addr['suburb'] as String?);
+        final addressLine = addressParts.isNotEmpty ? addressParts.join(', ') : null;
+
+        final city = _firstNonNull([
+          addr['city'] as String?,
+          addr['town'] as String?,
+          addr['village'] as String?,
+          addr['county'] as String?,
+        ]);
+
+        return SearchResultLocation(
+          latitude: lat,
+          longitude: lon,
+          displayName: map['display_name'] as String? ?? 'Unknown Location',
+          addressLine: addressLine,
+          city: city,
+          state: addr['state'] as String?,
+          postalCode: addr['postcode'] as String?,
+          country: addr['country'] as String?,
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('OsmLocationService searchLocations error: $e');
+      return [];
+    }
   }
 }

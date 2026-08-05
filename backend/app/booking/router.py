@@ -22,6 +22,7 @@ from app.booking.scheduling import AvailableSlotsResponse
 from app.booking.schemas import BookingListResponse, BookingResponse, CreateBookingRequest
 from app.booking.service import BookingService
 from app.core.dependencies import CustomerDep
+from app.auth.dependencies import ActiveUserDep
 
 logger = logging.getLogger(__name__)
 

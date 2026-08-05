@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/api_service.dart';
 import '../../../services/location_service.dart';
+import '../../../widgets/location_search_bar.dart';
 
 class WorkerServiceAreaScreen extends StatefulWidget {
   const WorkerServiceAreaScreen({super.key});
@@ -176,6 +177,17 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── Manual Search Bar ────────────────────────────────────
+                    LocationSearchBar(
+                      onLocationSelected: (location) {
+                        setState(() {
+                          _detectedLocation = LatLng(location.latitude, location.longitude);
+                          _detectedAddress = location.displayName;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
                     // ── Map Placeholder with radius visualization ────────────
                     Container(
                       height: 180,

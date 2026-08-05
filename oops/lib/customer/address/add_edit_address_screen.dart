@@ -22,6 +22,7 @@ import '../../models/address_model.dart';
 import '../../services/address_service.dart';
 import '../../services/api_service.dart';
 import '../../services/location_service.dart';
+import '../../widgets/location_search_bar.dart';
 import 'map_picker_screen.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
@@ -455,6 +456,22 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                   _ErrorBanner(message: _globalError!),
                   const SizedBox(height: 16),
                 ],
+
+                // ── Manual Search ──────────────────────────────────────
+                LocationSearchBar(
+                  onLocationSelected: (location) {
+                    setState(() {
+                      _latitude = location.latitude;
+                      _longitude = location.longitude;
+                      if (location.addressLine != null) _addressLine1Ctrl.text = location.addressLine!;
+                      if (location.city != null) _cityCtrl.text = location.city!;
+                      if (location.state != null) _stateCtrl.text = location.state!;
+                      if (location.postalCode != null) _postalCodeCtrl.text = location.postalCode!;
+                      if (location.country != null) _countryCtrl.text = location.country!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
 
                 // ── Location Buttons ──────────────────────────────────
                 _SectionHeader(icon: Icons.my_location_rounded, title: 'Detect Location'),
