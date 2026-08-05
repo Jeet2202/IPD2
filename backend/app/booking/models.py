@@ -391,12 +391,11 @@ class Booking(Document):
         indexes = [
             IndexModel(
                 [("customer_id", ASCENDING), ("status", ASCENDING), ("created_at", DESCENDING)],
-                name="customer_status_created_idx",
+                name="idx_customer_status_created",
             ),
-            IndexModel([("booking_number", ASCENDING)], unique=True, name="booking_number_idx"),
             IndexModel(
                 [("status", ASCENDING), ("created_at", DESCENDING)],
-                name="status_created_idx",
+                name="idx_status_created",
             ),
             IndexModel([("service_location", "2dsphere")], name="service_location_2dsphere"),
             IndexModel([("service_snapshot.service_id", ASCENDING), ("status", ASCENDING)], name="service_status_idx"),

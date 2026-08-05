@@ -1,22 +1,6 @@
 // File: lib/services/location_service.dart
 //
 // Phase 4.3.3 — LocationService abstraction.
-//
-// Architecture:
-//   LocationService (abstract interface)
-//       └── OsmLocationService (concrete impl using geolocator + Nominatim)
-//
-// Future migration path:
-//   To switch to Google Maps or Mapbox:
-//     1. Create GoogleLocationService implements LocationService
-//     2. Change LocationService.instance assignment below
-//     3. No other code changes needed — all callers use LocationService.instance
-//
-// Design principles:
-//   - No flutter_map imports in this file — purely business logic
-//   - All callers depend on LocationService, not OsmLocationService
-//   - Nominatim HTTP calls are isolated here; easy to swap geocoder
-//   - GPS is cached while address screen is open (see currentPosition)
 
 import 'dart:async';
 import 'dart:convert';
@@ -30,7 +14,6 @@ import 'package:http/http.dart' as http;
 // ══════════════════════════════════════════════════════════════════════════════
 
 /// Location coordinate pair — used throughout the app.
-/// Keeps lat/lng together to avoid argument-order bugs.
 class LatLng {
   final double latitude;
   final double longitude;
@@ -42,14 +25,13 @@ class LatLng {
 }
 
 /// Result of reverse geocoding a coordinate pair.
-/// All fields are nullable — allow manual editing if unavailable.
 class ReverseGeocodeResult {
   final String? addressLine;
   final String? city;
   final String? state;
   final String? country;
   final String? postalCode;
-  final String? displayName; // Full human-readable address for map preview
+  final String? displayName;
 
   const ReverseGeocodeResult({
     this.addressLine,
@@ -116,72 +98,30 @@ class LocationException implements Exception {
 // Abstract Interface
 // ══════════════════════════════════════════════════════════════════════════════
 
-/// Abstract location service interface.
-///
-/// All location-dependent code in the app depends on this interface.
-/// Swap the implementation (OSM → Google → Mapbox) by changing [instance].
 abstract class LocationService {
-  /// Singleton accessor — change the assignment to swap providers.
   static LocationService instance = OsmLocationService();
 
-  /// Request location permission from the OS.
-  /// Returns true if granted.
   Future<bool> requestPermission();
-
-  /// Check if location permission is currently granted.
   Future<LocationPermissionStatus> checkPermission();
-
-  /// Check if location services (GPS) are enabled on the device.
   Future<bool> isLocationServiceEnabled();
-
-  /// Get the current GPS position.
-  ///
-  /// Throws [LocationException] on service disabled / permission denied / timeout.
   Future<LatLng> getCurrentLocation({Duration timeout = const Duration(seconds: 15)});
-
-  /// Open the device location settings (useful when permission permanently denied).
   Future<void> openLocationSettings();
-
-  /// Open the app settings (for permanently denied permission).
   Future<void> openAppSettings();
-
-  /// Reverse geocode coordinates to an address.
-  ///
-  /// Returns [ReverseGeocodeResult] with as many fields as the provider returns.
-  /// Never throws — returns empty result on failure.
   Future<ReverseGeocodeResult> reverseGeocode(LatLng location);
-
-  /// Search for locations by query text (autocomplete).
-  ///
-  /// Returns a list of [SearchResultLocation].
-  /// Returns an empty list on failure or no results.
   Future<List<SearchResultLocation>> searchLocations(String query);
 }
 
-/// Permission status enumeration (provider-agnostic).
 enum LocationPermissionStatus {
   granted,
   denied,
   permanentlyDenied,
-  restricted, // iOS only
+  restricted,
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
 // OpenStreetMap / Nominatim Implementation
 // ══════════════════════════════════════════════════════════════════════════════
 
-/// Concrete location service using:
-///   - geolocator for GPS + permission management
-///   - Nominatim (OpenStreetMap) for reverse geocoding — no API key required
-///
-/// Nominatim usage policy:
-///   - Max 1 request/second (enforced by user interaction, not polling)
-///   - Must include a User-Agent identifying the app
-///   - Suitable for student/production projects under normal usage
-///
-/// To migrate to Google:
-///   Create GoogleLocationService that calls Google Geocoding API
-///   and set LocationService.instance = GoogleLocationService().
 class OsmLocationService implements LocationService {
   static const _nominatimBase = 'https://nominatim.openstreetmap.org';
   static const _userAgent = 'Ally/1.0 (student project; contact@ally.app)';
@@ -191,8 +131,6 @@ class OsmLocationService implements LocationService {
 
   OsmLocationService({http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
-
-  // ── Permission ──────────────────────────────────────────────────────────
 
   @override
   Future<bool> requestPermission() async {
@@ -232,13 +170,10 @@ class OsmLocationService implements LocationService {
     await Geolocator.openAppSettings();
   }
 
-  // ── GPS ─────────────────────────────────────────────────────────────────
-
   @override
   Future<LatLng> getCurrentLocation({
     Duration timeout = const Duration(seconds: 15),
   }) async {
-    // 1. Check GPS enabled
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw const LocationException(
@@ -247,7 +182,6 @@ class OsmLocationService implements LocationService {
       );
     }
 
-    // 2. Check / request permission
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -266,7 +200,6 @@ class OsmLocationService implements LocationService {
       );
     }
 
-    // 3. Get position
     try {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: LocationSettings(
@@ -287,8 +220,6 @@ class OsmLocationService implements LocationService {
       );
     }
   }
-
-  // ── Reverse Geocoding (Nominatim) ────────────────────────────────────────
 
   @override
   Future<ReverseGeocodeResult> reverseGeocode(LatLng location) async {
@@ -314,7 +245,6 @@ class OsmLocationService implements LocationService {
       final addr = data['address'] as Map<String, dynamic>? ?? {};
       final displayName = data['display_name'] as String?;
 
-      // Build address line from Nominatim fields
       final addressParts = <String>[];
       _addIfPresent(addressParts, addr['house_number'] as String?);
       _addIfPresent(addressParts, addr['road'] as String?);
@@ -322,7 +252,6 @@ class OsmLocationService implements LocationService {
       final addressLine =
           addressParts.isNotEmpty ? addressParts.join(', ') : null;
 
-      // City: try multiple field names Nominatim uses
       final city = _firstNonNull([
         addr['city'] as String?,
         addr['town'] as String?,
@@ -344,29 +273,13 @@ class OsmLocationService implements LocationService {
         displayName: displayName,
       );
     } on SocketException {
-      return const ReverseGeocodeResult(); // No internet — silent fail, allow manual entry
+      return const ReverseGeocodeResult();
     } on TimeoutException {
-      return const ReverseGeocodeResult(); // Timeout — silent fail
+      return const ReverseGeocodeResult();
     } catch (_) {
-      return const ReverseGeocodeResult(); // Any other error — silent fail
+      return const ReverseGeocodeResult();
     }
   }
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  void _addIfPresent(List<String> parts, String? value) {
-    if (value != null && value.isNotEmpty) parts.add(value);
-  }
-
-  /// Returns the first non-null string in a list, or null.
-  String? _firstNonNull(List<String?> items) {
-    for (final item in items) {
-      if (item != null && item.trim().isNotEmpty) return item.trim();
-    }
-    return null;
-  }
-
-  // ── Address Search (Nominatim) ──────────────────────────────────────────
 
   @override
   Future<List<SearchResultLocation>> searchLocations(String query) async {
@@ -378,7 +291,7 @@ class OsmLocationService implements LocationService {
         '?q=${Uri.encodeComponent(query)}'
         '&format=json'
         '&addressdetails=1'
-        '&limit=5'
+        '&limit=5',
       );
 
       final response = await _httpClient
@@ -393,16 +306,16 @@ class OsmLocationService implements LocationService {
       return data.map((item) {
         final map = item as Map<String, dynamic>;
         final addr = map['address'] as Map<String, dynamic>? ?? {};
-        
+
         final lat = double.tryParse(map['lat']?.toString() ?? '') ?? 0.0;
         final lon = double.tryParse(map['lon']?.toString() ?? '') ?? 0.0;
-        
-        // Build address line
+
         final addressParts = <String>[];
         _addIfPresent(addressParts, addr['house_number'] as String?);
         _addIfPresent(addressParts, addr['road'] as String?);
         _addIfPresent(addressParts, addr['suburb'] as String?);
-        final addressLine = addressParts.isNotEmpty ? addressParts.join(', ') : null;
+        final addressLine =
+            addressParts.isNotEmpty ? addressParts.join(', ') : null;
 
         final city = _firstNonNull([
           addr['city'] as String?,
@@ -423,8 +336,18 @@ class OsmLocationService implements LocationService {
         );
       }).toList();
     } catch (e) {
-      debugPrint('OsmLocationService searchLocations error: $e');
       return [];
     }
+  }
+
+  void _addIfPresent(List<String> parts, String? value) {
+    if (value != null && value.isNotEmpty) parts.add(value);
+  }
+
+  String? _firstNonNull(List<String?> items) {
+    for (final item in items) {
+      if (item != null && item.trim().isNotEmpty) return item.trim();
+    }
+    return null;
   }
 }
