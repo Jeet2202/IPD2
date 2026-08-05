@@ -77,6 +77,10 @@ class MarketplaceBookingItemResponse(BaseModel):
         default=False,
         description="True if the authenticated worker has already applied for this booking",
     )
+    application_id: str | None = Field(
+        default=None,
+        description="Job application ObjectId string if worker has applied",
+    )
     created_at: datetime = Field(..., description="Booking creation timestamp (UTC)")
 
 

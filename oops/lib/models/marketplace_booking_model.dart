@@ -44,6 +44,7 @@ class MarketplaceBookingItem {
   final double? distanceKm;
   final bool isRecommended;
   final bool hasApplied;
+  final String? applicationId;
   final DateTime createdAt;
 
   MarketplaceBookingItem({
@@ -62,6 +63,7 @@ class MarketplaceBookingItem {
     this.distanceKm,
     this.isRecommended = false,
     this.hasApplied = false,
+    this.applicationId,
     required this.createdAt,
   });
 
@@ -85,6 +87,7 @@ class MarketplaceBookingItem {
       distanceKm: (json['distance_km'] as num?)?.toDouble(),
       isRecommended: json['is_recommended'] as bool? ?? false,
       hasApplied: json['has_applied'] as bool? ?? false,
+      applicationId: json['application_id'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now()
           : DateTime.now(),
@@ -114,6 +117,7 @@ class MarketplaceBookingDetail extends MarketplaceBookingItem {
     super.distanceKm,
     super.isRecommended,
     super.hasApplied,
+    super.applicationId,
     required super.createdAt,
     this.problemDescription,
     this.problemPhotos = const [],
@@ -140,6 +144,7 @@ class MarketplaceBookingDetail extends MarketplaceBookingItem {
       distanceKm: item.distanceKm,
       isRecommended: item.isRecommended,
       hasApplied: item.hasApplied,
+      applicationId: item.applicationId,
       createdAt: item.createdAt,
       problemDescription: json['problem_description'] as String?,
       problemPhotos: photos,

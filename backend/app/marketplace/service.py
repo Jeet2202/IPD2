@@ -69,6 +69,7 @@ class MarketplaceService:
         booking: Booking,
         worker_profile: WorkerProfile | None = None,
         has_applied: bool = False,
+        application_id: str | None = None,
     ) -> MarketplaceBookingItemResponse:
         """Map a Booking model to a sanitized summary item DTO with distance & recommendation flags."""
         sanitized_addr = self._build_sanitized_address(booking)
@@ -88,6 +89,7 @@ class MarketplaceService:
             distance_km=dist_km,
             is_recommended=is_rec,
             has_applied=has_applied,
+            application_id=application_id,
             created_at=booking.created_at,
         )
 
@@ -96,11 +98,15 @@ class MarketplaceService:
         booking: Booking,
         worker_profile: WorkerProfile | None = None,
         has_applied: bool = False,
+        application_id: str | None = None,
     ) -> MarketplaceBookingDetailResponse:
         """Map a Booking model to a sanitized detail DTO."""
-        item = self._to_item_response(booking, worker_profile, has_applied=has_applied)
+        base_dto = self._to_item_response(
+            booking, worker_profile=worker_profile, has_applied=has_applied, application_id=application_id
+        )
+
         return MarketplaceBookingDetailResponse(
-            **item.model_dump(),
+            **base_dto.model_dump(),
             problem_description=booking.problem_description,
             problem_photos=booking.problem_photos,
         )
@@ -229,6 +235,7 @@ class MarketplaceService:
             )
 
         has_applied = False
+        application_id = None
         user_id_obj = worker_user_id or (worker_profile.user_id if worker_profile else None)
         if user_id_obj and PydanticObjectId.is_valid(booking_id):
             uid = PydanticObjectId(str(user_id_obj))
@@ -236,5 +243,6 @@ class MarketplaceService:
             existing = await JobApplication.find_one({"booking_id": bid, "worker_id": uid})
             if existing:
                 has_applied = True
+                application_id = str(existing.id)
 
-        return self._to_detail_response(booking, worker_profile, has_applied=has_applied)
+        return self._to_detail_response(booking, worker_profile, has_applied=has_applied, application_id=application_id)

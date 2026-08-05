@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../models/marketplace_booking_model.dart';
 import '../../../../services/job_application_service.dart';
 import '../../../../services/marketplace_service.dart';
+import '../../quotations/quotation_form_screen.dart';
 
 class MarketplaceBookingDetailModal extends StatefulWidget {
   final String bookingId;
@@ -114,9 +115,14 @@ class _MarketplaceBookingDetailModalState
     );
   }
 
+  String? _applicationId;
+
   Widget _buildDetailContent(MarketplaceBookingDetail detail) {
     if (detail.hasApplied && !_hasApplied) {
       _hasApplied = true;
+      if (detail.applicationId != null) {
+        _applicationId = detail.applicationId;
+      }
     }
     final isInspection = detail.isInspection;
     final primaryColor =
@@ -329,7 +335,7 @@ class _MarketplaceBookingDetailModalState
     });
 
     try {
-      await JobApplicationService.instance.applyForJob(
+      final appRes = await JobApplicationService.instance.applyForJob(
         bookingId: detail.id,
         coverLetter: coverLetterController.text,
       );
@@ -339,6 +345,7 @@ class _MarketplaceBookingDetailModalState
       setState(() {
         _isApplying = false;
         _hasApplied = true;
+        _applicationId = appRes.id;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -377,29 +384,69 @@ class _MarketplaceBookingDetailModalState
 
   Widget _buildApplySection(MarketplaceBookingDetail detail) {
     if (_hasApplied) {
-      return Container(
-        width: double.infinity,
-        height: 48,
-        decoration: BoxDecoration(
-          color: const Color(0xFFECFDF5),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFA7F3D0)),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 20),
-            SizedBox(width: 8),
-            Text(
-              'Application Submitted',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF047857),
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 48,
+            decoration: BoxDecoration(
+              color: const Color(0xFFECFDF5),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFA7F3D0)),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Application Submitted',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF047857),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_applicationId != null) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuotationFormScreen(
+                        bookingId: detail.id,
+                        applicationId: _applicationId!,
+                        bookingNumber: detail.bookingNumber,
+                        serviceName: detail.serviceName,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.request_quote_rounded, size: 20),
+                label: const Text(
+                  'Manage / Send Quotation',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F172A),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
               ),
             ),
           ],
-        ),
+        ],
       );
     }
 
