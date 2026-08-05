@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
@@ -53,16 +54,39 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
+    final cleanPhone = phoneNumber.trim();
+    if (cleanPhone.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Phone number not available.')),
+        );
+      }
+      return;
+    }
+
+    // 1. Copy phone number to clipboard
+    await Clipboard.setData(ClipboardData(text: cleanPhone));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Copied phone number ($cleanPhone) to clipboard! Opening phone app...'),
+          backgroundColor: const Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+    // 2. Open phone app via tel: URL scheme
     final Uri launchUri = Uri(
       scheme: 'tel',
-      path: phoneNumber,
+      path: cleanPhone,
     );
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch phone dialer.')),
+          const SnackBar(content: Text('Phone number copied, but could not open dialer.')),
         );
       }
     }
@@ -137,11 +161,9 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
               height: 48,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // In a real app, you would fetch the actual phone number
-                  // from the booking's worker snapshot or customer snapshot.
                   final phone = widget.isWorker 
                       ? widget.booking.addressSnapshot.phone
-                      : '0000000000'; // Worker phone is not exposed in BookingModel
+                      : (widget.booking.workerPhone ?? '');
                   _makePhoneCall(phone);
                 },
                 icon: const Icon(Icons.phone_rounded, size: 20),

@@ -180,6 +180,8 @@ class BookingModel {
   final String? problemDescription;
   final List<String> problemPhotos;
   final String? workerId;
+  final String? workerName;
+  final String? workerPhone;
   final String? assignedAt;
   final String? enRouteAt;
   final String? arrivedAt;
@@ -218,6 +220,8 @@ class BookingModel {
     this.problemDescription,
     this.problemPhotos = const [],
     this.workerId,
+    this.workerName,
+    this.workerPhone,
     this.assignedAt,
     this.enRouteAt,
     this.arrivedAt,
@@ -269,6 +273,8 @@ class BookingModel {
       problemDescription: raw['problem_description'] as String?,
       problemPhotos: (raw['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       workerId: raw['worker_id'] as String?,
+      workerName: raw['worker_name'] as String?,
+      workerPhone: raw['worker_phone'] as String?,
       assignedAt: raw['assigned_at'] as String?,
       enRouteAt: raw['en_route_at'] as String?,
       arrivedAt: raw['arrived_at'] as String?,
@@ -312,6 +318,8 @@ class BookingModel {
         'problem_description': problemDescription,
         'problem_photos': problemPhotos,
         'worker_id': workerId,
+        'worker_name': workerName,
+        'worker_phone': workerPhone,
         'assigned_at': assignedAt,
         'en_route_at': enRouteAt,
         'arrived_at': arrivedAt,

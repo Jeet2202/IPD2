@@ -136,6 +136,14 @@ async def _to_response(booking: Booking) -> BookingResponse:
         {"booking_id": booking.id}
     ).count()
 
+    worker_name: str | None = None
+    worker_phone: str | None = None
+    if booking.worker_id is not None:
+        worker_user = await User.get(booking.worker_id)
+        if worker_user:
+            worker_name = worker_user.full_name
+            worker_phone = worker_user.phone
+
     return BookingResponse(
         id=str(booking.id),
         booking_number=booking.booking_number,
@@ -156,6 +164,8 @@ async def _to_response(booking: Booking) -> BookingResponse:
         problem_description=booking.problem_description,
         problem_photos=booking.problem_photos,
         worker_id=str(booking.worker_id) if booking.worker_id else None,
+        worker_name=worker_name,
+        worker_phone=worker_phone,
         assigned_at=booking.assigned_at.isoformat() if booking.assigned_at else None,
         en_route_at=booking.en_route_at.isoformat() if booking.en_route_at else None,
         arrived_at=booking.arrived_at.isoformat() if booking.arrived_at else None,

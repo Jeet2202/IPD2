@@ -1,6 +1,10 @@
 // File: lib/worker/jobs/active_jobs/active_jobs_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../services/booking_chat_service.dart';
+import '../../../widgets/booking_chat_bottom_sheet.dart';
 
 class WorkerActiveJobsScreen extends StatefulWidget {
   const WorkerActiveJobsScreen({super.key});
@@ -247,13 +251,22 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                     const SizedBox(width: 8),
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Calling customer: +91 98765 43210...'),
-                              backgroundColor: Color(0xFF10B981),
-                            ),
-                          );
+                        onPressed: () async {
+                          const phone = '+919876543210';
+                          await Clipboard.setData(const ClipboardData(text: phone));
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Copied phone number ($phone) to clipboard! Opening phone app...'),
+                                backgroundColor: Color(0xFF10B981),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                          final Uri launchUri = Uri(scheme: 'tel', path: phone);
+                          if (await canLaunchUrl(launchUri)) {
+                            await launchUrl(launchUri);
+                          }
                         },
                         icon: const Icon(Icons.call_rounded, size: 18),
                         label: const Text('Call'),
@@ -271,7 +284,11 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/worker/support/live-chat');
+                          final chatService = BookingChatService(
+                            bookingId: 'JOB-8821',
+                            currentUserId: 'worker',
+                          );
+                          BookingChatBottomSheet.show(context, chatService: chatService);
                         },
                         icon: const Icon(Icons.chat_bubble_outline_rounded,
                             size: 18),

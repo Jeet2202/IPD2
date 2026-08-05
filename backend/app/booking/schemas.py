@@ -205,6 +205,8 @@ class BookingResponse(BaseModel):
 
     # Execution & Completion (Phase 4.7.2)
     worker_id: str | None = Field(default=None, description="Assigned worker ObjectId")
+    worker_name: str | None = Field(default=None, description="Assigned worker full name")
+    worker_phone: str | None = Field(default=None, description="Assigned worker phone number")
     assigned_at: str | None = Field(default=None, description="Worker assignment timestamp")
     en_route_at: str | None = Field(default=None, description="Worker en route timestamp")
     arrived_at: str | None = Field(default=None, description="Worker arrival timestamp")

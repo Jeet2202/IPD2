@@ -25,7 +25,8 @@ class BookingChatService extends ChangeNotifier {
   List<ChatMessage> get messages => _messages;
   bool get isOtherPartyTyping => _isOtherPartyTyping;
 
-  void _initSocketListeners() {
+  Future<void> _initSocketListeners() async {
+    await _socketService.connect();
     final socket = _socketService.socket;
     if (socket == null) return;
 
