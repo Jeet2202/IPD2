@@ -173,12 +173,13 @@ async def on_leave_booking(sid: str, data: Dict[str, Any]):
 @sio.on("send_message")
 async def on_send_message(sid: str, data: Dict[str, Any]):
     """
-    Broadcast a chat message to the booking room.
+    Broadcast and persist a chat message to the booking room.
     Expects data: {"booking_id": "...", "message": "...", "sender_id": "..."}
     Optional media: {"media_url": "...", "media_type": "image"|"document"}
     """
     booking_id = data.get("booking_id")
     sender_id = data.get("sender_id")
+    message_text = data.get("message", "")
     if not booking_id or not sender_id:
         return {"error": "booking_id and sender_id required"}
 
@@ -188,27 +189,53 @@ async def on_send_message(sid: str, data: Dict[str, Any]):
         return {"error": "Not authorized for this booking"}
         
     chat_room = room_manager.get_chat_room(booking_id)
-    
-    # Broadcast to everyone else in the room
-    await sio.emit("receive_message", data, room=chat_room, skip_sid=sid)
+
+    # 1. Save ChatMessage to MongoDB
+    from app.booking.models import ChatMessage
+    from beanie import PydanticObjectId
+
+    chat_msg = ChatMessage(
+        booking_id=PydanticObjectId(booking_id),
+        sender_id=PydanticObjectId(sender_id),
+        message=message_text,
+        media_url=data.get("media_url"),
+        media_type=data.get("media_type"),
+        media_name=data.get("media_name"),
+        media_size=data.get("media_size"),
+    )
+    await chat_msg.insert()
+
+    payload = {
+        "id": str(chat_msg.id),
+        "booking_id": booking_id,
+        "sender_id": sender_id,
+        "message": message_text,
+        "timestamp": chat_msg.timestamp.isoformat(),
+        "is_read": False,
+        "media_url": chat_msg.media_url,
+        "media_type": chat_msg.media_type,
+        "media_name": chat_msg.media_name,
+        "media_size": chat_msg.media_size,
+    }
+
+    # 2. Broadcast to everyone else in the room
+    await sio.emit("receive_message", payload, room=chat_room, skip_sid=sid)
     logger.debug(f"Message broadcasted to {chat_room} by {sid}")
 
-    # Optional: Media push notification — send via queue to avoid blocking
-    media_type = data.get("media_type")
-    if media_type:
-        asyncio.create_task(_send_media_notification(booking_id, sender_id, media_type))
+    # 3. Push notification — send via queue to avoid blocking
+    asyncio.create_task(_send_chat_notification(booking_id, sender_id, message_text, data.get("media_type")))
 
-    return {"status": "delivered", "timestamp": data.get("timestamp")}
+    return {"status": "delivered", "id": str(chat_msg.id), "timestamp": chat_msg.timestamp.isoformat()}
 
 
-async def _send_media_notification(booking_id: str, sender_id: str, media_type: str):
+async def _send_chat_notification(booking_id: str, sender_id: str, message_text: str, media_type: str | None = None):
     """
-    Background task: send a push notification when a media message is sent.
-    Isolated so that any failure does not affect message delivery.
+    Background task: send a push notification when a message is sent.
     """
     try:
         from app.booking.models import Booking
-        from app.notifications.service import notification_service
+        from app.auth.models import User
+        from app.notifications.service import NotificationService
         from app.notifications.templates import NotificationType
         from fastapi import BackgroundTasks
 
@@ -221,26 +248,25 @@ async def _send_media_notification(booking_id: str, sender_id: str, media_type: 
         if not recipient_id or recipient_id == "None":
             return
 
-        sender_role = "Customer" if is_customer_sender else "Worker"
-        media_noun = "an image" if media_type == "image" else "a document"
+        sender_user = await User.get(sender_id)
+        sender_name = sender_user.full_name if sender_user else ("Customer" if is_customer_sender else "Worker")
+        body_text = message_text if message_text else ("📷 Sent an image" if media_type == "image" else "📄 Sent a document")
 
-        # Use a temporary BackgroundTasks for the public queue_notification interface
         bg = BackgroundTasks()
-        notification_service.queue_notification(
+        NotificationService().queue_notification(
             bg,
             user_id=recipient_id,
             notif_type=NotificationType.SYSTEM_ANNOUNCEMENT,
             data={
-                "title": "New Media",
-                "body": f"{sender_role} sent {media_noun}.",
+                "title": f"Message from {sender_name}",
+                "body": body_text,
                 "booking_id": booking_id,
             },
         )
-        # Execute the background task inline inside this async task
         await bg()
 
     except Exception as e:
-        logger.error(f"Failed to send media push notification for booking {booking_id}: {e}")
+        logger.error(f"Failed to send chat notification for booking {booking_id}: {e}")
 
 
 @sio.on("typing_indicator")
@@ -257,11 +283,24 @@ async def on_typing_indicator(sid: str, data: Dict[str, Any]):
 @sio.on("read_receipt")
 async def on_read_receipt(sid: str, data: Dict[str, Any]):
     """
-    Broadcast read receipt for a message.
+    Broadcast read receipt for a message and update MongoDB is_read flag.
     Expects data: {"booking_id": "...", "message_id": "...", "reader_id": "..."}
     """
     booking_id = data.get("booking_id")
+    message_id = data.get("message_id")
     if booking_id:
+        if message_id:
+            try:
+                from app.booking.models import ChatMessage
+                from beanie import PydanticObjectId
+                if PydanticObjectId.is_valid(message_id):
+                    msg = await ChatMessage.get(PydanticObjectId(message_id))
+                    if msg:
+                        msg.is_read = True
+                        await msg.save()
+            except Exception as e:
+                logger.error(f"Failed to update read status for message {message_id}: {e}")
+
         chat_room = room_manager.get_chat_room(booking_id)
         await sio.emit("message_read", data, room=chat_room, skip_sid=sid)
 

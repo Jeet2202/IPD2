@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     from app.address.models import Address
     from app.application.models import JobApplication
     from app.auth.models import AuthAuditLog, RefreshToken, User
-    from app.booking.models import Booking
+    from app.booking.models import Booking, ChatMessage
     from app.category.models import Service, ServiceCategory
     from app.customer.models import CustomerProfile
     from app.otp.models import OTP
@@ -149,6 +149,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             Service,
             Address,
             Booking,
+            ChatMessage,
             JobApplication,
             Quotation,
             QuotationHistory,

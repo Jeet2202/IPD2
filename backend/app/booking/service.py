@@ -34,6 +34,8 @@ from app.booking.schemas import (
     BookingStatusResponse,
     BookingTimelineEventResponse,
     BookingTimelineResponse,
+    ChatMessageListResponse,
+    ChatMessageResponse,
     CompleteJobRequest,
     ConfirmCompletionRequest,
     CreateBookingRequest,
@@ -1115,6 +1117,55 @@ class BookingService:
             user.role,
         )
         return await _to_response(booking)
+
+    # ── Chat Messages History ───────────────────────────────────────────────
+
+    @classmethod
+    async def get_booking_messages(
+        cls,
+        user_id: str,
+        booking_id: str,
+    ) -> ChatMessageListResponse:
+        """
+        Fetch all historical chat messages for a booking.
+        Enforces participant access check (customer or assigned worker).
+        """
+        from app.booking.models import ChatMessage
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Access check
+        if str(booking.customer_id) != user_id and str(booking.worker_id) != user_id:
+            raise ForbiddenException(
+                message="You do not have permission to access chat for this booking.",
+                error_code="BOOKING_ACCESS_DENIED",
+            )
+
+        messages = await ChatMessage.find(
+            ChatMessage.booking_id == booking.id
+        ).sort("+timestamp").to_list()
+
+        dtos = [
+            ChatMessageResponse(
+                id=str(m.id),
+                booking_id=str(m.booking_id),
+                sender_id=str(m.sender_id),
+                message=m.message,
+                timestamp=m.timestamp.isoformat(),
+                is_read=m.is_read,
+                media_url=m.media_url,
+                media_type=m.media_type,
+                media_name=m.media_name,
+                media_size=m.media_size,
+            )
+            for m in messages
+        ]
+        return ChatMessageListResponse(messages=dtos)
+
 
 
 

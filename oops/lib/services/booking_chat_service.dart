@@ -25,7 +25,19 @@ class BookingChatService extends ChangeNotifier {
   List<ChatMessage> get messages => _messages;
   bool get isOtherPartyTyping => _isOtherPartyTyping;
 
+  Future<void> fetchHistory() async {
+    try {
+      final res = await ApiService.instance.get('/customer/bookings/$bookingId/messages');
+      final rawList = (res['messages'] as List<dynamic>?) ?? [];
+      _messages = rawList.map((j) => ChatMessage.fromJson(j as Map<String, dynamic>)).toList();
+      notifyListeners();
+    } catch (_) {
+      // Ignore if no history or error
+    }
+  }
+
   Future<void> _initSocketListeners() async {
+    await fetchHistory();
     await _socketService.connect();
     final socket = _socketService.socket;
     if (socket == null) return;

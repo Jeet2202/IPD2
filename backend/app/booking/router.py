@@ -378,5 +378,37 @@ async def get_booking_timeline(
     )
 
 
+# ---------------------------------------------------------------------------
+# Chat Messages Endpoint
+# ---------------------------------------------------------------------------
+
+from app.booking.schemas import ChatMessageListResponse
+
+
+@router.get(
+    "/bookings/{booking_id}/messages",
+    response_model=ChatMessageListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get chat messages for a booking",
+    description="Retrieve all historical chat messages for a booking in chronological order.",
+)
+@router.get(
+    "/customer/bookings/{booking_id}/messages",
+    response_model=ChatMessageListResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def get_booking_messages(
+    booking_id: str,
+    current_user: ActiveUserDep,
+) -> ChatMessageListResponse:
+    """Fetch historical chat messages for a booking."""
+    return await BookingService.get_booking_messages(
+        user_id=str(current_user.id),
+        booking_id=booking_id,
+    )
+
+
+
 
 

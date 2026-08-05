@@ -389,32 +389,48 @@ class Booking(Document):
         use_state_management = True
 
         indexes = [
-            # Customer booking history — most common query.
-            # Covers: "show this customer's bookings, newest first".
             IndexModel(
-                [
-                    ("customer_id", ASCENDING),
-                    ("status", ASCENDING),
-                    ("created_at", DESCENDING),
-                ],
-                name="idx_customer_status_created",
+                [("customer_id", ASCENDING), ("status", ASCENDING), ("created_at", DESCENDING)],
+                name="customer_status_created_idx",
             ),
-            # Admin / worker dashboard — pending bookings by date.
+            IndexModel([("booking_number", ASCENDING)], unique=True, name="booking_number_idx"),
             IndexModel(
                 [("status", ASCENDING), ("created_at", DESCENDING)],
-                name="idx_status_created",
+                name="status_created_idx",
             ),
-            # Service analytics — bookings per service.
+            IndexModel([("service_location", "2dsphere")], name="service_location_2dsphere"),
+            IndexModel([("service_snapshot.service_id", ASCENDING), ("status", ASCENDING)], name="service_status_idx"),
+        ]
+
+# ---------------------------------------------------------------------------
+# Chat Message Document Model
+# ---------------------------------------------------------------------------
+
+class ChatMessage(Document):
+    """
+    Persistent chat message document model for live booking communication.
+
+    Collection: chat_messages
+    """
+
+    booking_id: Annotated[PydanticObjectId, Indexed()]
+    sender_id: Annotated[PydanticObjectId, Indexed()]
+    message: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    is_read: bool = False
+
+    media_url: str | None = None
+    media_type: str | None = None
+    media_name: str | None = None
+    media_size: int | None = None
+
+    class Settings:
+        name = "chat_messages"
+        indexes = [
             IndexModel(
-                [
-                    ("service_snapshot.service_id", ASCENDING),
-                    ("status", ASCENDING),
-                ],
-                name="idx_service_status",
+                [("booking_id", ASCENDING), ("timestamp", ASCENDING)],
+                name="chat_booking_timestamp_idx",
             ),
-            # 2dsphere index on GeoJSON location for $geoNear worker matching.
-            # Required for Phase 4.5 worker matching queries.
-            [("service_location", "2dsphere")],
         ]
 
     # ── Lifecycle helpers ─────────────────────────────────────────────────────

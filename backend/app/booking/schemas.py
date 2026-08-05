@@ -237,6 +237,29 @@ class BookingResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ChatMessageResponse(BaseModel):
+    """Response DTO for an individual chat message."""
+
+    id: str = Field(..., description="Message ObjectId string")
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    sender_id: str = Field(..., description="Sender User ObjectId string")
+    message: str = Field(..., description="Message body text")
+    timestamp: str = Field(..., description="ISO 8601 creation timestamp")
+    is_read: bool = Field(default=False, description="Read receipt status")
+
+    media_url: str | None = Field(default=None, description="Optional attached media URL")
+    media_type: str | None = Field(default=None, description="Media type: image or document")
+    media_name: str | None = Field(default=None, description="Original filename")
+    media_size: int | None = Field(default=None, description="File size in bytes")
+
+
+class ChatMessageListResponse(BaseModel):
+    """Response DTO for listing chat messages for a booking."""
+
+    messages: list[ChatMessageResponse] = Field(default_factory=list)
+
+
+
 class BookingTimelineEventResponse(BaseModel):
     """Timeline event response schema (Phase 4.7.4)."""
 
