@@ -60,7 +60,7 @@ from app.otp.service import OTPService
 from app.utils.enums import TokenType, UserRole
 
 # Dummy bcrypt hash to ensure constant-time verification when user is not found
-_DUMMY_BCRYPT_HASH = "$2b$12$Sch6BJ1IRVLfk.4b06p.ueGjQjW9tB./vQn1R.vJgHk.d.g.1"
+_DUMMY_BCRYPT_HASH = "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjIQ68YkwS"
 logger = logging.getLogger(__name__)
 
 
