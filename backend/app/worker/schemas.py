@@ -10,6 +10,13 @@ from pydantic import BaseModel, Field, field_validator
 from app.utils.enums import WorkerAvailability
 
 
+class UpdateWorkerLocationRequest(BaseModel):
+    """Payload for PATCH /worker/profile/location — update worker's real-time GPS coordinates."""
+
+    latitude: float = Field(..., ge=-90.0, le=90.0, description="GPS latitude")
+    longitude: float = Field(..., ge=-180.0, le=180.0, description="GPS longitude")
+
+
 class UpdateWorkerProfileRequest(BaseModel):
     """Payload for updating worker profile details."""
 

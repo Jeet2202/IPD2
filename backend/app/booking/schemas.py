@@ -226,6 +226,12 @@ class BookingResponse(BaseModel):
     created_at: str = Field(..., description="ISO 8601 creation timestamp")
     updated_at: str = Field(..., description="ISO 8601 last-update timestamp")
 
+    # ── Marketplace fields ──────────────────────────────────────────────────
+    applicant_count: int = Field(
+        default=0,
+        description="Number of workers who have applied for this marketplace booking",
+    )
+
     model_config = {"from_attributes": True}
 
 

@@ -56,13 +56,16 @@ logger = logging.getLogger(__name__)
 # Internal Helpers
 # ---------------------------------------------------------------------------
 
-def _to_response(booking: Booking) -> BookingResponse:
+async def _to_response(booking: Booking) -> BookingResponse:
     """
     Convert a Booking document to its response DTO.
 
     Extracts flat latitude/longitude from service_location GeoJSON
     (same pattern as the Address module) for Flutter compatibility.
+    Also queries applicant_count from job_applications collection.
     """
+    from app.application.models import JobApplication
+
     latitude: float | None = None
     longitude: float | None = None
     if booking.service_location is not None:
@@ -128,6 +131,11 @@ def _to_response(booking: Booking) -> BookingResponse:
         for e in (booking.timeline or [])
     ]
 
+    # Count how many workers have applied for this booking
+    applicant_count = await JobApplication.find(
+        {"booking_id": booking.id}
+    ).count()
+
     return BookingResponse(
         id=str(booking.id),
         booking_number=booking.booking_number,
@@ -166,6 +174,7 @@ def _to_response(booking: Booking) -> BookingResponse:
         timeline=timeline_dtos,
         created_at=booking.created_at.isoformat(),
         updated_at=booking.updated_at.isoformat(),
+        applicant_count=applicant_count,
     )
 
 
@@ -348,7 +357,7 @@ class BookingService:
             customer_id,
             service.name,
         )
-        return _to_response(booking)
+        return await _to_response(booking)
 
     # ── Get Single ───────────────────────────────────────────────────────────
 
@@ -372,7 +381,7 @@ class BookingService:
                 error_code="BOOKING_NOT_FOUND",
             )
         _verify_ownership(booking, customer_id)
-        return _to_response(booking)
+        return await _to_response(booking)
 
     # ── List ─────────────────────────────────────────────────────────────────
 
@@ -400,7 +409,8 @@ class BookingService:
         total = await BookingRepository.count_by_customer(
             customer_id, status=status
         )
-        dtos = [_to_response(b) for b in bookings]
+        import asyncio
+        dtos = list(await asyncio.gather(*[_to_response(b) for b in bookings]))
         return BookingListResponse(total=total, bookings=dtos)
 
     @classmethod
@@ -425,7 +435,8 @@ class BookingService:
         total = await BookingRepository.count_by_worker(
             worker_user.id, status=status
         )
-        dtos = [_to_response(b) for b in bookings]
+        import asyncio
+        dtos = list(await asyncio.gather(*[_to_response(b) for b in bookings]))
         return BookingListResponse(total=total, bookings=dtos)
 
     # ── Available Slots ───────────────────────────────────────────────────────
@@ -594,7 +605,7 @@ class BookingService:
             new_status.value,
             worker_user.id,
         )
-        return _to_response(booking)
+        return await _to_response(booking)
 
     # ── Job Execution Flow Actions (Phase 4.7.2) ─────────────────────────────
 
@@ -725,7 +736,7 @@ class BookingService:
                 error_code="BOOKING_ACCESS_DENIED",
             )
 
-        return _to_response(booking)
+        return await _to_response(booking)
 
     @classmethod
     async def get_booking_status(
@@ -927,7 +938,7 @@ class BookingService:
             booking.booking_number,
             customer_user.id,
         )
-        return _to_response(booking)
+        return await _to_response(booking)
 
     # ── Timeline Audit Log (Phase 4.7.4) ─────────────────────────────────────
 
@@ -1093,7 +1104,7 @@ class BookingService:
             user.id,
             user.role,
         )
-        return _to_response(booking)
+        return await _to_response(booking)
 
 
 

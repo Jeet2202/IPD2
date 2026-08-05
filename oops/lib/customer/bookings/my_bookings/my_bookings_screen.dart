@@ -494,6 +494,49 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                     ),
                   ),
                 ],
+                // ── Applicant count badge (only for PENDING marketplace bookings) ──
+                if (b.isPending && b.applicantCount > 0) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFBFDBFE)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.people_alt_rounded, size: 15, color: Color(0xFF2563EB)),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${b.applicantCount} worker${b.applicantCount == 1 ? '' : 's'} have applied for this job',
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF1D4ED8)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (b.isPending && b.applicantCount == 0) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFFDE68A)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.hourglass_empty_rounded, size: 15, color: Color(0xFFD97706)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Looking for available workers nearby...',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 14),
                 const Divider(color: Color(0xFFF1F5F9), height: 1),
                 const SizedBox(height: 12),

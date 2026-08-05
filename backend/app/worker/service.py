@@ -10,7 +10,8 @@ from app.uploads.service import CloudinaryService
 from app.uploads.validation import validate_profile_image
 from app.worker.models import WorkerProfile
 from app.worker.repository import WorkerRepository
-from app.worker.schemas import UpdateWorkerProfileRequest, WorkerProfileResponse
+from app.address.models import GeoJSONPoint
+from app.worker.schemas import UpdateWorkerLocationRequest, UpdateWorkerProfileRequest, WorkerProfileResponse
 
 logger = logging.getLogger(__name__)
 
@@ -203,6 +204,29 @@ class WorkerService:
 
         await WorkerRepository.save_profile(profile)
         logger.info("Deleted profile photo for worker user_id=%s", user.id)
+
+        return cls._build_response_dto(user, profile, completion_pct, is_completed)
+
+    @classmethod
+    async def update_worker_location(
+        cls, user: User, payload: UpdateWorkerLocationRequest
+    ) -> WorkerProfileResponse:
+        """Update worker's real-time GPS location as a GeoJSON Point."""
+        profile = await cls.get_or_create_profile(user)
+
+        profile.current_location = GeoJSONPoint.from_lat_lng(
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+        )
+
+        completion_pct, is_completed = cls.calculate_completion_percentage(user, profile)
+        profile.profile_completed = is_completed
+
+        await WorkerRepository.save_profile(profile)
+        logger.info(
+            "Updated location for worker user_id=%s (lat=%.6f, lng=%.6f)",
+            user.id, payload.latitude, payload.longitude,
+        )
 
         return cls._build_response_dto(user, profile, completion_pct, is_completed)
 

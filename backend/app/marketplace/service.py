@@ -167,6 +167,15 @@ class MarketplaceService:
         items_with_score = []
         for b in bookings:
             score, dist_km, is_rec = self.recommendation_engine.score_booking(b, worker_profile)
+
+            # ── Radius Filter ───────────────────────────────────────────────
+            # Only exclude jobs that exceed the worker's configured radius when:
+            #   1. A worker_profile exists (radius is configured), AND
+            #   2. A valid distance was calculated (worker has a known location)
+            if worker_profile is not None and dist_km is not None:
+                if dist_km > worker_profile.working_radius_km:
+                    continue  # Skip jobs beyond the worker's radius
+
             has_applied = str(b.id) in applied_booking_ids
             item_dto = MarketplaceBookingItemResponse(
                 id=str(b.id),
@@ -194,7 +203,7 @@ class MarketplaceService:
 
         return MarketplacePaginatedResponse(
             items=items,
-            total=total,
+            total=len(items),  # Reflect actual count after radius filter
             page=page,
             page_size=page_size,
             total_pages=total_pages,

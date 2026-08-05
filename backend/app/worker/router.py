@@ -10,7 +10,7 @@ from app.auth.repository import AuthRepository
 from app.core.dependencies import WorkerDep
 from app.core.exceptions import NotFoundException
 from app.worker.dashboard_schemas import WorkerDashboardResponse
-from app.worker.schemas import UpdateWorkerProfileRequest, WorkerProfileResponse
+from app.worker.schemas import UpdateWorkerLocationRequest, UpdateWorkerProfileRequest, WorkerProfileResponse
 from app.worker.service import WorkerService
 
 logger = logging.getLogger(__name__)
@@ -100,3 +100,18 @@ async def delete_worker_profile_photo(
 ) -> WorkerProfileResponse:
     """Delete profile photo for worker."""
     return await WorkerService.delete_profile_photo(user)
+
+
+@router.patch(
+    "/profile/location",
+    response_model=WorkerProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update worker current location",
+    description="Update worker's real-time GPS location. Used by the app to enable geo-proximity job matching.",
+)
+async def update_worker_location(
+    payload: UpdateWorkerLocationRequest,
+    user=Depends(_get_worker_user),
+) -> WorkerProfileResponse:
+    """Update current GPS location for worker."""
+    return await WorkerService.update_worker_location(user, payload)

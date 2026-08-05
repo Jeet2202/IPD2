@@ -5,6 +5,7 @@ import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
+import 'service_area/service_area_screen.dart';
 
 class WorkerProfileScreen extends StatefulWidget {
   const WorkerProfileScreen({super.key});
@@ -475,6 +476,18 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             },
           ),
           _MenuItem(
+            icon: Icons.location_on_rounded,
+            title: 'Service Area & Location',
+            subtitle: 'Set your GPS location and job radius',
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WorkerServiceAreaScreen()),
+              );
+              _loadProfile(); // Refresh profile to show updated radius
+            },
+          ),
+          _MenuItem(
             icon: Icons.lock_reset_rounded,
             title: 'Change Password',
             onTap: () => Navigator.pushNamed(context, '/worker/settings'),
@@ -596,16 +609,18 @@ class _WorkerHeroStat extends StatelessWidget {
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   final bool isRed;
 
-  const _MenuItem({required this.icon, required this.title, required this.onTap, this.isRed = false});
+  const _MenuItem({required this.icon, required this.title, required this.onTap, this.subtitle, this.isRed = false});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF475569)),
       title: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF0F172A))),
+      subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))) : null,
       trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
       onTap: onTap,
     );

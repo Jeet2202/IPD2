@@ -198,6 +198,7 @@ class BookingModel {
   final List<BookingTimelineEventModel> timeline;
   final String createdAt;
   final String updatedAt;
+  final int applicantCount;
 
   const BookingModel({
     required this.id,
@@ -235,6 +236,7 @@ class BookingModel {
     this.timeline = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.applicantCount = 0,
   });
 
   bool get isPending => status == 'pending';
@@ -288,6 +290,7 @@ class BookingModel {
           [],
       createdAt: raw['created_at'] as String? ?? '',
       updatedAt: raw['updated_at'] as String? ?? '',
+      applicantCount: (raw['applicant_count'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -326,6 +329,7 @@ class BookingModel {
         'after_photos': afterPhotos,
         'created_at': createdAt,
         'updated_at': updatedAt,
+        'applicant_count': applicantCount,
       };
 }
 
