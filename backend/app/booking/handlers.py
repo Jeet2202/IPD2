@@ -149,3 +149,5 @@ class InspectionBookingHandler(BaseBookingHandler):
     ) -> None:
         booking.category_slug = payload.category_slug
         booking.inspection_status = InspectionStatus.REQUESTED
+        booking.inspection_charge = 99.0
+        booking.payment_status = "PENDING"
