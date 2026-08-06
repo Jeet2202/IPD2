@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -25,16 +25,28 @@ import PersonRoleBadge from '../../components/common/PersonRoleBadge';
 import Modal from '../../components/common/Modal';
 import EmptyState from '../../components/common/EmptyState';
 import { useToast } from '../../components/common/ToastContext';
-import { COMPLAINTS_DATA } from '../../data/complaints';
+import { supportService } from '../../services/supportService';
 
 export default function Complaints() {
   const navigate = useNavigate();
   const { addToast } = useToast();
 
-  const [complaints, setComplaints] = useState(COMPLAINTS_DATA);
+  const [complaints, setComplaints] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTickets() {
+      setIsLoading(true);
+      const data = await supportService.getAdminTickets();
+      setComplaints(data);
+      setIsLoading(false);
+    }
+    loadTickets();
+  }, []);
 
   // Active Tab
   const [activeTab, setActiveTab] = useState('All'); // All | Customer Complaints | Worker Complaints | Payment Disputes | Service Disputes
+
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,7 +60,7 @@ export default function Complaints() {
   const [actionModalOpen, setActionModalOpen] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [modalActionType, setModalActionType] = useState('assign'); // assign | status | priority | note
-  const [adminValue, setAdminValue] = useState('Suresh Mehta');
+  const [adminValue, setAdminValue] = useState('Admin');
   const [statusValue, setStatusValue] = useState('Under Review');
   const [priorityValue, setPriorityValue] = useState('High');
   const [noteValue, setNoteValue] = useState('');

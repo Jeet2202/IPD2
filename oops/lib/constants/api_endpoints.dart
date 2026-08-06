@@ -54,10 +54,13 @@ class ApiEndpoints {
   static const String chatRooms       = '/chat/rooms';
   static const String chatMessages    = '/chat/rooms/:id/messages';
 
-  // ── Admin ─────────────────────────────────────────────
-  static const String adminStats      = '/admin/stats';
-  static const String adminUsers      = '/admin/users';
-  static const String adminWorkers    = '/admin/workers';
-  static const String adminBookings   = '/admin/bookings';
-  static const String adminPayments   = '/admin/payments';
+  // ── Support & Help Center ──────────────────────────────
+  static const String helpFaqs        = '/help/faqs';
+  static const String helpArticles    = '/help/articles';
+  static const String helpCategories  = '/help/categories';
+  static const String supportTickets  = '/support/tickets';
+  static const String supportContact  = '/support/contact';
+  static const String supportSos      = '/support/sos';
+  static const String supportFeedback = '/support/feedback';
 }
+

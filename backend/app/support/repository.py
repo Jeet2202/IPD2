@@ -42,7 +42,7 @@ class FAQRepository:
         query: dict[str, Any] = {}
         if not include_inactive:
             query["is_active"] = True
-        if category:
+        if category and not hasattr(category, "default") and isinstance(category, str) and category.strip():
             query["category"] = category
         if popular_only:
             query["is_popular"] = True
@@ -170,7 +170,7 @@ class SupportTicketRepository:
     async def list_by_user(user_id: str, status: TicketStatus | None = None, skip: int = 0, limit: int = 50) -> list[SupportTicket]:
         """List tickets for a specific user."""
         query: dict[str, Any] = {"user_id": str(user_id)}
-        if status:
+        if status is not None and not hasattr(status, "default"):
             query["status"] = status
         return await SupportTicket.find(query).sort("-created_at").skip(skip).limit(limit).to_list()
 
@@ -178,7 +178,7 @@ class SupportTicketRepository:
     async def count_by_user(user_id: str, status: TicketStatus | None = None) -> int:
         """Count tickets for a specific user."""
         query: dict[str, Any] = {"user_id": str(user_id)}
-        if status:
+        if status is not None and not hasattr(status, "default"):
             query["status"] = status
         return await SupportTicket.find(query).count()
 
@@ -192,11 +192,11 @@ class SupportTicketRepository:
     ) -> list[SupportTicket]:
         """List all support tickets for admin dashboard."""
         query: dict[str, Any] = {}
-        if status:
+        if status is not None and not hasattr(status, "default"):
             query["status"] = status
-        if priority:
+        if priority is not None and not hasattr(priority, "default"):
             query["priority"] = priority
-        if category:
+        if category is not None and not hasattr(category, "default") and isinstance(category, str) and category.strip():
             query["category"] = category
         return await SupportTicket.find(query).sort("-created_at").skip(skip).limit(limit).to_list()
 
@@ -208,11 +208,11 @@ class SupportTicketRepository:
     ) -> int:
         """Count all support tickets for admin dashboard."""
         query: dict[str, Any] = {}
-        if status:
+        if status is not None and not hasattr(status, "default"):
             query["status"] = status
-        if priority:
+        if priority is not None and not hasattr(priority, "default"):
             query["priority"] = priority
-        if category:
+        if category is not None and not hasattr(category, "default") and isinstance(category, str) and category.strip():
             query["category"] = category
         return await SupportTicket.find(query).count()
 
@@ -265,6 +265,10 @@ class SupportContactRepository:
         if not contact:
             contact = SupportContact()
             await contact.insert()
+        elif contact.phone != "+919579601589":
+            contact.phone = "+919579601589"
+            contact.whatsapp = "+919579601589"
+            await contact.save()
         return contact
 
     @staticmethod
