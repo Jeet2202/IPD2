@@ -1,6 +1,8 @@
 // File: lib/worker/work/worker_booking_detail_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
 import '../../models/review_model.dart';
@@ -327,6 +329,61 @@ class _WorkerBookingDetailScreenState
     );
   }
 
+  void _showSnackBar(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  Future<void> _openMapsForAddress(AddressSnapshotModel addr) async {
+    final fullAddrStr = addr.shortAddress.isNotEmpty ? addr.shortAddress : 'Customer Location';
+
+    await Clipboard.setData(ClipboardData(text: fullAddrStr));
+
+    // Prefer exact lat/lng query if coordinates exist
+    final String googleMapsUrl;
+    if (addr.latitude != null && addr.longitude != null && addr.latitude != 0 && addr.longitude != 0) {
+      googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=${addr.latitude},${addr.longitude}';
+    } else {
+      final encodedQuery = Uri.encodeComponent(fullAddrStr);
+      googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$encodedQuery';
+    }
+
+    final primaryUri = Uri.parse(googleMapsUrl);
+
+    try {
+      // 1. Direct external application launch (opens Google Maps App or Default Web Browser)
+      bool launched = await launchUrl(
+        primaryUri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      // 2. Fallback to platform default mode if external app mode failed
+      if (!launched) {
+        launched = await launchUrl(
+          primaryUri,
+          mode: LaunchMode.platformDefault,
+        );
+      }
+
+      // 3. Fallback to direct maps.google.com link
+      if (!launched) {
+        final altUri = Uri.parse('https://maps.google.com/?q=${Uri.encodeComponent(fullAddrStr)}');
+        await launchUrl(altUri, mode: LaunchMode.externalApplication);
+      }
+
+      _showSnackBar('Address copied & opening Google Maps...');
+    } catch (_) {
+      try {
+        final geoUri = Uri.parse('geo:0,0?q=${Uri.encodeComponent(fullAddrStr)}');
+        await launchUrl(geoUri, mode: LaunchMode.externalApplication);
+      } catch (_) {
+        _showSnackBar('Address copied to clipboard.');
+      }
+    }
+  }
+
   Widget _buildCustomerAddressCard() {
     final addr = _booking.addressSnapshot;
     return Card(
@@ -345,6 +402,30 @@ class _WorkerBookingDetailScreenState
                   'Customer & Location',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
                 ),
+                const Spacer(),
+                InkWell(
+                  onTap: () => _openMapsForAddress(addr),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFBFDBFE)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.directions_rounded, size: 14, color: Color(0xFF2563EB)),
+                        SizedBox(width: 4),
+                        Text(
+                          'Open Maps',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             const Divider(height: 16),
@@ -352,9 +433,38 @@ class _WorkerBookingDetailScreenState
             const SizedBox(height: 6),
             _infoRow(Icons.phone_outlined, addr.phone),
             const SizedBox(height: 6),
-            _infoRow(Icons.location_on_outlined, addr.shortAddress),
+            InkWell(
+              onTap: () => _openMapsForAddress(addr),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        addr.shortAddress.isNotEmpty ? addr.shortAddress : 'Customer Location',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(Icons.open_in_new_rounded, size: 16, color: Color(0xFF2563EB)),
+                  ],
+                ),
+              ),
+            ),
             if (addr.landmark != null && addr.landmark!.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               _infoRow(Icons.flag_outlined, 'Landmark: ${addr.landmark}'),
             ],
           ],
