@@ -96,9 +96,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         title: const Row(
           children: [
             Icon(Icons.build_circle_rounded, color: Color(0xFF2563EB), size: 24),
@@ -237,7 +235,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hello, ${data.workerName} 👋',
+          'Hello, ${data.workerName}',
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,

@@ -123,8 +123,8 @@ class SupportContact(Document):
     """
     contact_id: Annotated[str, Indexed(unique=True)] = Field(default_factory=lambda: str(uuid.uuid4()))
     email: str = "support@kaamsetu.com"
-    phone: str = "+91 1800-555-5226"
-    whatsapp: str | None = "+91 98765 43210"
+    phone: str = "+919579601589"
+    whatsapp: str | None = "+919579601589"
     business_hours: str = "Monday - Saturday: 9:00 AM - 8:00 PM IST"
     address: str | None = "KaamSetu HQ, Bandra Kurla Complex, Mumbai, Maharashtra 400051"
     is_active: bool = True

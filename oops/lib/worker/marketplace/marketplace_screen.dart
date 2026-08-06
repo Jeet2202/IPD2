@@ -112,11 +112,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     final hasActiveFilters =
         _filterData.hasActiveFilters || _searchController.text.isNotEmpty;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
           children: [

@@ -96,9 +96,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
+      appBar: AppBar(        elevation: 0.5,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: () => Navigator.pop(context),

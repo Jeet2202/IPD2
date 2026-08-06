@@ -29,6 +29,8 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.all(AppDimensions.md),
@@ -37,10 +39,10 @@ class BookingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             ),
-            child: Icon(categoryIcon, color: AppColors.primary, size: 24),
+            child: Icon(categoryIcon, color: colorScheme.primary, size: 24),
           ),
           const SizedBox(width: AppDimensions.md),
           Expanded(
@@ -53,10 +55,10 @@ class BookingCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: colorScheme.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -82,9 +84,9 @@ class BookingCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -93,10 +95,10 @@ class BookingCard extends StatelessWidget {
                   children: [
                     Text(
                       price,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                       ),
                     ),
                     if (actionLabel != null && onActionPressed != null)
@@ -108,10 +110,10 @@ class BookingCard extends StatelessWidget {
                         ),
                         child: Text(
                           actionLabel!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
@@ -125,4 +127,3 @@ class BookingCard extends StatelessWidget {
     );
   }
 }
-

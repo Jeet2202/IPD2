@@ -36,11 +36,7 @@ class _WorkerEarningsDashboardScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
           'Earnings & Analytics',
@@ -157,9 +153,7 @@ class _WorkerEarningsDashboardScreenState
                             Navigator.pushNamed(
                                 context, '/worker/earnings/wallet');
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF2563EB),
+                          style: ElevatedButton.styleFrom(                            foregroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 10),
                             elevation: 0,

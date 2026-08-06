@@ -47,9 +47,7 @@ class _OffersScreenState extends State<OffersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -116,9 +114,7 @@ class _OffersScreenState extends State<OffersScreen> {
                       child: ChoiceChip(
                         label: Text(cat),
                         selected: isSelected,
-                        selectedColor: const Color(0xFF2563EB),
-                        backgroundColor: Colors.white,
-                        labelStyle: TextStyle(
+                        selectedColor: const Color(0xFF2563EB),                        labelStyle: TextStyle(
                           fontSize: 12,
                           fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                           color: isSelected ? Colors.white : const Color(0xFF475569),

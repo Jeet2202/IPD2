@@ -6,6 +6,7 @@ import 'app_text_styles.dart';
 class AppTheme {
   AppTheme._();
 
+  // ─── Light Theme ───────────────────────────────────────────────────────────
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -13,12 +14,14 @@ class AppTheme {
           primary: AppColors.primary,
           secondary: AppColors.secondary,
           surface: AppColors.surface,
+          onSurface: AppColors.textPrimary,
+          onSurfaceVariant: AppColors.textSecondary,
           error: AppColors.error,
           brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: AppColors.background,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
           scrolledUnderElevation: 0,
@@ -150,6 +153,8 @@ class AppTheme {
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
           ),
+          prefixIconColor: AppColors.textHint,
+          suffixIconColor: AppColors.textHint,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -167,9 +172,14 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             borderSide: const BorderSide(color: AppColors.error),
           ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
+          ),
         ),
       );
 
+  // ─── Dark Theme ────────────────────────────────────────────────────────────
   static ThemeData get darkTheme => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -177,6 +187,8 @@ class AppTheme {
           primary: AppColors.primaryLight,
           secondary: AppColors.secondaryLight,
           surface: AppColors.darkSurface,
+          onSurface: AppColors.darkTextPrimary,
+          onSurfaceVariant: AppColors.darkTextSecondary,
           error: AppColors.error,
           brightness: Brightness.dark,
         ),
@@ -207,15 +219,119 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
             side: const BorderSide(color: AppColors.darkBorder),
           ),
+          margin: EdgeInsets.zero,
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: AppColors.darkSurface,
+          surfaceTintColor: Colors.transparent,
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+          ),
+          titleTextStyle: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.darkTextPrimary,
+          ),
+          contentTextStyle: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: AppColors.darkTextSecondary,
+          ),
+        ),
+        bottomSheetTheme: const BottomSheetThemeData(
+          backgroundColor: AppColors.darkSurface,
+          surfaceTintColor: Colors.transparent,
+          elevation: 10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+          ),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: AppColors.darkSurfaceVariant,
+          contentTextStyle: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.darkTextPrimary,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+        dividerTheme: const DividerThemeData(
+          color: AppColors.darkBorder,
+          thickness: 1,
+          space: 1,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryLight,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: AppColors.slate700,
+            disabledForegroundColor: AppColors.slate500,
+            minimumSize: const Size(88, AppDimensions.buttonHeight),
+            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: 12),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            ),
+            textStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primaryLight,
+            disabledForegroundColor: AppColors.slate600,
+            minimumSize: const Size(88, AppDimensions.buttonHeight),
+            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: 12),
+            side: const BorderSide(color: AppColors.primaryLight, width: 1.5),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            ),
+            textStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.primaryLight,
+            disabledForegroundColor: AppColors.slate600,
+            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.sm, vertical: 8),
+            textStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColors.darkSurface,
+          fillColor: AppColors.darkSurfaceVariant,
           hintStyle: const TextStyle(
             fontFamily: 'Inter',
             fontSize: 14,
-            color: AppColors.textHint,
+            color: AppColors.slate500,
           ),
+          labelStyle: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.darkTextSecondary,
+          ),
+          prefixIconColor: AppColors.slate500,
+          suffixIconColor: AppColors.slate500,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             borderSide: const BorderSide(color: AppColors.darkBorder),
@@ -231,6 +347,10 @@ class AppTheme {
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             borderSide: const BorderSide(color: AppColors.error),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
           ),
         ),
       );

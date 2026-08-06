@@ -8,20 +8,17 @@ class WorkerHelpCenterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return Scaffold(      appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Partner Help & Support',
           style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
@@ -114,9 +111,7 @@ class WorkerHelpCenterScreen extends StatelessWidget {
                             },
                             icon: const Icon(Icons.chat_rounded, size: 18),
                             label: const Text('Live Chat'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF2563EB),
+                            style: ElevatedButton.styleFrom(                              foregroundColor: const Color(0xFF2563EB),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               elevation: 0,
                               shape: RoundedRectangleBorder(

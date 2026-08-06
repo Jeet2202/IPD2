@@ -257,9 +257,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
@@ -419,9 +417,7 @@ class _LocationFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       heroTag: 'map_location_fab',
-      mini: true,
-      backgroundColor: Colors.white,
-      foregroundColor: const Color(0xFF2563EB),
+      mini: true,      foregroundColor: const Color(0xFF2563EB),
       elevation: 4,
       onPressed: isLoading ? null : onPressed,
       child: isLoading

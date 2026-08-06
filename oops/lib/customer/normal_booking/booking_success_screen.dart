@@ -30,15 +30,11 @@ class BookingSuccessScreen extends StatelessWidget {
     final scheduledTime = b?.scheduledTime ?? 'Flexible';
     final status = (b?.status ?? 'pending').toUpperCase();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(
+        automaticallyImplyLeading: false,        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary),
+            icon: const Icon(Icons.close_rounded),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.customerHome,
@@ -76,14 +72,13 @@ class BookingSuccessScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 6),
             const Text(
               'Your booking request has been submitted successfully.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13),
             ),
 
             const SizedBox(height: 24),
@@ -99,7 +94,7 @@ class BookingSuccessScreen extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Booking ID: ', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                  const Text('Booking ID: ', style: TextStyle(fontSize: 13)),
                   Text(
                     bookingNumber,
                     style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.primary),
@@ -216,8 +211,7 @@ class BookingSuccessScreen extends StatelessWidget {
                 icon: const Icon(Icons.home_rounded),
                 label: const Text('Back to Home', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.textPrimary,
-                  side: const BorderSide(color: AppColors.divider),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                 ),
               ),
@@ -240,7 +234,7 @@ class BookingSuccessScreen extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        Text(label, style: const TextStyle(fontSize: 13)),
         const Spacer(),
         if (valueWidget != null)
           valueWidget
@@ -250,7 +244,7 @@ class BookingSuccessScreen extends StatelessWidget {
               value ?? '',
               textAlign: TextAlign.end,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
           ),
       ],

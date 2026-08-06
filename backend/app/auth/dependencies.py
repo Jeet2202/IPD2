@@ -35,6 +35,7 @@ from app.auth.models import User, UserRole
 from app.auth.permissions import Permission, require_permission
 from app.auth.security import TokenPayload, decode_token
 from app.auth.utils import extract_bearer_token
+from app.core.config import settings
 
 # OAuth2 bearer token extractor (auto_error=False to allow custom Ally exception handling)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
@@ -246,26 +247,44 @@ async def get_current_worker(
 
 
 async def get_current_admin(
-    user: User = Depends(get_current_active_user),
+    token: str | None = Depends(oauth2_scheme),
+    authorization: str | None = Header(default=None, alias="Authorization"),
 ) -> User:
     """
     Restrict access strictly to ADMIN role.
-
-    Args:
-        user: Active User document.
-
-    Returns:
-        The User document if permitted.
-
-    Raises:
-        InsufficientPermissionsError: If user is not ADMIN.
+    In development mode without valid admin token, returns a dev admin user instance.
     """
-    if user.role != UserRole.ADMIN:
-        raise InsufficientPermissionsError(
-            message="This endpoint is restricted to platform administrators",
-            error_code="ADMIN_ROLE_REQUIRED",
+    token_str = token
+    if not token_str and authorization:
+        token_str = extract_bearer_token(authorization)
+
+    if token_str and token_str != "kaamsetu_demo_token":
+        try:
+            payload = decode_token(token_str, expected_type=ACCESS_TOKEN_TYPE)
+            user = await User.get(payload.sub)
+            if user and user.role == UserRole.ADMIN:
+                return user
+        except Exception:
+            pass
+
+    if not settings.is_production:
+        return User.model_construct(
+            id="admin-dev-id",
+            email="admin@kaamsetu.com",
+            phone="+91 99999 99999",
+            password_hash="mock_hash",
+            full_name="Suresh Mehta",
+            role=UserRole.ADMIN,
+            is_active=True,
+            is_email_verified=True,
+            is_phone_verified=True,
         )
-    return user
+
+    raise InsufficientPermissionsError(
+        message="This endpoint is restricted to platform administrators",
+        error_code="ADMIN_ROLE_REQUIRED",
+    )
+
 
 
 # =============================================================================

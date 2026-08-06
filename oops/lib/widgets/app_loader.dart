@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../app/theme/app_colors.dart';
 
 /// Full-screen loading overlay.
 class AppLoader extends StatelessWidget {
@@ -8,14 +7,19 @@ class AppLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(color: AppColors.primary),
+          CircularProgressIndicator(color: colorScheme.primary),
           if (message != null) ...[
             const SizedBox(height: 16),
-            Text(message!, style: const TextStyle(color: AppColors.textSecondary)),
+            Text(
+              message!,
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
           ],
         ],
       ),

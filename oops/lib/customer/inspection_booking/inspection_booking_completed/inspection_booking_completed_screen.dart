@@ -18,9 +18,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
           'Booking Complete',

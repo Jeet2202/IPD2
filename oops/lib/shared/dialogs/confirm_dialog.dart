@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 
 class ConfirmDialog extends StatelessWidget {
@@ -26,13 +25,14 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveConfirmColor = confirmColor ?? AppColors.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final effectiveConfirmColor = confirmColor ?? colorScheme.primary;
 
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
       ),
-      backgroundColor: AppColors.surface,
+      // backgroundColor and title/contentTextStyle come from dialogTheme
       surfaceTintColor: Colors.transparent,
       title: Row(
         children: [
@@ -43,10 +43,10 @@ class ConfirmDialog extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
               ),
             ),
           ),
@@ -54,9 +54,9 @@ class ConfirmDialog extends StatelessWidget {
       ),
       content: Text(
         message,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
-          color: AppColors.textSecondary,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
       actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -68,8 +68,8 @@ class ConfirmDialog extends StatelessWidget {
           },
           child: Text(
             cancelText,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),

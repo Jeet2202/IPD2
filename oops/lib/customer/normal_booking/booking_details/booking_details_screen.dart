@@ -194,9 +194,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   void _showAddressPickerModal() {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      context: context,      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
@@ -211,7 +209,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 children: [
                   const Text(
                     'Select Service Address',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                   TextButton.icon(
                     onPressed: () {
@@ -268,7 +266,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                         '${addr.fullName} • ${addr.shortAddress}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 12),
                       ),
                       trailing: isSelected
                           ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
@@ -360,11 +358,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Column(
@@ -375,7 +371,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             ),
             Text(
               'Booking Details',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
             ),
           ],
         ),
@@ -420,12 +416,12 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                             children: [
                               Text(
                                 service.name,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 '${service.categorySlug.replaceAll('-', ' ').toUpperCase()} • ${service.durationDisplay}',
-                                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                style: const TextStyle(fontSize: 12),
                               ),
                             ],
                           ),
@@ -591,7 +587,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                             const SizedBox(width: 12),
                             Text(
                               '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
@@ -634,11 +630,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     child: TextField(
                       controller: _problemDescController,
                       maxLines: 3,
-                      style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                      style: const TextStyle(fontSize: 14),
                       decoration: const InputDecoration(
-                        hintText: 'Describe the issue in detail (e.g. AC unit leaking, switchboard sparking)...',
-                        hintStyle: TextStyle(fontSize: 13, color: AppColors.textHint),
-                        border: InputBorder.none,
+                        hintText: 'Describe the issue in detail (e.g. AC unit leaking, switchboard sparking)...',                        border: InputBorder.none,
                         contentPadding: EdgeInsets.all(14),
                       ),
                     ),
@@ -661,11 +655,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   child: TextField(
                     controller: _notesController,
                     maxLines: 3,
-                    style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                    style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
-                      hintText: 'Add instructions like landmark, gate code, or specific preferences...',
-                      hintStyle: TextStyle(fontSize: 13, color: AppColors.textHint),
-                      border: InputBorder.none,
+                      hintText: 'Add instructions like landmark, gate code, or specific preferences...',                      border: InputBorder.none,
                       contentPadding: EdgeInsets.all(14),
                     ),
                   ),
@@ -733,7 +725,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
         ),
       ],
     );
@@ -748,7 +740,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           children: [
             SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
             SizedBox(width: 12),
-            Text('Loading saved addresses...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            Text('Loading saved addresses...', style: TextStyle(fontSize: 13)),
           ],
         ),
       );
@@ -782,7 +774,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 Expanded(
                   child: Text(
                     'No saved addresses found. Please add a service location.',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 13),
                   ),
                 ),
               ],
@@ -838,7 +830,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 children: [
                   Row(
                     children: [
-                      Text(addr.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                      Text(addr.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                       if (addr.isDefault) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -854,7 +846,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     addr.shortAddress,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
+                    style: const TextStyle(fontSize: 13, height: 1.3),
                   ),
                 ],
               ),
@@ -882,7 +874,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           children: [
             SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
             SizedBox(width: 12),
-            Text('Loading available time slots...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            Text('Loading available time slots...', style: TextStyle(fontSize: 13)),
           ],
         ),
       );
@@ -918,9 +910,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           ),
           selected: isSelected && isAvail,
           disabledColor: const Color(0xFFF1F5F9),
-          selectedColor: AppColors.primary,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
+          selectedColor: AppColors.primary,          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
               color: isSelected

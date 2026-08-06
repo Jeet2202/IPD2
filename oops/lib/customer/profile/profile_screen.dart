@@ -85,9 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
@@ -375,7 +373,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _MenuItem(
             icon: Icons.location_on_outlined,
             title: 'Saved Addresses',
-            onTap: () => Navigator.pushNamed(context, AppRoutes.savedAddresses),
+            onTap: () async {
+              await Navigator.pushNamed(context, AppRoutes.savedAddresses);
+              _loadProfile();
+            },
           ),
           _MenuItem(
             icon: Icons.lock_reset_rounded,

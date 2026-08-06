@@ -1,18 +1,216 @@
-// File:
-// lib/customer/support/help_support/help_support_screen.dart
+// File: lib/customer/support/help_support/help_support_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../models/support_model.dart';
+import '../../../services/support_service.dart';
 
-class HelpSupportScreen extends StatelessWidget {
+class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
 
   @override
+  State<HelpSupportScreen> createState() => _HelpSupportScreenState();
+}
+
+class _HelpSupportScreenState extends State<HelpSupportScreen> {
+  final SupportService _supportService = SupportService.instance;
+  final TextEditingController _searchController = TextEditingController();
+
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  List<FAQModel> _faqs = [];
+  List<FAQModel> _filteredFaqs = [];
+  SupportTicketModel? _activeTicket;
+  ContactInfoModel? _contactInfo;
+  SOSConfigModel? _sosConfig;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSupportData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSupportData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final results = await Future.wait([
+        _supportService.fetchFAQs(),
+        _supportService.fetchUserTickets(),
+        _supportService.fetchContactInfo(),
+        _supportService.fetchSOSConfig(),
+      ]);
+
+      final allFaqs = results[0] as List<FAQModel>;
+      final userTickets = results[1] as List<SupportTicketModel>;
+      final contact = results[2] as ContactInfoModel;
+      final sos = results[3] as SOSConfigModel;
+
+      // Find open / in_progress ticket if available
+      SupportTicketModel? openTicket;
+      for (final t in userTickets) {
+        if (t.isOpen) {
+          openTicket = t;
+          break;
+        }
+      }
+      if (openTicket == null && userTickets.isNotEmpty) {
+        openTicket = userTickets.first;
+      }
+
+      setState(() {
+        _faqs = allFaqs;
+        _filteredFaqs = allFaqs;
+        _activeTicket = openTicket;
+        _contactInfo = contact;
+        _sosConfig = sos;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load support information. Please try again.';
+      });
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    if (query.trim().isEmpty) {
+      setState(() => _filteredFaqs = _faqs);
+      return;
+    }
+
+    final q = query.toLowerCase();
+    setState(() {
+      _filteredFaqs = _faqs.where((faq) {
+        return faq.question.toLowerCase().contains(q) ||
+            faq.answer.toLowerCase().contains(q) ||
+            faq.category.toLowerCase().contains(q);
+      }).toList();
+    });
+  }
+
+  Future<void> _makePhoneCall(String? phoneNumber) async {
+    final numberToCall = (phoneNumber != null && phoneNumber.trim().isNotEmpty)
+        ? phoneNumber.trim()
+        : '+919579601589';
+    await Clipboard.setData(ClipboardData(text: numberToCall));
+
+    final cleanNum = numberToCall.replaceAll(RegExp(r'[^0-9+]'), '');
+    final uri = Uri.parse('tel:$cleanNum');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+      _showSnackBar('Number $numberToCall copied to clipboard & opening dialer.');
+    } catch (_) {
+      _showSnackBar('Number $numberToCall copied to clipboard.');
+    }
+  }
+
+  void _showSnackBar(String text) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  void _showSOSModal() {
+    final sos = _sosConfig;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFCBD5E1),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
+                  SizedBox(width: 10),
+                  Text(
+                    'Emergency Assistance',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF991B1B)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'If you are in immediate physical danger, contact emergency services right away.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 20),
+
+              _EmergencyButton(
+                icon: Icons.local_police_rounded,
+                title: 'Police Helpline',
+                number: sos?.policeHelpline ?? '112',
+                color: const Color(0xFF1E3A8A),
+                onTap: () => _makePhoneCall(sos?.policeHelpline ?? '112'),
+              ),
+              const SizedBox(height: 10),
+              _EmergencyButton(
+                icon: Icons.female_rounded,
+                title: 'Women Helpline',
+                number: sos?.womenHelpline ?? '1091',
+                color: const Color(0xFFBE185D),
+                onTap: () => _makePhoneCall(sos?.womenHelpline ?? '1091'),
+              ),
+              const SizedBox(height: 10),
+              _EmergencyButton(
+                icon: Icons.medical_services_rounded,
+                title: 'Ambulance',
+                number: sos?.ambulanceHelpline ?? '108',
+                color: const Color(0xFFDC2626),
+                onTap: () => _makePhoneCall(sos?.ambulanceHelpline ?? '108'),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final ticket = _activeTicket;
+    final contact = _contactInfo;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
@@ -29,179 +227,343 @@ class HelpSupportScreen extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0F172A)),
+            onPressed: _loadSupportData,
+          ),
+        ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Search Help Bar ──────────────────────────────────────
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.search_rounded, color: Color(0xFF2563EB)),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Search help topics, refunds, booking issues...',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Quick Help Grid ──────────────────────────────────────
-              const Text('How can we help you?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 14),
-
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.3,
-                children: const [
-                  _HelpCard(icon: Icons.calendar_today_rounded, title: 'Booking Issues', color: Color(0xFF2563EB)),
-                  _HelpCard(icon: Icons.account_balance_wallet_rounded, title: 'Payments & Refund', color: Color(0xFF16A34A)),
-                  _HelpCard(icon: Icons.fact_check_rounded, title: 'Inspection & Quote', color: Color(0xFF0EA5E9)),
-                  _HelpCard(icon: Icons.shield_rounded, title: 'Safety & Trust', color: Color(0xFF8B5CF6)),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Direct Contact Row ───────────────────────────────────
-              const Text('Contact Support 24/7', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: _ContactBox(
-                      icon: Icons.headset_mic_rounded,
-                      title: 'Live Chat',
-                      sub: 'Instant 2-Min Reply',
-                      color: const Color(0xFF2563EB),
-                      onTap: () {},
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ContactBox(
-                      icon: Icons.call_rounded,
-                      title: 'Call Us',
-                      sub: '1800-123-4567',
-                      color: const Color(0xFF16A34A),
-                      onTap: () {},
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Active Support Ticket ────────────────────────────────
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(color: Color(0xFFFEF3C7), shape: BoxShape.circle),
-                      child: const Icon(Icons.confirmation_number_rounded, color: Color(0xFFD97706), size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+            : RefreshIndicator(
+                onRefresh: _loadSupportData,
+                color: const Color(0xFF2563EB),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_errorMessage != null) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF2F2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFFCA5A5)),
+                          ),
+                          child: Row(
                             children: [
-                              Text('Ticket #TK-98412', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                              Text('OPEN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Color(0xFFD97706))),
+                              const Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626)),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  _errorMessage!,
+                                  style: const TextStyle(fontSize: 12, color: Color(0xFF991B1B)),
+                                ),
+                              ),
                             ],
                           ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Diagnostic Inspection Fee Inquiry',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // ── Search Help Bar ──────────────────────────────────────
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.search_rounded, color: Color(0xFF2563EB)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: _onSearchChanged,
+                                decoration: const InputDecoration(
+                                  hintText: 'Search help topics, FAQs, booking issues...',
+                                  hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            if (_searchController.text.isNotEmpty)
+                              IconButton(
+                                icon: const Icon(Icons.clear_rounded, size: 18, color: Color(0xFF94A3B8)),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _onSearchChanged('');
+                                },
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-              // ── Emergency SOS Banner ──────────────────────────────────
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFFFCA5A5)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      // ── Active Support Ticket Card ───────────────────────────
+                      const Text(
+                        'Support Ticket & Admin Chat',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 12),
+
+                      GestureDetector(
+                        onTap: () {
+                          if (ticket != null) {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.liveChat,
+                              arguments: {'ticketId': ticket.ticketId},
+                            ).then((_) => _loadSupportData());
+                          } else {
+                            Navigator.pushNamed(context, AppRoutes.raiseComplaint)
+                                .then((_) => _loadSupportData());
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(
+                              color: ticket != null ? const Color(0xFF3B82F6) : const Color(0xFFE2E8F0),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: ticket != null ? const Color(0xFFDBEAFE) : const Color(0xFFF1F5F9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  ticket != null ? Icons.chat_rounded : Icons.add_comment_rounded,
+                                  color: ticket != null ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          ticket != null ? '#${ticket.ticketId}' : 'Raise a Complaint / Ticket',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                        if (ticket != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: ticket.isOpen ? const Color(0xFFFEF3C7) : const Color(0xFFDCFCE7),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              ticket.status.toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w900,
+                                                color: ticket.isOpen ? const Color(0xFFD97706) : const Color(0xFF16A34A),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      ticket != null
+                                          ? ticket.subject
+                                          : 'Tap here to raise a ticket and chat with Ally support team.',
+                                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF94A3B8)),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // ── Direct Contact Row ───────────────────────────────────
+                      const Text(
+                        'Contact Support 24/7',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 12),
+
+                      Row(
                         children: [
-                          Text('Emergency Safety SOS 🚨', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B))),
-                          SizedBox(height: 2),
-                          Text(
-                            'Immediate assistance for active on-site safety issues.',
-                            style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D)),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
+                          Expanded(
+                            child: _ContactBox(
+                              icon: Icons.headset_mic_rounded,
+                              title: 'Live Chat',
+                              sub: 'Chat with Admin',
+                              color: const Color(0xFF2563EB),
+                              onTap: () {
+                                if (ticket != null) {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.liveChat,
+                                    arguments: {'ticketId': ticket.ticketId},
+                                  ).then((_) => _loadSupportData());
+                                } else {
+                                  Navigator.pushNamed(context, AppRoutes.raiseComplaint)
+                                      .then((_) => _loadSupportData());
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _ContactBox(
+                              icon: Icons.call_rounded,
+                              title: 'Call Us',
+                              sub: contact?.helplinePhone ?? '1800-123-4567',
+                              color: const Color(0xFF16A34A),
+                              onTap: () => _makePhoneCall(contact?.helplinePhone ?? '1800-123-4567'),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+                      const SizedBox(height: 24),
+
+                      // ── Emergency SOS Banner ──────────────────────────────────
+                      Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(color: const Color(0xFFFCA5A5)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
+                            const SizedBox(width: 14),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Emergency Safety SOS 🚨',
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B)),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Immediate assistance for active safety issues.',
+                                    style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D)),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: _showSOSModal,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFEF4444),
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              child: const Text('SOS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: const Text('SOS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
-                    ),
-                  ],
+
+                      const SizedBox(height: 24),
+
+                      // ── FAQs List ───────────────────────────────────────────
+                      const Text(
+                        'Frequently Asked Questions',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                      ),
+                      const SizedBox(height: 12),
+
+                      if (_filteredFaqs.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'No FAQs found matching your search.',
+                              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _filteredFaqs.length,
+                          itemBuilder: (context, index) {
+                            final faq = _filteredFaqs[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              child: ExpansionTile(
+                                shape: const Border(),
+                                title: Text(
+                                  faq.question,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                                ),
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                    child: Text(
+                                      faq.answer,
+                                      style: const TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.5),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
-
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -235,7 +597,6 @@ class HelpSupportScreen extends StatelessWidget {
             }
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
           selectedItemColor: const Color(0xFF2563EB),
           unselectedItemColor: const Color(0xFF94A3B8),
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
@@ -265,35 +626,6 @@ class HelpSupportScreen extends StatelessWidget {
   }
 }
 
-class _HelpCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Color color;
-
-  const _HelpCard({required this.icon, required this.title, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 26),
-          const SizedBox(height: 10),
-          Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-        ],
-      ),
-    );
-  }
-}
-
 class _ContactBox extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -301,7 +633,13 @@ class _ContactBox extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _ContactBox({required this.icon, required this.title, required this.sub, required this.color, required this.onTap});
+  const _ContactBox({
+    required this.icon,
+    required this.title,
+    required this.sub,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -339,6 +677,52 @@ class _ContactBox extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmergencyButton extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String number;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _EmergencyButton({
+    required this.icon,
+    required this.title,
+    required this.number,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color,
+          child: Icon(icon, color: Colors.white, size: 20),
+        ),
+        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+        subtitle: Text(number, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700)),
+        trailing: ElevatedButton.icon(
+          onPressed: onTap,
+          icon: const Icon(Icons.call_rounded, size: 16),
+          label: const Text('Call'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
       ),
     );

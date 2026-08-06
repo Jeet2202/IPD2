@@ -14,14 +14,13 @@ class WorkerVerificationStatusScreen extends StatelessWidget {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Verification Progress',
           style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),

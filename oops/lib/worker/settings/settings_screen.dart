@@ -302,18 +302,16 @@ class _WorkerSettingsScreenState extends State<WorkerSettingsScreen> {
     final photoUrl = data?['profile_photo_url'] as String?;
     final completion = (data?['profile_completion_percentage'] as num?)?.toInt() ?? 0;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return Scaffold(      appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Partner Settings',
-          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w800, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),

@@ -45,16 +45,20 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label.isNotEmpty) ...[
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 6),
@@ -72,35 +76,45 @@ class AppTextField extends StatelessWidget {
           readOnly:            readOnly,
           autofocus:           autofocus,
           textInputAction:     textInputAction,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 14,
+          ),
           decoration: InputDecoration(
             hintText:        hint,
             helperText:      helperText,
-            hintStyle:       const TextStyle(color: AppColors.textHint, fontSize: 14),
+            hintStyle:       TextStyle(
+              color: isDark ? AppColors.slate500 : AppColors.textHint,
+              fontSize: 14,
+            ),
             suffixIcon:      suffix,
             prefixIcon:      prefix,
             counterText:     '',
             filled:          true,
-            fillColor:       AppColors.surface,
+            fillColor:       isDark ? AppColors.darkSurfaceVariant : AppColors.surface,
             contentPadding:  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              borderSide:   const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              borderSide:   const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              borderSide:   const BorderSide(color: AppColors.primary, width: 2),
+              borderSide: BorderSide(
+                color: isDark ? AppColors.primaryLight : AppColors.primary,
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              borderSide:   const BorderSide(color: AppColors.error),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              borderSide:   const BorderSide(color: AppColors.error, width: 2),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
             ),
           ),
         ),
@@ -108,4 +122,3 @@ class AppTextField extends StatelessWidget {
     );
   }
 }
-

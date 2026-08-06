@@ -9,9 +9,7 @@ class OnboardingPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return Scaffold(      body: SafeArea(
         child: Column(
           children: [
             // ── Top Bar (no skip on last page) ───────────────────────

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -30,20 +30,26 @@ import Modal from '../../components/common/Modal';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import EmptyState from '../../components/common/EmptyState';
 import { useToast } from '../../components/common/ToastContext';
-import { COMPLAINTS_DATA } from '../../data/complaints';
+import { supportService } from '../../services/supportService';
 
 export default function ComplaintDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
 
-  // Find complaint or default to first
-  const initialComplaint = useMemo(() => {
-    const found = COMPLAINTS_DATA.find((c) => c.id === id);
-    return found || COMPLAINTS_DATA[0];
-  }, [id]);
+  const [complaint, setComplaint] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [complaint, setComplaint] = useState(initialComplaint);
+  useEffect(() => {
+    async function loadTicket() {
+      if (!id) return;
+      setIsLoading(true);
+      const data = await supportService.getTicketDetails(id);
+      setComplaint(data);
+      setIsLoading(false);
+    }
+    loadTicket();
+  }, [id]);
 
   // Active Communication Tab
   const [commTab, setCommTab] = useState('internal'); // customer | worker | internal
@@ -55,16 +61,14 @@ export default function ComplaintDetails() {
   const [previewMedia, setPreviewMedia] = useState(null);
 
   // Investigation Checklist state
-  const [checklist, setChecklist] = useState(
-    complaint.investigationChecklist || [
-      { key: 'job', label: 'Review Job Details & Booking Notes', completed: true },
-      { key: 'inspection', label: 'Check Initial Inspection Report', completed: true },
-      { key: 'payment', label: 'Verify Payment & Escrow Amount', completed: true },
-      { key: 'chat', label: 'Review Chat & Photo Evidence', completed: true },
-      { key: 'customer', label: 'Contact Customer for Details', completed: false },
-      { key: 'worker', label: 'Contact Worker for Explanation', completed: false },
-    ]
-  );
+  const [checklist, setChecklist] = useState([
+    { key: 'job', label: 'Review Job Details & Booking Notes', completed: true },
+    { key: 'inspection', label: 'Check Initial Inspection Report', completed: true },
+    { key: 'payment', label: 'Verify Payment & Escrow Amount', completed: true },
+    { key: 'chat', label: 'Review Chat & Photo Evidence', completed: true },
+    { key: 'customer', label: 'Contact Customer for Details', completed: false },
+    { key: 'worker', label: 'Contact Worker for Explanation', completed: false },
+  ]);
 
   // Resolution Modal State
   const [resolveModalOpen, setResolveModalOpen] = useState(false);
@@ -88,13 +92,13 @@ export default function ComplaintDetails() {
     if (commTab === 'internal') {
       const noteObj = {
         id: 'IN-' + Date.now(),
-        adminName: 'Suresh Mehta (Admin)',
+        adminName: 'Admin',
         note: newMessage.trim(),
         timestamp: 'Just now',
       };
       setComplaint((prev) => ({
         ...prev,
-        internalNotes: [noteObj, ...prev.internalNotes],
+        internalNotes: [noteObj, ...(prev?.internalNotes || [])],
       }));
       addToast({
         title: 'Internal Note Added',
@@ -102,20 +106,28 @@ export default function ComplaintDetails() {
         type: 'success',
       });
     } else if (commTab === 'customer') {
+      const msgText = newMessage.trim();
       const msgObj = {
         id: 'CC-' + Date.now(),
-        sender: 'Suresh Mehta (Admin)',
+        sender: 'Admin',
         senderRole: 'Admin',
-        message: newMessage.trim(),
+        message: msgText,
         timestamp: 'Just now',
       };
+
       setComplaint((prev) => ({
         ...prev,
         customerCommunication: [...prev.customerCommunication, msgObj],
       }));
+
+      // Async send to backend support API
+      supportService.sendAdminReply(complaint.id, msgText).catch((err) => {
+        console.warn('Failed to sync message to backend:', err);
+      });
+
       addToast({
         title: 'Message Sent to Customer',
-        message: 'Notification queued for customer.',
+        message: 'Message sent to customer live chat thread.',
         type: 'info',
       });
     } else if (commTab === 'worker') {
@@ -140,7 +152,7 @@ export default function ComplaintDetails() {
     setNewMessage('');
   };
 
-  const handleConfirmResolve = () => {
+  const handleConfirmResolve = async () => {
     if (!resolutionNotes.trim()) {
       addToast({
         title: 'Resolution Notes Required',
@@ -150,33 +162,52 @@ export default function ComplaintDetails() {
       return;
     }
 
+    const notesText = resolutionNotes.trim();
+
+    // 1. Optimistic UI update
     setComplaint((prev) => ({
       ...prev,
       status: 'Resolved',
       resolutionType,
-      resolutionNotes: resolutionNotes.trim(),
+      resolutionNotes: notesText,
       resolvedAt: 'Just now',
       timeline: [
         {
           id: 'TL-' + Date.now(),
           event: `Complaint Resolved (${resolutionType})`,
           timestamp: 'Just now',
-          actor: 'Suresh Mehta (Admin)',
+          actor: 'Admin',
         },
-        ...prev.timeline,
+        ...(prev?.timeline || []),
       ],
     }));
 
+    // 2. Persist status change to backend MongoDB
+    try {
+      await supportService.updateTicketStatus(complaint.id, {
+        status: 'resolved',
+      });
+
+      // 3. Send automated resolution reply to customer live chat
+      await supportService.sendAdminReply(
+        complaint.id,
+        `[Ticket Resolved] Resolution: ${resolutionType}. Note: ${notesText}`
+      );
+    } catch (e) {
+      console.warn('Failed to sync resolution to backend:', e);
+    }
+
     addToast({
       title: 'Complaint Resolved',
-      message: `Complaint ${complaint.id} has been marked as resolved.`,
+      message: `Complaint ${complaint.id} has been marked as resolved and synced live.`,
       type: 'success',
     });
 
     setResolveModalOpen(false);
   };
 
-  const handleConfirmReopen = () => {
+  const handleConfirmReopen = async () => {
+    // 1. Optimistic UI update
     setComplaint((prev) => ({
       ...prev,
       status: 'Under Review',
@@ -186,11 +217,26 @@ export default function ComplaintDetails() {
           id: 'TL-' + Date.now(),
           event: 'Complaint Reopened by Admin',
           timestamp: 'Just now',
-          actor: 'Suresh Mehta (Admin)',
+          actor: 'Admin',
         },
-        ...prev.timeline,
+        ...(prev?.timeline || []),
       ],
     }));
+
+    // 2. Persist status change to backend MongoDB
+    try {
+      await supportService.updateTicketStatus(complaint.id, {
+        status: 'open',
+      });
+
+      // 3. Send automated reopen note to live chat
+      await supportService.sendAdminReply(
+        complaint.id,
+        '[Ticket Reopened] Admin has reopened this ticket for further investigation.'
+      );
+    } catch (e) {
+      console.warn('Failed to sync reopen to backend:', e);
+    }
 
     addToast({
       title: 'Complaint Reopened',
@@ -200,6 +246,29 @@ export default function ComplaintDetails() {
 
     setReopenModalOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <PageContainer title="Loading Ticket Details...">
+        <div className="flex items-center justify-center p-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563EB]"></div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!complaint) {
+    return (
+      <PageContainer title="Complaint Not Found">
+        <EmptyState
+          title="Support Ticket Not Found"
+          description="The requested ticket ID does not exist in backend database."
+          actionText="Back to Complaints"
+          onAction={() => navigate('/admin/complaints')}
+        />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer

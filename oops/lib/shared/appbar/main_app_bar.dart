@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/app_colors.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -18,24 +17,24 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final canPop = Navigator.canPop(context);
+    final theme = Theme.of(context);
 
     return AppBar(
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
+        style: theme.appBarTheme.titleTextStyle,
       ),
       centerTitle: centerTitle,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.appBarTheme.backgroundColor,
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: leading ??
           (canPop
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+                  icon: Icon(
+                    Icons.arrow_back_rounded,
+                    color: theme.appBarTheme.iconTheme?.color,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 )
               : null),

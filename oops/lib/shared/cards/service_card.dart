@@ -36,6 +36,9 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final effectiveImageUrl = (imageUrl != null && imageUrl!.isNotEmpty)
         ? imageUrl!
         : CategoryHelper.getServiceImageUrl('', category, title);
@@ -47,9 +50,9 @@ class ServiceCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.md),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: colorScheme.surface,
           borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-          border: Border.all(color: AppColors.divider),
+          border: Border.all(color: theme.dividerColor),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -148,10 +151,10 @@ class ServiceCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: colorScheme.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -160,9 +163,9 @@ class ServiceCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       shortDescription!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -178,10 +181,10 @@ class ServiceCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               rating,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                             if (duration != null && duration!.isNotEmpty) ...[
@@ -189,9 +192,9 @@ class ServiceCard extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   '• $duration',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textSecondary,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -204,10 +207,10 @@ class ServiceCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         price,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -222,7 +225,7 @@ class ServiceCard extends StatelessWidget {
               ElevatedButton(
                 onPressed: onAdd,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: colorScheme.primary,
                   minimumSize: const Size(64, 36),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   shape: RoundedRectangleBorder(
