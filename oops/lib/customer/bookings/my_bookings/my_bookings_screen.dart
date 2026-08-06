@@ -1,5 +1,4 @@
-// File: lib/customer/bookings/my_bookings/my_bookings_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
@@ -25,6 +24,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   bool _isLoading = true;
   String? _errorMessage;
   List<BookingModel> _allBookings = [];
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
@@ -32,6 +32,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
     _fetchBookings();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _fetchBookings(isSilent: true);
+    });
   }
 
   void _handleTabSelection() {
@@ -42,6 +45,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
 
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
     _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     super.dispose();
@@ -66,11 +70,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     }
   }
 
-  Future<void> _fetchBookings() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  Future<void> _fetchBookings({bool isSilent = false}) async {
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final statusParam = _mapFilterToStatusParam(_selectedFilter);

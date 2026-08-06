@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../models/notification_model.dart';
@@ -18,19 +19,31 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
   List<NotificationModel> _notifications = [];
   String _selectedFilter = 'All';
   final List<String> _filters = ['All', 'Booking', 'Communication', 'System'];
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadNotifications();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _loadNotifications(isSilent: true);
+    });
   }
 
-  Future<void> _loadNotifications() async {
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadNotifications({bool isSilent = false}) async {
     if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final list = await NotificationService.instance.getNotifications();
