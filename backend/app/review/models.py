@@ -42,6 +42,9 @@ class Review(Document):
     would_recommend: bool = Field(default=True, description="True if customer would recommend worker")
     attachments: list[str] = Field(default_factory=list, description="Prepared Cloudinary attachment URLs")
 
+    status: str = Field(default="Published", description="Moderation status: Published, Flagged, Hidden, Under Review")
+    flag_reason: str | None = Field(default=None, description="Reason for flagging/hiding review")
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

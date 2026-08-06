@@ -16,6 +16,8 @@ from app.application.models import JobApplication
 from app.core.config import settings
 from app.quotation.models import Quotation, QuotationHistory
 from app.quotation.repository import QuotationRepository
+from app.notifications.service import notification_service
+from app.notifications.templates import NotificationType
 from app.quotation.schemas import (
     AssignedWorkerResponse,
     CustomerQuotationResponse,
@@ -175,8 +177,9 @@ class QuotationService:
         self, worker: User, payload: QuotationCreateRequest
     ) -> QuotationResponse:
         """
-        Create a new quotation for a marketplace job application.
+        Create a new quotation for a booking. Can be saved as DRAFT or SUBMITTED.
         """
+        print(f"!!! create_quotation called by {worker.id} for booking {payload.booking_id} !!!")
         if not worker.is_active:
             raise ForbiddenException(
                 message="Inactive worker cannot submit quotations",
@@ -293,6 +296,30 @@ class QuotationService:
                 existing.submitted_at = datetime.now(timezone.utc)
 
             saved = await existing.save()
+
+            await self._record_history_event(
+                quotation=saved,
+                actor_id=worker.id,
+                actor_role=worker.role,
+                event_type=QuotationEventType.UPDATED if payload.is_draft else QuotationEventType.SUBMITTED,
+                previous_status=QuotationStatus.DRAFT,
+                new_status=saved.quotation_status,
+                previous_snapshot=None,
+                notes="Draft quotation updated" if payload.is_draft else "Quotation submitted to customer",
+            )
+
+            if not payload.is_draft:
+                await notification_service._process_single_notification(
+                    user_id=str(booking.customer_id),
+                    notif_type=NotificationType.QUOTATION_RECEIVED,
+                    data={
+                        "booking_id": str(booking.id),
+                        "quotation_id": str(saved.id),
+                        "amount": f"₹{saved.total_amount:,.0f}",
+                        "booking_number": booking.booking_number,
+                    },
+                )
+
             return self._to_response(saved)
 
         # 6. Generate unique quotation number
@@ -350,6 +377,17 @@ class QuotationService:
                 previous_snapshot=None,
                 notes="Quotation submitted to customer",
             )
+            # Notify the customer that a new quotation has been received
+            await notification_service._process_single_notification(
+                user_id=str(booking.customer_id),
+                notif_type=NotificationType.QUOTATION_RECEIVED,
+                data={
+                    "booking_id": str(booking.id),
+                    "quotation_id": str(saved.id),
+                    "amount": f"₹{saved.total_amount:,.0f}",
+                    "booking_number": booking.booking_number,
+                },
+            )
 
         return self._to_response(saved)
 
@@ -359,6 +397,7 @@ class QuotationService:
         """
         Update an existing draft quotation or submit it. Read-only if already submitted.
         """
+        print(f"!!! update_quotation called by {worker.id} for quotation {quotation_id} !!!")
         if not worker.is_active:
             raise ForbiddenException(
                 message="Inactive worker cannot update quotations",
@@ -487,6 +526,19 @@ class QuotationService:
                 previous_snapshot=prev_snap,
                 notes="Quotation submitted to customer",
             )
+            # Fetch booking to get customer_id for notification
+            booking_for_notif = await Booking.get(q.booking_id)
+            if booking_for_notif:
+                await notification_service._process_single_notification(
+                    user_id=str(booking_for_notif.customer_id),
+                    notif_type=NotificationType.QUOTATION_RECEIVED,
+                    data={
+                        "booking_id": str(booking_for_notif.id),
+                        "quotation_id": str(saved.id),
+                        "amount": f"₹{saved.total_amount:,.0f}",
+                        "booking_number": booking_for_notif.booking_number,
+                    },
+                )
 
         return self._to_response(saved)
 

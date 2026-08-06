@@ -76,3 +76,13 @@ class WorkerRatingSummaryResponse(BaseModel):
     communication_avg: float
     recommendation_percentage: float
     would_recommend_count: int
+
+
+class UpdateReviewStatusRequest(BaseModel):
+    """
+    Payload for updating review moderation status in Admin Panel.
+    """
+
+    status: str = Field(..., description="Target status: Published, Flagged, Hidden, Under Review")
+    flag_reason: str | None = Field(default=None, description="Reason for flagging or hiding the review")
+

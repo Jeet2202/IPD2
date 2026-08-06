@@ -7,6 +7,11 @@ import '../../shared/utils/category_helper.dart';
 import '../../models/home_model.dart';
 import '../../models/service_model.dart';
 import '../../services/api_service.dart';
+import '../../services/ai_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/location_service.dart';
+import '../../widgets/notification_bell.dart';
+import '../search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   HomeModel? _homeModel;
+  String? _profilePicUrl;
 
   // Promos / Promotional Banners
   final List<Map<String, dynamic>> _banners = [
@@ -69,9 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final homeData = await ApiService.instance.getHomeData();
+      String? picUrl;
+      try {
+        final profile = await AuthService.instance.fetchCustomerProfile();
+        picUrl = profile['profile_photo_url'] as String?;
+      } catch (_) {}
+
       if (mounted) {
         setState(() {
           _homeModel = homeData;
+          _profilePicUrl = picUrl;
           _isLoading = false;
         });
       }
@@ -255,9 +268,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: const Color(0xFFDBEAFE),
                     border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
                   ),
-                  child: const ClipOval(
-                    child: Icon(Icons.person_rounded, color: Color(0xFF2563EB), size: 28),
-                  ),
+                  child: _profilePicUrl != null && _profilePicUrl!.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            _profilePicUrl!,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.person_rounded, color: Color(0xFF2563EB), size: 28),
+                          ),
+                        )
+                      : const ClipOval(
+                          child: Icon(Icons.person_rounded, color: Color(0xFF2563EB), size: 28),
+                        ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -266,15 +289,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Row(
                     children: [
-                      const Text(
-                        'Good Day',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF64748B),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
@@ -307,23 +321,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notifications feature coming soon!'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: const Icon(Icons.notifications_none_rounded, color: Color(0xFF334155), size: 22),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: NotificationBell(
+              iconColor: const Color(0xFF334155),
+              iconSize: 22.0,
+              onBellPressed: () {
+                Navigator.pushNamed(context, AppRoutes.notifications);
+              },
             ),
           ),
         ],

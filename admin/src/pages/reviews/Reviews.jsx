@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Star,
@@ -17,6 +17,7 @@ import {
   X,
   FileText,
   ShieldAlert,
+  Loader2,
 } from 'lucide-react';
 import PageContainer from '../../components/layout/PageContainer';
 import StatCard from '../../components/cards/StatCard';
@@ -25,13 +26,28 @@ import Modal from '../../components/common/Modal';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import EmptyState from '../../components/common/EmptyState';
 import { useToast } from '../../components/common/ToastContext';
-import { REVIEWS_DATA, REVIEWS_SUMMARY_DATA } from '../../data/reviews';
+import { reviewService } from '../../services/reviewService';
 
 export default function Reviews() {
   const navigate = useNavigate();
   const { addToast } = useToast();
 
-  const [reviews, setReviews] = useState(REVIEWS_DATA);
+  const [reviews, setReviews] = useState([]);
+  const [summary, setSummary] = useState({
+    totalReviews: 0,
+    averageRating: 5.0,
+    fiveStarReviews: 0,
+    lowRatings: 0,
+    flaggedReviews: 0,
+    ratingDistribution: [
+      { stars: 5, count: 0, percentage: 0 },
+      { stars: 4, count: 0, percentage: 0 },
+      { stars: 3, count: 0, percentage: 0 },
+      { stars: 2, count: 0, percentage: 0 },
+      { stars: 1, count: 0, percentage: 0 },
+    ],
+  });
+  const [loading, setLoading] = useState(true);
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,45 +67,60 @@ export default function Reviews() {
     flagReason: 'Abusive Language',
   });
 
-  // Summary Metrics
-  const metrics = useMemo(() => {
-    const total = reviews.length;
-    const avg = (reviews.reduce((acc, r) => acc + r.rating, 0) / total).toFixed(1);
-    const fiveStar = reviews.filter((r) => r.rating === 5).length;
-    const low = reviews.filter((r) => r.rating <= 2).length;
-    const flagged = reviews.filter((r) => r.status === 'Flagged').length;
+  const fetchReviews = async () => {
+    setLoading(true);
+    const data = await reviewService.getAdminReviews({
+      status: statusFilter,
+      rating: ratingFilter,
+      category: categoryFilter,
+      search: searchQuery,
+    });
 
-    return { total, avg, fiveStar, low, flagged };
+    if (data) {
+      setReviews(data.reviews || []);
+      if (data.summary) {
+        setSummary(data.summary);
+      }
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [searchQuery, ratingFilter, statusFilter, categoryFilter]);
+
+  const categoryOptions = useMemo(() => {
+    const defaultCats = ['Electrical', 'Plumbing', 'AC Repair', 'Carpentry', 'Painting'];
+    const set = new Set(defaultCats);
+    reviews.forEach((r) => {
+      if (r.category) set.add(r.category);
+    });
+    return Array.from(set);
   }, [reviews]);
 
-  // Filtered List
+  // Client-side fallback filtered list if needed
   const filteredReviews = useMemo(() => {
     return reviews.filter((r) => {
-      // Search
       const query = searchQuery.toLowerCase().trim();
       if (query) {
-        const matchesId = r.id.toLowerCase().includes(query);
-        const matchesCust = r.customerName.toLowerCase().includes(query);
-        const matchesWorker = r.workerName.toLowerCase().includes(query);
-        const matchesService = r.service.toLowerCase().includes(query);
-        const matchesJob = r.jobId.toLowerCase().includes(query);
-        const matchesText = r.reviewText.toLowerCase().includes(query);
+        const matchesId = (r.id || '').toLowerCase().includes(query);
+        const matchesCust = (r.customerName || '').toLowerCase().includes(query);
+        const matchesWorker = (r.workerName || '').toLowerCase().includes(query);
+        const matchesService = (r.service || '').toLowerCase().includes(query);
+        const matchesJob = (r.jobId || '').toLowerCase().includes(query);
+        const matchesText = (r.reviewText || '').toLowerCase().includes(query);
 
         if (!matchesId && !matchesCust && !matchesWorker && !matchesService && !matchesJob && !matchesText) {
           return false;
         }
       }
 
-      // Rating Filter
       if (ratingFilter !== 'All') {
         const stars = parseInt(ratingFilter, 10);
         if (Math.floor(r.rating) !== stars) return false;
       }
 
-      // Status Filter
       if (statusFilter !== 'All' && r.status !== statusFilter) return false;
-
-      // Category Filter
       if (categoryFilter !== 'All' && r.category !== categoryFilter) return false;
 
       return true;
@@ -128,41 +159,35 @@ export default function Reviews() {
     });
   };
 
-  const handleExecuteAction = () => {
+  const handleExecuteAction = async () => {
     const { type, review, flagReason } = confirmModal;
     if (!review) return;
 
-    setReviews((prev) =>
-      prev.map((r) => {
-        if (r.id === review.id) {
-          if (type === 'hide') {
-            return { ...r, status: 'Hidden', flagReason };
-          }
-          if (type === 'restore') {
-            return { ...r, status: 'Published', flagReason: null };
-          }
-          if (type === 'flag') {
-            return { ...r, status: 'Flagged', flagReason };
-          }
-        }
-        return r;
-      })
-    );
+    const targetStatus = type === 'hide' ? 'Hidden' : type === 'restore' ? 'Published' : 'Flagged';
+    const targetReason = type === 'hide' || type === 'flag' ? flagReason : null;
 
-    addToast({
-      title: 'Review Moderated',
-      message: `Review ${review.id} status updated to ${
-        type === 'hide' ? 'Hidden' : type === 'restore' ? 'Published' : 'Flagged'
-      }. Original user text preserved untouched.`,
-      type: 'success',
-    });
+    const res = await reviewService.updateReviewStatus(review._id || review.id, targetStatus, targetReason);
 
-    if (selectedReview && selectedReview.id === review.id) {
-      setSelectedReview((prev) => ({
-        ...prev,
-        status: type === 'hide' ? 'Hidden' : type === 'restore' ? 'Published' : 'Flagged',
-        flagReason: type === 'hide' || type === 'flag' ? flagReason : null,
-      }));
+    if (res) {
+      addToast({
+        title: 'Review Moderated',
+        message: `Review ${review.id} status updated to ${targetStatus} in MongoDB.`,
+        type: 'success',
+      });
+      fetchReviews();
+      if (selectedReview && (selectedReview.id === review.id || selectedReview._id === review._id)) {
+        setSelectedReview((prev) => ({
+          ...prev,
+          status: targetStatus,
+          flagReason: targetReason,
+        }));
+      }
+    } else {
+      addToast({
+        title: 'Action Failed',
+        message: 'Failed to update review status in MongoDB. Please try again.',
+        type: 'error',
+      });
     }
 
     setConfirmModal({ open: false, type: 'hide', review: null, flagReason: '' });
@@ -171,22 +196,22 @@ export default function Reviews() {
   return (
     <PageContainer
       title="Reviews Management"
-      subtitle="Monitor customer feedback, ratings breakdown, and moderate inappropriate service reviews."
+      subtitle="Monitor customer feedback, ratings breakdown, and moderate service reviews directly in MongoDB."
     >
       <div className="space-y-6">
         {/* SUMMARY CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <StatCard
             title="Total Reviews"
-            value={REVIEWS_SUMMARY_DATA.totalReviews}
-            subtitle="Platform lifetime"
+            value={summary.totalReviews}
+            subtitle="MongoDB lifetime"
             icon={MessageSquare}
             iconBg="bg-[#EFF6FF]"
             iconColor="text-[#2563EB]"
           />
           <StatCard
             title="Average Rating"
-            value={`${REVIEWS_SUMMARY_DATA.averageRating} ★`}
+            value={`${summary.averageRating} ★`}
             subtitle="Customer satisfaction"
             icon={Star}
             iconBg="bg-[#FEF3C7]"
@@ -194,15 +219,15 @@ export default function Reviews() {
           />
           <StatCard
             title="5-Star Reviews"
-            value={REVIEWS_SUMMARY_DATA.fiveStarReviews}
-            subtitle="73% of total"
+            value={summary.fiveStarReviews}
+            subtitle={`${summary.totalReviews > 0 ? Math.round((summary.fiveStarReviews / summary.totalReviews) * 100) : 0}% of total`}
             icon={CheckCircle2}
             iconBg="bg-[#DCFCE7]"
             iconColor="text-[#16A34A]"
           />
           <StatCard
             title="Low Ratings (1–2★)"
-            value={REVIEWS_SUMMARY_DATA.lowRatings}
+            value={summary.lowRatings}
             subtitle="Requires attention"
             icon={AlertTriangle}
             iconBg="bg-[#FEE2E2]"
@@ -210,7 +235,7 @@ export default function Reviews() {
           />
           <StatCard
             title="Flagged Reviews"
-            value={REVIEWS_SUMMARY_DATA.flaggedReviews}
+            value={summary.flaggedReviews}
             subtitle="Moderation queue"
             icon={Flag}
             iconBg="bg-[#FFF7ED]"
@@ -224,7 +249,7 @@ export default function Reviews() {
             Overall Rating Distribution
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {REVIEWS_SUMMARY_DATA.ratingDistribution.map((item) => (
+            {(summary.ratingDistribution || []).map((item) => (
               <div
                 key={item.stars}
                 onClick={() => setRatingFilter(item.stars.toString())}
@@ -318,11 +343,11 @@ export default function Reviews() {
                   className="w-full px-3 py-2.5 text-xs font-semibold bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#2563EB]"
                 >
                   <option value="All">All Categories</option>
-                  <option value="Electrical">Electrical</option>
-                  <option value="Plumbing">Plumbing</option>
-                  <option value="AC Repair">AC Repair</option>
-                  <option value="Carpentry">Carpentry</option>
-                  <option value="Painting">Painting</option>
+                  {categoryOptions.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -347,7 +372,16 @@ export default function Reviews() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F1F5F9] text-xs">
-                {filteredReviews.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={9} className="py-12 text-center">
+                      <div className="flex flex-col items-center justify-center gap-2 text-[#64748B]">
+                        <Loader2 className="w-6 h-6 animate-spin text-[#2563EB]" />
+                        <span className="font-semibold text-xs">Loading reviews from MongoDB...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : filteredReviews.length === 0 ? (
                   <tr>
                     <td colSpan={9} className="py-12 text-center">
                       <EmptyState
@@ -362,7 +396,7 @@ export default function Reviews() {
                     const isLowRating = r.rating <= 2.0;
                     return (
                       <tr
-                        key={r.id}
+                        key={r.id || r._id}
                         className={`transition-colors ${
                           isLowRating
                             ? 'bg-[#FEF2F2]/30 hover:bg-[#FEF2F2]/60'
@@ -378,7 +412,7 @@ export default function Reviews() {
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2">
                             <img
-                              src={r.customerAvatar}
+                              src={r.customerAvatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150'}
                               alt={r.customerName}
                               className="w-7 h-7 rounded-full object-cover border border-[#E2E8F0]"
                             />
@@ -392,7 +426,7 @@ export default function Reviews() {
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2">
                             <img
-                              src={r.workerAvatar}
+                              src={r.workerAvatar || 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&q=80&w=150'}
                               alt={r.workerName}
                               className="w-7 h-7 rounded-full object-cover border border-[#E2E8F0]"
                             />
@@ -438,7 +472,7 @@ export default function Reviews() {
 
                         {/* Date */}
                         <td className="py-4 px-4 text-[#64748B] font-medium">
-                          {r.createdAt.split(' ')[0]}
+                          {r.createdAt ? r.createdAt.split(' ')[0] : 'Just now'}
                         </td>
 
                         {/* Status */}
@@ -450,7 +484,7 @@ export default function Reviews() {
                           )}
                           {r.status === 'Flagged' && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#D97706] text-[11px] font-bold">
-                              Flagged ({r.flagReason})
+                              Flagged {r.flagReason ? `(${r.flagReason})` : ''}
                             </span>
                           )}
                           {r.status === 'Hidden' && (
