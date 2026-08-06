@@ -126,19 +126,21 @@ class PushNotificationService {
     }
   }
 
-  void _showLocalNotification(RemoteMessage message) {
-    final notification = message.notification;
-    final android = message.notification?.android;
-
-    if (notification != null && android != null && !kIsWeb) {
-      _localNotifications.show(
-        id: notification.hashCode,
-        title: notification.title,
-        body: notification.body,
+  Future<void> showLocalNotificationDirect({
+    required String title,
+    required String body,
+    Map<String, dynamic>? payloadData,
+  }) async {
+    try {
+      final id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+      await _localNotifications.show(
+        id: id,
+        title: title,
+        body: body,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
-            'ally_high_importance_channel', // id
-            'High Importance Notifications', // name
+            'ally_high_importance_channel',
+            'High Importance Notifications',
             channelDescription: 'This channel is used for important notifications.',
             importance: Importance.max,
             priority: Priority.high,
@@ -150,7 +152,22 @@ class PushNotificationService {
             presentSound: true,
           ),
         ),
-        payload: jsonEncode(message.data),
+        payload: payloadData != null ? jsonEncode(payloadData) : null,
+      );
+    } catch (e) {
+      debugPrint('Failed to show direct local notification: $e');
+    }
+  }
+
+  void _showLocalNotification(RemoteMessage message) {
+    final notification = message.notification;
+    final android = message.notification?.android;
+
+    if (notification != null && android != null && !kIsWeb) {
+      showLocalNotificationDirect(
+        title: notification.title ?? 'New Notification',
+        body: notification.body ?? '',
+        payloadData: message.data,
       );
     }
   }

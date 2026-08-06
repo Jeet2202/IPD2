@@ -8,6 +8,7 @@ import 'config/environment.dart';
 import 'customer/splash/splash_screen.dart';
 import 'utils/token_storage.dart';
 import 'services/push_notification_service.dart';
+import 'services/in_app_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,12 +19,13 @@ Future<void> main() async {
   // Load persistent authentication session tokens
   await TokenStorage.init();
 
-  // Initialize push notifications safely if token exists
+  // Initialize push notifications & real-time in-app alerts if token exists
   if (TokenStorage.accessToken.isNotEmpty) {
     try {
       await PushNotificationService.instance.initialize();
+      InAppNotificationService.instance.startPolling();
     } catch (e) {
-      debugPrint('FCM init ignored during startup: $e');
+      debugPrint('Init ignored during startup: $e');
     }
   }
 

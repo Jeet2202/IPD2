@@ -28,7 +28,7 @@ from app.core.exceptions import (
     NotFoundException,
 )
 from app.marketplace.rules import MarketplaceRulesEngine
-from app.utils.enums import ApplicationStatus, BookingStatus
+from app.utils.enums import ApplicationStatus, BookingStatus, BookingType
 from app.worker.models import WorkerProfile
 
 
@@ -57,7 +57,7 @@ class JobApplicationService:
                 booking_number="DELETED",
                 service_name="Unknown Service",
                 category_slug="unknown",
-                booking_type=BookingStatus.PENDING,  # type fallback
+                booking_type=BookingType.NORMAL_SERVICE,  # type fallback
                 booking_status=BookingStatus.CANCELLED,
                 scheduled_date=None,
                 estimated_price=None,
