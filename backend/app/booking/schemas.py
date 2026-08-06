@@ -247,6 +247,8 @@ class BookingResponse(BaseModel):
     category_slug: str | None = None
     inspection_status: str | None = None
     inspection_scheduled_at: str | None = None
+    inspection_charge: float | None = None
+    payment_status: str | None = None
 
     # Execution & Completion (Phase 4.7.2)
     worker_id: str | None = Field(default=None, description="Assigned worker ObjectId")

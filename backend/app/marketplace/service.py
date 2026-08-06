@@ -75,6 +75,12 @@ class MarketplaceService:
         sanitized_addr = self._build_sanitized_address(booking)
         _, dist_km, is_rec = self.recommendation_engine.score_booking(booking, worker_profile)
 
+        insp_status_str = (
+            booking.inspection_status.value
+            if hasattr(booking.inspection_status, "value")
+            else (str(booking.inspection_status) if booking.inspection_status else None)
+        )
+
         return MarketplaceBookingItemResponse(
             id=str(booking.id),
             booking_number=booking.booking_number,
@@ -91,6 +97,16 @@ class MarketplaceService:
             has_applied=has_applied,
             application_id=application_id,
             created_at=booking.created_at,
+            problem_description=booking.problem_description,
+            problem_photos=booking.problem_photos or [],
+            custom_title=booking.custom_title,
+            custom_description=booking.custom_description,
+            custom_budget=booking.custom_budget,
+            category_slug=booking.category_slug,
+            customer_notes=booking.customer_notes,
+            inspection_charge=booking.inspection_charge,
+            inspection_status=insp_status_str,
+            payment_status=booking.payment_status,
         )
 
     def _to_detail_response(
@@ -105,11 +121,7 @@ class MarketplaceService:
             booking, worker_profile=worker_profile, has_applied=has_applied, application_id=application_id
         )
 
-        return MarketplaceBookingDetailResponse(
-            **base_dto.model_dump(),
-            problem_description=booking.problem_description,
-            problem_photos=booking.problem_photos,
-        )
+        return MarketplaceBookingDetailResponse(**base_dto.model_dump())
 
     async def list_marketplace_bookings(
         self,

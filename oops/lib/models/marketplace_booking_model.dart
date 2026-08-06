@@ -47,6 +47,16 @@ class MarketplaceBookingItem {
   final String? applicationId;
   final DateTime createdAt;
 
+  final String? problemDescription;
+  final List<String> problemPhotos;
+  final String? customTitle;
+  final String? customDescription;
+  final double? customBudget;
+  final String? customerNotes;
+  final double? inspectionCharge;
+  final String? inspectionStatus;
+  final String? paymentStatus;
+
   MarketplaceBookingItem({
     required this.id,
     required this.bookingNumber,
@@ -65,24 +75,36 @@ class MarketplaceBookingItem {
     this.hasApplied = false,
     this.applicationId,
     required this.createdAt,
+    this.problemDescription,
+    this.problemPhotos = const [],
+    this.customTitle,
+    this.customDescription,
+    this.customBudget,
+    this.customerNotes,
+    this.inspectionCharge,
+    this.inspectionStatus,
+    this.paymentStatus,
   });
 
   factory MarketplaceBookingItem.fromJson(Map<String, dynamic> json) {
     final svcSnap = json['service_snapshot'] as Map<String, dynamic>? ?? {};
     final addrSnap = json['address'] as Map<String, dynamic>? ?? {};
 
+    final photosRaw = json['problem_photos'] as List?;
+    final photos = photosRaw != null ? photosRaw.map((e) => e.toString()).toList() : <String>[];
+
     return MarketplaceBookingItem(
       id: json['id'] as String? ?? '',
       bookingNumber: json['booking_number'] as String? ?? '',
       bookingType: json['booking_type'] as String? ?? 'normal_service',
       status: json['status'] as String? ?? 'pending',
-      serviceName: svcSnap['name'] as String? ?? 'Service',
-      categorySlug: svcSnap['category_slug'] as String? ?? '',
+      serviceName: svcSnap['name'] as String? ?? json['custom_title'] as String? ?? 'Service',
+      categorySlug: svcSnap['category_slug'] as String? ?? json['category_slug'] as String? ?? '',
       baseMarketPrice: (svcSnap['base_market_price'] as num?)?.toDouble() ?? 0.0,
       address: MarketplaceAddress.fromJson(addrSnap),
       scheduledDate: json['scheduled_date'] as String?,
       scheduledTime: json['scheduled_time'] as String?,
-      estimatedPrice: (json['estimated_price'] as num?)?.toDouble(),
+      estimatedPrice: (json['estimated_price'] as num?)?.toDouble() ?? (json['inspection_charge'] as num?)?.toDouble(),
       estimatedDurationMinutes: (json['estimated_duration_minutes'] as num?)?.toInt(),
       distanceKm: (json['distance_km'] as num?)?.toDouble(),
       isRecommended: json['is_recommended'] as bool? ?? false,
@@ -91,6 +113,15 @@ class MarketplaceBookingItem {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now()
           : DateTime.now(),
+      problemDescription: json['problem_description'] as String?,
+      problemPhotos: photos,
+      customTitle: json['custom_title'] as String?,
+      customDescription: json['custom_description'] as String?,
+      customBudget: (json['custom_budget'] as num?)?.toDouble(),
+      customerNotes: json['customer_notes'] as String?,
+      inspectionCharge: (json['inspection_charge'] as num?)?.toDouble(),
+      inspectionStatus: json['inspection_status'] as String?,
+      paymentStatus: json['payment_status'] as String?,
     );
   }
 
@@ -98,9 +129,6 @@ class MarketplaceBookingItem {
 }
 
 class MarketplaceBookingDetail extends MarketplaceBookingItem {
-  final String? problemDescription;
-  final List<String> problemPhotos;
-
   MarketplaceBookingDetail({
     required super.id,
     required super.bookingNumber,
@@ -119,15 +147,19 @@ class MarketplaceBookingDetail extends MarketplaceBookingItem {
     super.hasApplied,
     super.applicationId,
     required super.createdAt,
-    this.problemDescription,
-    this.problemPhotos = const [],
+    super.problemDescription,
+    super.problemPhotos,
+    super.customTitle,
+    super.customDescription,
+    super.customBudget,
+    super.customerNotes,
+    super.inspectionCharge,
+    super.inspectionStatus,
+    super.paymentStatus,
   });
 
   factory MarketplaceBookingDetail.fromJson(Map<String, dynamic> json) {
     final item = MarketplaceBookingItem.fromJson(json);
-    final photosRaw = json['problem_photos'] as List?;
-    final photos = photosRaw != null ? photosRaw.map((e) => e.toString()).toList() : <String>[];
-
     return MarketplaceBookingDetail(
       id: item.id,
       bookingNumber: item.bookingNumber,
@@ -146,8 +178,15 @@ class MarketplaceBookingDetail extends MarketplaceBookingItem {
       hasApplied: item.hasApplied,
       applicationId: item.applicationId,
       createdAt: item.createdAt,
-      problemDescription: json['problem_description'] as String?,
-      problemPhotos: photos,
+      problemDescription: item.problemDescription,
+      problemPhotos: item.problemPhotos,
+      customTitle: item.customTitle,
+      customDescription: item.customDescription,
+      customBudget: item.customBudget,
+      customerNotes: item.customerNotes,
+      inspectionCharge: item.inspectionCharge,
+      inspectionStatus: item.inspectionStatus,
+      paymentStatus: item.paymentStatus,
     );
   }
 }

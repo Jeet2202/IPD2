@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'app_routes.dart';
 import '../../models/address_model.dart';
 import '../../services/location_service.dart';
+import '../../utils/token_storage.dart';
 
 // ── Role Selection ─────────────────────────────────────────────────────────────
 import '../role_selection/role_selection_screen.dart';
@@ -488,7 +489,11 @@ class AppRouter {
         return _build(const SettingsScreen(), settings);
 
       // ── Engagement & Retention Module ──────────────────────────────────────
+      case '/notifications':
       case AppRoutes.notifications:
+        if (TokenStorage.userRole == 'worker') {
+          return _build(const WorkerNotificationsScreen(), settings);
+        }
         return _build(const NotificationCenterScreen(), settings);
 
       case AppRoutes.offers:
@@ -657,10 +662,6 @@ class AppRouter {
       // ── AI Assistant (Phase 5.5) ──────────────────────────────────────
       case AppRoutes.customerAIAssistant:
         return _build(const AIAssistantScreen(), settings);
-
-      // ── Engagement & Support ────────────────────────────────────────────────
-      case AppRoutes.notifications:
-        return _build(const NotificationCenterScreen(), settings);
 
       // ── Fallback ────────────────────────────────────────────────────────────
       default:

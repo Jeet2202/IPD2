@@ -245,6 +245,41 @@ class MarketplaceBookingCard extends StatelessWidget {
                 ),
               ),
 
+            if (booking.problemDescription != null && booking.problemDescription!.isNotEmpty) ...[
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Text(
+                  booking.problemDescription!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.3),
+                ),
+              ),
+            ],
+
+            if (booking.problemPhotos.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    const Icon(Icons.photo_library_rounded, size: 14, color: Color(0xFF2563EB)),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${booking.problemPhotos.length} Attached Media File(s)',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const Divider(height: 1, color: Color(0xFFF1F5F9)),
 
             const SizedBox(height: 12),

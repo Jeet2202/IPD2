@@ -83,6 +83,18 @@ class MarketplaceBookingItemResponse(BaseModel):
     )
     created_at: datetime = Field(..., description="Booking creation timestamp (UTC)")
 
+    # Customer problem description & media photos (Cloudinary)
+    problem_description: str | None = Field(default=None, description="Problem description provided by customer")
+    problem_photos: list[str] = Field(default_factory=list, description="Photo URL strings uploaded by customer")
+    custom_title: str | None = Field(default=None, description="User-defined title for CUSTOM_SERVICE bookings")
+    custom_description: str | None = Field(default=None, description="Detailed requirements for CUSTOM_SERVICE bookings")
+    custom_budget: float | None = Field(default=None, description="Customer estimated budget for CUSTOM_SERVICE bookings")
+    category_slug: str | None = Field(default=None, description="Category slug")
+    customer_notes: str | None = Field(default=None, description="Customer additional notes")
+    inspection_charge: float | None = Field(default=None, description="Diagnostic visit fee")
+    inspection_status: str | None = Field(default=None, description="Current inspection status")
+    payment_status: str | None = Field(default=None, description="Payment status")
+
 
 class MarketplaceBookingDetailResponse(MarketplaceBookingItemResponse):
     """
@@ -90,15 +102,7 @@ class MarketplaceBookingDetailResponse(MarketplaceBookingItemResponse):
     Includes additional problem descriptions & photos for inspection requests.
     Customer PII remains strictly redacted.
     """
-
-    problem_description: str | None = Field(
-        default=None,
-        description="Problem description provided for inspection requests",
-    )
-    problem_photos: list[str] = Field(
-        default_factory=list,
-        description="Photo URL strings uploaded by customer",
-    )
+    pass
 
 
 class MarketplacePaginatedResponse(BaseModel):

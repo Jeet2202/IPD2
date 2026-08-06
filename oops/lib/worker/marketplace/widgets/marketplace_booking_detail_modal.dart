@@ -237,7 +237,6 @@ class _MarketplaceBookingDetailModalState
               'Problem Description',
               style: TextStyle(
                 fontSize: 15,
-                fontWeight: FontWeight.w700,
                 color: Color(0xFF0F172A),
               ),
             ),
@@ -261,12 +260,121 @@ class _MarketplaceBookingDetailModalState
             ),
           ],
 
-          // Section 3: Apply for Job Action Section
+          // Section 3: Customer Uploaded Photos & Media Gallery
+          if (detail.problemPhotos.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Customer Uploaded Media',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                Text(
+                  '${detail.problemPhotos.length} item(s)',
+                  style: const TextStyle(fontSize: 12, color: Color(0xFF2563EB), fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: detail.problemPhotos.length,
+                itemBuilder: (context, idx) {
+                  final photoUrl = detail.problemPhotos[idx];
+                  return GestureDetector(
+                    onTap: () => _openFullScreenImage(detail.problemPhotos, idx),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: const Color(0xFFCBD5E1)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(13),
+                        child: Image.network(
+                          photoUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF2563EB)),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) => Container(
+                            color: const Color(0xFFF1F5F9),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8), size: 24),
+                                SizedBox(height: 4),
+                                Text('Tap to retry', style: TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+
+          // Section 4: Apply for Job Action Section
           const SizedBox(height: 20),
           _buildApplySection(detail),
 
           const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  void _openFullScreenImage(List<String> photos, int initialIndex) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog.fullscreen(
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            title: Text('Media ${initialIndex + 1} of ${photos.length}'),
+          ),
+          body: PageView.builder(
+            itemCount: photos.length,
+            controller: PageController(initialPage: initialIndex),
+            itemBuilder: (context, idx) {
+              return InteractiveViewer(
+                child: Center(
+                  child: Image.network(
+                    photos[idx],
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.broken_image_rounded, size: 48, color: Colors.white54),
+                          SizedBox(height: 8),
+                          Text('Failed to load media file', style: TextStyle(color: Colors.white70)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

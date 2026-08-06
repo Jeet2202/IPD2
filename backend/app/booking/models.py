@@ -308,6 +308,15 @@ class Booking(Document):
         default=None,
         description="Scheduled date/time for site inspection visit.",
     )
+    inspection_charge: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Diagnostic fee for inspection visit (INR).",
+    )
+    payment_status: str | None = Field(
+        default="PENDING",
+        description="Payment status: PENDING, PAID, REFUNDED, FAILED.",
+    )
 
     # ── Customer notes ────────────────────────────────────────────────────────
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
 import '../services/in_app_notification_service.dart';
+import '../utils/token_storage.dart';
 
 class NotificationBell extends StatefulWidget {
   final VoidCallback? onBellPressed; // Usually navigates to NotificationCenter
@@ -70,11 +71,11 @@ class _NotificationBellState extends State<NotificationBell> {
           onPressed: () async {
             if (widget.onBellPressed != null) {
               widget.onBellPressed!();
-              // Optionally refresh after returning, if we awaited a Future, but 
-              // for generic callback it's tricky. Let's just do it directly if needed
-              // or rely on route observer.
             } else {
-              await Navigator.of(context).pushNamed('/notifications');
+              final targetRoute = TokenStorage.userRole == 'worker'
+                  ? '/worker/notifications'
+                  : '/customer/notifications';
+              await Navigator.of(context).pushNamed(targetRoute);
               _fetchUnreadCount(); // Refresh after coming back
             }
           },

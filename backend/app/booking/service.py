@@ -184,6 +184,8 @@ async def _to_response(booking: Booking) -> BookingResponse:
             if booking.inspection_scheduled_at
             else None
         ),
+        inspection_charge=booking.inspection_charge,
+        payment_status=booking.payment_status,
         worker_id=str(booking.worker_id) if booking.worker_id else None,
         worker_name=worker_name,
         worker_phone=worker_phone,
