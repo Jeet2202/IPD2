@@ -1,5 +1,4 @@
-// File: lib/worker/dashboard/worker_dashboard_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../models/worker_dashboard_model.dart';
@@ -27,20 +26,32 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
   String? _errorMessage;
   WorkerDashboardData? _dashboardData;
   bool _isTogglingAvailability = false;
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadDashboardData();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _loadDashboardData(isSilent: true);
+    });
   }
 
-  Future<void> _loadDashboardData() async {
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadDashboardData({bool isSilent = false}) async {
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final data = await WorkerDashboardService.instance.fetchDashboardData();

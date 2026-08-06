@@ -1,5 +1,4 @@
-// File: lib/customer/quotations/customer_quotations_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/quotation_model.dart';
 import '../../services/quotation_service.dart';
@@ -24,18 +23,30 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   List<CustomerQuotationItem> _quotations = [];
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadQuotations();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _loadQuotations(isSilent: true);
+    });
   }
 
-  Future<void> _loadQuotations() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadQuotations({bool isSilent = false}) async {
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final list = await QuotationService.instance

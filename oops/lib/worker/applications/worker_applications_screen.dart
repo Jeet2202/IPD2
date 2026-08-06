@@ -1,5 +1,4 @@
-// File: lib/worker/applications/worker_applications_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/job_application_model.dart';
 import '../../services/job_application_service.dart';
@@ -17,20 +16,32 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
   String? _errorMessage;
   List<JobApplicationItem> _applications = [];
   int _totalApplications = 0;
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     _loadApplications();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _loadApplications(isSilent: true);
+    });
   }
 
-  Future<void> _loadApplications() async {
+  @override
+  void dispose() {
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadApplications({bool isSilent = false}) async {
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final result = await JobApplicationService.instance.fetchWorkerApplications(

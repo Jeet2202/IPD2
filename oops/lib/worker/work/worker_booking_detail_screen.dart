@@ -39,6 +39,7 @@ class _WorkerBookingDetailScreenState
   bool _isLocationSharing = false;
   double? _distanceMeters;
   int? _etaMinutes;
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
@@ -46,6 +47,9 @@ class _WorkerBookingDetailScreenState
     _booking = widget.booking;
     _setupTracking();
     _fetchReviewIfCompleted();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _refreshBookingData();
+    });
   }
 
   void _setupTracking() {
@@ -133,8 +137,22 @@ class _WorkerBookingDetailScreenState
     }
   }
 
+  Future<void> _refreshBookingData() async {
+    try {
+      final updated = await BookingService.instance.getWorkerBooking(_booking.id);
+      if (mounted) {
+        setState(() {
+          _booking = updated;
+        });
+        _checkLocationSharing();
+        _fetchReviewIfCompleted();
+      }
+    } catch (_) {}
+  }
+
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
     _stopLocationSharing();
     _socketService.leaveBookingTracking(_booking.id);
     _socketService.offBookingStatusUpdated(_onBookingStatusUpdated);
