@@ -294,16 +294,16 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   Widget _buildPredefinedServicesHeader() {
     final predefinedList = [
       const ServiceModel(
-        id: 'srv_ac_repair',
-        categoryId: 'cat_electrical',
-        categorySlug: 'electrical',
+        id: '6a6f95d0281409423c4cce35',
+        categoryId: 'cat_ac_repair',
+        categorySlug: 'ac-repair',
         name: 'AC Service & Repair',
         basePrice: 499,
         durationDisplay: '45 mins',
         image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80',
       ),
       const ServiceModel(
-        id: 'srv_plumbing_leak',
+        id: '6a6f95d0281409423c4cce1b',
         categoryId: 'cat_plumbing',
         categorySlug: 'plumbing',
         name: 'Plumbing Leakage Fix',
@@ -312,7 +312,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         image: 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=400&q=80',
       ),
       const ServiceModel(
-        id: 'srv_switchboard_fix',
+        id: '6a6f95d0281409423c4cce16',
         categoryId: 'cat_electrical',
         categorySlug: 'electrical',
         name: 'Switchboard Repair',
@@ -321,7 +321,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80',
       ),
       const ServiceModel(
-        id: 'srv_tap_replacement',
+        id: '6a6f95d0281409423c4cce1a',
         categoryId: 'cat_plumbing',
         categorySlug: 'plumbing',
         name: 'Tap Replacement',

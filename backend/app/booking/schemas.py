@@ -184,7 +184,7 @@ class CreateBookingRequest(BaseModel):
     def validate_booking_type_fields(self) -> "CreateBookingRequest":
         if self.booking_type in (BookingType.NORMAL_SERVICE, BookingType.PREDEFINED_SERVICE):
             if not self.service_id and not (self.category_slug and self.custom_title):
-                raise ValueError("service_id (or category_slug with service title) is required for predefined service bookings.")
+                raise ValueError("service_id is required for predefined service bookings.")
         elif self.booking_type == BookingType.CUSTOM_SERVICE:
             if not self.custom_title or not self.custom_title.strip():
                 raise ValueError("custom_title is required for custom service bookings.")
@@ -192,9 +192,9 @@ class CreateBookingRequest(BaseModel):
                 raise ValueError("category_slug is required for custom service bookings.")
         elif self.booking_type == BookingType.INSPECTION_REQUEST:
             if not self.problem_description or not self.problem_description.strip():
-                raise ValueError("Problem description is required for inspection requests.")
+                raise ValueError("problem_description is required for inspection requests.")
             if not self.service_id and not self.category_slug:
-                raise ValueError("Either category_slug or service_id is required for inspection requests.")
+                raise ValueError("category_slug or service_id is required for inspection requests.")
         return self
 
 

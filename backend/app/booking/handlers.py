@@ -148,4 +148,4 @@ class InspectionBookingHandler(BaseBookingHandler):
         self, booking: Booking, payload: CreateBookingRequest
     ) -> None:
         booking.category_slug = payload.category_slug
-        booking.inspection_status = InspectionStatus.PENDING
+        booking.inspection_status = InspectionStatus.REQUESTED

@@ -409,7 +409,10 @@ class CreateBookingPayload {
       'address_id': addressId,
       'booking_type': bookingType,
     };
-    if (serviceId != null && serviceId!.isNotEmpty) {
+    final is24Hex = serviceId != null &&
+        serviceId!.length == 24 &&
+        RegExp(r'^[0-9a-fA-F]{24}$').hasMatch(serviceId!);
+    if (is24Hex) {
       map['service_id'] = serviceId;
     }
     if (scheduledDate != null && scheduledDate!.isNotEmpty) {
