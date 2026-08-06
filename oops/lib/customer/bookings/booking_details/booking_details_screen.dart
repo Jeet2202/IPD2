@@ -336,9 +336,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -555,7 +553,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -622,7 +620,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   _booking!.bookingType == 'inspection_request' ? 'Site Inspection Request' : 'Direct Service Booking',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -817,7 +815,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Service Information', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textSecondary)),
+          const Text('Service Information', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -832,9 +830,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(svc.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                    Text(svc.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 2),
-                    Text('Category: ${svc.categorySlug}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    Text('Category: ${svc.categorySlug}', style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -846,16 +844,16 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Base Market Price', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-              Text('₹${svc.baseMarketPrice.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+              Text('Base Market Price', style: const TextStyle(fontSize: 13)),
+              Text('₹${svc.baseMarketPrice.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Estimated Duration', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-              Text('${svc.estimatedDurationMinutes} mins', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+              Text('Estimated Duration', style: const TextStyle(fontSize: 13)),
+              Text('${svc.estimatedDurationMinutes} mins', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             ],
           ),
         ],
@@ -876,22 +874,22 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Service Address', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textSecondary)),
+          const Text('Service Address', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           Row(
             children: [
               const Icon(Icons.location_on_rounded, color: AppColors.primary, size: 22),
               const SizedBox(width: 10),
-              Text(addr.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+              Text(addr.label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
             ],
           ),
           const SizedBox(height: 8),
-          Text(addr.fullName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-          Text(addr.phone, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(addr.fullName, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+          Text(addr.phone, style: const TextStyle(fontSize: 12)),
           const SizedBox(height: 6),
           Text(
             '${addr.addressLine1}${addr.addressLine2 != null ? ', ${addr.addressLine2}' : ''}\n${addr.landmark != null ? 'Landmark: ${addr.landmark}\n' : ''}${addr.city}, ${addr.state} - ${addr.postalCode}',
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
+            style: const TextStyle(fontSize: 12, height: 1.4),
           ),
         ],
       ),
@@ -909,7 +907,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Schedule Preferences', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textSecondary)),
+          const Text('Schedule Preferences', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -917,7 +915,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               const SizedBox(width: 10),
               Text(
                 'Date: ${_booking!.scheduledDate ?? 'ASAP / On-demand'}',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -928,7 +926,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               const SizedBox(width: 10),
               Text(
                 'Time Slot: ${_booking!.scheduledTime ?? 'ASAP / Flexible'}',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -1002,11 +1000,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Customer Notes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textSecondary)),
+          const Text('Customer Notes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(
             _booking!.customerNotes!,
-            style: const TextStyle(fontSize: 13, color: AppColors.textPrimary, height: 1.4),
+            style: const TextStyle(fontSize: 13, height: 1.4),
           ),
         ],
       ),
@@ -1024,7 +1022,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Estimated Price', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+          const Text('Estimated Price', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
           Text(
             '₹${_booking!.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.primary),

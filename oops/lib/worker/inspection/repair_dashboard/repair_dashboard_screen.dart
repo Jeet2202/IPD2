@@ -46,11 +46,7 @@ class _WorkerRepairDashboardScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
           'Inspection & Repair Dashboard',
@@ -260,9 +256,7 @@ class _WorkerRepairDashboardScreenState
         currentIndex: _currentNavIndex,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        elevation: 12,
+        type: BottomNavigationBarType.fixed,        elevation: 12,
         onTap: (idx) {
           if (idx == 0) {
             Navigator.pushReplacementNamed(context, '/worker/dashboard');

@@ -143,10 +143,13 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: theme.bottomSheetTheme.backgroundColor ?? colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
         top: 20,
@@ -165,21 +168,21 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
               children: [
                 const Text(
                   'Filter & Sort Services',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-            const Divider(height: 1, color: AppColors.divider),
+            Divider(height: 1, color: theme.dividerColor),
             const SizedBox(height: 16),
 
             // Sort By Section
             const Text(
               'Sort By',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -191,16 +194,16 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                   label: Text(entry.value),
                   selected: isSelected,
                   onSelected: (_) => setState(() => _sortBy = entry.key),
-                  selectedColor: AppColors.primary.withValues(alpha: 0.15),
-                  backgroundColor: const Color(0xFFF1F5F9),
+                  selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+                  backgroundColor: colorScheme.surfaceContainerHighest,
                   labelStyle: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                    color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+                    side: BorderSide(color: isSelected ? colorScheme.primary : Colors.transparent),
                   ),
                   showCheckmark: false,
                 );
@@ -211,18 +214,18 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             // Price Range Presets
             const Text(
               'Price Range',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildPriceChip('All Prices', null, null),
-                _buildPriceChip('Under ₹300', null, 300),
-                _buildPriceChip('₹300 – ₹800', 300, 800),
-                _buildPriceChip('₹800 – ₹1,500', 800, 1500),
-                _buildPriceChip('₹1,500+', 1500, null),
+                _buildPriceChip(context, 'All Prices', null, null),
+                _buildPriceChip(context, 'Under ₹300', null, 300),
+                _buildPriceChip(context, '₹300 – ₹800', 300, 800),
+                _buildPriceChip(context, '₹800 – ₹1,500', 800, 1500),
+                _buildPriceChip(context, '₹1,500+', 1500, null),
               ],
             ),
             const SizedBox(height: 20),
@@ -230,17 +233,17 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             // Estimated Duration Presets
             const Text(
               'Max Estimated Duration',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildDurationChip('Any Duration', null),
-                _buildDurationChip('< 45 Mins', 45),
-                _buildDurationChip('< 90 Mins', 90),
-                _buildDurationChip('< 3 Hours', 180),
+                _buildDurationChip(context, 'Any Duration', null),
+                _buildDurationChip(context, '< 45 Mins', 45),
+                _buildDurationChip(context, '< 90 Mins', 90),
+                _buildDurationChip(context, '< 3 Hours', 180),
               ],
             ),
             const SizedBox(height: 20),
@@ -254,18 +257,18 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                   children: [
                     Text(
                       'Featured Services Only',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'Show top-rated and admin highlighted services',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
                 Switch.adaptive(
                   value: _isFeatured,
-                  activeThumbColor: AppColors.primary,
+                  activeThumbColor: colorScheme.primary,
                   onChanged: (val) => setState(() => _isFeatured = val),
                 ),
               ],
@@ -280,10 +283,10 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                     onPressed: _reset,
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: AppColors.divider),
+                      side: BorderSide(color: theme.dividerColor),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                     ),
-                    child: const Text('Reset All', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    child: const Text('Reset All', style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -291,7 +294,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                   child: ElevatedButton(
                     onPressed: _apply,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
@@ -307,8 +310,9 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
     );
   }
 
-  Widget _buildPriceChip(String label, double? min, double? max) {
+  Widget _buildPriceChip(BuildContext context, String label, double? min, double? max) {
     final isSelected = _minPrice == min && _maxPrice == max;
+    final colorScheme = Theme.of(context).colorScheme;
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
@@ -318,23 +322,24 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
           _maxPrice = max;
         });
       },
-      selectedColor: AppColors.primary.withValues(alpha: 0.15),
-      backgroundColor: const Color(0xFFF1F5F9),
+      selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+      backgroundColor: colorScheme.surfaceContainerHighest,
       labelStyle: TextStyle(
         fontSize: 12,
         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+        side: BorderSide(color: isSelected ? colorScheme.primary : Colors.transparent),
       ),
       showCheckmark: false,
     );
   }
 
-  Widget _buildDurationChip(String label, int? maxDur) {
+  Widget _buildDurationChip(BuildContext context, String label, int? maxDur) {
     final isSelected = _maxDuration == maxDur;
+    final colorScheme = Theme.of(context).colorScheme;
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
@@ -343,16 +348,16 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
           _maxDuration = maxDur;
         });
       },
-      selectedColor: AppColors.primary.withValues(alpha: 0.15),
-      backgroundColor: const Color(0xFFF1F5F9),
+      selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+      backgroundColor: colorScheme.surfaceContainerHighest,
       labelStyle: TextStyle(
         fontSize: 12,
         fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: isSelected ? AppColors.primary : Colors.transparent),
+        side: BorderSide(color: isSelected ? colorScheme.primary : Colors.transparent),
       ),
       showCheckmark: false,
     );

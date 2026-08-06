@@ -121,9 +121,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
   void _showPhase5Modal({required bool isInspection}) {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      context: context,      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
@@ -148,7 +146,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
               const SizedBox(height: 16),
               Text(
                 isInspection ? 'Request Inspection (Phase 5)' : 'Book Service (Phase 5)',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
@@ -156,7 +154,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                     ? 'In Phase 5, an expert will visit your doorstep for an on-site inspection and provide an exact job quote.'
                     : 'In Phase 5, you will be able to select your preferred date, time slot, address, and place a direct booking.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+                style: const TextStyle(fontSize: 13, height: 1.5),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -192,9 +190,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
     final priceDisplay = service.priceRangeDisplay.isNotEmpty ? service.priceRangeDisplay : '₹${service.basePrice.toStringAsFixed(0)}';
     final durationDisplay = service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} min';
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
+    return Scaffold(      body: Stack(
         children: [
           // Scrollable Body Content
           SingleChildScrollView(
@@ -299,13 +295,13 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                       // Service Title
                       Text(
                         service.name,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
                       ),
                       if (service.shortDescription.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
                           service.shortDescription,
-                          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.4),
+                          style: const TextStyle(fontSize: 14, height: 1.4),
                         ),
                       ],
                       const SizedBox(height: 12),
@@ -315,8 +311,8 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                         children: [
                           const Icon(Icons.star_rounded, size: 18, color: Color(0xFFFBBF24)),
                           const SizedBox(width: 4),
-                          Text('${service.rating}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                          Text(' (${service.reviewCount} reviews)', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                          Text('${service.rating}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                          Text(' (${service.reviewCount} reviews)', style: const TextStyle(fontSize: 12)),
                           const SizedBox(width: 16),
                           Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFFCBD5E1), shape: BoxShape.circle)),
                           const SizedBox(width: 16),
@@ -342,7 +338,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Base Market Price', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                    const Text('Base Market Price', style: TextStyle(fontSize: 12)),
                                     const SizedBox(height: 2),
                                     Text(
                                       priceDisplay,
@@ -353,13 +349,13 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const Text('Est. Duration', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                    const Text('Est. Duration', style: TextStyle(fontSize: 12)),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(Icons.schedule_rounded, size: 16, color: AppColors.textPrimary),
+                                        const Icon(Icons.schedule_rounded, size: 16),
                                         const SizedBox(width: 4),
-                                        Text(durationDisplay, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                                        Text(durationDisplay, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                                       ],
                                     ),
                                   ],
@@ -376,7 +372,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 Expanded(
                                   child: Text(
                                     'Final price may vary depending on actual work required.',
-                                    style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontStyle: FontStyle.italic),
+                                    style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
                                   ),
                                 ),
                               ],
@@ -520,7 +516,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                 children: [
                   const Text(
                     'Do you know what work needs to be done?',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -643,9 +639,9 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                Text(subtitle, style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -657,7 +653,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: -0.4),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.4),
     );
   }
 
@@ -683,9 +679,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   }
 
   Widget _buildSkeletonLoader() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white, elevation: 0.5),
+    return Scaffold(      appBar: AppBar(backgroundColor: Colors.white, elevation: 0.5),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -717,7 +711,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
               const SizedBox(height: 16),
               const Text('Failed to load service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(_errorMessage ?? 'Unexpected error', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
+              Text(_errorMessage ?? 'Unexpected error', textAlign: TextAlign.center, style: const TextStyle()),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

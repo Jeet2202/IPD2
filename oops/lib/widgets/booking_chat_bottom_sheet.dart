@@ -110,9 +110,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
 
   void _showAttachmentOptions() {
     showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      context: context,      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -192,11 +190,10 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -328,7 +325,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
           if (_isUploading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('Uploading media...', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              child: Text('Uploading media...', style: TextStyle(fontSize: 12)),
             ),
 
           // Typing Indicator
@@ -341,7 +338,6 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                   'Typing...',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -424,8 +420,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                 'This booking session has ended.\nMedia sharing is no longer available.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
+                                    fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),

@@ -9,9 +9,7 @@ class LiveInspectionTrackingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
+    return Scaffold(      body: Stack(
         children: [
           // ── Map Canvas Canvas ─────────────────────────────────────
           Positioned.fill(

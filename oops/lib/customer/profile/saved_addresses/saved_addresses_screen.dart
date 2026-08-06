@@ -190,9 +190,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bgPage,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: _darkText),

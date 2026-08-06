@@ -101,13 +101,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -127,15 +123,15 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ally AI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                Text('Grounded AI Assistant', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                Text('Ally AI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Text('Grounded AI Assistant', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
               ],
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.textSecondary),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
               setState(() {
                 _messages.clear();
@@ -435,11 +431,9 @@ class _InputBar extends StatelessWidget {
               enabled: !isLoading,
               textInputAction: TextInputAction.send,
               onSubmitted: onSend,
-              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+              style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
-                hintText: 'Ask about bookings, pricing...',
-                hintStyle: const TextStyle(fontSize: 13, color: AppColors.textHint),
-                filled: true,
+                hintText: 'Ask about bookings, pricing...',                filled: true,
                 fillColor: AppColors.background,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppColors.divider)),

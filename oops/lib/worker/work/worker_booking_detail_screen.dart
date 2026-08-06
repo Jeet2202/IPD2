@@ -228,13 +228,11 @@ class _WorkerBookingDetailScreenState
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) Navigator.of(context).pop(true);
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
+      child: Scaffold(        appBar: AppBar(
           backgroundColor: AppColors.surface,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+            icon: const Icon(Icons.arrow_back_rounded),
             onPressed: () => Navigator.of(context).pop(true),
           ),
           title: Column(

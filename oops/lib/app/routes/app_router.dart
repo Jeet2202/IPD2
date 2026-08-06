@@ -661,9 +661,7 @@ class AppRouter {
       // ── Fallback ────────────────────────────────────────────────────────────
       default:
         return _build(
-          Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
+          Scaffold(            body: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

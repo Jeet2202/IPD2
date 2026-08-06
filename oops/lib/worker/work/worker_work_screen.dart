@@ -72,9 +72,7 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return Scaffold(      appBar: AppBar(
         title: const Row(
           children: [
             Icon(Icons.work_rounded, color: AppColors.primary, size: 22),
@@ -83,7 +81,6 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
               'My Jobs',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
               ),
             ),
           ],
@@ -92,7 +89,7 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: AppColors.textSecondary),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _loadBookings,
             tooltip: 'Refresh',
           ),
@@ -121,13 +118,13 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
                       const SizedBox(height: 12),
                       Text(
                         _error!,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 6),
                       const Text(
                         'Pull to refresh or try again.',
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: TextStyle(fontSize: 12),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(

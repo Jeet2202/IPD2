@@ -35,9 +35,7 @@ class ReviewDialog extends StatefulWidget {
   }) {
     return showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      isScrollControlled: true,      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Padding(

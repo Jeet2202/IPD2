@@ -15,11 +15,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
           children: [
@@ -64,7 +60,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Hello, Ramesh 👋',
+                    'Hello, Ramesh',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -390,9 +386,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         currentIndex: 0,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        elevation: 12,
+        type: BottomNavigationBarType.fixed,        elevation: 12,
         onTap: (index) {
           if (index == 0) return;
           if (index == 1) {

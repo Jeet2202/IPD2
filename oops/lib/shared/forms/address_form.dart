@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
@@ -34,6 +33,8 @@ class _AddressFormState extends State<AddressForm> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -76,12 +77,12 @@ class _AddressFormState extends State<AddressForm> {
             validator: (v) => v == null || v.length < 6 ? 'Enter valid 6-digit pincode' : null,
           ),
           const SizedBox(height: AppDimensions.md),
-          const Text(
+          Text(
             'Save Address As',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -96,13 +97,13 @@ class _AddressFormState extends State<AddressForm> {
                   onSelected: (val) {
                     if (val) setState(() => _addressType = type);
                   },
-                  selectedColor: AppColors.primary,
+                  selectedColor: colorScheme.primary,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
+                    color: isSelected ? Colors.white : colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
-                  backgroundColor: AppColors.surfaceVariant,
+                  backgroundColor: colorScheme.surfaceContainerHighest,
                 ),
               );
             }).toList(),

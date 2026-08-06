@@ -175,11 +175,9 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Column(
@@ -190,7 +188,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             ),
             Text(
               'Booking Summary',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
             ),
           ],
         ),
@@ -254,12 +252,12 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                           children: [
                             Text(
                               service.name,
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Category: ${service.categorySlug.replaceAll('-', ' ').toUpperCase()}',
-                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ],
                         ),
@@ -286,16 +284,16 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                         children: [
                           Text(
                             address.label,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(width: 8),
-                          Text('(${address.fullName} • ${address.phone})', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                          Text('(${address.fullName} • ${address.phone})', style: const TextStyle(fontSize: 12)),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         address.shortAddress,
-                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
+                        style: const TextStyle(fontSize: 13, height: 1.3),
                       ),
                     ],
                   ),
@@ -329,7 +327,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     onChangeTap: () => Navigator.pop(context),
                     content: Text(
                       '"$_customerNotes"',
-                      style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, fontStyle: FontStyle.italic),
+                      style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -380,7 +378,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Total Estimated', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      const Text('Total Estimated', style: TextStyle(fontSize: 11)),
                       const SizedBox(height: 2),
                       Text(
                         '₹${estimatedPrice.toStringAsFixed(0)}',
@@ -449,7 +447,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   const SizedBox(width: 8),
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                   ),
                 ],
               ),

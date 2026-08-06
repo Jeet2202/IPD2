@@ -178,9 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BottomNavigationBar(
           currentIndex: _currentNavIndex,
           onTap: _onBottomNavTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF2563EB),
+          type: BottomNavigationBarType.fixed,          selectedItemColor: const Color(0xFF2563EB),
           unselectedItemColor: const Color(0xFF94A3B8),
           selectedFontSize: 12,
           unselectedFontSize: 12,
@@ -273,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       const Text(
-                        'Good Day 👋',
+                        'Good Day',
                         style: TextStyle(
                           fontSize: 13,
                           color: Color(0xFF64748B),

@@ -43,11 +43,7 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -150,9 +146,7 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                             },
                             icon: const Icon(Icons.download_rounded, size: 18),
                             label: const Text('Transfer to Bank'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF2563EB),
+                            style: ElevatedButton.styleFrom(                              foregroundColor: const Color(0xFF2563EB),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               elevation: 0,
                               shape: RoundedRectangleBorder(

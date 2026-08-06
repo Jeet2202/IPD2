@@ -239,13 +239,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
+    return Scaffold(      appBar: AppBar(        elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         titleSpacing: 0,
@@ -262,14 +258,14 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               autofocus: true,
               onChanged: _onSearchChanged,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               decoration: InputDecoration(
                 hintText: 'Search services, e.g. Fan, Tap, Cleaning...',
-                hintStyle: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                hintStyle: const TextStyle(fontSize: 13),
                 prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.cancel_rounded, color: AppColors.textSecondary, size: 18),
+                        icon: const Icon(Icons.cancel_rounded, size: 18),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -296,7 +292,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   children: [
                     Text(
                       '$_totalResults Services Found',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                     ),
                     IconButton(
                       onPressed: _openFilterModal,
@@ -358,7 +354,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 const Text(
                   'Recent Searches',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 GestureDetector(
                   onTap: () => setState(() => _recentSearches.clear()),
@@ -376,7 +372,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   contentPadding: EdgeInsets.zero,
                   dense: true,
                   leading: const Icon(Icons.history_rounded, color: AppColors.textHint, size: 20),
-                  title: Text(term, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
+                  title: Text(term, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                   trailing: const Icon(Icons.north_west_rounded, color: AppColors.textHint, size: 16),
                   onTap: () => _onSelectSearchTerm(term),
                 );
@@ -388,7 +384,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Popular Searches
           const Text(
             'Popular Searches 🔥',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -397,7 +393,7 @@ class _SearchScreenState extends State<SearchScreen> {
             children: _popularSearches.map((term) {
               return ActionChip(
                 label: Text(term),
-                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 backgroundColor: const Color(0xFFF1F5F9),
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 shape: RoundedRectangleBorder(
@@ -530,7 +526,7 @@ class _SearchScreenState extends State<SearchScreen> {
           SizedBox(width: 10),
           Text(
             'Loading more matches...',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -552,12 +548,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 16),
                 const Text(
                   'Search Failed',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage ?? 'Unable to fetch search results.',
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
@@ -594,13 +590,13 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 16),
                 const Text(
                   'No matching services found',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'We couldn\'t find any matches for "$_currentQuery". Try clearing your active filters or searching for another term.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 13),
                 ),
                 if (_filterData.hasActiveFilters) ...[
                   const SizedBox(height: 16),

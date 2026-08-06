@@ -196,17 +196,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return Scaffold(      appBar: AppBar(
         title: const Text(
           'Browse All Services',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        centerTitle: true,        elevation: 0.5,
+        iconTheme: const IconThemeData(),
       ),
       body: Column(
         children: [
@@ -228,14 +224,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         child: TextField(
                           controller: _searchController,
                           onChanged: _onSearchChanged,
-                          style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                          style: const TextStyle(fontSize: 14),
                           decoration: InputDecoration(
                             hintText: 'Search services, e.g. Fan, Tap, Cleaning...',
-                            hintStyle: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-                            prefixIcon: const Icon(Icons.search_rounded, size: 20, color: AppColors.textSecondary),
+                            hintStyle: const TextStyle(fontSize: 13),
+                            prefixIcon: const Icon(Icons.search_rounded, size: 20),
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.textSecondary),
+                                    icon: const Icon(Icons.clear_rounded, size: 18),
                                     onPressed: () {
                                       _searchController.clear();
                                       _onSearchChanged('');
@@ -468,7 +464,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           SizedBox(width: 10),
           Text(
             'Loading more services...',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -490,12 +486,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 const SizedBox(height: 16),
                 const Text(
                   'Connection Error',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   _errorMessage ?? 'Unable to fetch services.',
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
@@ -530,12 +526,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
               const SizedBox(height: 16),
               const Text(
                 'No matching services found.',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               const Text(
                 'We couldn\'t find any services matching your filter criteria.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13),
               ),
               const SizedBox(height: 16),
               ElevatedButton(

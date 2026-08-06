@@ -11,9 +11,7 @@ class WorkerNavigationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
+    return Scaffold(      body: Stack(
         children: [
           // Full Screen Google Maps Placeholder
           Container(
@@ -92,9 +90,7 @@ class WorkerNavigationScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: IconButton(
+                  CircleAvatar(                    child: IconButton(
                       icon: const Icon(Icons.arrow_back_rounded,
                           color: Color(0xFF0F172A)),
                       onPressed: () => Navigator.pop(context),

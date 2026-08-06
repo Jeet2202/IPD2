@@ -108,11 +108,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
           'Partner Profile & Settings',
@@ -213,9 +209,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           Row(
             children: [
               CircleAvatar(
-                radius: 36,
-                backgroundColor: Colors.white,
-                backgroundImage: (photoUrl != null && photoUrl.isNotEmpty) ? NetworkImage(photoUrl) : null,
+                radius: 36,                backgroundImage: (photoUrl != null && photoUrl.isNotEmpty) ? NetworkImage(photoUrl) : null,
                 child: (photoUrl == null || photoUrl.isEmpty)
                     ? const Icon(Icons.person_rounded, size: 42, color: Color(0xFF2563EB))
                     : null,

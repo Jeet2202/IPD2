@@ -7,9 +7,7 @@ class RoleSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return Scaffold(      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 24.0),
           child: Column(

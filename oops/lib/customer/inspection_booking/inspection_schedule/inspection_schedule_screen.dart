@@ -33,9 +33,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -294,9 +292,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected ? Colors.white : const Color(0xFF0F172A),
-              ),
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
+              ),              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFCBD5E1)),
               ),

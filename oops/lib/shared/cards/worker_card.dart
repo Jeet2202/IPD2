@@ -23,6 +23,8 @@ class WorkerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.all(AppDimensions.md),
@@ -32,10 +34,10 @@ class WorkerCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             ),
-            child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 32),
+            child: Icon(Icons.person_rounded, color: colorScheme.primary, size: 32),
           ),
           const SizedBox(width: AppDimensions.md),
           Expanded(
@@ -44,10 +46,10 @@ class WorkerCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -55,9 +57,9 @@ class WorkerCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   role,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -67,27 +69,27 @@ class WorkerCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       rating,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Text(
                       distance,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textHint,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       price,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                       ),
                     ),
                   ],
@@ -100,4 +102,3 @@ class WorkerCard extends StatelessWidget {
     );
   }
 }
-

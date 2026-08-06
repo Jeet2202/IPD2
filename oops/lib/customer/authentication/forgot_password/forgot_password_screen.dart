@@ -59,13 +59,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-        backgroundColor: AppColors.background,
-        foregroundColor: AppColors.textPrimary,
-        elevation: 0,
+    return Scaffold(      appBar: AppBar(
+        title: const Text('Forgot Password'),        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppDimensions.lg),
@@ -79,7 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               const SizedBox(height: 8),
               const Text(
                 'Enter your registered email address to receive a 6-digit OTP code.',
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(),
               ),
               const SizedBox(height: 32),
               AppTextField(

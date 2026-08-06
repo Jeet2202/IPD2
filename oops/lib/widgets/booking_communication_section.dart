@@ -112,7 +112,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
         children: [
           Text(
             widget.isWorker ? 'Connect with Customer' : 'Connect with your Worker',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textSecondary),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 12),
 
@@ -169,7 +169,6 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
                 icon: const Icon(Icons.phone_rounded, size: 20),
                 label: Text(widget.isWorker ? 'Call Customer' : 'Call Worker'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.textPrimary,
                   side: const BorderSide(color: Color(0xFFCBD5E1)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),

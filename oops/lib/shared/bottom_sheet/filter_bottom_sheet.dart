@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 
 class FilterBottomSheet extends StatelessWidget {
@@ -22,6 +21,9 @@ class FilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: EdgeInsets.only(
         top: 12,
@@ -29,9 +31,9 @@ class FilterBottomSheet extends StatelessWidget {
         left: 20,
         right: 20,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+      decoration: BoxDecoration(
+        color: theme.bottomSheetTheme.backgroundColor ?? colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -43,7 +45,7 @@ class FilterBottomSheet extends StatelessWidget {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: theme.dividerColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -56,10 +58,10 @@ class FilterBottomSheet extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: colorScheme.onSurface,
                 ),
               ),
               if (onReset != null)
@@ -67,17 +69,17 @@ class FilterBottomSheet extends StatelessWidget {
                   onPressed: onReset,
                   child: Text(
                     resetText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(height: 1, color: AppColors.divider),
+          Divider(height: 1, color: theme.dividerColor),
           const SizedBox(height: 16),
 
           // Main Filter Content
@@ -93,13 +95,6 @@ class FilterBottomSheet extends StatelessWidget {
                   Navigator.pop(context);
                   onApply!();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                  ),
-                ),
                 child: Text(
                   applyText,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

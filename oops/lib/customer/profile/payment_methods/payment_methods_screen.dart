@@ -18,9 +18,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -67,9 +65,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.customerWallet),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF2563EB),
+                      style: ElevatedButton.styleFrom(                        foregroundColor: const Color(0xFF2563EB),
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),

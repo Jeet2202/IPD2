@@ -134,9 +134,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: AppBar(        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
@@ -246,9 +244,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 break;
             }
           },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primary,
+          type: BottomNavigationBarType.fixed,          selectedItemColor: AppColors.primary,
           unselectedItemColor: const Color(0xFF94A3B8),
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
@@ -302,7 +298,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -345,7 +341,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 const SizedBox(height: 20),
                 Text(
                   tabIndex == 0 ? 'No Direct Service Bookings' : 'No Inspection Requests',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -353,7 +349,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                       ? 'You have not placed any service bookings yet.'
                       : 'No bookings found with status "$_selectedFilter".',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 13),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
@@ -447,27 +443,27 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 const SizedBox(height: 12),
                 Text(
                   b.serviceSnapshot.name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.location_on_outlined, size: 16),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         '${b.addressSnapshot.label} • ${b.addressSnapshot.city}',
-                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 12),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.schedule_rounded, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.schedule_rounded, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       '${b.scheduledDate ?? 'ASAP'} ${b.scheduledTime != null ? '• ${b.scheduledTime}' : ''}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

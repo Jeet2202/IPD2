@@ -24,9 +24,7 @@ class WorkerSystemStatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = _getStatusConfig(statusType);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return Scaffold(      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
