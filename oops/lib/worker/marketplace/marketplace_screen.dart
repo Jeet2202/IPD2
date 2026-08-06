@@ -21,6 +21,7 @@ class WorkerMarketplaceScreen extends StatefulWidget {
 class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounceTimer;
+  Timer? _autoRefreshTimer;
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -35,12 +36,16 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   void initState() {
     super.initState();
     _loadMarketplaceBookings();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _loadMarketplaceBookings(isSilent: true);
+    });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _debounceTimer?.cancel();
+    _autoRefreshTimer?.cancel();
     super.dispose();
   }
 
@@ -51,13 +56,15 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     });
   }
 
-  Future<void> _loadMarketplaceBookings() async {
+  Future<void> _loadMarketplaceBookings({bool isSilent = false}) async {
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final result = await MarketplaceService.instance.fetchMarketplaceBookings(

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
+import '../services/in_app_notification_service.dart';
 
 class NotificationBell extends StatefulWidget {
   final VoidCallback? onBellPressed; // Usually navigates to NotificationCenter
@@ -20,16 +22,27 @@ class NotificationBell extends StatefulWidget {
 class _NotificationBellState extends State<NotificationBell> {
   int _unreadCount = 0;
   bool _isLoading = true;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
+    InAppNotificationService.instance.startPolling();
     _fetchUnreadCount();
+    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _fetchUnreadCount(isSilent: true);
+    });
   }
 
-  Future<void> _fetchUnreadCount() async {
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _fetchUnreadCount({bool isSilent = false}) async {
     if (!mounted) return;
-    setState(() => _isLoading = true);
+    if (!isSilent) setState(() => _isLoading = true);
     try {
       final count = await NotificationService.instance.getUnreadCount();
       if (mounted) {
@@ -40,7 +53,7 @@ class _NotificationBellState extends State<NotificationBell> {
     } catch (e) {
       debugPrint('Failed to fetch unread count: $e');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && !isSilent) setState(() => _isLoading = false);
     }
   }
 

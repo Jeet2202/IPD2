@@ -1,5 +1,4 @@
-// File: lib/customer/bookings/booking_details/booking_details_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../models/booking_model.dart';
@@ -46,6 +45,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   int? _etaMinutes;
   double? _distanceMeters;
   String? _lastUpdated;
+  Timer? _autoRefreshTimer;
 
   @override
   void initState() {
@@ -59,6 +59,15 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         setState(() => _isLoading = false);
         _setupTracking();
         _fetchReviewIfCompleted(_booking!.id);
+      }
+    });
+
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      if (!mounted) return;
+      if (_booking != null) {
+        _fetchBookingById(_booking!.id, isSilentRefresh: true);
+      } else if (widget.bookingId != null) {
+        _fetchBookingById(widget.bookingId!, isSilentRefresh: true);
       }
     });
   }
@@ -98,6 +107,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
     if (_booking != null) {
       _socketService.leaveBookingTracking(_booking!.id);
       _socketService.offBookingStatusUpdated(_onBookingStatusUpdated);

@@ -1,5 +1,4 @@
-// File: lib/customer/home/home_screen.dart
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../models/category_model.dart';
@@ -24,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentNavIndex = 0;
   final PageController _bannerController = PageController();
   int _currentBannerIndex = 0;
+  Timer? _autoRefreshTimer;
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -59,19 +59,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _fetchHomeData();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _fetchHomeData(isSilent: true);
+    });
   }
 
   @override
   void dispose() {
+    _autoRefreshTimer?.cancel();
     _bannerController.dispose();
     super.dispose();
   }
 
-  Future<void> _fetchHomeData() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  Future<void> _fetchHomeData({bool isSilent = false}) async {
+    if (!isSilent) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
 
     try {
       final homeData = await ApiService.instance.getHomeData();
