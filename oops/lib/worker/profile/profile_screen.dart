@@ -267,6 +267,10 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     final isCompleted = data['profile_completed'] as bool? ?? false;
     final suggestions = _getSuggestions(data);
 
+    if (isCompleted || percentage >= 100) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -279,25 +283,31 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         children: [
           Row(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(
-                      value: percentage / 100.0,
-                      strokeWidth: 6,
-                      backgroundColor: const Color(0xFFE2E8F0),
-                      color: isCompleted ? const Color(0xFF10B981) : const Color(0xFF2563EB),
+              percentage >= 100
+                  ? const SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 50),
+                    )
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: CircularProgressIndicator(
+                            value: percentage / 100.0,
+                            strokeWidth: 6,
+                            backgroundColor: const Color(0xFFE2E8F0),
+                            color: isCompleted ? const Color(0xFF10B981) : const Color(0xFF2563EB),
+                          ),
+                        ),
+                        Text(
+                          '$percentage%',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '$percentage%',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
-                  ),
-                ],
-              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

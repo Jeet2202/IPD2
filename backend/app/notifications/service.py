@@ -72,6 +72,8 @@ class NotificationService:
             
         except Exception as e:
             logger.error(f"Error processing single notification for user {user_id}: {e}")
+            with open("notif_errors.txt", "a") as f:
+                f.write(f"Error: {e}\n")
 
     async def _process_broadcast(self, title: str, body: str, target_role: Optional[str] = None):
         """Background task to broadcast to all/filtered users."""

@@ -54,7 +54,7 @@ from app.booking.scheduling import (
 )
 from app.category.models import Service
 from app.core.exceptions import BadRequestException, ForbiddenException, NotFoundException
-from app.utils.enums import BookingStatus
+from app.utils.enums import BookingStatus, BookingType, InspectionStatus
 
 logger = logging.getLogger(__name__)
 
