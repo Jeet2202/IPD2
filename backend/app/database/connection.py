@@ -73,7 +73,7 @@ async def connect_to_database(document_models: list[type["Document"]] | None = N
         await init_beanie(
             database=_client[settings.MONGODB_DATABASE],
             document_models=document_models or [],
-            allow_index_dropping=True,
+            allow_index_dropping=False,
         )
         logger.info("Beanie ODM initialized with %d document model(s).", len(document_models or []))
     except Exception as exc:

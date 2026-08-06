@@ -2,13 +2,16 @@
 Review API Router — Endpoints for ratings & reviews (Phase 4.7.6).
 """
 
+from typing import Any
 from fastapi import APIRouter, Query, status
 
-from app.auth.dependencies import ActiveUserDep, CustomerDep, WorkerUserDep
+from app.auth.dependencies import ActiveUserDep, AdminUserDep, CustomerDep, WorkerUserDep
+from app.review.admin_service import AdminReviewService
 from app.review.schemas import (
     CreateReviewRequest,
     ReviewListResponse,
     ReviewResponse,
+    UpdateReviewStatusRequest,
     WorkerRatingSummaryResponse,
 )
 from app.review.service import ReviewService
@@ -16,7 +19,55 @@ from app.review.service import ReviewService
 router = APIRouter(prefix="", tags=["Ratings & Reviews"])
 
 
+@router.get(
+    "/admin/reviews",
+    response_model=dict[str, Any],
+    status_code=status.HTTP_200_OK,
+    summary="Get all reviews for admin dashboard",
+    description="Fetch paginated list of reviews stored in MongoDB with rating breakdown summary.",
+)
+async def get_admin_reviews(
+    admin: AdminUserDep,
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=50, ge=1, le=200, description="Page size"),
+    status: str | None = Query(default=None, description="Status filter"),
+    rating: int | None = Query(default=None, description="Rating filter"),
+    category: str | None = Query(default=None, description="Category filter"),
+    search: str | None = Query(default=None, description="Search term"),
+) -> dict[str, Any]:
+    """Fetch reviews and ratings summary for Admin Panel from MongoDB."""
+    return await AdminReviewService.get_admin_reviews(
+        page=page,
+        page_size=page_size,
+        status=status,
+        rating=rating,
+        category=category,
+        search=search,
+    )
+
+
+@router.patch(
+    "/admin/reviews/{review_id}/status",
+    response_model=dict[str, Any],
+    status_code=status.HTTP_200_OK,
+    summary="Update review moderation status",
+    description="Update review status (Published, Hidden, Flagged, Under Review) and optional flag reason in MongoDB.",
+)
+async def update_review_status(
+    review_id: str,
+    payload: UpdateReviewStatusRequest,
+    admin: AdminUserDep,
+) -> dict[str, Any]:
+    """Update review status in MongoDB."""
+    return await AdminReviewService.update_review_status(
+        review_id=review_id,
+        status=payload.status,
+        flag_reason=payload.flag_reason,
+    )
+
+
 @router.post(
+
     "/customer/reviews",
     response_model=ReviewResponse,
     status_code=status.HTTP_201_CREATED,
