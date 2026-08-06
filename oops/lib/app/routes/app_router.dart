@@ -118,6 +118,7 @@ import '../../worker/system/system_status/system_status_screen.dart';
 import '../../customer/inspection_booking/inspection_intro/inspection_intro_screen.dart';
 import '../../customer/inspection_booking/inspection_details/inspection_details_screen.dart';
 import '../../customer/inspection_booking/inspection_schedule/inspection_schedule_screen.dart';
+import '../../customer/inspection_booking/inspection_summary/inspection_summary_screen.dart';
 import '../../customer/inspection_booking/inspector_assigned/inspector_assigned_screen.dart';
 import '../../customer/inspection_booking/live_inspection_tracking/live_inspection_tracking_screen.dart';
 import '../../customer/inspection_booking/inspection_in_progress/inspection_in_progress_screen.dart';
@@ -570,6 +571,9 @@ class AppRouter {
 
       case AppRoutes.inspectionSchedule:
         return _build(const InspectionScheduleScreen(), settings);
+
+      case AppRoutes.inspectionSummary:
+        return _build(const InspectionSummaryScreen(), settings);
 
       case AppRoutes.professionalAssigned:
         return _build(const InspectorAssignedScreen(), settings);

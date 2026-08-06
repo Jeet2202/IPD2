@@ -2,15 +2,168 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../app/theme/app_colors.dart';
+import '../../../models/address_model.dart';
+import '../../../models/booking_model.dart';
+import '../../../services/api_service.dart';
+import '../../../services/booking_service.dart';
 
-class InspectionSummaryScreen extends StatelessWidget {
+class InspectionSummaryScreen extends StatefulWidget {
   const InspectionSummaryScreen({super.key});
 
   @override
+  State<InspectionSummaryScreen> createState() => _InspectionSummaryScreenState();
+}
+
+class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
+  final BookingService _bookingService = BookingService.instance;
+
+  AddressModel? _address;
+  String _categorySlug = 'electrical';
+  String _typeOfWork = 'General Diagnostic Check';
+  String _problemDescription = '';
+  List<String> _problemPhotos = [];
+  String? _scheduledDate;
+  String? _scheduledTime;
+  String? _customerNotes;
+  double _inspectionCharge = 99.0;
+
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _extractArgs();
+    });
+  }
+
+  void _extractArgs() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic>) {
+      setState(() {
+        _address = args['address'] as AddressModel?;
+        _categorySlug = args['category_slug'] as String? ?? 'electrical';
+        _typeOfWork = args['type_of_work'] as String? ?? 'General Diagnostic Check';
+        _problemDescription = args['problem_description'] as String? ?? '';
+        _problemPhotos = (args['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+        _scheduledDate = args['scheduled_date'] as String?;
+        _scheduledTime = args['scheduled_time'] as String?;
+        _customerNotes = args['customer_notes'] as String?;
+        _inspectionCharge = (args['inspection_charge'] as num?)?.toDouble() ?? 99.0;
+      });
+    }
+  }
+
+  void _handlePaymentAndBooking() {
+    if (_address == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Missing address. Please go back and select an address.')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.payment_rounded, color: AppColors.primary),
+            SizedBox(width: 10),
+            Text('Payment Gateway'),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Online payment gateway integration will be available in a future release.',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Your inspection request (₹99 fee) will be submitted with Payment Status: PENDING.',
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _submitBookingPayload();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Continue & Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submitBookingPayload() async {
+    setState(() => _isSubmitting = true);
+
+    try {
+      final payload = CreateBookingPayload(
+        addressId: _address!.id,
+        bookingType: 'inspection_request',
+        categorySlug: _categorySlug,
+        problemDescription: '[$_typeOfWork] $_problemDescription',
+        problemPhotos: _problemPhotos,
+        scheduledDate: _scheduledDate,
+        scheduledTime: _scheduledTime,
+        customerNotes: _customerNotes,
+      );
+
+      final bookingResult = await _bookingService.createBooking(payload);
+
+      if (!mounted) return;
+
+      setState(() => _isSubmitting = false);
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.bookingSuccess,
+        (route) => route.isFirst || route.settings.name == AppRoutes.customerHome,
+        arguments: {'booking': bookingResult},
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to submit inspection request. Please try again.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final catTitle = _categorySlug.replaceAll('-', ' ').replaceAll('_', ' ').toUpperCase();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -25,7 +178,7 @@ class InspectionSummaryScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -47,22 +200,22 @@ class InspectionSummaryScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.assignment_turned_in_rounded, color: Colors.white, size: 36),
-                      SizedBox(width: 14),
+                      const Icon(Icons.assignment_turned_in_rounded, color: Colors.white, size: 36),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Electrical Inspection',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                              '$catTitle Inspection',
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
-                              'Main DB Switchboard & MCB Tripping',
-                              style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
+                              _typeOfWork,
+                              style: const TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
                             ),
                           ],
                         ),
@@ -83,30 +236,33 @@ class InspectionSummaryScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF2563EB)),
-                          SizedBox(width: 10),
-                          Text('Schedule:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          Spacer(),
-                          Text('Today • 11:00 AM - 12:00 PM', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF2563EB)),
+                          const SizedBox(width: 10),
+                          const Text('Schedule:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          const Spacer(),
+                          Text(
+                            '${_scheduledDate ?? "ASAP"} • ${_scheduledTime ?? "Flexible"}',
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       const Divider(color: Color(0xFFF1F5F9), height: 1),
                       const SizedBox(height: 12),
-                      const Row(
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on_rounded, size: 18, color: Color(0xFF2563EB)),
-                          SizedBox(width: 10),
-                          Text('Location:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          Spacer(),
+                          const Icon(Icons.location_on_rounded, size: 18, color: Color(0xFF2563EB)),
+                          const SizedBox(width: 10),
+                          const Text('Location:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Flat 402, Green Glen Heights, HSR Layout Sector 6',
+                              _address != null ? '${_address!.label}: ${_address!.shortAddress}' : 'No address selected',
                               textAlign: TextAlign.right,
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                             ),
                           ),
                         ],
@@ -128,31 +284,31 @@ class InspectionSummaryScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Diagnostic Visit Charge', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          Text('₹99.00', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          const Text('Diagnostic Visit Charge', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                         ],
                       ),
-                      SizedBox(height: 8),
-                      Row(
+                      const SizedBox(height: 8),
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Taxes & GST (18%)', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
                           Text('Included', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
                         ],
                       ),
-                      SizedBox(height: 12),
-                      Divider(color: Color(0xFFF1F5F9), height: 1),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
+                      const Divider(color: Color(0xFFF1F5F9), height: 1),
+                      const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Total Payable Now', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                          Text('₹99.00', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                          const Text('Total Payable Now', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                         ],
                       ),
                     ],
@@ -182,8 +338,6 @@ class InspectionSummaryScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -205,21 +359,23 @@ class InspectionSummaryScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.searchingProfessional),
+                  onPressed: _isSubmitting ? null : _handlePaymentAndBooking,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Pay ₹99 & Book Inspection', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
+                  child: _isSubmitting
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Pay ₹99 & Book Inspection', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
+                        ),
                 ),
               ),
             ),

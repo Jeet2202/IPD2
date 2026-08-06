@@ -16,7 +16,39 @@ from app.uploads.service import CloudinaryService
 from app.booking.models import Booking
 from app.utils.enums import UserRole
 
+from datetime import datetime, timezone
+
 router = APIRouter()
+
+@router.post("/image")
+@router.post("/file")
+async def upload_general_media(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    """
+    Upload an image or media file to Cloudinary and return metadata.
+    """
+    file_bytes = await file.read()
+    if len(file_bytes) > 25 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="File size exceeds the 25MB limit",
+        )
+    url, public_id, resource_type, size = CloudinaryService.upload_booking_media(
+        file_bytes=file_bytes,
+        filename=file.filename or "media_upload",
+        user_id=str(current_user.id),
+        booking_id="inspection",
+    )
+    return {
+        "secure_url": url,
+        "url": url,
+        "public_id": public_id,
+        "resource_type": resource_type,
+        "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        "size": size,
+    }
 
 @router.post("/booking-media")
 async def upload_booking_media(
