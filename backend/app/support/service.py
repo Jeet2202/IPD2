@@ -63,15 +63,28 @@ class FAQService:
 
     @staticmethod
     async def seed_default_faqs_if_empty() -> None:
-        """Seed default FAQs if faqs collection is empty."""
-        existing = await FAQRepository.list_faqs(include_inactive=True)
-        if existing:
+        """Seed initial FAQ list if database collection is empty."""
+        existing_faqs = await FAQRepository.list_faqs(include_inactive=True)
+        if existing_faqs:
+            for faq in existing_faqs:
+                if "Audit" in faq.question or "Audit" in faq.answer or "SOS" in faq.question:
+                    await faq.delete()
+                    continue
+                modified = False
+                if "KaamSetu" in faq.question:
+                    faq.question = faq.question.replace("KaamSetu", "Ally")
+                    modified = True
+                if "KaamSetu" in faq.answer:
+                    faq.answer = faq.answer.replace("KaamSetu", "Ally")
+                    modified = True
+                if modified:
+                    await faq.save()
             return
 
         default_faqs = [
             {
-                "question": "How do I book a service on KaamSetu?",
-                "answer": "Open the KaamSetu app, select a service category (e.g. Electrician, Plumber), choose an address, select date & time, and tap 'Confirm Booking'. You will be instantly matched with a verified local professional.",
+                "question": "How do I book a service on Ally?",
+                "answer": "Open the Ally app, select a service category (e.g. Electrician, Plumber), choose an address, select date & time, and tap 'Confirm Booking'. You will be instantly matched with a verified local professional.",
                 "category": "Booking",
                 "is_popular": True,
                 "tags": ["booking", "schedule", "create"],
@@ -87,7 +100,7 @@ class FAQService:
             },
             {
                 "question": "What payment methods are supported?",
-                "answer": "KaamSetu supports UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, Net Banking, KaamSetu Wallet points, and Cash on Completion.",
+                "answer": "Ally supports UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, Net Banking, Ally Wallet points, and Cash on Completion.",
                 "category": "Payment",
                 "is_popular": True,
                 "tags": ["payment", "upi", "cash", "wallet"],
@@ -102,8 +115,8 @@ class FAQService:
                 "order": 4,
             },
             {
-                "question": "How can I register as a worker on KaamSetu?",
-                "answer": "Download the KaamSetu Worker app, register your mobile number, submit your ID documents and skills certificates. Once our team approves your profile, you can start receiving job requests.",
+                "question": "How can I register as a worker on Ally?",
+                "answer": "Download the Ally Worker app, register your mobile number, submit your ID documents and skills certificates. Once our team approves your profile, you can start receiving job requests.",
                 "category": "Worker",
                 "is_popular": False,
                 "tags": ["worker", "register", "join"],

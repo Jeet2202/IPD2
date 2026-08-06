@@ -1,7 +1,9 @@
-// File:
-// lib/customer/support/live_chat/live_chat_screen.dart
+// File: lib/customer/support/live_chat/live_chat_screen.dart
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../models/support_model.dart';
+import '../../../services/support_service.dart';
 
 class LiveChatScreen extends StatefulWidget {
   const LiveChatScreen({super.key});
@@ -11,158 +13,357 @@ class LiveChatScreen extends StatefulWidget {
 }
 
 class _LiveChatScreenState extends State<LiveChatScreen> {
+  final SupportService _supportService = SupportService.instance;
   final TextEditingController _msgController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'isAgent': true,
-      'text': 'Hello Rahul! I am Priya from Ally Care. How can I assist you today with #BK-90214?',
-      'time': '11:02 AM',
-    },
-    {
-      'isAgent': false,
-      'text': 'Hi Priya, I wanted to confirm if the 30-day warranty applies to replaced MCB breakers?',
-      'time': '11:04 AM',
-    },
-    {
-      'isAgent': true,
-      'text': 'Yes absolutely! All electrical spare parts supplied by Ally verified technicians carry an automatic 30-day free warranty & replacement guarantee.',
-      'time': '11:05 AM',
-    },
-  ];
+  bool _isLoading = true;
+  bool _isSending = false;
+
+  SupportTicketModel? _ticket;
+  Timer? _pollTimer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_ticket == null) {
+      _initTicket();
+    }
+  }
 
   @override
   void dispose() {
+    _pollTimer?.cancel();
     _msgController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initTicket() async {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final ticketId = args?['ticketId'] as String?;
+
+    if (ticketId != null && ticketId.isNotEmpty) {
+      await _fetchTicketDetails(ticketId);
+    } else {
+      // Find latest ticket from user
+      try {
+        final tickets = await _supportService.fetchUserTickets();
+        if (tickets.isNotEmpty) {
+          final open = tickets.firstWhere((t) => t.isOpen, orElse: () => tickets.first);
+          await _fetchTicketDetails(open.ticketId);
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } catch (_) {
+        setState(() => _isLoading = false);
+      }
+    }
+
+    // Poll for admin replies every 4 seconds
+    _pollTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (_ticket != null) {
+        _silentRefreshTicket(_ticket!.ticketId);
+      }
+    });
+  }
+
+  Future<void> _fetchTicketDetails(String ticketId) async {
+    try {
+      final t = await _supportService.fetchTicketById(ticketId);
+      setState(() {
+        _ticket = t;
+        _isLoading = false;
+      });
+      _scrollToBottom();
+    } catch (_) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _silentRefreshTicket(String ticketId) async {
+    try {
+      final t = await _supportService.fetchTicketById(ticketId);
+      if (t.responses.length != _ticket?.responses.length) {
+        setState(() {
+          _ticket = t;
+        });
+        _scrollToBottom();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _sendMessage() async {
+    final text = _msgController.text.trim();
+    if (text.isEmpty || _ticket == null || _isSending) return;
+
+    setState(() => _isSending = true);
+    _msgController.clear();
+
+    try {
+      final updatedTicket = await _supportService.replyToTicket(
+        ticketId: _ticket!.ticketId,
+        message: text,
+      );
+
+      setState(() {
+        _ticket = updatedTicket;
+        _isSending = false;
+      });
+      _scrollToBottom();
+    } catch (e) {
+      setState(() => _isSending = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to send message. Please try again.')),
+      );
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final ticket = _ticket;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 18,
               backgroundColor: Color(0xFFDCFCE7),
               child: Icon(Icons.support_agent_rounded, color: Color(0xFF16A34A), size: 22),
             ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Priya (Ally Care)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                Text('Active Now • Typically replies in 1 min', style: TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
-              ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    ticket != null ? 'Support (#${ticket.ticketId})' : 'Ally Support Agent',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    ticket != null ? 'Status: ${ticket.status.toUpperCase()}' : 'Connecting...',
+                    style: const TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              physics: const BouncingScrollPhysics(),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isAgent = msg['isAgent'] == true;
-
-                return Align(
-                  alignment: isAgent ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isAgent ? Colors.white : const Color(0xFF2563EB),
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(18),
-                        topRight: const Radius.circular(18),
-                        bottomLeft: Radius.circular(isAgent ? 4 : 18),
-                        bottomRight: Radius.circular(isAgent ? 18 : 4),
-                      ),
-                      border: isAgent ? Border.all(color: const Color(0xFFE2E8F0)) : null,
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
-                      ],
-                    ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          : ticket == null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
-                      crossAxisAlignment: isAgent ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          msg['text'] as String,
-                          style: TextStyle(fontSize: 13, color: isAgent ? const Color(0xFF0F172A) : Colors.white, height: 1.4),
+                        const Icon(Icons.mark_email_read_outlined, size: 54, color: Color(0xFF94A3B8)),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'No Active Ticket Found',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          msg['time'] as String,
-                          style: TextStyle(fontSize: 10, color: isAgent ? const Color(0xFF94A3B8) : const Color(0xFFDBEAFE)),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Submit a ticket to start live chatting with our support team.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pushReplacementNamed(context, '/customer/support/raise-complaint'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2563EB),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                          child: const Text('Raise a Complaint / Ticket'),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            color: Colors.white,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.attach_file_rounded, color: Color(0xFF64748B)),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Attachment picker opened.')),
-                    );
-                  },
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: TextField(
-                      controller: _msgController,
-                      decoration: const InputDecoration(
-                        hintText: 'Type your message...',
-                        hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                        border: InputBorder.none,
+                )
+              : Column(
+                  children: [
+                    // Ticket Subject Banner
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      color: ticket.isOpen ? const Color(0xFFEFF6FF) : const Color(0xFFDCFCE7),
+                      child: Row(
+                        children: [
+                          Icon(
+                            ticket.isOpen ? Icons.info_outline_rounded : Icons.check_circle_rounded,
+                            color: ticket.isOpen ? const Color(0xFF2563EB) : const Color(0xFF16A34A),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              ticket.isOpen
+                                  ? '${ticket.category}: ${ticket.subject}'
+                                  : 'Ticket Resolved: ${ticket.subject}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: ticket.isOpen ? const Color(0xFF1E40AF) : const Color(0xFF15803D),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+
+                    // Messages List
+                    Expanded(
+                      child: ListView(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(16),
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          // First message: Ticket Description
+                          _buildChatBubble(
+                            text: ticket.description,
+                            time: ticket.createdAt.length >= 16 ? ticket.createdAt.substring(0, 16) : ticket.createdAt,
+                            isAgent: false,
+                            senderLabel: 'You (Original Issue)',
+                          ),
+
+                          // Subsequent responses
+                          ...ticket.responses.map((resp) {
+                            final isAgent = resp.isAdminMessage;
+                            final senderName = isAgent ? 'Priya (Ally Admin Support)' : 'You';
+                            return _buildChatBubble(
+                              text: resp.message,
+                              time: resp.createdAt.length >= 16 ? resp.createdAt.substring(0, 16) : resp.createdAt,
+                              isAgent: isAgent,
+                              senderLabel: senderName,
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+
+                    // Input Box
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: TextField(
+                                controller: _msgController,
+                                onSubmitted: (_) => _sendMessage(),
+                                decoration: const InputDecoration(
+                                  hintText: 'Type your message to admin...',
+                                  hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          CircleAvatar(
+                            backgroundColor: const Color(0xFF2563EB),
+                            child: IconButton(
+                              icon: _isSending
+                                  ? const SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                              onPressed: _sendMessage,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: const Color(0xFF2563EB),
-                  child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                    onPressed: () {
-                      final text = _msgController.text.trim();
-                      if (text.isNotEmpty) {
-                        setState(() {
-                          _messages.add({'sender': 'user', 'text': text, 'time': 'Just now'});
-                          _msgController.clear();
-                        });
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
+    );
+  }
+
+  Widget _buildChatBubble({
+    required String text,
+    required String time,
+    required bool isAgent,
+    required String senderLabel,
+  }) {
+    return Align(
+      alignment: isAgent ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isAgent ? Colors.white : const Color(0xFF2563EB),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(18),
+            topRight: const Radius.circular(18),
+            bottomLeft: Radius.circular(isAgent ? 4 : 18),
+            bottomRight: Radius.circular(isAgent ? 18 : 4),
           ),
-        ],
+          border: isAgent ? Border.all(color: const Color(0xFFE2E8F0)) : null,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: isAgent ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+          children: [
+            Text(
+              senderLabel,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: isAgent ? const Color(0xFF2563EB) : const Color(0xFFDBEAFE),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: TextStyle(fontSize: 13, color: isAgent ? const Color(0xFF0F172A) : Colors.white, height: 1.4),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              time,
+              style: TextStyle(fontSize: 9, color: isAgent ? const Color(0xFF94A3B8) : const Color(0xFFBFDBFE)),
+            ),
+          ],
+        ),
       ),
     );
   }

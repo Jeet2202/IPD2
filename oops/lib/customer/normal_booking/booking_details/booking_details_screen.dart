@@ -446,46 +446,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                 const SizedBox(height: 24),
 
-                // ── Booking Type Selector ──────────────────────────────
-                _buildSectionHeader(
-                  title: 'Choose Booking Type',
-                  icon: Icons.category_rounded,
-                ),
-                const SizedBox(height: 10),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildBookingTypeTile(
-                            typeKey: 'normal_service',
-                            title: 'Predefined Service',
-                            subtitle: 'Fixed catalog booking',
-                            icon: Icons.flash_on_rounded,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _buildBookingTypeTile(
-                            typeKey: 'custom_service',
-                            title: 'Custom Service',
-                            subtitle: 'Your custom requirements',
-                            icon: Icons.edit_attributes_rounded,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    _buildBookingTypeTile(
-                      typeKey: 'inspection_request',
-                      title: 'Request Inspection Visit',
-                      subtitle: 'On-site diagnostic before quotation',
-                      icon: Icons.search_rounded,
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 24),
 
                 // ── Category Selector for Custom / Standalone Inspection ─────
                 if (_bookingType != 'normal_service' || _service == null) ...[
@@ -902,45 +863,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     );
   }
 
-  Widget _buildBookingTypeTile({
-    required String typeKey,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-  }) {
-    final isSelected = _bookingType == typeKey;
 
-    return GestureDetector(
-      onTap: () => setState(() => _bookingType = typeKey),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary, size: 22),
-                if (isSelected) const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 18),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isSelected ? AppColors.primary : AppColors.textPrimary)),
-            const SizedBox(height: 2),
-            Text(subtitle, style: const TextStyle(fontSize: 11)),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildTimeSlotsWidget() {
     if (_isLoadingSlots) {
