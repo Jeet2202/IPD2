@@ -59,6 +59,21 @@ class FCMClient:
                 body=body
             ),
             data=self._sanitize_data(data),
+            android=messaging.AndroidConfig(
+                priority='high',
+                notification=messaging.AndroidNotification(
+                    channel_id='ally_high_importance_channel',
+                    sound='default'
+                )
+            ),
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        sound='default',
+                        content_available=True
+                    )
+                )
+            ),
             tokens=tokens,
         )
 
@@ -95,6 +110,21 @@ class FCMClient:
                 body=body
             ),
             data=self._sanitize_data(data),
+            android=messaging.AndroidConfig(
+                priority='high',
+                notification=messaging.AndroidNotification(
+                    channel_id='ally_high_importance_channel',
+                    sound='default'
+                )
+            ),
+            apns=messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        sound='default',
+                        content_available=True
+                    )
+                )
+            ),
             token=token,
         )
 

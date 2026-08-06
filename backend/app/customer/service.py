@@ -104,9 +104,30 @@ class CustomerService:
         )
 
     @classmethod
+    async def _hydrate_addresses(cls, user_id, profile: CustomerProfile):
+        from app.address.repository import AddressRepository
+        addresses = await AddressRepository.list_by_customer(user_id)
+        # Sort so default address is first
+        addresses.sort(key=lambda x: x.is_default, reverse=True)
+        profile.addresses = [
+            {
+                "id": str(addr.id),
+                "address_line1": addr.address_line_1,
+                "address_line2": addr.address_line_2,
+                "city": addr.city,
+                "state": addr.state,
+                "postal_code": addr.postal_code,
+                "is_default": addr.is_default,
+                "label": addr.label.value if hasattr(addr.label, 'value') else str(addr.label),
+            }
+            for addr in addresses
+        ]
+
+    @classmethod
     async def get_customer_profile(cls, user: User) -> CustomerProfileResponse:
         """Retrieve full customer profile DTO for authenticated user."""
         profile = await cls.get_or_create_profile(user)
+        await cls._hydrate_addresses(user.id, profile)
         completion_pct, is_completed = cls.calculate_completion_percentage(user, profile)
 
         # Sync profile_completed flag if state changed
@@ -145,6 +166,8 @@ class CustomerService:
             )
         if payload.addresses is not None:
             profile.addresses = payload.addresses
+
+        await cls._hydrate_addresses(user.id, profile)
 
         # 3. Calculate new completion percentage
         completion_pct, is_completed = cls.calculate_completion_percentage(user, profile)

@@ -738,26 +738,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             ),
             const SizedBox(height: 14),
           ],
-
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: _isConfirming ? null : _handleConfirmCompletion,
-              icon: _isConfirming
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.verified_rounded, size: 20),
-              label: Text(
-                _isConfirming ? 'Confirming...' : 'Confirm Service Completion',
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0D9488),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-            ),
+          const SizedBox(height: 4),
+          Text(
+            'Tap the button below to confirm service completion.',
+            style: TextStyle(fontSize: 12, color: Color(0xFF15803D), fontStyle: FontStyle.italic),
           ),
         ],
       ),

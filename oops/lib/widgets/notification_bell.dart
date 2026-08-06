@@ -3,8 +3,15 @@ import '../services/notification_service.dart';
 
 class NotificationBell extends StatefulWidget {
   final VoidCallback? onBellPressed; // Usually navigates to NotificationCenter
+  final Color? iconColor;
+  final double? iconSize;
 
-  const NotificationBell({super.key, this.onBellPressed});
+  const NotificationBell({
+    super.key, 
+    this.onBellPressed,
+    this.iconColor,
+    this.iconSize,
+  });
 
   @override
   State<NotificationBell> createState() => _NotificationBellState();
@@ -42,7 +49,11 @@ class _NotificationBellState extends State<NotificationBell> {
     return Stack(
       children: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined),
+          icon: Icon(
+            Icons.notifications_outlined,
+            color: widget.iconColor ?? Colors.black87,
+            size: widget.iconSize ?? 24.0,
+          ),
           onPressed: () async {
             if (widget.onBellPressed != null) {
               widget.onBellPressed!();

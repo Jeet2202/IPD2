@@ -218,6 +218,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isCompleted = data['profile_completed'] as bool? ?? false;
     final suggestions = _getSuggestions(data);
 
+    if (isCompleted || percentage >= 100) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -242,25 +246,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 54,
-                    height: 54,
-                    child: CircularProgressIndicator(
-                      value: percentage / 100.0,
-                      strokeWidth: 6,
-                      backgroundColor: Colors.white24,
-                      color: Colors.white,
+              percentage >= 100
+                  ? const SizedBox(
+                      width: 54,
+                      height: 54,
+                      child: Icon(Icons.check_circle_rounded, color: Colors.white, size: 54),
+                    )
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 54,
+                          height: 54,
+                          child: CircularProgressIndicator(
+                            value: percentage / 100.0,
+                            strokeWidth: 6,
+                            backgroundColor: Colors.white24,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          '$percentage%',
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '$percentage%',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
-                  ),
-                ],
-              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
