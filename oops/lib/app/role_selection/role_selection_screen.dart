@@ -34,25 +34,18 @@ class RoleSelectionScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.handyman_rounded,
-                  size: 46,
-                  color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(26),
+                  child: Image.asset(
+                    'assets/images/logos/ally_logo.png',
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 24),
-
-              const Text(
-                'Ally',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF2563EB),
-                  letterSpacing: -0.8,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 20),
               const Text(
                 'Who are you?',
                 style: TextStyle(
