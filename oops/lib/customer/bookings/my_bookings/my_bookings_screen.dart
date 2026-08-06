@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../models/booking_model.dart';
+import '../../../models/service_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 
@@ -274,11 +275,187 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
+        onPressed: () {
+          // "Book New Service" FAB is exclusively for Custom Service Requests
+          Navigator.pushNamed(
+            context,
+            AppRoutes.createBookingDetails,
+            arguments: {'booking_type': 'custom_service'},
+          );
+        },
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Book New Service', style: TextStyle(fontWeight: FontWeight.w800)),
+        label: const Text(
+          'Book New Service',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildPredefinedServicesHeader() {
+    final predefinedList = [
+      const ServiceModel(
+        id: 'srv_ac_repair',
+        categoryId: 'cat_electrical',
+        categorySlug: 'electrical',
+        name: 'AC Service & Repair',
+        basePrice: 499,
+        durationDisplay: '45 mins',
+        image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80',
+      ),
+      const ServiceModel(
+        id: 'srv_plumbing_leak',
+        categoryId: 'cat_plumbing',
+        categorySlug: 'plumbing',
+        name: 'Plumbing Leakage Fix',
+        basePrice: 299,
+        durationDisplay: '30 mins',
+        image: 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=400&q=80',
+      ),
+      const ServiceModel(
+        id: 'srv_switchboard_fix',
+        categoryId: 'cat_electrical',
+        categorySlug: 'electrical',
+        name: 'Switchboard Repair',
+        basePrice: 199,
+        durationDisplay: '20 mins',
+        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80',
+      ),
+      const ServiceModel(
+        id: 'srv_tap_replacement',
+        categoryId: 'cat_plumbing',
+        categorySlug: 'plumbing',
+        name: 'Tap Replacement',
+        basePrice: 249,
+        durationDisplay: '25 mins',
+        image: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=400&q=80',
+      ),
+    ];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Predefined Popular Services',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
+                child: const Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 110,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: predefinedList.length,
+              itemBuilder: (context, idx) {
+                final srv = predefinedList[idx];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.createBookingDetails,
+                      arguments: {
+                        'service': srv,
+                        'booking_type': 'normal_service',
+                      },
+                    );
+                  },
+                  child: Container(
+                    width: 145,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          srv.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '₹${srv.basePrice.toStringAsFixed(0)}',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
+                            ),
+                            const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.primary),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInspectionHeader() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.problemDetails,
+          arguments: {'booking_type': 'inspection_request'},
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(color: const Color(0xFF0F766E).withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.shield_outlined, color: Colors.white, size: 32),
+            SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Unsure what is broken?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                  SizedBox(height: 2),
+                  Text('Request an expert technician diagnostic visit (₹99)', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+          ],
+        ),
       ),
     );
   }
@@ -330,10 +507,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           child: Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 80),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                tabIndex == 0 ? _buildPredefinedServicesHeader() : _buildInspectionHeader(),
+                const SizedBox(height: 30),
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(
@@ -357,14 +536,27 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
+                  onPressed: () {
+                    if (tabIndex == 1) {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.problemDetails,
+                        arguments: {'booking_type': 'inspection_request'},
+                      );
+                    } else {
+                      Navigator.pushNamed(context, AppRoutes.customerCategories);
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: tabIndex == 1 ? const Color(0xFF0F766E) : AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Explore Services', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    tabIndex == 1 ? 'Request Inspection Visit' : 'Browse Predefined Services',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -379,9 +571,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        itemCount: bookings.length,
+        itemCount: bookings.length + 1,
         itemBuilder: (context, index) {
-          final b = bookings[index];
+          if (index == 0) {
+            return tabIndex == 0 ? _buildPredefinedServicesHeader() : _buildInspectionHeader();
+          }
+
+          final b = bookings[index - 1];
           final statusColor = _getStatusColor(b.status);
 
           return Container(

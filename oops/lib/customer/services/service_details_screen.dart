@@ -518,63 +518,31 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Do you know what work needs to be done?',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.createBookingDetails,
-                              arguments: {
-                                'service': service,
-                                'booking_type': 'inspection_request',
-                              },
-                            );
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.createBookingDetails,
+                          arguments: {
+                            'service': service,
+                            'booking_type': 'normal_service',
                           },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: AppColors.primary, width: 1.5),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
-                          ),
-                          child: const Text(
-                            'Request Inspection',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary),
-                          ),
-                        ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.createBookingDetails,
-                              arguments: {
-                                'service': service,
-                                'booking_type': 'normal_service',
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
-                          ),
-                          child: const Text(
-                            'Book Service',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-                          ),
-                        ),
+                      child: const Text(
+                        'Book Service',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
