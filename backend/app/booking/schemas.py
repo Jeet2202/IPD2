@@ -67,16 +67,15 @@ class CreateBookingRequest(BaseModel):
     """
     Payload for POST /bookings — create a new service booking.
 
-    The client provides references (IDs) for service and address.
-    The service layer validates existence, ownership, and active status,
-    then creates immutable snapshots before persisting.
+    Supports:
+        - NORMAL_SERVICE: requires service_id.
+        - CUSTOM_SERVICE: requires custom_title and category_slug.
+        - INSPECTION_REQUEST: requires problem_description and category_slug (or service_id).
     """
 
-    service_id: str = Field(
-        ...,
-        min_length=24,
-        max_length=24,
-        description="ObjectId of the service to book",
+    service_id: str | None = Field(
+        default=None,
+        description="ObjectId of the service to book (Required for NORMAL_SERVICE)",
         examples=["60d5ec49f1a2c8b1f8e4e1a1"],
     )
     address_id: str = Field(
@@ -88,10 +87,7 @@ class CreateBookingRequest(BaseModel):
     )
     booking_type: BookingType = Field(
         default=BookingType.NORMAL_SERVICE,
-        description=(
-            "NORMAL_SERVICE: standard service booking. "
-            "INSPECTION_REQUEST: site-visit before committing."
-        ),
+        description="NORMAL_SERVICE, INSPECTION_REQUEST, or CUSTOM_SERVICE",
     )
     scheduled_date: date | None = Field(
         default=None,
@@ -121,13 +117,45 @@ class CreateBookingRequest(BaseModel):
         description="Optional photo URL strings (Cloudinary)",
     )
 
-    @field_validator("service_id", "address_id")
+    # Custom Service & Inspection Category Fields
+    custom_title: str | None = Field(
+        default=None,
+        max_length=200,
+        description="Required for CUSTOM_SERVICE bookings.",
+    )
+    custom_description: str | None = Field(
+        default=None,
+        max_length=2000,
+        description="Detailed requirements for CUSTOM_SERVICE bookings.",
+    )
+    custom_budget: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Estimated budget for CUSTOM_SERVICE bookings (INR).",
+    )
+    category_slug: str | None = Field(
+        default=None,
+        description="Service category slug for CUSTOM_SERVICE or standalone INSPECTION_REQUEST.",
+    )
+
+    @field_validator("address_id")
     @classmethod
-    def validate_object_id(cls, v: str) -> str:
+    def validate_address_id(cls, v: str) -> str:
         """Ensure value looks like a valid MongoDB ObjectId (24 hex chars)."""
         v = v.strip()
-        if not all(c in "0123456789abcdefABCDEF" for c in v):
+        if len(v) != 24 or not all(c in "0123456789abcdefABCDEF" for c in v):
             raise ValueError("Must be a valid 24-character hexadecimal ObjectId.")
+        return v
+
+    @field_validator("service_id")
+    @classmethod
+    def validate_service_id(cls, v: str | None) -> str | None:
+        if v is not None:
+            v = v.strip()
+            if not v:
+                return None
+            if len(v) != 24 or not all(c in "0123456789abcdefABCDEF" for c in v):
+                raise ValueError("Must be a valid 24-character hexadecimal ObjectId.")
         return v
 
     @field_validator("customer_notes")
@@ -153,11 +181,20 @@ class CreateBookingRequest(BaseModel):
         return None
 
     @model_validator(mode="after")
-    def validate_inspection_request(self) -> "CreateBookingRequest":
-        """Enforce that problem_description is provided when booking_type is INSPECTION_REQUEST."""
-        if self.booking_type == BookingType.INSPECTION_REQUEST:
+    def validate_booking_type_fields(self) -> "CreateBookingRequest":
+        if self.booking_type == BookingType.NORMAL_SERVICE:
+            if not self.service_id:
+                raise ValueError("service_id is required for normal service bookings.")
+        elif self.booking_type == BookingType.CUSTOM_SERVICE:
+            if not self.custom_title or not self.custom_title.strip():
+                raise ValueError("custom_title is required for custom service bookings.")
+            if not self.category_slug or not self.category_slug.strip():
+                raise ValueError("category_slug is required for custom service bookings.")
+        elif self.booking_type == BookingType.INSPECTION_REQUEST:
             if not self.problem_description or not self.problem_description.strip():
                 raise ValueError("Problem description is required for inspection requests.")
+            if not self.service_id and not self.category_slug:
+                raise ValueError("Either category_slug or service_id is required for inspection requests.")
         return self
 
 
@@ -177,7 +214,7 @@ class BookingResponse(BaseModel):
     booking_number: str = Field(..., description="Human-readable booking reference (KSYYYYnnnnn)")
     customer_id: str = Field(..., description="Customer User ObjectId")
 
-    booking_type: str = Field(..., description="NORMAL_SERVICE or INSPECTION_REQUEST")
+    booking_type: str = Field(..., description="NORMAL_SERVICE, INSPECTION_REQUEST, or CUSTOM_SERVICE")
     status: str = Field(..., description="Current booking status")
 
     service_snapshot: ServiceSnapshotResponse
@@ -202,6 +239,13 @@ class BookingResponse(BaseModel):
     customer_notes: str | None = None
     problem_description: str | None = None
     problem_photos: list[str] = Field(default_factory=list)
+
+    custom_title: str | None = None
+    custom_description: str | None = None
+    custom_budget: float | None = None
+    category_slug: str | None = None
+    inspection_status: str | None = None
+    inspection_scheduled_at: str | None = None
 
     # Execution & Completion (Phase 4.7.2)
     worker_id: str | None = Field(default=None, description="Assigned worker ObjectId")

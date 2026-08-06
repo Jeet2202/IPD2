@@ -94,11 +94,25 @@ class BookingType(str, Enum):
     NORMAL_SERVICE     — Standard fixed-price service booking.
                          Worker is dispatched and performs the service.
     INSPECTION_REQUEST — Customer requests a site visit for assessment
-                         before committing to a full service (e.g., home
-                         painting, renovation). Results in a Quotation.
+                         before committing to a full service. Results in a Quotation.
+    CUSTOM_SERVICE     — Custom service request defined by customer.
     """
     NORMAL_SERVICE = "normal_service"
     INSPECTION_REQUEST = "inspection_request"
+    CUSTOM_SERVICE = "custom_service"
+
+
+class InspectionStatus(str, Enum):
+    """
+    Lifecycle states for Inspection Requests (Phase 5 Inspection Flow).
+
+    Flow: PENDING -> ACCEPTED -> SCHEDULED -> COMPLETED -> QUOTATION_GENERATED
+    """
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    SCHEDULED = "scheduled"
+    COMPLETED = "completed"
+    QUOTATION_GENERATED = "quotation_generated"
 
 
 # ---------------------------------------------------------------------------

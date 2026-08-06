@@ -350,12 +350,17 @@ class _WorkerBookingCard extends StatelessWidget {
                           ),
                         ),
                       if (_nextAction.isNotEmpty)
-                        Text(
-                          _nextAction,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: booking.isWorkCompleted ? Colors.teal : const Color(0xFF2563EB),
+                        Expanded(
+                          child: Text(
+                            _nextAction,
+                            textAlign: TextAlign.end,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: booking.isWorkCompleted ? Colors.teal : const Color(0xFF2563EB),
+                            ),
                           ),
                         ),
                     ],

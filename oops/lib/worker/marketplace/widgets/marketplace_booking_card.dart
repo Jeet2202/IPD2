@@ -15,8 +15,13 @@ class MarketplaceBookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isInspection = booking.isInspection;
-    final primaryColor = isInspection ? const Color(0xFF8B5CF6) : const Color(0xFF2563EB);
+    final isInspection = booking.isInspection || booking.bookingType == 'inspection_request';
+    final isCustom = booking.bookingType == 'custom_service';
+    final primaryColor = isInspection
+        ? const Color(0xFF8B5CF6)
+        : isCustom
+            ? const Color(0xFFD97706)
+            : const Color(0xFF2563EB);
     final formattedPrice = booking.estimatedPrice != null
         ? '₹ ${booking.estimatedPrice!.toStringAsFixed(0)}'
         : '₹ ${booking.baseMarketPrice.toStringAsFixed(0)}';
@@ -48,89 +53,100 @@ class MarketplaceBookingCard extends StatelessWidget {
             // Top Row: Category Badge, Recommended Badge, & Booking Number
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isInspection ? Icons.fact_check_rounded : Icons.build_circle_rounded,
-                            size: 14,
-                            color: primaryColor,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            isInspection ? 'Inspection' : 'Standard',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isInspection
+                                  ? Icons.fact_check_rounded
+                                  : isCustom
+                                      ? Icons.edit_note_rounded
+                                      : Icons.build_circle_rounded,
+                              size: 14,
                               color: primaryColor,
                             ),
+                            const SizedBox(width: 4),
+                            Text(
+                              isInspection
+                                  ? 'Inspection'
+                                  : isCustom
+                                      ? 'Custom Service'
+                                      : 'Standard',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (booking.hasApplied)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF5),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFA7F3D0)),
                           ),
-                        ],
-                      ),
-                    ),
-                    if (booking.hasApplied) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFA7F3D0)),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF059669)),
-                            SizedBox(width: 3),
-                            Text(
-                              'Applied',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF047857),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF059669)),
+                              SizedBox(width: 3),
+                              Text(
+                                'Applied',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF047857),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                    if (booking.isRecommended) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF3C7),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFFFDE68A)),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.star_rounded, size: 13, color: Color(0xFFD97706)),
-                            SizedBox(width: 3),
-                            Text(
-                              'Recommended',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFFB45309),
+                      if (booking.isRecommended)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF3C7),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFFDE68A)),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star_rounded, size: 13, color: Color(0xFFD97706)),
+                              SizedBox(width: 3),
+                              Text(
+                                'Recommended',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFFB45309),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
                     ],
-                  ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   booking.bookingNumber,
                   style: const TextStyle(

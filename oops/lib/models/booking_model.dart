@@ -179,6 +179,12 @@ class BookingModel {
   final String? customerNotes;
   final String? problemDescription;
   final List<String> problemPhotos;
+  final String? customTitle;
+  final String? customDescription;
+  final double? customBudget;
+  final String? categorySlug;
+  final String? inspectionStatus;
+  final String? inspectionScheduledAt;
   final String? workerId;
   final String? workerName;
   final String? workerPhone;
@@ -219,6 +225,12 @@ class BookingModel {
     this.customerNotes,
     this.problemDescription,
     this.problemPhotos = const [],
+    this.customTitle,
+    this.customDescription,
+    this.customBudget,
+    this.categorySlug,
+    this.inspectionStatus,
+    this.inspectionScheduledAt,
     this.workerId,
     this.workerName,
     this.workerPhone,
@@ -242,6 +254,15 @@ class BookingModel {
     required this.updatedAt,
     this.applicantCount = 0,
   });
+
+  bool get isNormalService => bookingType == 'normal_service';
+  bool get isInspectionRequest => bookingType == 'inspection_request';
+  bool get isCustomService => bookingType == 'custom_service';
+
+  bool get isInspectionPending => inspectionStatus == 'pending';
+  bool get isInspectionAccepted => inspectionStatus == 'accepted';
+  bool get isInspectionScheduled => inspectionStatus == 'scheduled';
+  bool get isInspectionCompleted => inspectionStatus == 'completed';
 
   bool get isPending => status == 'pending';
   bool get isAssigned => status == 'assigned' || status == 'accepted';
@@ -272,6 +293,12 @@ class BookingModel {
       customerNotes: raw['customer_notes'] as String?,
       problemDescription: raw['problem_description'] as String?,
       problemPhotos: (raw['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      customTitle: raw['custom_title'] as String?,
+      customDescription: raw['custom_description'] as String?,
+      customBudget: (raw['custom_budget'] as num?)?.toDouble(),
+      categorySlug: raw['category_slug'] as String?,
+      inspectionStatus: raw['inspection_status'] as String?,
+      inspectionScheduledAt: raw['inspection_scheduled_at'] as String?,
       workerId: raw['worker_id'] as String?,
       workerName: raw['worker_name'] as String?,
       workerPhone: raw['worker_phone'] as String?,
@@ -317,6 +344,12 @@ class BookingModel {
         'customer_notes': customerNotes,
         'problem_description': problemDescription,
         'problem_photos': problemPhotos,
+        'custom_title': customTitle,
+        'custom_description': customDescription,
+        'custom_budget': customBudget,
+        'category_slug': categorySlug,
+        'inspection_status': inspectionStatus,
+        'inspection_scheduled_at': inspectionScheduledAt,
         'worker_id': workerId,
         'worker_name': workerName,
         'worker_phone': workerPhone,
@@ -343,17 +376,21 @@ class BookingModel {
 
 /// Payload sent to POST /customer/bookings (CreateBookingRequest schema)
 class CreateBookingPayload {
-  final String serviceId;
+  final String? serviceId;
   final String addressId;
-  final String bookingType; // 'normal_service' or 'inspection_request'
+  final String bookingType; // 'normal_service', 'inspection_request', or 'custom_service'
   final String? scheduledDate; // YYYY-MM-DD
   final String? scheduledTime; // e.g. '10:00-12:00'
   final String? customerNotes;
   final String? problemDescription;
   final List<String> problemPhotos;
+  final String? customTitle;
+  final String? customDescription;
+  final double? customBudget;
+  final String? categorySlug;
 
   const CreateBookingPayload({
-    required this.serviceId,
+    this.serviceId,
     required this.addressId,
     this.bookingType = 'normal_service',
     this.scheduledDate,
@@ -361,14 +398,20 @@ class CreateBookingPayload {
     this.customerNotes,
     this.problemDescription,
     this.problemPhotos = const [],
+    this.customTitle,
+    this.customDescription,
+    this.customBudget,
+    this.categorySlug,
   });
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
-      'service_id': serviceId,
       'address_id': addressId,
       'booking_type': bookingType,
     };
+    if (serviceId != null && serviceId!.isNotEmpty) {
+      map['service_id'] = serviceId;
+    }
     if (scheduledDate != null && scheduledDate!.isNotEmpty) {
       map['scheduled_date'] = scheduledDate;
     }
@@ -383,6 +426,18 @@ class CreateBookingPayload {
     }
     if (problemPhotos.isNotEmpty) {
       map['problem_photos'] = problemPhotos;
+    }
+    if (customTitle != null && customTitle!.trim().isNotEmpty) {
+      map['custom_title'] = customTitle!.trim();
+    }
+    if (customDescription != null && customDescription!.trim().isNotEmpty) {
+      map['custom_description'] = customDescription!.trim();
+    }
+    if (customBudget != null) {
+      map['custom_budget'] = customBudget;
+    }
+    if (categorySlug != null && categorySlug!.trim().isNotEmpty) {
+      map['category_slug'] = categorySlug!.trim();
     }
     return map;
   }

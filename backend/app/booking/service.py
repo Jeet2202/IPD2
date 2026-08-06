@@ -24,6 +24,11 @@ from beanie import PydanticObjectId
 
 from app.address.models import Address
 from app.auth.models import User
+from app.booking.handlers import (
+    CustomBookingHandler,
+    InspectionBookingHandler,
+    StandardBookingHandler,
+)
 from app.booking.config import BookingLifecycleConfig
 from app.booking.models import AddressSnapshot, Booking, BookingTimelineEvent, ServiceSnapshot
 from app.booking.repository import BookingRepository
@@ -165,6 +170,20 @@ async def _to_response(booking: Booking) -> BookingResponse:
         customer_notes=booking.customer_notes,
         problem_description=booking.problem_description,
         problem_photos=booking.problem_photos,
+        custom_title=booking.custom_title,
+        custom_description=booking.custom_description,
+        custom_budget=booking.custom_budget,
+        category_slug=booking.category_slug,
+        inspection_status=(
+            booking.inspection_status.value
+            if hasattr(booking.inspection_status, "value")
+            else (str(booking.inspection_status) if booking.inspection_status else None)
+        ),
+        inspection_scheduled_at=(
+            booking.inspection_scheduled_at.isoformat()
+            if booking.inspection_scheduled_at
+            else None
+        ),
         worker_id=str(booking.worker_id) if booking.worker_id else None,
         worker_name=worker_name,
         worker_phone=worker_phone,
@@ -252,26 +271,19 @@ class BookingService:
         # 0. Validate schedule & time slot
         validate_booking_schedule(payload.scheduled_date, payload.scheduled_time)
 
-        # 1. Validate service
-        try:
-            service_oid = PydanticObjectId(payload.service_id)
-        except Exception:
-            raise NotFoundException(
-                message="Service not found.",
-                error_code="SERVICE_NOT_FOUND",
-            )
+        # 1. Strategy Handler Selection
+        if payload.booking_type == BookingType.CUSTOM_SERVICE:
+            handler = CustomBookingHandler()
+        elif payload.booking_type == BookingType.INSPECTION_REQUEST:
+            handler = InspectionBookingHandler()
+        else:
+            handler = StandardBookingHandler()
 
-        service: Service | None = await Service.get(service_oid)
-        if service is None:
-            raise NotFoundException(
-                message="Service not found.",
-                error_code="SERVICE_NOT_FOUND",
-            )
-        if not service.is_active:
-            raise NotFoundException(
-                message="This service is currently unavailable.",
-                error_code="SERVICE_INACTIVE",
-            )
+        (
+            service_snapshot,
+            estimated_price,
+            estimated_duration_minutes,
+        ) = await handler.build_service_snapshot_and_pricing(payload)
 
         # 2. Validate address
         try:
@@ -299,17 +311,7 @@ class BookingService:
                 error_code="INVALID_ADDRESS_LOCATION",
             )
 
-        # 3. Build snapshots
-        service_snapshot = ServiceSnapshot(
-            service_id=str(service.id),
-            name=service.name,
-            category_id=service.category_id,
-            category_slug=service.category_slug,
-            base_market_price=service.base_market_price,
-            estimated_duration_minutes=service.estimated_duration_minutes,
-            is_inspection_required=service.is_inspection_required,
-        )
-
+        # 3. Build address snapshot
         address_snapshot = AddressSnapshot(
             address_id=str(address.id),
             label=address.label.value,
@@ -326,7 +328,7 @@ class BookingService:
         )
 
         # 4. Copy GeoJSON Point to top-level service_location for 2dsphere index
-        service_location = address.location  # None if address had no GPS
+        service_location = address.location
 
         # 5. Generate unique booking number
         booking_number = await BookingRepository.generate_booking_number()
@@ -342,10 +344,14 @@ class BookingService:
             service_location=service_location,
             scheduled_date=payload.scheduled_date,
             scheduled_time=payload.scheduled_time,
-            estimated_price=service.base_market_price,
-            estimated_duration_minutes=service.estimated_duration_minutes,
+            estimated_price=estimated_price,
+            estimated_duration_minutes=estimated_duration_minutes,
+            customer_notes=payload.customer_notes,
+            problem_description=payload.problem_description,
             problem_photos=payload.problem_photos,
         )
+
+        handler.setup_booking_specific_fields(booking, payload)
 
         now_utc = datetime.now(timezone.utc)
         initial_event = BookingTimelineEvent(
@@ -355,7 +361,7 @@ class BookingService:
             previous_status=None,
             new_status=BookingStatus.PENDING,
             title="Booking Created",
-            description=f"Service booking created for {service.name}",
+            description=f"Booking created for {service_snapshot.name}",
             actor_id=PydanticObjectId(customer_id),
             actor_role="customer",
             timestamp=now_utc,
@@ -364,12 +370,97 @@ class BookingService:
 
         booking = await BookingRepository.create(booking)
         logger.info(
-            "Booking created: number=%s customer_id=%s service=%s",
+            "Booking created: number=%s customer_id=%s service=%s type=%s",
             booking_number,
             customer_id,
-            service.name,
+            service_snapshot.name,
+            payload.booking_type.value,
         )
         return await _to_response(booking)
+
+    # ── Inspection Workflow Actions (Phase 5) ──────────────────────────────────
+
+    @classmethod
+    async def accept_inspection(cls, booking_id: str, worker: User) -> BookingResponse:
+        """Worker accepts an inspection request visit."""
+        booking = await Booking.get(PydanticObjectId(booking_id))
+        if not booking:
+            raise NotFoundException(message="Booking not found.", error_code="BOOKING_NOT_FOUND")
+        if booking.booking_type != BookingType.INSPECTION_REQUEST:
+            raise BadRequestException(message="Not an inspection request.", error_code="INVALID_BOOKING_TYPE")
+
+        booking.inspection_status = InspectionStatus.ACCEPTED
+        booking.worker_id = worker.id
+        booking.assigned_at = datetime.now(timezone.utc)
+
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type="INSPECTION_ACCEPTED",
+            status=booking.status,
+            previous_status=booking.status,
+            new_status=booking.status,
+            title="Inspection Accepted",
+            description=f"Worker {worker.full_name} accepted the inspection visit request.",
+            actor_id=worker.id,
+            actor_role="worker",
+            timestamp=datetime.now(timezone.utc),
+        )
+        booking.timeline.append(event)
+        saved = await booking.save()
+        return await _to_response(saved)
+
+    @classmethod
+    async def schedule_inspection(
+        cls, booking_id: str, scheduled_at: datetime, worker: User
+    ) -> BookingResponse:
+        """Worker schedules the site visit time for an accepted inspection."""
+        booking = await Booking.get(PydanticObjectId(booking_id))
+        if not booking:
+            raise NotFoundException(message="Booking not found.", error_code="BOOKING_NOT_FOUND")
+
+        booking.inspection_status = InspectionStatus.SCHEDULED
+        booking.inspection_scheduled_at = scheduled_at
+
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type="INSPECTION_SCHEDULED",
+            status=booking.status,
+            previous_status=booking.status,
+            new_status=booking.status,
+            title="Inspection Scheduled",
+            description=f"Inspection visit scheduled for {scheduled_at.isoformat()}.",
+            actor_id=worker.id,
+            actor_role="worker",
+            timestamp=datetime.now(timezone.utc),
+        )
+        booking.timeline.append(event)
+        saved = await booking.save()
+        return await _to_response(saved)
+
+    @classmethod
+    async def complete_inspection(cls, booking_id: str, worker: User) -> BookingResponse:
+        """Worker marks site inspection visit as completed."""
+        booking = await Booking.get(PydanticObjectId(booking_id))
+        if not booking:
+            raise NotFoundException(message="Booking not found.", error_code="BOOKING_NOT_FOUND")
+
+        booking.inspection_status = InspectionStatus.COMPLETED
+
+        event = BookingTimelineEvent(
+            event_id=str(PydanticObjectId()),
+            event_type="INSPECTION_COMPLETED",
+            status=booking.status,
+            previous_status=booking.status,
+            new_status=booking.status,
+            title="Inspection Visit Completed",
+            description=f"Worker {worker.full_name} completed site inspection.",
+            actor_id=worker.id,
+            actor_role="worker",
+            timestamp=datetime.now(timezone.utc),
+        )
+        booking.timeline.append(event)
+        saved = await booking.save()
+        return await _to_response(saved)
 
     # ── Get Single ───────────────────────────────────────────────────────────
 

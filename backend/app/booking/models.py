@@ -39,7 +39,7 @@ from pymongo import ASCENDING, DESCENDING, IndexModel
 from typing import Annotated
 
 from app.address.models import GeoJSONPoint
-from app.utils.enums import BookingStatus, BookingType
+from app.utils.enums import BookingStatus, BookingType, InspectionStatus
 
 
 # ---------------------------------------------------------------------------
@@ -277,6 +277,36 @@ class Booking(Document):
     problem_photos: list[str] = Field(
         default_factory=list,
         description="List of photo URL strings (Cloudinary) uploaded for inspection.",
+    )
+
+    # ── Custom Service & Inspection Workflow Fields ─────────────────────────
+
+    custom_title: str | None = Field(
+        default=None,
+        max_length=200,
+        description="User-defined title for CUSTOM_SERVICE bookings.",
+    )
+    custom_description: str | None = Field(
+        default=None,
+        max_length=2000,
+        description="Detailed requirements for CUSTOM_SERVICE bookings.",
+    )
+    custom_budget: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Customer estimated budget for CUSTOM_SERVICE bookings.",
+    )
+    category_slug: str | None = Field(
+        default=None,
+        description="Service category slug for custom or inspection bookings.",
+    )
+    inspection_status: InspectionStatus | None = Field(
+        default=None,
+        description="Lifecycle status for INSPECTION_REQUEST bookings.",
+    )
+    inspection_scheduled_at: datetime | None = Field(
+        default=None,
+        description="Scheduled date/time for site inspection visit.",
     )
 
     # ── Customer notes ────────────────────────────────────────────────────────
