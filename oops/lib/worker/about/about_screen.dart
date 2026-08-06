@@ -48,10 +48,14 @@ class WorkerAboutScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.engineering_rounded,
-                  size: 46,
-                  color: Colors.white,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/images/logos/ally_logo.png',
+                    width: 84,
+                    height: 84,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
 
@@ -60,14 +64,6 @@ class WorkerAboutScreen extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Ally',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF2563EB),
-                    ),
-                  ),
                   const SizedBox(width: 6),
                   Container(
                     padding:
