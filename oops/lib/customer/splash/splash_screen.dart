@@ -104,22 +104,8 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 28),
-
-                  // App name
-                  const Text(
-                    'Ally',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF2563EB),
-                      letterSpacing: -0.8,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Tagline
+                  // Tagline / Subtitle
+                  const SizedBox(height: 16),
                   const Text(
                     'Trusted Professionals at Your Doorstep',
                     textAlign: TextAlign.center,
