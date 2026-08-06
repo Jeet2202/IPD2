@@ -90,11 +90,13 @@ class _WorkerSplashScreenState extends State<WorkerSplashScreen>
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.engineering_rounded,
-                          size: 54,
-                          color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Image.asset(
+                          'assets/images/logos/ally_logo.png',
+                          width: 110,
+                          height: 110,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -103,15 +105,8 @@ class _WorkerSplashScreenState extends State<WorkerSplashScreen>
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Ally',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF2563EB),
-                          letterSpacing: -0.8,
-                        ),
-                      ),
+                      
+                      
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
