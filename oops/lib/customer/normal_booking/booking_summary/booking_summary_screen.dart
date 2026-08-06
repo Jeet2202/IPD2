@@ -47,6 +47,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   String? _customDescription;
   double? _customBudget;
   String? _categorySlug;
+  List<String> _problemPhotos = [];
 
   bool _isSubmitting = false;
   String? _submitError;
@@ -74,6 +75,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         _customDescription = args['custom_description'] as String?;
         _customBudget = (args['custom_budget'] as num?)?.toDouble();
         _categorySlug = args['category_slug'] as String?;
+        _problemPhotos = (args['problem_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
       });
     } else {
       setState(() {
@@ -116,6 +118,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         scheduledTime: _scheduledTime,
         customerNotes: _customerNotes,
         problemDescription: _problemDescription,
+        problemPhotos: _problemPhotos,
         customTitle: _customTitle,
         customDescription: _customDescription,
         customBudget: _customBudget,

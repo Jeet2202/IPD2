@@ -108,6 +108,8 @@ class CustomBookingHandler(BaseBookingHandler):
         booking.custom_description = payload.custom_description
         booking.custom_budget = payload.custom_budget
         booking.category_slug = payload.category_slug
+        if not booking.problem_description:
+            booking.problem_description = payload.custom_description or payload.problem_description or payload.custom_title
 
 
 class InspectionBookingHandler(BaseBookingHandler):

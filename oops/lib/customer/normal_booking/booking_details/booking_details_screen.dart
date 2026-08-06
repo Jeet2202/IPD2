@@ -50,6 +50,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   bool _isLoadingAddresses = true;
   String? _addressError;
+  final List<String> _uploadedPhotos = [];
 
   late String _bookingType; // 'normal_service', 'custom_service', or 'inspection_request'
   late DateTime _selectedDate;
@@ -338,6 +339,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         'custom_description': _customDescController.text.trim(),
         'custom_budget': double.tryParse(_customBudgetController.text.trim()),
         'category_slug': _selectedCategorySlug,
+        'problem_photos': _uploadedPhotos,
       },
     );
   }

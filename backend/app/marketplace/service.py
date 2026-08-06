@@ -97,7 +97,7 @@ class MarketplaceService:
             has_applied=has_applied,
             application_id=application_id,
             created_at=booking.created_at,
-            problem_description=booking.problem_description,
+            problem_description=booking.problem_description or booking.custom_description or booking.custom_title,
             problem_photos=booking.problem_photos or [],
             custom_title=booking.custom_title,
             custom_description=booking.custom_description,
