@@ -21,9 +21,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
-from app.core.dependencies import get_current_user
-from app.core.permissions import require_admin
-from app.auth.models import User
+from app.core.dependencies import AdminDep, CurrentUserDep, get_current_admin, get_current_user
 from app.core.config import settings
 from app.booking.models import Booking
 from app.payments.schemas import (
@@ -58,7 +56,7 @@ router = APIRouter(tags=["Payments"])
 )
 async def create_payment_order(
     req: CreateOrderRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUserDep,
 ) -> OrderCreatedResponse:
     """
     1. Validates booking_id belongs to the current user (or is accessible).
@@ -127,7 +125,7 @@ async def create_payment_order(
 )
 async def verify_payment(
     req: VerifyPaymentRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUserDep,
 ) -> PaymentVerifiedResponse:
     """
     Security: We NEVER trust the client saying 'payment succeeded'.
@@ -166,7 +164,6 @@ async def verify_payment(
         "payment_status": "PAID",
         "payment_id": req.razorpay_payment_id,
     })
-
 
     logger.info(
         "Payment verified and booking updated: booking=%s payment=%s user=%s",
@@ -274,7 +271,7 @@ async def razorpay_webhook(request: Request) -> dict:
 )
 async def create_refund(
     req: RefundRequest,
-    current_user: User = Depends(require_admin),
+    admin: AdminDep,
 ) -> RefundResponse:
     try:
         refund = razorpay_service.create_refund(
@@ -311,9 +308,11 @@ async def create_refund(
 )
 async def fetch_payment(
     payment_id: str,
-    current_user: User = Depends(require_admin),
+    admin: AdminDep,
 ) -> dict:
     try:
         return razorpay_service.fetch_payment(payment_id)
     except Exception as exc:
         raise HTTPException(status_code=404, detail=f"Payment not found: {exc}") from exc
+
+

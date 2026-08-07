@@ -130,9 +130,9 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
     await _razorpayService.openInspectionPayment(
       bookingId: bookingId,
       amountRupees: _inspectionCharge,
-      customerName: TokenStorage.userName.isNotEmpty ? TokenStorage.userName : 'Customer',
-      customerPhone: TokenStorage.userPhone.isNotEmpty ? TokenStorage.userPhone : '',
-      customerEmail: TokenStorage.userEmail.isNotEmpty ? TokenStorage.userEmail : '',
+      customerName: (_address?.fullName.isNotEmpty == true) ? _address!.fullName : 'Customer',
+      customerPhone: _address?.phone ?? '',
+      customerEmail: '',
     );
   }
 
