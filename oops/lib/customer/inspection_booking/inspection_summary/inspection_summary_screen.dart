@@ -7,6 +7,8 @@ import '../../../models/address_model.dart';
 import '../../../models/booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../../services/razorpay_service.dart';
+import '../../../utils/token_storage.dart';
 
 class InspectionSummaryScreen extends StatefulWidget {
   const InspectionSummaryScreen({super.key});
@@ -17,6 +19,7 @@ class InspectionSummaryScreen extends StatefulWidget {
 
 class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
   final BookingService _bookingService = BookingService.instance;
+  final RazorpayService _razorpayService = RazorpayService();
 
   AddressModel? _address;
   String _categorySlug = 'electrical';
@@ -29,13 +32,33 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
   double _inspectionCharge = 99.0;
 
   bool _isSubmitting = false;
+  String? _pendingBookingId;   // Set before opening Razorpay; used by _submitBookingPayload
 
   @override
   void initState() {
     super.initState();
+    _razorpayService.init(
+      onSuccess: () {
+        // Razorpay confirmed + backend verified → submit booking
+        _submitBookingPayload();
+      },
+      onFailure: (String message) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: AppColors.error),
+        );
+        setState(() => _isSubmitting = false);
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _extractArgs();
     });
+  }
+
+  @override
+  void dispose() {
+    _razorpayService.dispose();
+    super.dispose();
   }
 
   void _extractArgs() {
@@ -55,7 +78,7 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
     }
   }
 
-  void _handlePaymentAndBooking() {
+  Future<void> _handlePaymentAndBooking() async {
     if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Missing address. Please go back and select an address.')),
@@ -63,57 +86,10 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
       return;
     }
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.payment_rounded, color: AppColors.primary),
-            SizedBox(width: 10),
-            Text('Payment Gateway'),
-          ],
-        ),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Online payment gateway integration will be available in a future release.',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your inspection request (₹99 fee) will be submitted with Payment Status: PENDING.',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _submitBookingPayload();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('Continue & Submit'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _submitBookingPayload() async {
+    // First create the booking to get a real booking_id
     setState(() => _isSubmitting = true);
 
+    String bookingId;
     try {
       final payload = CreateBookingPayload(
         addressId: _address!.id,
@@ -125,35 +101,52 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
         scheduledTime: _scheduledTime,
         customerNotes: _customerNotes,
       );
-
-      final bookingResult = await _bookingService.createBooking(payload);
-
-      if (!mounted) return;
-
-      setState(() => _isSubmitting = false);
-
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.bookingSuccess,
-        (route) => route.isFirst || route.settings.name == AppRoutes.customerHome,
-        arguments: {'booking': bookingResult},
-      );
+      final result = await _bookingService.createBooking(payload);
+      bookingId = result.id;
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
       );
-    } catch (e) {
+      return;
+    } catch (_) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Failed to submit inspection request. Please try again.'),
+          content: Text('Could not create booking. Please try again.'),
           backgroundColor: AppColors.error,
         ),
       );
+      return;
     }
+
+    setState(() => _isSubmitting = false);
+
+    // Open Razorpay payment sheet
+    // Success callback (_razorpayService.init onSuccess) calls _submitBookingPayload
+    _pendingBookingId = bookingId;
+    await _razorpayService.openInspectionPayment(
+      bookingId: bookingId,
+      amountRupees: _inspectionCharge,
+      customerName: TokenStorage.userName.isNotEmpty ? TokenStorage.userName : 'Customer',
+      customerPhone: TokenStorage.userPhone.isNotEmpty ? TokenStorage.userPhone : '',
+      customerEmail: TokenStorage.userEmail.isNotEmpty ? TokenStorage.userEmail : '',
+    );
+  }
+
+  Future<void> _submitBookingPayload() async {
+    // Booking was already created in _handlePaymentAndBooking before opening Razorpay.
+    // Payment has been verified by backend. Simply navigate to the success screen.
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.bookingSuccess,
+      (route) => route.isFirst || route.settings.name == AppRoutes.customerHome,
+      arguments: {'booking_id': _pendingBookingId},
+    );
   }
 
   @override

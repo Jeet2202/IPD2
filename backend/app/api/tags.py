@@ -192,4 +192,12 @@ OPENAPI_TAGS: list[dict[str, str]] = [
             "presence, and health status."
         ),
     },
+    {
+        "name": "Payments",
+        "description": (
+            "Razorpay payment integration — order creation for inspection fees and service payments, "
+            "HMAC-SHA256 signature verification, webhook event processing, "
+            "and admin-initiated refunds."
+        ),
+    },
 ]

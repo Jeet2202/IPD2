@@ -62,5 +62,10 @@ class ApiEndpoints {
   static const String supportContact  = '/support/contact';
   static const String supportSos      = '/support/sos';
   static const String supportFeedback = '/support/feedback';
+
+  // ── Payments (Razorpay) ───────────────────────────────
+  static const String paymentsCreateOrder = '/payments/create-order';
+  static const String paymentsVerify      = '/payments/verify';
+  static const String paymentsRefund      = '/payments/refund';
 }
 

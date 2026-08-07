@@ -134,6 +134,12 @@ class Settings(BaseSettings):
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None
 
+    # --- Razorpay Payment Gateway ---
+    RAZORPAY_KEY_ID: str = ""                              # rzp_test_... or rzp_live_...
+    RAZORPAY_KEY_SECRET: SecretStr = SecretStr("")         # Keep secret — never expose
+    RAZORPAY_WEBHOOK_SECRET: SecretStr = SecretStr("")     # Webhook signing secret
+    INSPECTION_FEE: float = 99.0                           # ₹99 diagnostic visit charge
+
     # --- Socket.IO Configuration ---
     SOCKET_CORS_ALLOWED_ORIGINS: list[str] = ["*"]
     SOCKET_MESSAGE_QUEUE: str | None = None  # e.g., "redis://localhost:6379/0"
@@ -214,6 +220,14 @@ class Settings(BaseSettings):
         # Firebase is required for push notifications in production
         if not self.FIREBASE_CREDENTIALS_PATH:
             production_missing.append("FIREBASE_CREDENTIALS_PATH")
+
+        # Razorpay is required for payments in production
+        if not self.RAZORPAY_KEY_ID or not self.RAZORPAY_KEY_ID.startswith("rzp_live"):
+            production_missing.append("RAZORPAY_KEY_ID (must be rzp_live_... in production)")
+        if not self.RAZORPAY_KEY_SECRET.get_secret_value():
+            production_missing.append("RAZORPAY_KEY_SECRET")
+        if not self.RAZORPAY_WEBHOOK_SECRET.get_secret_value():
+            production_missing.append("RAZORPAY_WEBHOOK_SECRET")
 
         # CORS origins must be restricted (not open wildcard) in production
         if "*" in self.ALLOWED_ORIGINS:

@@ -66,6 +66,7 @@ from app.trust_intelligence.router import router as trust_intelligence_router
 from app.uploads.router import router as uploads_router
 from app.verification.router import router as verification_router
 from app.worker.router import router as worker_router
+from app.payments.router import router as payments_router
 
 # ---------------------------------------------------------------------------
 # V1 Aggregate Router
@@ -339,4 +340,12 @@ v1_router.include_router(
     sockets_router,
     prefix="/sockets",
     tags=["Real-Time"],
+)
+
+# --- Payments (Razorpay) ---
+# Order creation, payment verification, webhook, refunds.
+v1_router.include_router(
+    payments_router,
+    prefix="/payments",
+    tags=["Payments"],
 )
