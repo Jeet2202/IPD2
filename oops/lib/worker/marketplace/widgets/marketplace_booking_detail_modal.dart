@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../models/marketplace_booking_model.dart';
 import '../../../../services/job_application_service.dart';
 import '../../../../services/marketplace_service.dart';
+import '../../../../l10n/app_translations.dart';
 import '../../quotations/quotation_form_screen.dart';
 
 class MarketplaceBookingDetailModal extends StatefulWidget {
@@ -144,7 +145,7 @@ class _MarketplaceBookingDetailModalState
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  isInspection ? 'Inspection Request' : 'Standard Service',
+                  isInspection ? 'inspection_visit'.tr(context) : 'standard'.tr(context),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -167,7 +168,7 @@ class _MarketplaceBookingDetailModalState
 
           // Service Title
           Text(
-            detail.serviceName,
+            AppTranslations.getLocalizedName(context, detail.serviceName),
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -190,28 +191,28 @@ class _MarketplaceBookingDetailModalState
               children: [
                 _buildInfoRow(
                   icon: Icons.location_on_rounded,
-                  title: 'Approximate Location',
+                  title: 'approximate_location'.tr(context),
                   value: detail.address.approximateLocation,
-                  subvalue: 'Exact customer address shared upon job assignment',
+                  subvalue: 'exact_address_notice'.tr(context),
                 ),
                 const Divider(height: 20, color: Color(0xFFE2E8F0)),
                 _buildInfoRow(
                   icon: Icons.calendar_month_rounded,
-                  title: 'Scheduled Date',
-                  value: detail.scheduledDate ?? 'On-Demand / Flexible',
+                  title: 'scheduled_date_title'.tr(context),
+                  value: detail.scheduledDate ?? 'on_demand_flexible'.tr(context),
                 ),
                 if (detail.scheduledTime != null) ...[
                   const Divider(height: 20, color: Color(0xFFE2E8F0)),
                   _buildInfoRow(
                     icon: Icons.access_time_filled_rounded,
-                    title: 'Preferred Time Window',
+                    title: 'preferred_time_window'.tr(context),
                     value: detail.scheduledTime!,
                   ),
                 ],
                 const Divider(height: 20, color: Color(0xFFE2E8F0)),
                 _buildInfoRow(
                   icon: Icons.payments_rounded,
-                  title: 'Estimated Price',
+                  title: 'estimated_price'.tr(context),
                   value: detail.estimatedPrice != null
                       ? '₹ ${detail.estimatedPrice!.toStringAsFixed(0)}'
                       : '₹ ${detail.baseMarketPrice.toStringAsFixed(0)}',
@@ -221,8 +222,8 @@ class _MarketplaceBookingDetailModalState
                   const Divider(height: 20, color: Color(0xFFE2E8F0)),
                   _buildInfoRow(
                     icon: Icons.timer_rounded,
-                    title: 'Expected Duration',
-                    value: '${detail.estimatedDurationMinutes} minutes',
+                    title: 'expected_duration'.tr(context),
+                    value: '${detail.estimatedDurationMinutes} ${'est_duration'.tr(context)}',
                   ),
                 ],
               ],
@@ -233,9 +234,9 @@ class _MarketplaceBookingDetailModalState
           if (detail.problemDescription != null &&
               detail.problemDescription!.isNotEmpty) ...[
             const SizedBox(height: 20),
-            const Text(
-              'Problem Description',
-              style: TextStyle(
+            Text(
+              'problem_description'.tr(context),
+              style: const TextStyle(
                 fontSize: 15,
                 color: Color(0xFF0F172A),
               ),
@@ -266,9 +267,9 @@ class _MarketplaceBookingDetailModalState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Customer Uploaded Media',
-                  style: TextStyle(
+                Text(
+                  'customer_uploaded_media'.tr(context),
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
@@ -389,16 +390,16 @@ class _MarketplaceBookingDetailModalState
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text(
-          'Apply for Job',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        title: Text(
+          'apply_for_job'.tr(context),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Express interest in ${detail.serviceName} (${detail.bookingNumber}).',
+              '${'apply_for_job'.tr(context)}: ${AppTranslations.getLocalizedName(context, detail.serviceName)} (${detail.bookingNumber}).',
               style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 14),
@@ -406,7 +407,7 @@ class _MarketplaceBookingDetailModalState
               controller: coverLetterController,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Optional message to customer (e.g., experience, availability)...',
+                hintText: 'optional_message_hint'.tr(context),
                 hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
@@ -421,7 +422,7 @@ class _MarketplaceBookingDetailModalState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel'.tr(context), style: const TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -430,7 +431,7 @@ class _MarketplaceBookingDetailModalState
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Submit Application'),
+            child: Text('submit_application'.tr(context)),
           ),
         ],
       ),
@@ -502,14 +503,14 @@ class _MarketplaceBookingDetailModalState
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: const Color(0xFFA7F3D0)),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 20),
-                SizedBox(width: 8),
+                const Icon(Icons.check_circle_rounded, color: Color(0xFF059669), size: 20),
+                const SizedBox(width: 8),
                 Text(
-                  'Application Submitted',
-                  style: TextStyle(
+                  'application_submitted'.tr(context),
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF047857),
@@ -539,9 +540,9 @@ class _MarketplaceBookingDetailModalState
                   );
                 },
                 icon: const Icon(Icons.request_quote_rounded, size: 20),
-                label: const Text(
-                  'Manage / Send Quotation',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                label: Text(
+                  'manage_send_quotation'.tr(context),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0F172A),
@@ -581,9 +582,9 @@ class _MarketplaceBookingDetailModalState
                   color: Colors.white,
                 ),
               )
-            : const Text(
-                'Apply for Job',
-                style: TextStyle(
+            : Text(
+                'apply_for_job'.tr(context),
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),

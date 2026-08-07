@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
 import 'service_area/service_area_screen.dart';
 
@@ -110,15 +112,20 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Partner Profile & Settings',
-          style: TextStyle(
+        title: Text(
+          'profile'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w800,
             fontSize: 18,
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Color(0xFF0F172A)),
             onPressed: () => Navigator.pushNamed(context, '/worker/settings'),
@@ -251,9 +258,9 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _WorkerHeroStat(title: 'Rating', value: rating > 0 ? rating.toStringAsFixed(1) : 'New', icon: Icons.star_rounded),
-              _WorkerHeroStat(title: 'Experience', value: '${expYears.toStringAsFixed(expYears.truncateToDouble() == expYears ? 0 : 1)} yrs', icon: Icons.work_history_rounded),
-              _WorkerHeroStat(title: 'Hourly Rate', value: hourlyRate != null && hourlyRate > 0 ? '₹${hourlyRate.toInt()}/hr' : 'Flexible', icon: Icons.payments_rounded),
+              _WorkerHeroStat(title: 'rating'.tr(context), value: rating > 0 ? rating.toStringAsFixed(1) : 'New', icon: Icons.star_rounded),
+              _WorkerHeroStat(title: 'experience'.tr(context), value: '${expYears.toStringAsFixed(expYears.truncateToDouble() == expYears ? 0 : 1)} yrs', icon: Icons.work_history_rounded),
+              _WorkerHeroStat(title: 'hourly_rate'.tr(context), value: hourlyRate != null && hourlyRate > 0 ? '₹${hourlyRate.toInt()}/hr' : 'Flexible', icon: Icons.payments_rounded),
             ],
           ),
         ],
@@ -405,14 +412,14 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Offered Services & Skills', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Text('offered_services_skills'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 12),
           skills.isNotEmpty
               ? Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: skills.map((s) => Chip(
-                    label: Text(s, style: const TextStyle(fontSize: 12, color: Color(0xFF1E40AF))),
+                    label: Text(AppTranslations.getLocalizedName(context, s), style: const TextStyle(fontSize: 12, color: Color(0xFF1E40AF))),
                     backgroundColor: const Color(0xFFEFF6FF),
                     side: const BorderSide(color: Color(0xFFBFDBFE)),
                     padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -421,7 +428,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
               : const Text('No skills added yet', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
           if (langs.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const Text('Spoken Languages', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+            Text('spoken_languages'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -451,7 +458,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Professional Bio', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Text('professional_bio'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 8),
           Text(
             bio,
@@ -472,8 +479,14 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       child: Column(
         children: [
           _MenuItem(
+            icon: Icons.language_rounded,
+            title: 'select_language'.tr(context),
+            subtitle: 'change_language'.tr(context),
+            onTap: () => LanguageSelectorWidget.show(context),
+          ),
+          _MenuItem(
             icon: Icons.edit_note_rounded,
-            title: 'Edit Partner Profile',
+            title: 'edit_profile'.tr(context),
             onTap: () async {
               await Navigator.pushNamed(context, AppRoutes.workerEditProfile);
               _loadProfile();
@@ -481,8 +494,8 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           ),
           _MenuItem(
             icon: Icons.location_on_rounded,
-            title: 'Service Area & Location',
-            subtitle: 'Set your GPS location and job radius',
+            title: 'service_area_location'.tr(context),
+            subtitle: 'set_location_radius'.tr(context),
             onTap: () async {
               await Navigator.push(
                 context,
@@ -493,12 +506,12 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           ),
           _MenuItem(
             icon: Icons.lock_reset_rounded,
-            title: 'Change Password',
+            title: 'change_password'.tr(context),
             onTap: () => Navigator.pushNamed(context, '/worker/settings'),
           ),
           _MenuItem(
             icon: Icons.logout_rounded,
-            title: 'Logout',
+            title: 'logout'.tr(context),
             isRed: true,
             onTap: _showLogoutDialog,
           ),
@@ -538,7 +551,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             ElevatedButton.icon(
               onPressed: _loadProfile,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text('retry'.tr(context)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
@@ -556,12 +569,12 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text('Are you sure you want to logout from your Ally Partner account?'),
+        title: Text('confirm_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
+        content: Text('confirm_logout'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel'.tr(context), style: const TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -576,7 +589,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+            child: Text('yes_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
           ),
         ],
       ),

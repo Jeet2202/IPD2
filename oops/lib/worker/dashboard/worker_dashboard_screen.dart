@@ -4,6 +4,8 @@ import '../../app/routes/app_routes.dart';
 import '../../models/worker_dashboard_model.dart';
 import '../../services/worker_dashboard_service.dart';
 import '../../widgets/notification_bell.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 import '../applications/worker_applications_screen.dart';
 import '../marketplace/widgets/marketplace_booking_card.dart';
 import '../marketplace/widgets/marketplace_booking_detail_modal.dart';
@@ -108,13 +110,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.build_circle_rounded, color: Color(0xFF2563EB), size: 24),
-            SizedBox(width: 8),
+            const Icon(Icons.build_circle_rounded, color: Color(0xFF2563EB), size: 24),
+            const SizedBox(width: 8),
             Text(
-              'Worker Dashboard',
-              style: TextStyle(
+              'worker_dashboard'.tr(context),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -123,6 +125,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
             onPressed: _loadDashboardData,
@@ -246,7 +253,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hello, ${data.workerName}',
+          '${'hello_worker'.tr(context)}, ${data.workerName}',
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
@@ -255,9 +262,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
-          'Discover open jobs and manage your marketplace applications.',
-          style: TextStyle(
+        Text(
+          'discover_jobs_subtitle'.tr(context),
+          style: const TextStyle(
             fontSize: 13,
             color: Color(0xFF64748B),
           ),
@@ -300,7 +307,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 Row(
                   children: [
                     Text(
-                      isAvailable ? 'Available for Jobs' : 'Offline / Unavailable',
+                      isAvailable ? 'available_for_jobs'.tr(context) : 'offline_unavailable'.tr(context),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -311,7 +318,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Working Radius: ${data.workingRadiusKm.toStringAsFixed(0)} km',
+                  '${'working_radius'.tr(context)}: ${data.workingRadiusKm.toStringAsFixed(0)} km',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -336,7 +343,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
       children: [
         Expanded(
           child: _buildStatCard(
-            title: 'Available Jobs',
+            title: 'available_jobs'.tr(context),
             value: data.stats.availableJobs.toString(),
             icon: Icons.work_outline_rounded,
             color: const Color(0xFF2563EB),
@@ -345,7 +352,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            title: 'Recommended',
+            title: 'recommended'.tr(context),
             value: data.stats.recommendedJobs.toString(),
             icon: Icons.star_rounded,
             color: const Color(0xFFD97706),
@@ -354,7 +361,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            title: 'Applications',
+            title: 'applications'.tr(context),
             value: data.stats.activeApplications.toString(),
             icon: Icons.assignment_outlined,
             color: const Color(0xFF059669),
@@ -412,13 +419,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           children: [
-            Icon(Icons.auto_awesome_rounded, color: Color(0xFFD97706), size: 20),
-            SizedBox(width: 8),
+            const Icon(Icons.auto_awesome_rounded, color: Color(0xFFD97706), size: 20),
+            const SizedBox(width: 8),
             Text(
-              'Recommended for You',
-              style: TextStyle(
+              'recommended_for_you'.tr(context),
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -436,9 +443,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Text(
-              'No recommended jobs match your current radius and skills right now.',
-              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            child: Text(
+              'no_recommended_jobs'.tr(context),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
           )
         else
@@ -470,13 +477,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.assignment_rounded, color: Color(0xFF2563EB), size: 20),
-                  SizedBox(width: 8),
+                  const Icon(Icons.assignment_rounded, color: Color(0xFF2563EB), size: 20),
+                  const SizedBox(width: 8),
                   Text(
-                    'My Applications',
-                    style: TextStyle(
+                    'my_applications'.tr(context),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
@@ -493,7 +500,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                     ),
                   );
                 },
-                child: const Text('View All'),
+                child: Text('view_all'.tr(context)),
               ),
             ],
           ),
@@ -501,10 +508,10 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildAppCountTile('Total', appSummary.total, const Color(0xFF3B82F6)),
-              _buildAppCountTile('Pending', appSummary.pending, const Color(0xFFD97706)),
-              _buildAppCountTile('Accepted', appSummary.accepted, const Color(0xFF059669)),
-              _buildAppCountTile('Rejected', appSummary.rejected, const Color(0xFFDC2626)),
+              _buildAppCountTile('total'.tr(context), appSummary.total, const Color(0xFF3B82F6)),
+              _buildAppCountTile('pending'.tr(context), appSummary.pending, const Color(0xFFD97706)),
+              _buildAppCountTile('accepted'.tr(context), appSummary.accepted, const Color(0xFF059669)),
+              _buildAppCountTile('rejected'.tr(context), appSummary.rejected, const Color(0xFFDC2626)),
             ],
           ),
         ],
@@ -545,9 +552,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Latest Marketplace Jobs',
-              style: TextStyle(
+            Text(
+              'latest_marketplace_jobs'.tr(context),
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -561,7 +568,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                   Navigator.pushNamed(context, AppRoutes.workerMarketplace);
                 }
               },
-              child: const Text('View All Jobs'),
+              child: Text('view_all_jobs'.tr(context)),
             ),
           ],
         ),
@@ -575,9 +582,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Text(
-              'No marketplace jobs available currently.',
-              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            child: Text(
+              'no_marketplace_jobs'.tr(context),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
           )
         else

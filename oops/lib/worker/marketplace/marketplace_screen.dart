@@ -6,6 +6,8 @@ import '../../app/routes/app_routes.dart';
 import '../../models/marketplace_booking_model.dart';
 import '../../services/marketplace_service.dart';
 import '../../utils/token_storage.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
 import 'widgets/marketplace_booking_card.dart';
 import 'widgets/marketplace_booking_detail_modal.dart';
@@ -139,16 +141,16 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Job Marketplace',
-                  style: TextStyle(
+                Text(
+                  'job_marketplace'.tr(context),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF0F172A),
                   ),
                 ),
                 Text(
-                  '$_totalBookings open booking${_totalBookings == 1 ? '' : 's'} available',
+                  '$_totalBookings ${'open_bookings_available'.tr(context)}',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -160,6 +162,11 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
             onPressed: _loadMarketplaceBookings,
@@ -191,7 +198,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                             onChanged: _onSearchChanged,
                             textInputAction: TextInputAction.search,
                             decoration: InputDecoration(
-                              hintText: 'Search service, category, keyword...',
+                              hintText: 'search_marketplace_hint'.tr(context),
                               hintStyle: const TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFF94A3B8),
@@ -261,31 +268,31 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           }
                         },
                         itemBuilder: (ctx) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'recommended',
                             child: Row(
                               children: [
-                                Icon(Icons.star_rounded, size: 16, color: Color(0xFFD97706)),
-                                SizedBox(width: 8),
-                                Text('Recommended for You'),
+                                const Icon(Icons.star_rounded, size: 16, color: Color(0xFFD97706)),
+                                const SizedBox(width: 8),
+                                Text('recommended_for_you'.tr(context)),
                               ],
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'newest',
-                            child: Text('Newest First'),
+                            child: Text('newest_first'.tr(context)),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'oldest',
-                            child: Text('Oldest First'),
+                            child: Text('oldest_first'.tr(context)),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'price_high',
-                            child: Text('Highest Price'),
+                            child: Text('highest_price'.tr(context)),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'price_low',
-                            child: Text('Lowest Price'),
+                            child: Text('lowest_price'.tr(context)),
                           ),
                         ],
                         child: Container(
@@ -334,8 +341,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           if (_filterData.bookingType != null)
                             _buildActiveBadge(
                               _filterData.bookingType == 'inspection_request'
-                                  ? 'Inspection'
-                                  : 'Standard',
+                                  ? 'inspection_visit'.tr(context)
+                                  : 'standard'.tr(context),
                               () {
                                 setState(() {
                                   _filterData = _filterData.copyWith(clearType: true);
@@ -369,9 +376,9 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                             style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 8),
                             ),
-                            child: const Text(
-                              'Clear All',
-                              style: TextStyle(
+                            child: Text(
+                              'clear_all'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFFEF4444),
@@ -556,8 +563,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   const SizedBox(height: 18),
                   Text(
                     hasActiveFilters
-                        ? 'No Matching Marketplace Jobs'
-                        : 'No Marketplace Bookings',
+                        ? 'no_matching_jobs'.tr(context)
+                        : 'no_marketplace_bookings'.tr(context),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -567,8 +574,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   const SizedBox(height: 8),
                   Text(
                     hasActiveFilters
-                        ? 'No open bookings matched your search parameters. Try adjusting or clearing your filters.'
-                        : 'There are currently no open customer bookings in your area. Pull down to refresh.',
+                        ? 'no_matching_jobs_desc'.tr(context)
+                        : 'no_marketplace_bookings_desc'.tr(context),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 13,
@@ -581,7 +588,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                     OutlinedButton.icon(
                       onPressed: _clearAllFilters,
                       icon: const Icon(Icons.filter_alt_off_rounded, size: 16),
-                      label: const Text('Clear All Filters'),
+                      label: Text('clear_all_filters'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2563EB),
                         side: const BorderSide(color: Color(0xFFBFDBFE)),
@@ -608,13 +615,13 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          _buildSectionHeader('Recommended for You', Icons.star_rounded, const Color(0xFFD97706)),
+          _buildSectionHeader('recommended_for_you'.tr(context), Icons.star_rounded, const Color(0xFFD97706)),
           ...recommendedJobs.map((b) => MarketplaceBookingCard(
                 booking: b,
                 onTap: () => MarketplaceBookingDetailModal.show(context, b.id),
               )),
           const SizedBox(height: 12),
-          _buildSectionHeader('Other Available Jobs', Icons.work_outline_rounded, const Color(0xFF64748B)),
+          _buildSectionHeader('other_available_jobs'.tr(context), Icons.work_outline_rounded, const Color(0xFF64748B)),
           ...otherJobs.map((b) => MarketplaceBookingCard(
                 booking: b,
                 onTap: () => MarketplaceBookingDetailModal.show(context, b.id),

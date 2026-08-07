@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
+import '../../l10n/app_translations.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -27,27 +28,28 @@ class BottomNavBar extends StatelessWidget {
       child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: onTap,
-        type: BottomNavigationBarType.fixed,        selectedItemColor: AppColors.primary,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textHint,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
         elevation: 0,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            icon: const Icon(Icons.home_rounded),
+            label: 'home'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_rounded),
-            label: 'Bookings',
+            icon: const Icon(Icons.calendar_today_rounded),
+            label: 'my_bookings'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.headset_mic_rounded),
-            label: 'Support',
+            icon: const Icon(Icons.headset_mic_rounded),
+            label: 'support'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: const Icon(Icons.person_rounded),
+            label: 'profile'.tr(context),
           ),
         ],
       ),

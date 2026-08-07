@@ -1,6 +1,8 @@
 // File: lib/worker/earnings/payout_history/payout_history_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerPayoutHistoryScreen extends StatefulWidget {
   const WorkerPayoutHistoryScreen({super.key});
@@ -55,20 +57,29 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payout History Statements',
-          style: TextStyle(
+        title: Text(
+          'earnings'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: const Color(0xFF2563EB),
@@ -76,10 +87,10 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
           indicatorColor: const Color(0xFF2563EB),
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-          tabs: const [
-            Tab(text: 'Completed'),
-            Tab(text: 'Pending'),
-            Tab(text: 'Failed'),
+          tabs: [
+            Tab(text: 'completed'.tr(context)),
+            Tab(text: 'pending'.tr(context)),
+            Tab(text: 'cancelled_bookings'.tr(context)),
           ],
         ),
       ),

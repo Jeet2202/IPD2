@@ -1,6 +1,8 @@
 // File: lib/worker/earnings/earnings_dashboard/earnings_dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 import '../../widgets/worker_bottom_navigation_bar.dart';
 
 class WorkerEarningsDashboardScreen extends StatefulWidget {
@@ -38,15 +40,20 @@ class _WorkerEarningsDashboardScreenState
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Earnings & Analytics',
-          style: TextStyle(
+        title: Text(
+          'earnings'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w800,
             fontSize: 18,
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.history_rounded, color: Color(0xFF2563EB)),
             onPressed: () {
@@ -74,7 +81,7 @@ class _WorkerEarningsDashboardScreenState
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.25),
+                      color: const Color(0xFF2563EB).withOpacity(0.25),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -86,9 +93,9 @@ class _WorkerEarningsDashboardScreenState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'TOTAL LIFETIME EARNINGS',
-                          style: TextStyle(
+                        Text(
+                          'total_lifetime_earnings'.tr(context),
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -102,9 +109,9 @@ class _WorkerEarningsDashboardScreenState
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
-                            'Verified Partner',
-                            style: TextStyle(
+                          child: Text(
+                            'verified_partner'.tr(context),
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -127,18 +134,18 @@ class _WorkerEarningsDashboardScreenState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Withdrawable Balance',
-                              style: TextStyle(
+                              'withdrawable_balance'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 11,
                                 color: Colors.white70,
                               ),
                             ),
-                            SizedBox(height: 2),
-                            Text(
+                            const SizedBox(height: 2),
+                            const Text(
                               '₹ 3,450',
                               style: TextStyle(
                                 fontSize: 18,
@@ -153,7 +160,8 @@ class _WorkerEarningsDashboardScreenState
                             Navigator.pushNamed(
                                 context, '/worker/earnings/wallet');
                           },
-                          style: ElevatedButton.styleFrom(                            foregroundColor: const Color(0xFF2563EB),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 10),
                             elevation: 0,
@@ -161,9 +169,9 @@ class _WorkerEarningsDashboardScreenState
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'Withdraw Now',
-                            style: TextStyle(
+                          child: Text(
+                            'withdraw_now'.tr(context),
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                             ),
@@ -182,27 +190,27 @@ class _WorkerEarningsDashboardScreenState
                 children: [
                   Expanded(
                     child: _buildTimeCard(
-                      period: "Today",
-                      amount: "₹ 2,450",
-                      change: "+12%",
+                      period: 'today'.tr(context),
+                      amount: '₹ 2,450',
+                      change: '+12%',
                       color: const Color(0xFF10B981),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _buildTimeCard(
-                      period: "This Week",
-                      amount: "₹ 14,800",
-                      change: "+18%",
+                      period: 'this_week'.tr(context),
+                      amount: '₹ 14,800',
+                      change: '+18%',
                       color: const Color(0xFF2563EB),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _buildTimeCard(
-                      period: "This Month",
-                      amount: "₹ 52,400",
-                      change: "+8%",
+                      period: 'this_month'.tr(context),
+                      amount: '₹ 52,400',
+                      change: '+8%',
                       color: const Color(0xFF0EA5E9),
                     ),
                   ),
@@ -229,20 +237,20 @@ class _WorkerEarningsDashboardScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Weekly Revenue Trend',
-                          style: TextStyle(
+                          'weekly_revenue_trend'.tr(context),
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF0F172A),
                           ),
                         ),
                         Text(
-                          'Avg: ₹2,114/day',
-                          style: TextStyle(
+                          'avg_per_day'.tr(context),
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF2563EB),
@@ -255,13 +263,13 @@ class _WorkerEarningsDashboardScreenState
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildBar('Mon', 0.5),
-                        _buildBar('Tue', 0.8),
-                        _buildBar('Wed', 0.45),
-                        _buildBar('Thu', 0.9),
-                        _buildBar('Fri', 0.6),
-                        _buildBar('Sat', 1.0, isMax: true),
-                        _buildBar('Sun', 0.7),
+                        _buildBar('mon'.tr(context), 0.5),
+                        _buildBar('tue'.tr(context), 0.8),
+                        _buildBar('wed'.tr(context), 0.45),
+                        _buildBar('thu'.tr(context), 0.9),
+                        _buildBar('fri'.tr(context), 0.6),
+                        _buildBar('sat'.tr(context), 1.0, isMax: true),
+                        _buildBar('sun'.tr(context), 0.7),
                       ],
                     ),
                   ],
@@ -274,9 +282,9 @@ class _WorkerEarningsDashboardScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Recent Transactions',
-                    style: TextStyle(
+                  Text(
+                    'recent_transactions'.tr(context),
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
@@ -287,7 +295,7 @@ class _WorkerEarningsDashboardScreenState
                     onPressed: () {
                       Navigator.pushNamed(context, '/worker/earnings/wallet');
                     },
-                    child: const Text('View Wallet'),
+                    child: Text('view_wallet'.tr(context)),
                   ),
                 ],
               ),

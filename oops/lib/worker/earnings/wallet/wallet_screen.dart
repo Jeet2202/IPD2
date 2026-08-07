@@ -1,6 +1,8 @@
 // File: lib/worker/earnings/wallet/wallet_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerWalletScreen extends StatefulWidget {
   const WorkerWalletScreen({super.key});
@@ -43,14 +45,16 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Ally Wallet',
-          style: TextStyle(
+        title: Text(
+          'my_wallet'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -58,6 +62,11 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.account_balance_rounded,
                 color: Color(0xFF2563EB)),

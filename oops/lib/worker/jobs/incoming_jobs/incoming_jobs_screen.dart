@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../models/marketplace_booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/marketplace_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 import '../../widgets/worker_bottom_navigation_bar.dart';
 
 class WorkerIncomingJobsScreen extends StatefulWidget {
@@ -135,12 +137,17 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
             }
           },
         ),
-        title: const Text(
-          'Incoming Job Requests',
-          style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700, fontSize: 18),
+        title: Text(
+          'incoming_jobs'.tr(context),
+          style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w700, fontSize: 18),
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Color(0xFF2563EB)),
             onPressed: _fetchJobs,

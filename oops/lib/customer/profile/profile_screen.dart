@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -96,12 +98,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           },
         ),
-        title: const Text(
-          'My Profile',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: Text(
+          'profile'.tr(context),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Color(0xFF0F172A)),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.customerSettings),
@@ -342,17 +349,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Personal Information', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Text('customer_profile'.tr(context), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 16),
-          _InfoRow(icon: Icons.phone_android_rounded, label: 'Alternate Phone', value: altPhone),
+          _InfoRow(icon: Icons.phone_android_rounded, label: 'alternate_phone'.tr(context), value: altPhone),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.cake_rounded, label: 'Date of Birth', value: dob),
+          _InfoRow(icon: Icons.cake_rounded, label: 'date_of_birth'.tr(context), value: dob),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.person_outline_rounded, label: 'Gender', value: gender),
+          _InfoRow(icon: Icons.person_outline_rounded, label: 'gender'.tr(context), value: gender),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.language_rounded, label: 'Preferred Language', value: lang),
+          _InfoRow(icon: Icons.language_rounded, label: 'language'.tr(context), value: lang),
           const SizedBox(height: 12),
-          _InfoRow(icon: Icons.location_on_outlined, label: 'Default Address', value: defaultAddr),
+          _InfoRow(icon: Icons.location_on_outlined, label: 'service_address'.tr(context), value: defaultAddr),
         ],
       ),
     );
@@ -368,8 +375,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           _MenuItem(
+            icon: Icons.language_rounded,
+            title: 'select_language'.tr(context),
+            onTap: () => LanguageSelectorWidget.show(context),
+          ),
+          _MenuItem(
             icon: Icons.person_outline_rounded,
-            title: 'Edit Profile',
+            title: 'edit_profile'.tr(context),
             onTap: () async {
               await Navigator.pushNamed(context, AppRoutes.editProfile);
               _loadProfile();
@@ -377,12 +389,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _MenuItem(
             icon: Icons.receipt_long_rounded,
-            title: 'My Bookings',
+            title: 'my_bookings'.tr(context),
             onTap: () => Navigator.pushNamed(context, AppRoutes.myBookings),
           ),
           _MenuItem(
             icon: Icons.location_on_outlined,
-            title: 'Saved Addresses',
+            title: 'saved_addresses'.tr(context),
             onTap: () async {
               await Navigator.pushNamed(context, AppRoutes.savedAddresses);
               _loadProfile();
@@ -390,22 +402,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           _MenuItem(
             icon: Icons.lock_reset_rounded,
-            title: 'Change Password',
+            title: 'change_password'.tr(context),
             onTap: () => Navigator.pushNamed(context, AppRoutes.customerSettings),
           ),
           _MenuItem(
             icon: Icons.notifications_none_rounded,
-            title: 'Notifications',
+            title: 'notifications'.tr(context),
             onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
           ),
           _MenuItem(
             icon: Icons.help_outline_rounded,
-            title: 'Help & Support',
+            title: 'help_support'.tr(context),
             onTap: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
           ),
           _MenuItem(
             icon: Icons.logout_rounded,
-            title: 'Logout',
+            title: 'logout'.tr(context),
             isRed: true,
             onTap: _showLogoutDialog,
           ),
@@ -454,7 +466,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton.icon(
               onPressed: _loadProfile,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text('retry'.tr(context)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
@@ -472,12 +484,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Confirm Logout', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text('Are you sure you want to logout from your Ally account?'),
+        title: Text('confirm_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
+        content: Text('confirm_logout'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel'.tr(context), style: const TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -492,7 +504,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.w800)),
+            child: Text('yes_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
           ),
         ],
       ),

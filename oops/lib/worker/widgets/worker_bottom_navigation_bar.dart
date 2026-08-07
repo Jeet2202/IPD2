@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../app/theme/app_colors.dart';
+import '../../l10n/app_translations.dart';
 
 class WorkerBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -44,26 +45,26 @@ class WorkerBottomNavigationBar extends StatelessWidget {
       backgroundColor: AppColors.surface,
       elevation: 12,
       onTap: (index) => _onTabTapped(context, index),
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard_rounded),
-          label: 'Home',
+          icon: const Icon(Icons.dashboard_rounded),
+          label: 'home'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.storefront_rounded),
-          label: 'Marketplace',
+          icon: const Icon(Icons.storefront_rounded),
+          label: 'marketplace'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.work_rounded),
-          label: 'Work',
+          icon: const Icon(Icons.work_rounded),
+          label: 'work'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_balance_wallet_rounded),
-          label: 'Earnings',
+          icon: const Icon(Icons.account_balance_wallet_rounded),
+          label: 'earnings'.tr(context),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_rounded),
-          label: 'Profile',
+          icon: const Icon(Icons.person_rounded),
+          label: 'profile'.tr(context),
         ),
       ],
     );

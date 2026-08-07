@@ -14,6 +14,8 @@ import '../../../widgets/review_display_card.dart';
 import '../../../widgets/booking_communication_section.dart';
 import '../../../widgets/live_tracking_map_widget.dart';
 import '../../../services/socket_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 import '../../quotations/customer_quotations_screen.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
@@ -441,12 +443,17 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Booking Details',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: Text(
+          'booking_details'.tr(context),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
             onPressed: () {

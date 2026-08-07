@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../../models/marketplace_booking_model.dart';
+import '../../../../l10n/app_translations.dart';
 
 class MarketplaceBookingCard extends StatelessWidget {
   final MarketplaceBookingItem booking;
@@ -27,8 +28,8 @@ class MarketplaceBookingCard extends StatelessWidget {
         : '₹ ${booking.baseMarketPrice.toStringAsFixed(0)}';
 
     final distanceText = booking.distanceKm != null
-        ? '${booking.distanceKm!.toStringAsFixed(1)} km away'
-        : 'Location available';
+        ? '${booking.distanceKm!.toStringAsFixed(1)} ${'km_away'.tr(context)}'
+        : 'location_available'.tr(context);
 
     return GestureDetector(
       onTap: onTap,
@@ -82,10 +83,10 @@ class MarketplaceBookingCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               isInspection
-                                  ? 'Inspection'
+                                  ? 'inspection_visit'.tr(context)
                                   : isCustom
-                                      ? 'Custom Service'
-                                      : 'Standard',
+                                      ? 'custom_service_request'.tr(context)
+                                      : 'standard'.tr(context),
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -103,14 +104,14 @@ class MarketplaceBookingCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: const Color(0xFFA7F3D0)),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF059669)),
-                              SizedBox(width: 3),
+                              const Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF059669)),
+                              const SizedBox(width: 3),
                               Text(
-                                'Applied',
-                                style: TextStyle(
+                                'applied'.tr(context),
+                                style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Color(0xFF047857),
@@ -127,14 +128,14 @@ class MarketplaceBookingCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: const Color(0xFFFDE68A)),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.star_rounded, size: 13, color: Color(0xFFD97706)),
-                              SizedBox(width: 3),
+                              const Icon(Icons.star_rounded, size: 13, color: Color(0xFFD97706)),
+                              const SizedBox(width: 3),
                               Text(
-                                'Recommended',
-                                style: TextStyle(
+                                'recommended'.tr(context),
+                                style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Color(0xFFB45309),
@@ -162,7 +163,7 @@ class MarketplaceBookingCard extends StatelessWidget {
 
             // Service Name
             Text(
-              booking.serviceName,
+              AppTranslations.getLocalizedName(context, booking.serviceName),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -272,7 +273,7 @@ class MarketplaceBookingCard extends StatelessWidget {
                     const Icon(Icons.photo_library_rounded, size: 14, color: Color(0xFF2563EB)),
                     const SizedBox(width: 6),
                     Text(
-                      '${booking.problemPhotos.length} Attached Media File(s)',
+                      '${booking.problemPhotos.length} ${'attached_photos'.tr(context)}',
                       style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                     ),
                   ],
@@ -291,9 +292,9 @@ class MarketplaceBookingCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Estimated Price',
-                      style: TextStyle(
+                    Text(
+                      'estimated_price'.tr(context),
+                      style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF64748B),
@@ -315,18 +316,18 @@ class MarketplaceBookingCard extends StatelessWidget {
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Text(
-                        'View Details',
-                        style: TextStyle(
+                        'view_details'.tr(context),
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF2563EB),
                         ),
                       ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF2563EB)),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF2563EB)),
                     ],
                   ),
                 ),
