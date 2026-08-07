@@ -199,6 +199,7 @@ class BookingModel {
   final String? inspectionId;
   final String? quotationId;
   final String? paymentId;
+  final String? paymentStatus;
   final String? completionNotes;
   final String? workSummary;
   final List<String> beforePhotos;
@@ -245,6 +246,7 @@ class BookingModel {
     this.inspectionId,
     this.quotationId,
     this.paymentId,
+    this.paymentStatus,
     this.completionNotes,
     this.workSummary,
     this.beforePhotos = const [],
@@ -272,6 +274,7 @@ class BookingModel {
   bool get isWorkCompleted => status == 'work_completed';
   bool get isCustomerConfirmed => status == 'customer_confirmed' || status == 'completed';
   bool get isCancelled => status == 'cancelled';
+  bool get isPaid => paymentStatus?.toUpperCase() == 'PAID';
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     final raw = (json['data'] is Map<String, dynamic>) ? json['data'] as Map<String, dynamic> : json;
@@ -313,6 +316,7 @@ class BookingModel {
       inspectionId: raw['inspection_id'] as String?,
       quotationId: raw['quotation_id'] as String?,
       paymentId: raw['payment_id'] as String?,
+      paymentStatus: raw['payment_status'] as String?,
       completionNotes: raw['completion_notes'] as String?,
       workSummary: raw['work_summary'] as String?,
       beforePhotos: (raw['before_photos'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
@@ -364,6 +368,7 @@ class BookingModel {
         'inspection_id': inspectionId,
         'quotation_id': quotationId,
         'payment_id': paymentId,
+        'payment_status': paymentStatus,
         'completion_notes': completionNotes,
         'work_summary': workSummary,
         'before_photos': beforePhotos,

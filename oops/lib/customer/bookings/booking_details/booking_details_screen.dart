@@ -6,6 +6,7 @@ import '../../../models/review_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/review_service.dart';
+import '../../../services/razorpay_service.dart';
 import '../../../widgets/booking_lifecycle_stepper.dart';
 import '../../../widgets/booking_timeline_widget.dart';
 import '../../../widgets/review_dialog.dart';
@@ -31,12 +32,14 @@ class BookingDetailsScreen extends StatefulWidget {
 
 class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   final BookingService _bookingService = BookingService.instance;
+  final RazorpayService _razorpayService = RazorpayService();
 
   BookingModel? _booking;
   ReviewModel? _existingReview;
   bool _isLoading = true;
   String? _errorMessage;
   bool _isConfirming = false;
+  bool _isProcessingPayment = false;
   final SocketService _socketService = SocketService();
 
   // Tracking data
@@ -51,6 +54,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   void initState() {
     super.initState();
     _booking = widget.booking;
+
+    _razorpayService.init(
+      onSuccess: _onRazorpaySuccess,
+      onFailure: _onRazorpayFailure,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_booking == null) {
@@ -70,6 +78,78 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _fetchBookingById(widget.bookingId!, isSilentRefresh: true);
       }
     });
+  }
+
+  Future<void> _onRazorpaySuccess() async {
+    if (!mounted || _booking == null) return;
+    setState(() {
+      _isProcessingPayment = false;
+    });
+
+    // Refresh booking details to get payment_status: PAID
+    await _fetchBookingById(_booking!.id, isSilentRefresh: true);
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Payment successful! Proceeding to service completion & review...'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+
+    _handleConfirmCompletion();
+  }
+
+  void _onRazorpayFailure(String message) {
+    if (!mounted) return;
+    setState(() {
+      _isProcessingPayment = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Payment cancelled or failed: $message'),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  Future<void> _handlePaymentAndCompletion() async {
+    if (_booking == null || _isProcessingPayment || _isConfirming) return;
+
+    final double amount = _booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0;
+
+    if (amount <= 0 || _booking!.isPaid) {
+      _handleConfirmCompletion();
+      return;
+    }
+
+    setState(() => _isProcessingPayment = true);
+
+    try {
+      await _razorpayService.openServicePayment(
+        bookingId: _booking!.id,
+        amountRupees: amount,
+        description: 'Payment for ${_booking!.serviceSnapshot.name} (${_booking!.bookingNumber})',
+        customerName: _booking!.addressSnapshot.fullName,
+        customerPhone: _booking!.addressSnapshot.phone,
+        customerEmail: 'customer@ally.com',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isProcessingPayment = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not open payment window: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
   }
 
   void _setupTracking() {
@@ -107,6 +187,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   @override
   void dispose() {
+    _razorpayService.dispose();
     _autoRefreshTimer?.cancel();
     if (_booking != null) {
       _socketService.leaveBookingTracking(_booking!.id);
@@ -207,13 +288,22 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   Future<void> _handleConfirmCompletion() async {
     if (_booking == null || _isConfirming) return;
 
+    // Strict Payment Gate: If work is completed and unpaid, trigger payment modal first
+    final double payableAmount = _booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0;
+    if (_booking!.isWorkCompleted && !_booking!.isPaid && payableAmount > 0) {
+      await _handlePaymentAndCompletion();
+      return;
+    }
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Confirm Service Completion', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text(
-          'Are you satisfied with the completed work? Confirming will mark the service as officially accepted.',
+        content: Text(
+          _booking!.isPaid
+              ? 'Payment of ₹${payableAmount.toStringAsFixed(0)} verified! Are you satisfied with the completed work? Confirming will mark the service as completed.'
+              : 'Are you satisfied with the completed work? Confirming will mark the service as officially accepted.',
         ),
         actions: [
           TextButton(
@@ -459,6 +549,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                             const SizedBox(height: 20),
 
+                            // ── Payment Status Card ────────────────────────
+                            _buildPaymentStatusCard(),
+
+                            const SizedBox(height: 20),
+
                             // ── Worker Quotations Button Card ───────────────
                             _buildViewQuotationsCard(),
 
@@ -485,22 +580,41 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: _isConfirming ? null : _handleConfirmCompletion,
-                  icon: _isConfirming
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Icon(Icons.verified_rounded, size: 20),
-                  label: Text(
-                    _isConfirming ? 'Confirming...' : 'Confirm Service Completion',
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D9488),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
-                ),
+                child: (!_booking!.isPaid && (_booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0) > 0)
+                    ? ElevatedButton.icon(
+                        onPressed: (_isProcessingPayment || _isConfirming) ? null : _handlePaymentAndCompletion,
+                        icon: _isProcessingPayment
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.payment_rounded, size: 20),
+                        label: Text(
+                          _isProcessingPayment
+                              ? 'Opening Razorpay...'
+                              : 'Pay ₹${(_booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0).toStringAsFixed(0)} & Rate Worker',
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
+                        ),
+                      )
+                    : ElevatedButton.icon(
+                        onPressed: _isConfirming ? null : _handleConfirmCompletion,
+                        icon: _isConfirming
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.verified_rounded, size: 20),
+                        label: Text(
+                          _isConfirming ? 'Confirming...' : 'Confirm Service Completion',
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0D9488),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
+                        ),
+                      ),
               ),
             )
           : (_booking != null && (_booking!.isCustomerConfirmed || _booking!.status == 'completed'))
@@ -748,10 +862,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
             ),
             const SizedBox(height: 14),
           ],
-          const SizedBox(height: 4),
           Text(
-            'Tap the button below to confirm service completion.',
-            style: TextStyle(fontSize: 12, color: Color(0xFF15803D), fontStyle: FontStyle.italic),
+            _booking!.isPaid
+                ? 'Tap the button below to confirm service completion and submit worker review.'
+                : 'Please complete payment via Razorpay to confirm service completion and rate the worker.',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF15803D), fontStyle: FontStyle.italic),
           ),
         ],
       ),
@@ -1006,6 +1121,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   }
 
   Widget _buildPriceSummaryCard() {
+    final effectivePrice = _booking!.finalPrice ?? _booking!.estimatedPrice;
+    final isAgreed = _booking!.finalPrice != null;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -1013,14 +1131,136 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Estimated Price', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-          Text(
-            '₹${_booking!.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.primary),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isAgreed ? 'Agreed Quotation Price' : 'Estimated Price',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+              ),
+              Text(
+                '₹${effectivePrice?.toStringAsFixed(0) ?? '0'}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.primary),
+              ),
+            ],
           ),
+          if (isAgreed) ...[
+            const SizedBox(height: 6),
+            const Row(
+              children: [
+                Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF10B981)),
+                SizedBox(width: 4),
+                Text(
+                  'Accepted Worker Quotation',
+                  style: TextStyle(fontSize: 11, color: Color(0xFF10B981), fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentStatusCard() {
+    final isPaid = _booking!.isPaid;
+    final effectivePrice = _booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0;
+    final paymentColor = isPaid ? const Color(0xFF16A34A) : const Color(0xFFD97706);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: isPaid ? const Color(0xFFF0FDF4) : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isPaid ? const Color(0xFF86EFAC) : const Color(0xFFFCD34D)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isPaid ? Icons.payment_rounded : Icons.pending_actions_rounded,
+                    color: paymentColor,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Payment Status',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: paymentColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  isPaid ? 'PAID' : 'PENDING PAYMENT',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: paymentColor),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isPaid ? 'Amount Paid' : 'Amount Payable',
+                style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              ),
+              Text(
+                '₹${effectivePrice.toStringAsFixed(0)}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: paymentColor),
+              ),
+            ],
+          ),
+          if (isPaid && _booking!.paymentId != null && _booking!.paymentId!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Razorpay Ref ID', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                Text(
+                  _booking!.paymentId!,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, fontFamily: 'monospace'),
+                ),
+              ],
+            ),
+          ],
+          if (!isPaid && _booking!.isWorkCompleted && effectivePrice > 0) ...[
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isProcessingPayment ? null : _handlePaymentAndCompletion,
+                icon: _isProcessingPayment
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.payment_rounded, size: 18),
+                label: Text(
+                  _isProcessingPayment ? 'Opening Checkout...' : 'Pay ₹${effectivePrice.toStringAsFixed(0)} via Razorpay',
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -888,6 +888,7 @@ class QuotationService:
         booking.assigned_at = now_utc
         booking.quotation_id = q.id
         booking.final_price = q.total_amount
+        booking.estimated_price = q.total_amount
         await booking.save()
 
         # ATOMIC STEP 3: Accept target job application
