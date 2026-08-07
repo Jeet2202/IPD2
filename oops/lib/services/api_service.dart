@@ -29,10 +29,13 @@ class ApiService {
 
   final http.Client _client = http.Client();
 
-  Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${TokenStorage.accessToken}',
-      };
+  Map<String, String> get _headers {
+    final token = TokenStorage.accessToken;
+    return {
+      'Content-Type': 'application/json',
+      if (token.isNotEmpty && token != 'null') 'Authorization': 'Bearer $token',
+    };
+  }
 
   Uri _uri(String path, [Map<String, String>? params]) {
     final uri = Uri.parse('${EnvironmentConfig.baseUrl}$path');

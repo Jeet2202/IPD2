@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/quotation_model.dart';
 import '../../services/quotation_service.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 import 'customer_quotation_detail_screen.dart';
 import 'quotation_comparison_screen.dart';
 
@@ -77,9 +79,9 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Received Quotations',
-              style: TextStyle(
+            Text(
+              'received_quotations'.tr(context),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -92,6 +94,11 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           if (_quotations.length >= 2)
             Padding(
               padding: const EdgeInsets.only(right: 12),
@@ -108,7 +115,7 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                   );
                 },
                 icon: const Icon(Icons.compare_arrows_rounded, size: 16),
-                label: const Text('Compare'),
+                label: Text('compare'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
                   foregroundColor: Colors.white,

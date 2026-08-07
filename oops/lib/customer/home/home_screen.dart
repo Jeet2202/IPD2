@@ -10,6 +10,8 @@ import '../../services/ai_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/location_service.dart';
 import '../../widgets/notification_bell.dart';
+import '../../widgets/language_selector_widget.dart';
+import '../../l10n/app_translations.dart';
 import '../search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,22 +35,22 @@ class _HomeScreenState extends State<HomeScreen> {
   // Promos / Promotional Banners
   final List<Map<String, dynamic>> _banners = [
     {
-      'title': 'Summer AC Service Offer',
-      'subtitle': 'Get up to 30% OFF on deep cleaning & gas refill',
+      'titleKey': 'summer_ac_offer',
+      'subKey': 'summer_ac_sub',
       'code': 'USE: COOL30',
       'bgGradient': [const Color(0xFF1E40AF), const Color(0xFF3B82F6)],
       'icon': Icons.ac_unit_rounded,
     },
     {
-      'title': 'Inspection Before Repair',
-      'subtitle': 'Diagnosis at just ₹99. Zero hidden charges!',
+      'titleKey': 'inspection_before_repair',
+      'subKey': 'diagnosis_at_99',
       'code': 'BOOK NOW',
       'bgGradient': [const Color(0xFF0F766E), const Color(0xFF14B8A6)],
       'icon': Icons.verified_rounded,
     },
     {
-      'title': 'Home Deep Cleaning',
-      'subtitle': 'Professional sanitization & deep cleaning experts',
+      'titleKey': 'home_deep_cleaning_offer',
+      'subKey': 'home_deep_cleaning_sub',
       'code': '20% DISCOUNT',
       'bgGradient': [const Color(0xFF6D28D9), const Color(0xFF8B5CF6)],
       'icon': Icons.cleaning_services_rounded,
@@ -198,26 +200,26 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedFontSize: 12,
           unselectedFontSize: 12,
           elevation: 0,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              activeIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: const Icon(Icons.home_rounded),
+              activeIcon: const Icon(Icons.home_rounded),
+              label: 'home'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_rounded),
-              activeIcon: Icon(Icons.calendar_today_rounded),
-              label: 'Bookings',
+              icon: const Icon(Icons.calendar_today_rounded),
+              activeIcon: const Icon(Icons.calendar_today_rounded),
+              label: 'my_bookings'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.headset_mic_rounded),
-              activeIcon: Icon(Icons.headset_mic_rounded),
-              label: 'Support',
+              icon: const Icon(Icons.headset_mic_rounded),
+              activeIcon: const Icon(Icons.headset_mic_rounded),
+              label: 'support'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.person_rounded),
+              activeIcon: const Icon(Icons.person_rounded),
+              label: 'profile'.tr(context),
             ),
           ],
         ),
@@ -315,9 +317,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'Welcome to Ally',
-                    style: TextStyle(
+                  Text(
+                    'welcome_to_ally'.tr(context),
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF0F172A),
@@ -327,19 +329,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: NotificationBell(
-              iconColor: const Color(0xFF334155),
-              iconSize: 22.0,
-              onBellPressed: () {
-                Navigator.pushNamed(context, AppRoutes.notifications);
-              },
-            ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB), size: 24),
+                tooltip: 'Select Language',
+                onPressed: () => LanguageSelectorWidget.show(context),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: NotificationBell(
+                  iconColor: const Color(0xFF334155),
+                  iconSize: 22.0,
+                  onBellPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.notifications);
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -366,15 +378,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 22),
-              SizedBox(width: 12),
-              Text(
-                'Search for AC repair, plumbing, electrical...',
-                style: TextStyle(
-                  color: Color(0xFF94A3B8),
-                  fontSize: 14,
+              const Icon(Icons.search_rounded, color: Color(0xFF94A3B8), size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'search_placeholder'.tr(context),
+                  style: const TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -422,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            banner['title'] as String,
+                            (banner['titleKey'] as String).tr(context),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -431,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            banner['subtitle'] as String,
+                            (banner['subKey'] as String).tr(context),
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 12,
@@ -522,19 +538,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.add_task_rounded, color: Colors.white, size: 28),
-                    SizedBox(height: 12),
+                    const Icon(Icons.add_task_rounded, color: Colors.white, size: 28),
+                    const SizedBox(height: 12),
                     Text(
-                      'Book New Service',
-                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      'book_new_service'.tr(context),
+                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Custom service request',
-                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                      'custom_service_request'.tr(context),
+                      style: const TextStyle(color: Colors.white70, fontSize: 11),
                     ),
                   ],
                 ),
@@ -566,19 +582,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.search_rounded, color: Colors.white, size: 28),
-                    SizedBox(height: 12),
+                    const Icon(Icons.search_rounded, color: Colors.white, size: 28),
+                    const SizedBox(height: 12),
                     Text(
-                      'Inspection Visit',
-                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      'inspection_visit'.tr(context),
+                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      'Unsure what is broken',
-                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                      'unsure_what_is_broken'.tr(context),
+                      style: const TextStyle(color: Colors.white70, fontSize: 11),
                     ),
                   ],
                 ),
@@ -602,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // ── Featured Categories ──────────────────────────────────────────────
         _buildSectionHeader(
-          'Featured Categories',
+          'featured_categories'.tr(context),
           onViewAll: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
         ),
         const SizedBox(height: 12),
@@ -612,7 +628,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // ── Featured Services ────────────────────────────────────────────────
         _buildSectionHeader(
-          'Featured Services',
+          'featured_services'.tr(context),
           onViewAll: () => Navigator.pushNamed(context, AppRoutes.customerServices),
         ),
         const SizedBox(height: 12),
@@ -622,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // ── Popular Services ─────────────────────────────────────────────────
         _buildSectionHeader(
-          'Popular Services',
+          'popular_services'.tr(context),
           onViewAll: () => Navigator.pushNamed(context, AppRoutes.customerServices),
         ),
         const SizedBox(height: 12),
@@ -632,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // ── Recommended Services ─────────────────────────────────────────────
         _buildSectionHeader(
-          'Recommended For You',
+          'recommended_for_you'.tr(context),
           onViewAll: () => Navigator.pushNamed(context, AppRoutes.customerServices),
         ),
         const SizedBox(height: 12),
@@ -642,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // ── Recently Added Services ──────────────────────────────────────────
         _buildSectionHeader(
-          'Recently Added Services',
+          'recently_added_services'.tr(context),
           onViewAll: () => Navigator.pushNamed(context, AppRoutes.customerServices),
         ),
         const SizedBox(height: 12),
@@ -669,9 +685,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (onViewAll != null)
             GestureDetector(
               onTap: onViewAll,
-              child: const Text(
-                'See All',
-                style: TextStyle(
+              child: Text(
+                'view_all'.tr(context),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF2563EB),
@@ -733,7 +749,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      cat.name,
+                      AppTranslations.getLocalizedName(context, cat.name),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -864,7 +880,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          service.name,
+                          AppTranslations.getLocalizedName(context, service.name),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

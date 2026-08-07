@@ -178,9 +178,6 @@ class RazorpayService {
       'theme': {
         'color': '#2563EB',  // Ally brand blue
       },
-      'external': {
-        'wallets': ['paytm', 'gpay', 'phonepe'],
-      },
     };
 
     debugPrint('[RazorpayService] Opening checkout for order: $orderId');

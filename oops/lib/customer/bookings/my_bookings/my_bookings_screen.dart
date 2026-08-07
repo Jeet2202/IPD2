@@ -6,6 +6,8 @@ import '../../../models/booking_model.dart';
 import '../../../models/service_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -152,11 +154,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             }
           },
         ),
-        title: const Text(
-          'My Bookings',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: Text(
+          'my_bookings'.tr(context),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primary,
@@ -256,22 +265,22 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
           elevation: 0,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: const Icon(Icons.home_rounded),
+              label: 'home'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_rounded),
-              label: 'Bookings',
+              icon: const Icon(Icons.calendar_today_rounded),
+              label: 'my_bookings'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.headset_mic_rounded),
-              label: 'Support',
+              icon: const Icon(Icons.headset_mic_rounded),
+              label: 'support'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.person_rounded),
+              label: 'profile'.tr(context),
             ),
           ],
         ),

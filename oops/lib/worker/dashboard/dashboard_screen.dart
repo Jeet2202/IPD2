@@ -1,6 +1,8 @@
 // File: lib/worker/dashboard/dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 
 class WorkerDashboardScreen extends StatefulWidget {
   const WorkerDashboardScreen({super.key});
@@ -59,9 +61,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Hello, Ramesh',
-                    style: TextStyle(
+                  Text(
+                    '${'hello_worker'.tr(context)}, Ramesh',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
@@ -79,9 +81,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                           color: const Color(0xFFEFF6FF),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
-                          'Electrician Pro',
-                          style: TextStyle(
+                        child: Text(
+                          'electrician_pro'.tr(context),
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF2563EB),
@@ -96,6 +98,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           // Online Toggle Switch Header Button
           Container(
             margin: const EdgeInsets.only(right: 16),
@@ -107,7 +114,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             child: Row(
               children: [
                 Text(
-                  _isOnline ? 'ONLINE' : 'OFFLINE',
+                  _isOnline ? 'online'.tr(context) : 'offline'.tr(context),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -145,9 +152,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 children: [
                   Expanded(
                     child: _buildStatCard(
-                      title: "Today's Earnings",
+                      title: 'todays_earnings'.tr(context),
                       value: '₹ 2,450',
-                      subtext: '+₹650 from tips',
+                      subtext: 'tips_subtext'.tr(context),
                       icon: Icons.account_balance_wallet_rounded,
                       color: const Color(0xFF2563EB),
                       bgGradient: const LinearGradient(
@@ -158,9 +165,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildStatCard(
-                      title: "Jobs Completed",
-                      value: '4 Jobs',
-                      subtext: 'Target 5 today',
+                      title: 'jobs_completed'.tr(context),
+                      value: 'jobs_value_count'.tr(context),
+                      subtext: 'target_today'.tr(context),
                       icon: Icons.check_circle_rounded,
                       color: const Color(0xFF0EA5E9),
                       bgGradient: const LinearGradient(
@@ -177,8 +184,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 children: [
                   Expanded(
                     child: _buildMiniStatCard(
-                      title: 'Pending Requests',
-                      value: '3 New',
+                      title: 'pending_requests'.tr(context),
+                      value: 'new_requests_count'.tr(context),
                       icon: Icons.notifications_active_rounded,
                       iconColor: const Color(0xFFF59E0B),
                     ),
@@ -186,7 +193,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildMiniStatCard(
-                      title: 'Partner Rating',
+                      title: 'partner_rating'.tr(context),
                       value: '4.9 ★',
                       icon: Icons.star_rounded,
                       iconColor: const Color(0xFFF59E0B),
@@ -198,9 +205,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               const SizedBox(height: 24),
 
               // Quick Actions Grid
-              const Text(
-                'Quick Management',
-                style: TextStyle(
+              Text(
+                'quick_management'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -218,7 +225,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 childAspectRatio: 0.92,
                 children: [
                   _buildQuickActionItem(
-                    label: 'Incoming Jobs',
+                    label: 'incoming_jobs'.tr(context),
                     icon: Icons.inbox_rounded,
                     badgeCount: 3,
                     color: const Color(0xFF2563EB),
@@ -226,7 +233,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                         Navigator.pushNamed(context, '/worker/jobs/incoming'),
                   ),
                   _buildQuickActionItem(
-                    label: 'Active Jobs',
+                    label: 'active_jobs'.tr(context),
                     icon: Icons.engineering_rounded,
                     badgeCount: 1,
                     color: const Color(0xFF0EA5E9),
@@ -234,28 +241,28 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                         Navigator.pushNamed(context, '/worker/jobs/active'),
                   ),
                   _buildQuickActionItem(
-                    label: 'Inspection Jobs',
+                    label: 'inspection_jobs'.tr(context),
                     icon: Icons.fact_check_rounded,
                     color: const Color(0xFF8B5CF6),
                     onTap: () =>
                         Navigator.pushNamed(context, '/worker/inspection/request'),
                   ),
                   _buildQuickActionItem(
-                    label: 'Earnings',
+                    label: 'earnings'.tr(context),
                     icon: Icons.payments_rounded,
                     color: const Color(0xFF10B981),
                     onTap: () =>
                         Navigator.pushReplacementNamed(context, '/worker/earnings/dashboard'),
                   ),
                   _buildQuickActionItem(
-                    label: 'Availability',
+                    label: 'availability'.tr(context),
                     icon: Icons.calendar_month_rounded,
                     color: const Color(0xFFF59E0B),
                     onTap: () =>
                         Navigator.pushNamed(context, '/worker/profile/availability'),
                   ),
                   _buildQuickActionItem(
-                    label: 'My Wallet',
+                    label: 'my_wallet'.tr(context),
                     icon: Icons.account_balance_wallet_rounded,
                     color: const Color(0xFFEC4899),
                     onTap: () =>
@@ -287,21 +294,21 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Weekly Performance',
-                              style: TextStyle(
+                              'weekly_performance'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFF0F172A),
                               ),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
-                              'Total: ₹ 14,800 this week',
-                              style: TextStyle(
+                              'weekly_total_text'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF64748B),
                               ),
@@ -315,9 +322,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                             color: const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
-                            '+18% vs last week',
-                            style: TextStyle(
+                          child: Text(
+                            'vs_last_week'.tr(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF2563EB),
@@ -332,13 +339,13 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildChartBar('Mon', 0.5),
-                        _buildChartBar('Tue', 0.75),
-                        _buildChartBar('Wed', 0.4),
-                        _buildChartBar('Thu', 0.9),
-                        _buildChartBar('Fri', 0.65),
-                        _buildChartBar('Sat', 0.95, isHigh: true),
-                        _buildChartBar('Sun', 0.8),
+                        _buildChartBar('mon'.tr(context), 0.5),
+                        _buildChartBar('tue'.tr(context), 0.75),
+                        _buildChartBar('wed'.tr(context), 0.4),
+                        _buildChartBar('thu'.tr(context), 0.9),
+                        _buildChartBar('fri'.tr(context), 0.65),
+                        _buildChartBar('sat'.tr(context), 0.95, isHigh: true),
+                        _buildChartBar('sun'.tr(context), 0.8),
                       ],
                     ),
                   ],
@@ -348,9 +355,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               const SizedBox(height: 24),
 
               // Recent Activity Feed
-              const Text(
-                'Recent Activity',
-                style: TextStyle(
+              Text(
+                'recent_activity'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -360,7 +367,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               const SizedBox(height: 12),
 
               _buildActivityTile(
-                title: 'AC Maintenance Completed',
+                title: 'ac_maintenance_completed'.tr(context),
                 customer: 'Anita Sharma • Saket',
                 amount: '₹ 850',
                 time: '1 hour ago',
@@ -369,7 +376,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
               ),
               const SizedBox(height: 10),
               _buildActivityTile(
-                title: 'Payout Transferred to Bank',
+                title: 'payout_transferred'.tr(context),
                 customer: 'SBI A/C ending ...4321',
                 amount: '₹ 3,200',
                 time: 'Yesterday',
@@ -386,7 +393,8 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
         currentIndex: 0,
         selectedItemColor: const Color(0xFF2563EB),
         unselectedItemColor: const Color(0xFF94A3B8),
-        type: BottomNavigationBarType.fixed,        elevation: 12,
+        type: BottomNavigationBarType.fixed,
+        elevation: 12,
         onTap: (index) {
           if (index == 0) return;
           if (index == 1) {
@@ -399,26 +407,26 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_rounded),
-            label: 'Home',
+            icon: const Icon(Icons.dashboard_rounded),
+            label: 'home'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storefront_rounded),
-            label: 'Marketplace',
+            icon: const Icon(Icons.storefront_rounded),
+            label: 'marketplace'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.work_history_rounded),
-            label: 'Jobs',
+            icon: const Icon(Icons.work_history_rounded),
+            label: 'work'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_rounded),
-            label: 'Earnings',
+            icon: const Icon(Icons.account_balance_wallet_rounded),
+            label: 'earnings'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: const Icon(Icons.person_rounded),
+            label: 'profile'.tr(context),
           ),
         ],
       ),

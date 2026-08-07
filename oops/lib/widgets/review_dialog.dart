@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_translations.dart';
 
 class ReviewDialog extends StatefulWidget {
   final String bookingId;
@@ -119,7 +120,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Rate & Review Service',
+            'rate_review_worker'.tr(context),
             style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
@@ -192,7 +193,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text('Submit Review', style: TextStyle(fontWeight: FontWeight.bold)),
+                  : Text('submit_review'.tr(context), style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],

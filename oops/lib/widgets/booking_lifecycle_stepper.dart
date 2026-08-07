@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/booking_model.dart';
+import '../l10n/app_translations.dart';
 
 class BookingLifecycleStepper extends StatelessWidget {
   final BookingModel booking;
@@ -112,7 +113,7 @@ class BookingLifecycleStepper extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    booking.status.toUpperCase().replaceAll('_', ' '),
+                    _getStatusText(context, booking.status),
                     style: TextStyle(
                       color: _getStatusColor(booking.status),
                       fontWeight: FontWeight.bold,
@@ -226,6 +227,21 @@ class BookingLifecycleStepper extends StatelessWidget {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  String _getStatusText(BuildContext context, String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return 'status_pending'.tr(context);
+      case 'assigned':
+      case 'accepted': return 'status_assigned'.tr(context);
+      case 'worker_en_route': return 'status_en_route'.tr(context);
+      case 'arrived': return 'status_arrived'.tr(context);
+      case 'in_progress': return 'status_in_progress'.tr(context);
+      case 'work_completed': return 'status_work_completed'.tr(context);
+      case 'completed': return 'status_completed'.tr(context);
+      case 'cancelled': return 'status_cancelled'.tr(context);
+      default: return status.toUpperCase().replaceAll('_', ' ');
     }
   }
 }

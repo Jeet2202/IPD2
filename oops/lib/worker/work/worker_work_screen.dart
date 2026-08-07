@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
 import 'worker_booking_detail_screen.dart';
 
@@ -73,13 +75,13 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.work_rounded, color: AppColors.primary, size: 22),
-            SizedBox(width: 8),
+            const Icon(Icons.work_rounded, color: AppColors.primary, size: 22),
+            const SizedBox(width: 8),
             Text(
-              'My Jobs',
-              style: TextStyle(
+              'work'.tr(context),
+              style: const TextStyle(
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -88,6 +90,11 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
         backgroundColor: AppColors.surface,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: AppColors.primary),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _loadBookings,
@@ -101,9 +108,9 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
           indicatorColor: AppColors.primary,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
           tabs: [
-            Tab(text: 'Active (${_activeBookings.length})'),
-            Tab(text: 'Waiting (${_waitingBookings.length})'),
-            Tab(text: 'Done (${_completedBookings.length})'),
+            Tab(text: '${'active_bookings'.tr(context)} (${_activeBookings.length})'),
+            Tab(text: '${'pending'.tr(context)} (${_waitingBookings.length})'),
+            Tab(text: '${'completed'.tr(context)} (${_completedBookings.length})'),
           ],
         ),
       ),

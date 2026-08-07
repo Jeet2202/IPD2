@@ -333,7 +333,7 @@ class Booking(Document):
     # ── Future Phase Stubs ────────────────────────────────────────────────────
     # Declared here to avoid schema migrations in later phases.
 
-    worker_id: PydanticObjectId | None = Field(
+    worker_id: PydanticObjectId | str | None = Field(
         default=None,
         description="[Phase 4.4.x] WorkerProfile ObjectId — set when worker accepts.",
     )
@@ -364,17 +364,17 @@ class Booking(Document):
         le=500_000.0,
         description="[Phase 4.6] Actual price after quotation/negotiation (INR).",
     )
-    inspection_id: PydanticObjectId | None = Field(
+    inspection_id: PydanticObjectId | str | None = Field(
         default=None,
         description="[Phase 4.5] InspectionRequest ObjectId — set for INSPECTION_REQUEST type.",
     )
-    quotation_id: PydanticObjectId | None = Field(
+    quotation_id: PydanticObjectId | str | None = Field(
         default=None,
         description="[Phase 4.6] Quotation ObjectId — set after inspection/approval.",
     )
-    payment_id: PydanticObjectId | None = Field(
+    payment_id: PydanticObjectId | str | None = Field(
         default=None,
-        description="[Phase 4.7] Payment ObjectId — set when payment is initiated.",
+        description="[Phase 4.7] Payment ObjectId or Razorpay Payment ID string.",
     )
 
     # ── Job Execution & Completion (Phase 4.7.2) ──────────────────────────────
