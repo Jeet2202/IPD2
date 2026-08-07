@@ -122,7 +122,9 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   Future<void> _handlePaymentAndCompletion() async {
     if (_booking == null || _isProcessingPayment || _isConfirming) return;
 
-    final double amount = _booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0;
+    final double amount = _booking!.isInspectionRequest
+        ? (_booking!.inspectionCharge ?? 99.0)
+        : (_booking!.finalPrice ?? _booking!.estimatedPrice ?? 0.0);
 
     if (amount <= 0 || _booking!.isPaid) {
       _handleConfirmCompletion();
@@ -132,14 +134,24 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     setState(() => _isProcessingPayment = true);
 
     try {
-      await _razorpayService.openServicePayment(
-        bookingId: _booking!.id,
-        amountRupees: amount,
-        description: 'Payment for ${_booking!.serviceSnapshot.name} (${_booking!.bookingNumber})',
-        customerName: _booking!.addressSnapshot.fullName,
-        customerPhone: _booking!.addressSnapshot.phone,
-        customerEmail: 'customer@ally.com',
-      );
+      if (_booking!.isInspectionRequest) {
+        await _razorpayService.openInspectionPayment(
+          bookingId: _booking!.id,
+          amountRupees: amount,
+          customerName: _booking!.addressSnapshot.fullName,
+          customerPhone: _booking!.addressSnapshot.phone,
+          customerEmail: 'customer@ally.com',
+        );
+      } else {
+        await _razorpayService.openServicePayment(
+          bookingId: _booking!.id,
+          amountRupees: amount,
+          description: 'Payment for ${_booking!.serviceSnapshot.name} (${_booking!.bookingNumber})',
+          customerName: _booking!.addressSnapshot.fullName,
+          customerPhone: _booking!.addressSnapshot.phone,
+          customerEmail: 'customer@ally.com',
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isProcessingPayment = false);

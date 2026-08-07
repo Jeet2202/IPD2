@@ -1,7 +1,6 @@
 // File: lib/models/booking_model.dart
-
-/// Data model representing a customer Booking response from the backend.
-/// Maps 1-to-1 with app/booking/schemas.py (BookingResponse).
+// Data model representing a customer Booking response from the backend.
+// Maps 1-to-1 with app/booking/schemas.py (BookingResponse).
 
 class ServiceSnapshotModel {
   final String serviceId;
@@ -185,6 +184,7 @@ class BookingModel {
   final String? categorySlug;
   final String? inspectionStatus;
   final String? inspectionScheduledAt;
+  final double? inspectionCharge;
   final String? workerId;
   final String? workerName;
   final String? workerPhone;
@@ -232,6 +232,7 @@ class BookingModel {
     this.categorySlug,
     this.inspectionStatus,
     this.inspectionScheduledAt,
+    this.inspectionCharge,
     this.workerId,
     this.workerName,
     this.workerPhone,
@@ -302,6 +303,7 @@ class BookingModel {
       categorySlug: raw['category_slug'] as String?,
       inspectionStatus: raw['inspection_status'] as String?,
       inspectionScheduledAt: raw['inspection_scheduled_at'] as String?,
+      inspectionCharge: (raw['inspection_charge'] as num?)?.toDouble(),
       workerId: raw['worker_id'] as String?,
       workerName: raw['worker_name'] as String?,
       workerPhone: raw['worker_phone'] as String?,
@@ -354,6 +356,7 @@ class BookingModel {
         'category_slug': categorySlug,
         'inspection_status': inspectionStatus,
         'inspection_scheduled_at': inspectionScheduledAt,
+        'inspection_charge': inspectionCharge,
         'worker_id': workerId,
         'worker_name': workerName,
         'worker_phone': workerPhone,
