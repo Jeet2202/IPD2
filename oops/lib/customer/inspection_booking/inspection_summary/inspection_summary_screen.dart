@@ -8,7 +8,6 @@ import '../../../models/booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/razorpay_service.dart';
-import '../../../utils/token_storage.dart';
 
 class InspectionSummaryScreen extends StatefulWidget {
   const InspectionSummaryScreen({super.key});
@@ -126,9 +125,7 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
       }
     }
 
-    setState(() => _isSubmitting = false);
-
-    // Open Razorpay payment sheet
+    // Open Razorpay payment sheet (keep _isSubmitting = true until callback completes)
     await _razorpayService.openInspectionPayment(
       bookingId: bookingId,
       amountRupees: _inspectionCharge,

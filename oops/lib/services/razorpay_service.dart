@@ -17,7 +17,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../constants/api_endpoints.dart';
 import '../services/api_service.dart';
-import '../utils/token_storage.dart';
 
 /// Lightweight wrapper around the Razorpay Flutter SDK.
 ///
@@ -208,7 +207,20 @@ class RazorpayService {
     if (_isVerifying) return;
     _isVerifying = true;
 
-    debugPrint('[RazorpayService] Payment success: ${response.paymentId}');
+    debugPrint('[RazorpayService] Payment success callback fired: ${response.paymentId}');
+
+    final orderId = response.orderId;
+    final paymentId = response.paymentId;
+    final signature = response.signature;
+
+    if (orderId == null || orderId.trim().isEmpty ||
+        paymentId == null || paymentId.trim().isEmpty ||
+        signature == null || signature.trim().isEmpty) {
+      _isVerifying = false;
+      debugPrint('[RazorpayService] Missing payment fields in success response');
+      _onPaymentFailure?.call('Payment response was incomplete. Please contact support if money was deducted.');
+      return;
+    }
 
     final bookingId = _activeBookingId ?? '';
 
@@ -218,9 +230,9 @@ class RazorpayService {
         ApiEndpoints.paymentsVerify,
         {
           'booking_id': bookingId,
-          'razorpay_order_id': response.orderId ?? '',
-          'razorpay_payment_id': response.paymentId ?? '',
-          'razorpay_signature': response.signature ?? '',
+          'razorpay_order_id': orderId,
+          'razorpay_payment_id': paymentId,
+          'razorpay_signature': signature,
         },
       );
       debugPrint('[RazorpayService] Signature verified. Payment confirmed.');
@@ -249,19 +261,9 @@ class RazorpayService {
 
   /// Fired when user selects an external wallet (Paytm, etc).
   void _handleExternalWallet(ExternalWalletResponse response) {
-    debugPrint('[RazorpayService] External wallet: ${response.walletName}');
-    // The payment will be confirmed via webhook; nothing to do here.
-  }
-
-  // ---------------------------------------------------------------------------
-  // Utility
-  // ---------------------------------------------------------------------------
-
-  /// In production, store booking_id separately (e.g. in state).
-  /// This is a placeholder — in your screen, pass it through the verify call.
-  String _extractBookingIdFromOrderId(String orderId) {
-    // The backend stores booking_id in order notes; this is handled server-side.
-    // Return empty — the backend will use orderId to look up the booking.
-    return orderId;
+    _isVerifying = false;
+    final walletName = response.walletName ?? 'external wallet';
+    debugPrint('[RazorpayService] External wallet selected: $walletName');
+    _onPaymentFailure?.call('External wallet selected ($walletName). If payment was not completed, please retry.');
   }
 }
