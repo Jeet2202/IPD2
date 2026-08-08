@@ -8,7 +8,6 @@ import '../../../models/booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/razorpay_service.dart';
-import '../../../utils/token_storage.dart';
 import '../../../l10n/app_translations.dart';
 
 class InspectionSummaryScreen extends StatefulWidget {
@@ -87,40 +86,44 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
       return;
     }
 
-    // First create the booking to get a real booking_id
     setState(() => _isSubmitting = true);
 
     String bookingId;
-    try {
-      final payload = CreateBookingPayload(
-        addressId: _address!.id,
-        bookingType: 'inspection_request',
-        categorySlug: _categorySlug,
-        problemDescription: '[$_typeOfWork] $_problemDescription',
-        problemPhotos: _problemPhotos,
-        scheduledDate: _scheduledDate,
-        scheduledTime: _scheduledTime,
-        customerNotes: _customerNotes,
-      );
-      final result = await _bookingService.createBooking(payload);
-      bookingId = result.id;
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
-      );
-      return;
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('could_not_create_booking_please'.tr(context)),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
+    if (_pendingBookingId != null && _pendingBookingId!.isNotEmpty) {
+      bookingId = _pendingBookingId!;
+    } else {
+      try {
+        final payload = CreateBookingPayload(
+          addressId: _address!.id,
+          bookingType: 'inspection_request',
+          categorySlug: _categorySlug,
+          problemDescription: '[$_typeOfWork] $_problemDescription',
+          problemPhotos: _problemPhotos,
+          scheduledDate: _scheduledDate,
+          scheduledTime: _scheduledTime,
+          customerNotes: _customerNotes,
+        );
+        final result = await _bookingService.createBooking(payload);
+        bookingId = result.id;
+        _pendingBookingId = bookingId;
+      } on ApiException catch (e) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
+        );
+        return;
+      } catch (_) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not create booking. Please try again.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
     }
 
     setState(() => _isSubmitting = false);

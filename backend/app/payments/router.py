@@ -82,6 +82,13 @@ async def create_payment_order(
             detail="You are not authorized to create a payment order for this booking.",
         )
 
+    # Server-enforce amount for inspection fee payments to prevent client-side amount tampering
+    from app.payments.schemas import PaymentType
+    if req.payment_type == PaymentType.INSPECTION_FEE:
+        amount_rupees = booking.inspection_charge or settings.INSPECTION_FEE or 99.0
+    else:
+        amount_rupees = req.amount
+
     receipt = f"rcpt_{req.booking_id}"
     notes = req.notes or {
         "booking_id": req.booking_id,
@@ -91,7 +98,7 @@ async def create_payment_order(
 
     try:
         order = razorpay_service.create_order(
-            amount_rupees=req.amount,
+            amount_rupees=amount_rupees,
             receipt=receipt,
             notes=notes,
         )
@@ -101,6 +108,14 @@ async def create_payment_order(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Payment gateway error. Please try again.",
         ) from exc
+
+    # Persist the created Razorpay order_id on the booking document
+    try:
+        await booking.set({
+            "razorpay_order_id": order["id"],
+        })
+    except Exception as save_err:
+        logger.warning("Failed to store razorpay_order_id on booking %s: %s", req.booking_id, save_err)
 
     return OrderCreatedResponse(
         order_id=order["id"],
@@ -132,6 +147,30 @@ async def verify_payment(
     We always independently verify the signature with our KEY_SECRET.
     Only after verification do we update booking state.
     """
+    # --- Fetch booking & verify access ---
+    booking = await Booking.get(req.booking_id)
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking not found.")
+
+    if str(booking.customer_id) != str(current_user.id) and getattr(current_user, "role", "customer") not in ("admin", "worker"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to verify payment for this booking.",
+        )
+
+    # --- Cross-booking order validation ---
+    if booking.razorpay_order_id and booking.razorpay_order_id != req.razorpay_order_id:
+        logger.warning(
+            "Order ID mismatch for booking %s: expected %s, got %s",
+            req.booking_id,
+            booking.razorpay_order_id,
+            req.razorpay_order_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Razorpay Order ID mismatch for this booking.",
+        )
+
     is_valid = razorpay_service.verify_payment_signature(
         razorpay_order_id=req.razorpay_order_id,
         razorpay_payment_id=req.razorpay_payment_id,
@@ -150,19 +189,11 @@ async def verify_payment(
         )
 
     # --- Update booking payment status ---
-    booking = await Booking.get(req.booking_id)
-    if booking is None:
-        raise HTTPException(status_code=404, detail="Booking not found.")
-
-    if str(booking.customer_id) != str(current_user.id) and getattr(current_user, "role", "customer") not in ("admin", "worker"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to verify payment for this booking.",
-        )
-
     await booking.set({
         "payment_status": "PAID",
         "payment_id": req.razorpay_payment_id,
+        "razorpay_order_id": req.razorpay_order_id,
+        "razorpay_payment_id": req.razorpay_payment_id,
     })
 
     logger.info(
