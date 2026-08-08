@@ -173,9 +173,9 @@ def get_email_provider() -> EmailProvider:
         return SMTPEmailProvider(
             host=smtp_host or "localhost",
             port=int(os.getenv("SMTP_PORT", "587")),
-            username=os.getenv("SMTP_USER"),
+            username=os.getenv("SMTP_USERNAME"),
             password=os.getenv("SMTP_PASSWORD"),
-            from_email=os.getenv("SMTP_FROM_EMAIL", "no-reply@ally.com"),
+            from_email=os.getenv("FROM_EMAIL", "no-reply@ally.com"),
             use_tls=os.getenv("SMTP_TLS", "true").lower() == "true",
         )
     return ConsoleMockEmailProvider()
