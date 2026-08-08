@@ -8,13 +8,13 @@ Architecture:
     - Factory function get_email_provider() resolves configured provider.
 """
 
+import asyncio
+import smtplib
 from abc import ABC, abstractmethod
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
 from typing import Any
-
-import aiosmtplib
 
 from app.core.config import settings
 from app.email.exceptions import EmailProviderConfigException, EmailSendFailedException
@@ -74,64 +74,34 @@ class GmailSMTPProvider(BaseEmailProvider):
     def _validate_config(self) -> None:
         """Validate SMTP credentials before sending."""
         if not self.username or not self.password:
-            # In development/test mode without credentials, log warning instead of crashing
-            if not settings.is_production:
-                logger.warning(
-                    "SMTP credentials missing. Email delivery will be simulated in non-production mode."
-                )
-                return
             raise EmailProviderConfigException(
                 message="SMTP_USERNAME and SMTP_PASSWORD must be configured for email delivery."
             )
 
-    async def send_email(
+    def _send_sync(
         self,
         to_email: str,
         subject: str,
         html_content: str,
-        text_content: str | None = None,
-        attachments: list[dict[str, Any]] | None = None,
+        text_content: str,
     ) -> bool:
-        """
-        Deliver an HTML / plain-text email using aiosmtplib.
-        """
-        self._validate_config()
-
-        # If credentials are not configured in non-production, log and simulate delivery
-        if not self.username or not self.password:
-            logger.info(
-                "[SIMULATED EMAIL] To: %s | Subject: %s | Provider: GmailSMTP",
-                to_email,
-                subject,
-            )
-            return True
-
-        # Build multipart message
+        """Synchronous SMTP send executed in a thread pool to avoid blocking the event loop."""
         message = MIMEMultipart("alternative")
         message["From"] = f"{self.from_name} <{self.from_email}>"
         message["To"] = to_email
         message["Subject"] = subject
 
-        # Attach plain-text fallback
-        plain_text = text_content or "Please view this email in an HTML-compatible client."
-        message.attach(MIMEText(plain_text, "plain", "utf-8"))
-
-        # Attach HTML content
+        message.attach(MIMEText(text_content, "plain", "utf-8"))
         message.attach(MIMEText(html_content, "html", "utf-8"))
 
-        # Send via aiosmtplib
         try:
-            await aiosmtplib.send(
-                message,
-                hostname=self.host,
-                port=self.port,
-                username=self.username,
-                password=self.password,
-                start_tls=True,
-            )
+            with smtplib.SMTP(self.host, self.port, timeout=15) as server:
+                server.starttls()
+                server.login(self.username, self.password)
+                server.send_message(message)
             logger.info("Email delivered successfully to %s", to_email)
             return True
-        except aiosmtplib.SMTPException as exc:
+        except smtplib.SMTPException as exc:
             logger.error("SMTP delivery failure to %s: %s", to_email, str(exc))
             raise EmailSendFailedException(
                 message=f"Failed to send email to {to_email}",
@@ -143,6 +113,28 @@ class GmailSMTPProvider(BaseEmailProvider):
                 message=f"Unexpected error delivering email to {to_email}",
                 details=[str(exc)],
             )
+
+    async def send_email(
+        self,
+        to_email: str,
+        subject: str,
+        html_content: str,
+        text_content: str | None = None,
+        attachments: list[dict[str, Any]] | None = None,
+    ) -> bool:
+        """
+        Deliver an HTML / plain-text email using smtplib in a thread pool.
+        """
+        self._validate_config()
+
+        plain_text = text_content or "Please view this email in an HTML-compatible client."
+        return await asyncio.to_thread(
+            self._send_sync,
+            to_email,
+            subject,
+            html_content,
+            plain_text,
+        )
 
 
 def get_email_provider() -> BaseEmailProvider:
