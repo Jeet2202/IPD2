@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../services/booking_chat_service.dart';
 import '../../../widgets/booking_chat_bottom_sheet.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerNavigationScreen extends StatelessWidget {
   const WorkerNavigationScreen({super.key});
@@ -27,7 +28,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                     crossAxisCount: 6,
                   ),
                   itemBuilder: (ctx, idx) => Container(
-                    margin: const EdgeInsets.all(1),
+                    margin: EdgeInsets.all(1),
                     color: Colors.blueGrey.withOpacity(0.08),
                   ),
                 ),
@@ -48,7 +49,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                 ),
 
                 // Current Location Dot Marker
-                const Positioned(
+                Positioned(
                   bottom: 280,
                   left: 100,
                   child: CircleAvatar(
@@ -60,7 +61,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                 ),
 
                 // Destination Marker
-                const Positioned(
+                Positioned(
                   top: 240,
                   right: 110,
                   child: Column(
@@ -68,7 +69,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                       Icon(Icons.location_on_rounded,
                           color: Color(0xFFEF4444), size: 36),
                       Text(
-                        'Sunil Verma',
+                        'mock_customer_name'.tr(context),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
@@ -86,12 +87,12 @@ class WorkerNavigationScreen extends StatelessWidget {
           SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                  EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded,
+                      icon: Icon(Icons.arrow_back_rounded,
                           color: Color(0xFF0F172A)),
                       onPressed: () => Navigator.pop(context),
                     ),
@@ -99,18 +100,18 @@ class WorkerNavigationScreen extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Opening Google Maps navigation...'),
-                          backgroundColor: Color(0xFF0F172A),
+                        SnackBar(
+                          content: Text('opening_google_maps'.tr(context)),
+                          backgroundColor: const Color(0xFF0F172A),
                         ),
                       );
                     },
-                    icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                    label: const Text('Open Google Maps'),
+                    icon: Icon(Icons.open_in_new_rounded, size: 16),
+                    label: Text('open_google_maps'.tr(context)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0F172A),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                           horizontal: 14, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -128,7 +129,7 @@ class WorkerNavigationScreen extends StatelessWidget {
             left: 20,
             right: 20,
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF0F172A),
                 borderRadius: BorderRadius.circular(20),
@@ -143,21 +144,21 @@ class WorkerNavigationScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
                       color: Color(0xFF2563EB),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.turn_right_rounded,
+                    child: Icon(Icons.turn_right_rounded,
                         color: Colors.white, size: 24),
                   ),
-                  const SizedBox(width: 14),
-                  const Expanded(
+                  SizedBox(width: 14),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'In 200m turn right onto Sector 15 Main Rd',
+                          'mock_nav_direction'.tr(context),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -166,7 +167,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'ETA: 12 Mins • 2.4 Km remaining',
+                          'mock_nav_eta'.tr(context),
                           style: TextStyle(
                             fontSize: 12,
                             color: Color(0xFF94A3B8),
@@ -184,8 +185,8 @@ class WorkerNavigationScreen extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(28),
@@ -208,13 +209,13 @@ class WorkerNavigationScreen extends StatelessWidget {
                       Container(
                         width: 48,
                         height: 48,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Color(0xFFDBEAFE),
                           shape: BoxShape.circle,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'SV',
+                            'mock_customer_initials'.tr(context),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -223,13 +224,13 @@ class WorkerNavigationScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Sunil Verma',
+                              'mock_customer_name'.tr(context),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
@@ -238,7 +239,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'MCB Tripping Repair • Dwarka Sector 15',
+                              'mock_nav_job_desc'.tr(context),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF64748B),
@@ -248,16 +249,16 @@ class WorkerNavigationScreen extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.call_rounded,
+                        icon: Icon(Icons.call_rounded,
                             color: Color(0xFF10B981)),
                         onPressed: () async {
                           const phone = '+919876543210';
                           await Clipboard.setData(const ClipboardData(text: phone));
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Copied phone number ($phone) to clipboard! Opening phone app...'),
-                                backgroundColor: Color(0xFF10B981),
+                              SnackBar(
+                                content: Text('copied_phone_to_clipboard'.tr(context)),
+                                backgroundColor: const Color(0xFF10B981),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -269,7 +270,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.chat_bubble_outline_rounded,
+                        icon: Icon(Icons.chat_bubble_outline_rounded,
                             color: Color(0xFF2563EB)),
                         onPressed: () {
                           final chatService = BookingChatService(
@@ -282,7 +283,7 @@ class WorkerNavigationScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Swipe to Mark Arrived Action Button
                   SizedBox(
@@ -301,13 +302,13 @@ class WorkerNavigationScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.location_city_rounded, size: 20),
                           SizedBox(width: 10),
                           Text(
-                            'Mark Arrived at Location',
+                            'mark_arrived_at_location'.tr(context),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,

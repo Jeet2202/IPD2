@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class MarketPriceComparisonScreen extends StatelessWidget {
   const MarketPriceComparisonScreen({super.key});
@@ -13,11 +14,10 @@ class MarketPriceComparisonScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Price Audit & Comparison',
+        title: Text('price_audit_comparison'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -26,13 +26,13 @@ class MarketPriceComparisonScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── AI Price Guarantee Banner ──────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF059669), Color(0xFF10B981)],
@@ -47,18 +47,18 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                        child: const Icon(Icons.verified_rounded, color: Colors.white, size: 28),
+                        child: Icon(Icons.verified_rounded, color: Colors.white, size: 28),
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
+                      SizedBox(width: 14),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('AI MARKET AUDIT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFA7F3D0))),
+                            Text('ai_market_audit'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFA7F3D0))),
                             SizedBox(height: 2),
-                            Text('Fair & Standard Quotation', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Colors.white)),
+                            Text('fair_standard_quotation'.tr(context), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Colors.white)),
                           ],
                         ),
                       ),
@@ -66,11 +66,11 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Price Comparison Card ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(22),
+                  padding: EdgeInsets.all(22),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -78,29 +78,29 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Sunil\'s Quote', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text('sunil'.tr(context)s Quote', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                               SizedBox(height: 4),
-                              Text('₹1,250', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                              Text('1250'.tr(context), style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                             ],
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('HSR Avg Market Rate', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text('hsr_avg_market_rate'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                               SizedBox(height: 4),
-                              Text('₹1,200 - ₹1,350', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                              Text('1200_1350'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                             ],
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Pricing Meter Bar
                       Stack(
@@ -130,30 +130,30 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                         ],
                       ),
 
-                      const SizedBox(height: 12),
-                      const Row(
+                      SizedBox(height: 12),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Great Value', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF10B981))),
-                          Text('Fair Market Price (Ideal)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
-                          Text('Overpriced', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFFEF4444))),
+                          Text('great_value'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF10B981))),
+                          Text('fair_market_price_ideal'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                          Text('overpriced'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFFEF4444))),
                         ],
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── AI Explanation Card ────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: const Color(0xFFBFDBFE)),
                   ),
-                  child: const Row(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(Icons.auto_awesome_rounded, color: Color(0xFF2563EB), size: 22),
@@ -162,10 +162,9 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('AI Audit Explanation', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1E40AF))),
+                            Text('ai_audit_explanation'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1E40AF))),
                             SizedBox(height: 4),
-                            Text(
-                              'This quotation is 100% compliant with local market rates in HSR Layout. Material costs match standard Havells MRP guidelines.',
+                            Text('this_quotation_is_100_compliant'.tr(context),
                               style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A), height: 1.4),
                             ),
                           ],
@@ -175,7 +174,7 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -186,7 +185,7 @@ class MarketPriceComparisonScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -204,10 +203,10 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Review Itemized Quotation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      Text('review_itemized_quotation'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),
                     ],

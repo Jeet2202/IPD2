@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class LogoutScreen extends StatelessWidget {
   const LogoutScreen({super.key});
@@ -6,8 +7,8 @@ class LogoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('L o g o u t S c r e e n')),
-      body: const Center(child: Text('L o g o u t S c r e e n')),
+      appBar: AppBar(title: Text('l_o_g_o_u'.tr(context))),
+      body: Center(child: Text('l_o_g_o_u'.tr(context))),
     );
   }
 }

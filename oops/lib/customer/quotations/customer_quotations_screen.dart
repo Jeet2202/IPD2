@@ -73,15 +73,14 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'received_quotations'.tr(context),
-              style: const TextStyle(
+            Text('receivedquotations'.tr(context).tr(context),
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -89,19 +88,19 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
             ),
             Text(
               'Booking Ref: ${widget.bookingNumber}',
-              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',
             onPressed: () => LanguageSelectorWidget.show(context),
           ),
           if (_quotations.length >= 2)
             Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: 12),
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -114,12 +113,12 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                     ),
                   );
                 },
-                icon: const Icon(Icons.compare_arrows_rounded, size: 16),
-                label: Text('compare'.tr(context)),
+                icon: Icon(Icons.compare_arrows_rounded, size: 16),
+                label: Text('compare'.tr(context).tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -133,7 +132,7 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
           onRefresh: _loadQuotations,
           color: const Color(0xFF2563EB),
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+              ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
               : _errorMessage != null
                   ? _buildErrorView()
                   : _quotations.isEmpty
@@ -142,7 +141,7 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                           physics: const AlwaysScrollableScrollPhysics(
                             parent: BouncingScrollPhysics(),
                           ),
-                          padding: const EdgeInsets.all(20.0),
+                          padding: EdgeInsets.all(20.0),
                           itemCount: _quotations.length,
                           itemBuilder: (context, index) {
                             return _buildQuotationCard(_quotations[index]);
@@ -159,25 +158,25 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.7,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 56, color: Color(0xFFDC2626)),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline_rounded, size: 56, color: Color(0xFFDC2626)),
+            SizedBox(height: 16),
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _loadQuotations,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Retry'),
+              child: Text('retry'.tr(context)),
             ),
           ],
         ),
@@ -191,19 +190,17 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.7,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(32.0),
-        child: const Column(
+        padding: EdgeInsets.all(32.0),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.request_quote_outlined, size: 64, color: Color(0xFF94A3B8)),
             SizedBox(height: 16),
-            Text(
-              'No Quotations Received Yet',
+            Text('no_quotations_received_yet'.tr(context),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
             ),
             SizedBox(height: 8),
-            Text(
-              'Workers who applied for your booking will submit custom quotations here.',
+            Text('workers_who_applied_for_your'.tr(context),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
@@ -218,8 +215,8 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
     final w = item.worker;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(18),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -245,36 +242,36 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                 child: w.profilePhotoUrl == null
                     ? Text(
                         w.fullName.isNotEmpty ? w.fullName[0].toUpperCase() : 'W',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
                       )
                     : null,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       w.fullName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 14, color: Color(0xFFEAB308)),
-                        const SizedBox(width: 4),
+                        Icon(Icons.star_rounded, size: 14, color: Color(0xFFEAB308)),
+                        SizedBox(width: 4),
                         Text(
                           w.rating.toStringAsFixed(1),
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           '•  ${w.experienceYears.toStringAsFixed(0)} yrs exp',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                          style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                         ),
                       ],
                     ),
@@ -282,24 +279,24 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   q.quotationNumber,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF475569)),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF475569)),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
 
           // Total Price Callout Box
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: const Color(0xFFF0FDF4),
               borderRadius: BorderRadius.circular(12),
@@ -311,13 +308,12 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Total Price',
+                    Text('total_price'.tr(context),
                       style: TextStyle(fontSize: 11, color: Color(0xFF166534)),
                     ),
                     Text(
                       '₹${q.totalAmount.toStringAsFixed(0)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFF15803D),
@@ -330,12 +326,12 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                   children: [
                     Text(
                       'Est. Duration: ${q.estimatedDuration}',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF166534)),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       'Valid: ${q.validityDate}',
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF15803D)),
+                      style: TextStyle(fontSize: 11, color: Color(0xFF15803D)),
                     ),
                   ],
                 ),
@@ -344,16 +340,16 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
           ),
 
           if (q.workDescription != null && q.workDescription!.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               q.workDescription!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.4),
+              style: TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.4),
             ),
           ],
 
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
 
           // Details Action Button
           SizedBox(
@@ -377,14 +373,13 @@ class _CustomerQuotationsScreenState extends State<CustomerQuotationsScreen> {
                 }
               },
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Color(0xFF2563EB)),
+                side: BorderSide(color: Color(0xFF2563EB)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: 10),
               ),
-              child: const Text(
-                'View Detailed Quotation',
+              child: Text('view_detailed_quotation'.tr(context),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
               ),
             ),

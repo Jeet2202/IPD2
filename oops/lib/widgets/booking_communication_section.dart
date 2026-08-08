@@ -5,6 +5,7 @@ import '../../app/theme/app_colors.dart';
 import '../../models/booking_model.dart';
 import '../../services/booking_chat_service.dart';
 import 'booking_chat_bottom_sheet.dart';
+import '../l10n/app_translations.dart';
 
 class BookingCommunicationSection extends StatefulWidget {
   final BookingModel booking;
@@ -58,7 +59,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
     if (cleanPhone.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Phone number not available.')),
+          const SnackBar(content: Text('phone_number_not_available'.tr(context))),
         );
       }
       return;
@@ -86,7 +87,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Phone number copied, but could not open dialer.')),
+          const SnackBar(content: Text('phone_number_copied_but_could'.tr(context))),
         );
       }
     }
@@ -101,7 +102,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -112,24 +113,23 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
         children: [
           Text(
             widget.isWorker ? 'Connect with Customer' : 'Connect with your Worker',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           if (_isPending()) ...[
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.hourglass_empty_rounded, color: Color(0xFF64748B), size: 20),
                   SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      'Waiting for a worker... Communication will become available once a worker accepts your booking.',
+                    child: Text('waiting_for_a_worker_communication'.tr(context),
                       style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                     ),
                   ),
@@ -143,7 +143,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
               height: 48,
               child: ElevatedButton.icon(
                 onPressed: _openChat,
-                icon: const Icon(Icons.chat_bubble_rounded, size: 20),
+                icon: Icon(Icons.chat_bubble_rounded, size: 20),
                 label: Text(widget.isWorker ? 'Chat with Customer' : 'Chat with Worker'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -153,7 +153,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Call Button
             SizedBox(
@@ -166,10 +166,10 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
                       : (widget.booking.workerPhone ?? '');
                   _makePhoneCall(phone);
                 },
-                icon: const Icon(Icons.phone_rounded, size: 20),
+                icon: Icon(Icons.phone_rounded, size: 20),
                 label: Text(widget.isWorker ? 'Call Customer' : 'Call Worker'),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  side: BorderSide(color: Color(0xFFCBD5E1)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
@@ -177,7 +177,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
 
             // Live Tracking (Only if Customer and Worker is En Route)
             if (!widget.isWorker && _isWorkerEnRoute()) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -185,14 +185,14 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
                   onPressed: () {
                     // Navigate to Live Tracking screen (Phase 4 / Phase 7.1)
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Live Tracking will be launched here.')),
+                      const SnackBar(content: Text('live_tracking_will_be_launched'.tr(context))),
                     );
                   },
-                  icon: const Icon(Icons.location_on_rounded, size: 20, color: Color(0xFF0D9488)),
-                  label: const Text('Live Track Worker'),
+                  icon: Icon(Icons.location_on_rounded, size: 20, color: Color(0xFF0D9488)),
+                  label: Text('live_track_worker'.tr(context)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF0D9488),
-                    side: const BorderSide(color: Color(0xFF99F6E4)),
+                    side: BorderSide(color: Color(0xFF99F6E4)),
                     backgroundColor: const Color(0xFFF0FDFA),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../modals/service_filter_modal.dart';
+import '../../l10n/app_translations.dart';
 
 class ActiveFilterChipsBar extends StatelessWidget {
   final ServiceFilterData filterData;
@@ -88,8 +89,7 @@ class ActiveFilterChipsBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                child: const Text(
-                  'Clear All',
+                child: Text('clear_all'.tr(context),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

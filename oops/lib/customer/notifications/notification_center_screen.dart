@@ -5,6 +5,7 @@ import '../../../models/notification_model.dart';
 import '../../../services/notification_service.dart';
 import '../../../utils/token_storage.dart';
 import 'notification_preferences_screen.dart';
+import '../../l10n/app_translations.dart';
 
 class NotificationCenterScreen extends StatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -126,8 +127,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Notifications',
+        title: Text('notifications'.tr(context),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -136,7 +136,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Color(0xFF64748B)),
+            icon: Icon(Icons.settings_outlined, color: Color(0xFF64748B)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -145,14 +145,14 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF64748B)),
+            icon: Icon(Icons.more_vert, color: Color(0xFF64748B)),
             onSelected: (val) {
               if (val == 'read_all') _markAllRead();
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'read_all',
-                child: Text('Mark all as read'),
+                child: Text('mark_all_as_read'.tr(context)),
               ),
             ],
           ),
@@ -173,14 +173,14 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
   Widget _buildFilterBar() {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: _filters.map((filter) {
             final isSelected = _selectedFilter == filter;
             return Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: EdgeInsets.only(right: 8),
               child: ChoiceChip(
                 label: Text(filter),
                 selected: isSelected,
@@ -209,11 +209,11 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)));
+      return Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)));
     }
     if (_errorMessage != null) {
       return Center(
-        child: Text('Error: $_errorMessage', style: const TextStyle(color: Colors.red)),
+        child: Text('Error: $_errorMessage', style: TextStyle(color: Colors.red)),
       );
     }
 
@@ -235,9 +235,9 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
       onRefresh: _loadNotifications,
       color: const Color(0xFF2563EB),
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         itemCount: filtered.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => SizedBox(height: 12),
         itemBuilder: (context, index) {
           final notif = filtered[index];
           return _buildNotificationCard(notif, index);
@@ -252,18 +252,16 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade400),
-          const SizedBox(height: 16),
-          Text(
-            'No notifications yet',
+          SizedBox(height: 16),
+          Text('no_notifications_yet'.tr(context),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.grey.shade700,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'When you get notifications, they\'ll show up here.',
+          SizedBox(height: 8),
+          Text('when_you_get_notifications_they'.tr(context)ll show up here.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade500,
@@ -299,19 +297,19 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
       direction: DismissDirection.endToStart,
       onDismissed: (_) => _deleteNotification(notif.id),
       background: Container(
-        padding: const EdgeInsets.only(right: 20),
+        padding: EdgeInsets.only(right: 20),
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
           color: const Color(0xFFEF4444),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
+        child: Icon(Icons.delete_outline, color: Colors.white),
       ),
       child: InkWell(
         onTap: () => _handleNotificationTap(notif, index),
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: notif.isRead ? Colors.white : const Color(0xFFF0FDF4),
             borderRadius: BorderRadius.circular(16),
@@ -329,14 +327,14 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: color, size: 24),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,15 +356,15 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
                           Container(
                             width: 8,
                             height: 8,
-                            margin: const EdgeInsets.only(left: 8),
-                            decoration: const BoxDecoration(
+                            margin: EdgeInsets.only(left: 8),
+                            decoration: BoxDecoration(
                               color: Color(0xFF2563EB),
                               shape: BoxShape.circle,
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       notif.body,
                       style: TextStyle(
@@ -375,10 +373,10 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
                         height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       formattedTime,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF94A3B8),
                         fontWeight: FontWeight.w500,

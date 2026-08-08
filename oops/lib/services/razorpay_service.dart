@@ -17,7 +17,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../constants/api_endpoints.dart';
 import '../services/api_service.dart';
-import '../utils/token_storage.dart';
 
 /// Lightweight wrapper around the Razorpay Flutter SDK.
 ///
@@ -163,6 +162,13 @@ class RazorpayService {
     final String orderId = orderData['order_id'] as String;
     final String keyId = orderData['key_id'] as String;
 
+    // Clean prefill contact/email for Razorpay Test Mode modal stability
+    final cleanPhone = customerPhone.replaceAll(RegExp(r'\D'), '');
+    final prefillContact = cleanPhone.length >= 10 ? cleanPhone.substring(cleanPhone.length - 10) : customerPhone;
+    final prefillEmail = (customerEmail.trim().isNotEmpty && customerEmail.contains('@'))
+        ? customerEmail.trim()
+        : 'customer@ally.com';
+
     // 2. Open Razorpay checkout
     final options = <String, dynamic>{
       'key': keyId,
@@ -171,9 +177,9 @@ class RazorpayService {
       'order_id': orderId,
       'description': description,
       'prefill': {
-        'name': customerName,
-        'contact': customerPhone,
-        'email': customerEmail,
+        'name': customerName.isNotEmpty ? customerName : 'Customer',
+        'contact': prefillContact,
+        'email': prefillEmail,
       },
       'theme': {
         'color': '#2563EB',  // Ally brand blue
@@ -189,6 +195,8 @@ class RazorpayService {
     }
   }
 
+  bool _isVerifying = false;
+
   // ---------------------------------------------------------------------------
   // Event handlers (called by Razorpay SDK)
   // ---------------------------------------------------------------------------
@@ -196,7 +204,23 @@ class RazorpayService {
   /// Fired by SDK when user completes payment successfully.
   /// We MUST verify the signature on backend before trusting this.
   Future<void> _handleSuccess(PaymentSuccessResponse response) async {
-    debugPrint('[RazorpayService] Payment success: ${response.paymentId}');
+    if (_isVerifying) return;
+    _isVerifying = true;
+
+    debugPrint('[RazorpayService] Payment success callback fired: ${response.paymentId}');
+
+    final orderId = response.orderId;
+    final paymentId = response.paymentId;
+    final signature = response.signature;
+
+    if (orderId == null || orderId.trim().isEmpty ||
+        paymentId == null || paymentId.trim().isEmpty ||
+        signature == null || signature.trim().isEmpty) {
+      _isVerifying = false;
+      debugPrint('[RazorpayService] Missing payment fields in success response');
+      _onPaymentFailure?.call('Payment response was incomplete. Please contact support if money was deducted.');
+      return;
+    }
 
     final bookingId = _activeBookingId ?? '';
 
@@ -206,17 +230,20 @@ class RazorpayService {
         ApiEndpoints.paymentsVerify,
         {
           'booking_id': bookingId,
-          'razorpay_order_id': response.orderId ?? '',
-          'razorpay_payment_id': response.paymentId ?? '',
-          'razorpay_signature': response.signature ?? '',
+          'razorpay_order_id': orderId,
+          'razorpay_payment_id': paymentId,
+          'razorpay_signature': signature,
         },
       );
       debugPrint('[RazorpayService] Signature verified. Payment confirmed.');
+      _isVerifying = false;
       _onPaymentSuccess?.call();
     } on ApiException catch (e) {
+      _isVerifying = false;
       debugPrint('[RazorpayService] Signature verification failed: ${e.message}');
       _onPaymentFailure?.call('Payment verification failed. Please contact support.');
     } catch (e) {
+      _isVerifying = false;
       debugPrint('[RazorpayService] Unexpected verification error: $e');
       _onPaymentFailure?.call('Payment recorded but verification error occurred. Contact support.');
     }
@@ -224,6 +251,7 @@ class RazorpayService {
 
   /// Fired by SDK when payment fails or user cancels.
   void _handleFailure(PaymentFailureResponse response) {
+    _isVerifying = false;
     debugPrint('[RazorpayService] Payment failed: code=${response.code} msg=${response.message}');
     final msg = response.code == Razorpay.PAYMENT_CANCELLED
         ? 'Payment was cancelled.'
@@ -233,19 +261,9 @@ class RazorpayService {
 
   /// Fired when user selects an external wallet (Paytm, etc).
   void _handleExternalWallet(ExternalWalletResponse response) {
-    debugPrint('[RazorpayService] External wallet: ${response.walletName}');
-    // The payment will be confirmed via webhook; nothing to do here.
-  }
-
-  // ---------------------------------------------------------------------------
-  // Utility
-  // ---------------------------------------------------------------------------
-
-  /// In production, store booking_id separately (e.g. in state).
-  /// This is a placeholder — in your screen, pass it through the verify call.
-  String _extractBookingIdFromOrderId(String orderId) {
-    // The backend stores booking_id in order notes; this is handled server-side.
-    // Return empty — the backend will use orderId to look up the booking.
-    return orderId;
+    _isVerifying = false;
+    final walletName = response.walletName ?? 'external wallet';
+    debugPrint('[RazorpayService] External wallet selected: $walletName');
+    _onPaymentFailure?.call('External wallet selected ($walletName). If payment was not completed, please retry.');
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionPaymentScreen extends StatelessWidget {
   const InspectionPaymentScreen({super.key});
@@ -6,8 +7,8 @@ class InspectionPaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('I n s p e c t i o n P a y m e n t S c r e e n')),
-      body: const Center(child: Text('I n s p e c t i o n P a y m e n t S c r e e n')),
+      appBar: AppBar(title: Text('i_n_s_p_e_3'.tr(context))),
+      body: Center(child: Text('i_n_s_p_e_3'.tr(context))),
     );
   }
 }

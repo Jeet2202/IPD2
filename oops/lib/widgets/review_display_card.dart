@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../models/review_model.dart';
+import '../l10n/app_translations.dart';
 
 class ReviewDisplayCard extends StatelessWidget {
   final ReviewModel review;
@@ -37,7 +38,7 @@ class ReviewDisplayCard extends StatelessWidget {
 
   Widget _buildMetricChip(String label, double val) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(8),
@@ -48,14 +49,14 @@ class ReviewDisplayCard extends StatelessWidget {
         children: [
           Text(
             '$label: ',
-            style: const TextStyle(fontSize: 11, color: Color(0xFF78350F), fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 11, color: Color(0xFF78350F), fontWeight: FontWeight.w600),
           ),
           Text(
             val.toStringAsFixed(1),
-            style: const TextStyle(fontSize: 11, color: Color(0xFF92400E), fontWeight: FontWeight.w900),
+            style: TextStyle(fontSize: 11, color: Color(0xFF92400E), fontWeight: FontWeight.w900),
           ),
-          const SizedBox(width: 2),
-          const Icon(Icons.star_rounded, size: 12, color: Colors.amber),
+          SizedBox(width: 2),
+          Icon(Icons.star_rounded, size: 12, color: Colors.amber),
         ],
       ),
     );
@@ -64,7 +65,7 @@ class ReviewDisplayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -87,17 +88,17 @@ class ReviewDisplayCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFEF3C7),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(Icons.stars_rounded, color: Colors.amber.shade800, size: 22),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Text(
                     titleText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
@@ -106,7 +107,7 @@ class ReviewDisplayCard extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(20),
@@ -122,34 +123,33 @@ class ReviewDisplayCard extends StatelessWidget {
                         color: Colors.amber.shade900,
                       ),
                     ),
-                    const SizedBox(width: 3),
+                    SizedBox(width: 3),
                     Icon(Icons.star_rounded, size: 16, color: Colors.amber.shade700),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
 
           // Overall Stars
           Row(
             children: [
               _buildStarRow(review.overallRating, size: 22),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               if (review.wouldRecommend)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: const Color(0xFFECFDF5),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: const Color(0xFFA7F3D0)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.thumb_up_rounded, size: 12, color: Color(0xFF059669)),
                       SizedBox(width: 4),
-                      Text(
-                        'Recommended',
+                      Text('recommended'.tr(context),
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF047857)),
                       ),
                     ],
@@ -157,7 +157,7 @@ class ReviewDisplayCard extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
 
           // Rating Breakdown Chips
           Wrap(
@@ -173,10 +173,10 @@ class ReviewDisplayCard extends StatelessWidget {
 
           // Review Title & Comment
           if (review.reviewTitle != null && review.reviewTitle!.isNotEmpty) ...[
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             Text(
               review.reviewTitle!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
@@ -185,10 +185,10 @@ class ReviewDisplayCard extends StatelessWidget {
           ],
 
           if (review.reviewComment != null && review.reviewComment!.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               '"${review.reviewComment!}"',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
                 color: Color(0xFF334155),

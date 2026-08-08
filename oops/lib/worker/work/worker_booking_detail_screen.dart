@@ -18,6 +18,8 @@ import '../../widgets/worker_voice_summary_button.dart';
 import '../../services/socket_service.dart';
 import '../quotations/quotation_form_screen.dart';
 import 'worker_complete_job_dialog.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 
 class WorkerBookingDetailScreen extends StatefulWidget {
   final BookingModel booking;
@@ -269,7 +271,7 @@ class _WorkerBookingDetailScreenState
                 ),
               ),
               Text(
-                _booking.serviceSnapshot.name,
+                AppTranslations.getLocalizedName(context, _booking.serviceSnapshot.name),
                 style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -292,6 +294,11 @@ class _WorkerBookingDetailScreenState
                   'distance_km': (_distanceMeters! / 1000).toStringAsFixed(1),
                 if (_etaMinutes != null) 'eta_minutes': _etaMinutes,
               },
+            ),
+            IconButton(
+              icon: const Icon(Icons.language_rounded, color: AppColors.primary),
+              tooltip: 'Select Language',
+              onPressed: () => LanguageSelectorWidget.show(context),
             ),
             IconButton(
               icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),

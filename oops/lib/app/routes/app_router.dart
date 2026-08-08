@@ -167,6 +167,7 @@ import '../../customer/legal/privacy_policy/privacy_policy_screen.dart';
 import '../../customer/system/no_internet/no_internet_screen.dart';
 import '../../customer/system/system_status/system_status_screen.dart';
 import '../../customer/ai_assistant/ai_assistant_screen.dart';
+import '../../l10n/app_translations.dart';
 
 class AppRouter {
   AppRouter._();
@@ -672,8 +673,7 @@ class AppRouter {
                 children: [
                   const Icon(Icons.map_outlined, size: 48, color: Color(0xFFCBD5E1)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Page not found',
+                  Text('page_not_found'.tr(context),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,

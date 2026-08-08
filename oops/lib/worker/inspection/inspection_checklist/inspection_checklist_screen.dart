@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/inspection_checklist/inspection_checklist_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerInspectionChecklistScreen extends StatefulWidget {
   const WorkerInspectionChecklistScreen({super.key});
@@ -13,12 +15,12 @@ class WorkerInspectionChecklistScreen extends StatefulWidget {
 class _WorkerInspectionChecklistScreenState
     extends State<WorkerInspectionChecklistScreen> {
   final Map<String, bool> _checklist = {
-    'Visual check of indoor & outdoor unit casing': true,
-    'Drain pipe blockage & water tray check': true,
-    'Compressor noise & vibration testing': true,
-    'Refrigerant R32 pressure level test': false,
-    'Blower fan motor & capacitor inspection': false,
-    'Electrical wiring & MCB load safety check': true,
+    'chk_visual_indoor_outdoor': true,
+    'chk_drain_pipe_blockage': true,
+    'chk_compressor_noise': true,
+    'chk_refrigerant_pressure': false,
+    'chk_blower_fan_motor': false,
+    'chk_electrical_wiring': true,
   };
 
   final _inspectionNotesController = TextEditingController(
@@ -37,15 +39,22 @@ class _WorkerInspectionChecklistScreenState
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Inspection Checklist',
-          style: TextStyle(
+        title: Text(
+          'inspection_checklist'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF8B5CF6)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -89,9 +98,9 @@ class _WorkerInspectionChecklistScreenState
                 ],
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Step 1 of 3: Checklist & Diagnostics',
-                style: TextStyle(
+              Text(
+                'step_1_of_3_checklist'.tr(context),
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF8B5CF6),
@@ -101,9 +110,9 @@ class _WorkerInspectionChecklistScreenState
               const SizedBox(height: 24),
 
               // Checklist Section
-              const Text(
-                'Diagnostic Check Items',
-                style: TextStyle(
+              Text(
+                'diagnostic_check_items'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -146,7 +155,7 @@ class _WorkerInspectionChecklistScreenState
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          item,
+                          item.tr(context),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: isChecked
@@ -166,9 +175,9 @@ class _WorkerInspectionChecklistScreenState
               const SizedBox(height: 20),
 
               // Media Upload Section
-              const Text(
-                'Inspection Evidence (Photos & Video)',
-                style: TextStyle(
+              Text(
+                'inspection_evidence'.tr(context),
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF0F172A),
@@ -182,14 +191,14 @@ class _WorkerInspectionChecklistScreenState
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Inspection photo captured!'),
-                            backgroundColor: Color(0xFF8B5CF6),
+                          SnackBar(
+                            content: Text('inspection_photo_captured'.tr(context)),
+                            backgroundColor: const Color(0xFF8B5CF6),
                           ),
                         );
                       },
                       icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                      label: const Text('Capture Photo'),
+                      label: Text('capture_photo'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF8B5CF6),
                         side: const BorderSide(color: Color(0xFF8B5CF6)),
@@ -205,14 +214,14 @@ class _WorkerInspectionChecklistScreenState
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Inspection video clip recorded!'),
-                            backgroundColor: Color(0xFF0EA5E9),
+                          SnackBar(
+                            content: Text('inspection_video_recorded'.tr(context)),
+                            backgroundColor: const Color(0xFF0EA5E9),
                           ),
                         );
                       },
                       icon: const Icon(Icons.videocam_outlined, size: 18),
-                      label: const Text('Record Clip'),
+                      label: Text('record_clip'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF0EA5E9),
                         side: const BorderSide(color: Color(0xFF0EA5E9)),
@@ -229,9 +238,9 @@ class _WorkerInspectionChecklistScreenState
               const SizedBox(height: 20),
 
               // Diagnostic Notes
-              const Text(
-                'Diagnostic Observations & Notes',
-                style: TextStyle(
+              Text(
+                'diagnostic_observations_notes'.tr(context),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF334155),
@@ -242,7 +251,7 @@ class _WorkerInspectionChecklistScreenState
                 controller: _inspectionNotesController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Enter technical findings during inspection...',
+                  hintText: 'enter_technical_findings_hint'.tr(context),
                   hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                   filled: true,
                   fillColor: const Color(0xFFF8FAFC),
@@ -277,18 +286,18 @@ class _WorkerInspectionChecklistScreenState
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Proceed to Create Report',
-                        style: TextStyle(
+                        'proceed_to_create_report'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 20),
                     ],
                   ),
                 ),

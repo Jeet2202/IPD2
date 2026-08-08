@@ -16,30 +16,30 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, String>> _completedPayouts = [
+  List<Map<String, String>> get _completedPayouts => [
     {
       'id': 'PAY-992182',
-      'bank': 'State Bank of India (...4321)',
+      'bank': 'mock_bank_name_sbi_ending'.tr(context),
       'amount': '₹ 12,400',
       'date': '28 Jul 2026, 10:30 AM',
       'utr': 'UTR4901928301',
-      'status': 'Completed',
+      'status': 'completed'.tr(context),
     },
     {
       'id': 'PAY-991204',
-      'bank': 'State Bank of India (...4321)',
+      'bank': 'mock_bank_name_sbi_ending'.tr(context),
       'amount': '₹ 9,850',
       'date': '21 Jul 2026, 10:30 AM',
       'utr': 'UTR3810294812',
-      'status': 'Completed',
+      'status': 'completed'.tr(context),
     },
     {
       'id': 'PAY-989102',
-      'bank': 'State Bank of India (...4321)',
+      'bank': 'mock_bank_name_sbi_ending'.tr(context),
       'amount': '₹ 14,200',
       'date': '14 Jul 2026, 10:30 AM',
       'utr': 'UTR2910394810',
-      'status': 'Completed',
+      'status': 'completed'.tr(context),
     },
   ];
 
@@ -133,9 +133,9 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
                               color: const Color(0xFFD1FAE5),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
-                              'SUCCESSFUL SETTLEMENT',
-                              style: TextStyle(
+                            child: Text(
+                              'successful_settlement'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFF10B981),
@@ -165,14 +165,14 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Date: ${pay['date']}',
+                        'date_prefix'.tr(context).replaceAll('{}', pay['date'] ?? ''),
                         style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF64748B),
                         ),
                       ),
                       Text(
-                        'Ref UTR: ${pay['utr']}',
+                        'ref_utr_prefix'.tr(context).replaceAll('{}', pay['utr'] ?? ''),
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color(0xFF94A3B8),
@@ -185,7 +185,7 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Ref: ${pay['id']}',
+                            'ref_prefix'.tr(context).replaceAll('{}', pay['id'] ?? ''),
                             style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -195,14 +195,14 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
                           OutlinedButton.icon(
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Downloading payout statement PDF...'),
-                                  backgroundColor: Color(0xFF2563EB),
+                                SnackBar(
+                                  content: Text('downloading_payout_statement'.tr(context)),
+                                  backgroundColor: const Color(0xFF2563EB),
                                 ),
                               );
                             },
                             icon: const Icon(Icons.download_rounded, size: 14),
-                            label: const Text('Download Receipt'),
+                            label: Text('download_receipt'.tr(context)),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF2563EB),
                               side: const BorderSide(color: Color(0xFF2563EB)),
@@ -222,10 +222,10 @@ class _WorkerPayoutHistoryScreenState extends State<WorkerPayoutHistoryScreen>
             ),
 
             // Pending Tab Empty View
-            _buildEmptyState('No pending payouts undergoing settlement'),
+            _buildEmptyState('no_pending_payouts'.tr(context)),
 
             // Failed Tab Empty View
-            _buildEmptyState('No failed payouts on record'),
+            _buildEmptyState('no_failed_payouts'.tr(context)),
           ],
         ),
       ),

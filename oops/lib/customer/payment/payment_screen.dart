@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../l10n/app_translations.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -25,11 +26,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payment Gateway',
+        title: Text('payment_gateway'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -38,13 +38,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Total Amount Card ─────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF1E40AF), Color(0xFF2563EB)],
@@ -59,30 +59,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Amount Payable', style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE))),
-                          const SizedBox(height: 4),
+                          Text('amount_payable'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE))),
+                          SizedBox(height: 4),
                           Text(
                             '₹${finalPay.toStringAsFixed(0)}',
-                            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white),
+                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white),
                           ),
-                          const SizedBox(height: 2),
-                          const Text('Incl. of all taxes & GST', style: TextStyle(fontSize: 11, color: Color(0xFF93C5FD))),
+                          SizedBox(height: 2),
+                          Text('incl_of_all_taxes_gst'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF93C5FD))),
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), shape: BoxShape.circle),
-                        child: const Icon(Icons.shield_rounded, color: Colors.white, size: 36),
+                        child: Icon(Icons.shield_rounded, color: Colors.white, size: 36),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Ally Wallet Card ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -91,18 +91,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(14)),
-                        child: const Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF2563EB), size: 22),
+                        child: Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF2563EB), size: 22),
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
+                      SizedBox(width: 14),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Ally Wallet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('ally_wallet'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
-                            Text('Available Balance: ₹150.00', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            Text('available_balance_15000'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           ],
                         ),
                       ),
@@ -115,14 +115,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Payment Methods ────────────────────────────────────
-                const Text(
-                  'Select Payment Method',
+                Text('select_payment_method'.tr(context),
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 // UPI Option
                 _buildPaymentTile(
@@ -133,7 +132,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   badge: 'Fastest',
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Cash Option
                 _buildPaymentTile(
@@ -144,7 +143,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   badge: 'Recommended',
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Credit/Debit Card Option
                 _buildPaymentTile(
@@ -154,7 +153,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   icon: Icons.credit_card_rounded,
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Net Banking Option
                 _buildPaymentTile(
@@ -164,22 +163,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   icon: Icons.account_balance_outlined,
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Security Info Banner ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.lock_rounded, color: Color(0xFF64748B), size: 18),
                       SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          '256-Bit SSL Encrypted & 100% Safe Payments',
+                        child: Text('256bit_ssl_encrypted_100_safe'.tr(context),
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
                         ),
                       ),
@@ -187,7 +185,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -198,7 +196,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -218,7 +216,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   child: Text(
                     'Pay ₹${finalPay.toStringAsFixed(0)} & Finish',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -240,7 +238,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedMethod = id),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -257,26 +255,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
               activeColor: const Color(0xFF2563EB),
               onChanged: (val) => setState(() => _selectedMethod = val!),
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                      Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                       if (badge != null) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
-                          child: Text(badge, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+                          child: Text(badge, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                  SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                 ],
               ),
             ),

@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/work_in_progress/work_in_progress_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkInProgressScreen extends StatefulWidget {
   const WorkInProgressScreen({super.key});
@@ -25,11 +26,10 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Work In Progress',
+        title: Text('work_in_progress'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -37,13 +37,13 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Live Status Banner Card ──────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -58,18 +58,18 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                      child: const Icon(Icons.build_circle_rounded, color: Colors.white, size: 30),
+                      child: Icon(Icons.build_circle_rounded, color: Colors.white, size: 30),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('LIVE SERVICE ACTIVE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                          Text('live_service_active'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                           SizedBox(height: 2),
-                          Text('Work In Progress (~65%)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
+                          Text('work_in_progress_65'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
                         ],
                       ),
                     ),
@@ -77,11 +77,11 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Worker Info Card ──────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -92,25 +92,25 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                     Container(
                       width: 52,
                       height: 52,
-                      decoration: const BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
-                      child: const Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB)),
+                      decoration: BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
+                      child: Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB)),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Ramesh Kumar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('ramesh_kumar'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           SizedBox(height: 2),
-                          Text('Senior Electrician on site', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text('senior_electrician_on_site'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                         ],
                       ),
                     ),
                     IconButton(
                       icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                        child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                        child: Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
                       onPressed: () {},
                     ),
@@ -118,11 +118,11 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Time & Progress Card ──────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -131,14 +131,14 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Work Progress', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                        Text('65%', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                        Text('work_progress'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                        Text('65'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: const LinearProgressIndicator(
@@ -148,24 +148,24 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                         color: Color(0xFF2563EB),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const Row(
+                    SizedBox(height: 16),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Started At', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+                            Text('started_at'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
                             SizedBox(height: 2),
-                            Text('10:35 AM', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                            Text('1035_am'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('Est. Completion', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+                            Text('est_completion'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
                             SizedBox(height: 2),
-                            Text('11:15 AM (~15 mins)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                            Text('1115_am_15_mins'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                           ],
                         ),
                       ],
@@ -174,17 +174,16 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Task Checklist ────────────────────────────────────────
-              const Text(
-                'Live Task Checklist',
+              Text('live_task_checklist'.tr(context),
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -197,7 +196,7 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                     final isActive = task['active'] == true;
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
                         children: [
                           Icon(
@@ -209,7 +208,7 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                                 : (isActive ? const Color(0xFF2563EB) : const Color(0xFFCBD5E1)),
                             size: 22,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               task['title'] as String,
@@ -222,9 +221,9 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                           ),
                           if (isActive)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(6)),
-                              child: const Text('In Progress', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                              child: Text('in_progress'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                             ),
                         ],
                       ),
@@ -233,17 +232,17 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Professional Notes ────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBEB),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFFFCD34D)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.notes_rounded, color: Color(0xFFD97706), size: 20),
@@ -252,7 +251,7 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Note from Ramesh', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
+                          Text('note_from_ramesh'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
                           SizedBox(height: 2),
                           Text(
                             '"Replaced damaged copper terminal wire. Board installation almost ready for testing."',
@@ -265,7 +264,7 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Action Buttons ────────────────────────────────────────
               Row(
@@ -273,27 +272,27 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
-                      label: const Text('Add More Work'),
+                      icon: Icon(Icons.add_circle_outline_rounded, size: 18),
+                      label: Text('add_more_work'.tr(context)),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFF2563EB)),
                         foregroundColor: const Color(0xFF2563EB),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.support_agent_rounded, size: 18),
-                      label: const Text('Contact Support'),
+                      icon: Icon(Icons.support_agent_rounded, size: 18),
+                      label: Text('contact_support'.tr(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
@@ -301,7 +300,7 @@ class _WorkInProgressScreenState extends State<WorkInProgressScreen> {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

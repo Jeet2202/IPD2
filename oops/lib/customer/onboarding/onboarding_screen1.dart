@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import 'onboarding_widgets.dart';
+import '../../l10n/app_translations.dart';
 
 class OnboardingPage1 extends StatelessWidget {
   const OnboardingPage1({super.key});
@@ -83,8 +84,7 @@ class OnboardingPage1 extends StatelessWidget {
 
                     const SizedBox(height: 36),
 
-                    const Text(
-                      'Book Trusted\nProfessionals',
+                    Text('book_trustednprofessionals'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28,
@@ -97,8 +97,7 @@ class OnboardingPage1 extends StatelessWidget {
 
                     const SizedBox(height: 14),
 
-                    const Text(
-                      'Find skilled electricians, plumbers,\ncarpenters and more — at your doorstep.',
+                    Text('find_skilled_electricians_plumbersncarpenters_and'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,

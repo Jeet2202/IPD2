@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/booking_model.dart';
+import '../l10n/app_translations.dart';
 
 class BookingTimelineWidget extends StatelessWidget {
   final List<BookingTimelineEventModel> events;
@@ -18,11 +19,10 @@ class BookingTimelineWidget extends StatelessWidget {
         elevation: 0,
         color: Colors.grey.shade50,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Center(
-            child: Text(
-              'No timeline events logged yet.',
+            child: Text('no_timeline_events_logged_yet'.tr(context),
               style: TextStyle(color: Colors.grey),
             ),
           ),
@@ -34,28 +34,27 @@ class BookingTimelineWidget extends StatelessWidget {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.history_rounded, color: theme.primaryColor),
-                const SizedBox(width: 8),
-                Text(
-                  'Audit Activity Timeline',
+                SizedBox(width: 8),
+                Text('audit_activity_timeline'.tr(context),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: events.length,
-              separatorBuilder: (context, index) => const Divider(height: 20),
+              separatorBuilder: (context, index) => Divider(height: 20),
               itemBuilder: (context, index) {
                 final event = events[index];
                 final roleBadgeColor = _getRoleColor(event.actorRole);
@@ -64,7 +63,7 @@ class BookingTimelineWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: roleBadgeColor.withOpacity(0.1),
                         shape: BoxShape.circle,
@@ -75,7 +74,7 @@ class BookingTimelineWidget extends StatelessWidget {
                         color: roleBadgeColor,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +91,7 @@ class BookingTimelineWidget extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: roleBadgeColor.withOpacity(0.12),
                                   borderRadius: BorderRadius.circular(12),
@@ -109,13 +108,13 @@ class BookingTimelineWidget extends StatelessWidget {
                             ],
                           ),
                           if (event.description != null && event.description!.isNotEmpty) ...[
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               event.description!,
                               style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade700),
                             ),
                           ],
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             _formatTimestamp(event.timestamp),
                             style: theme.textTheme.bodySmall?.copyWith(

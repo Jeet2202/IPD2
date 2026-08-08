@@ -1,6 +1,7 @@
 // File: lib/worker/earnings/payment_accounts/payment_accounts_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
 
 class WorkerPaymentAccountsScreen extends StatefulWidget {
   const WorkerPaymentAccountsScreen({super.key});
@@ -14,23 +15,23 @@ class _WorkerPaymentAccountsScreenState
     extends State<WorkerPaymentAccountsScreen> {
   String _defaultAccountId = 'BANK-1';
 
-  final List<Map<String, String>> _accounts = [
+  List<Map<String, String>> get _accounts => [
     {
       'id': 'BANK-1',
-      'title': 'State Bank of India',
-      'subtitle': 'Savings A/C ending ...4321',
-      'holder': 'RAMESH KUMAR',
+      'title': 'mock_bank_name_sbi'.tr(context),
+      'subtitle': 'mock_bank_account_ending'.tr(context),
+      'holder': 'mock_bank_holder_name'.tr(context),
       'ifsc': 'SBIN0001234',
-      'type': 'Bank Account',
+      'type': 'bank_account'.tr(context),
       'isDefault': 'true',
     },
     {
       'id': 'UPI-1',
-      'title': 'Google Pay / PhonePe UPI',
-      'subtitle': 'rameshkumar@upi',
-      'holder': 'RAMESH KUMAR',
-      'ifsc': 'VPA Verified',
-      'type': 'UPI ID',
+      'title': 'mock_upi_name'.tr(context),
+      'subtitle': 'mock_upi_id'.tr(context),
+      'holder': 'mock_bank_holder_name'.tr(context),
+      'ifsc': 'vpa_verified'.tr(context),
+      'type': 'upi_id'.tr(context),
       'isDefault': 'false',
     },
   ];
@@ -42,9 +43,9 @@ class _WorkerPaymentAccountsScreenState
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payout Accounts Management',
-          style: TextStyle(
+        title: Text(
+          'payout_accounts_management'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -59,9 +60,9 @@ class _WorkerPaymentAccountsScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Linked Settlement Accounts',
-                style: TextStyle(
+              Text(
+                'linked_settlement_accounts'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -69,9 +70,9 @@ class _WorkerPaymentAccountsScreenState
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Select primary account for weekly automated payouts',
-                style: TextStyle(
+              Text(
+                'select_primary_account_desc'.tr(context),
+                style: const TextStyle(
                   fontSize: 13,
                   color: Color(0xFF64748B),
                 ),
@@ -81,7 +82,7 @@ class _WorkerPaymentAccountsScreenState
 
               ..._accounts.map((acc) {
                 final isSelected = _defaultAccountId == acc['id'];
-                final isBank = acc['type'] == 'Bank Account';
+                final isBank = acc['type'] == 'bank_account'.tr(context);
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 14),
@@ -168,9 +169,9 @@ class _WorkerPaymentAccountsScreenState
                                 color: const Color(0xFF2563EB),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
-                                'PRIMARY',
-                                style: TextStyle(
+                              child: Text(
+                                'primary_caps'.tr(context),
+                                style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -186,7 +187,7 @@ class _WorkerPaymentAccountsScreenState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Holder: ${acc['holder']}',
+                            'holder_prefix'.tr(context).replaceAll('{}', acc['holder'] ?? ''),
                             style: const TextStyle(
                               fontSize: 11,
                               color: Color(0xFF94A3B8),
@@ -198,20 +199,20 @@ class _WorkerPaymentAccountsScreenState
                                 onPressed: () {
                                   Navigator.pushNamed(context, '/worker/profile/bank-details');
                                 },
-                                child: const Text('Edit',
-                                    style: TextStyle(fontSize: 12)),
+                                child: Text('edit'.tr(context),
+                                    style: const TextStyle(fontSize: 12)),
                               ),
                               TextButton(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Account removed.'),
+                                  SnackBar(
+                                      content: Text('account_removed_success'.tr(context)),
                                     ),
                                   );
                                 },
-                                child: const Text(
-                                  'Remove',
-                                  style: TextStyle(
+                                child: Text(
+                                  'remove'.tr(context),
+                                  style: const TextStyle(
                                       fontSize: 12, color: Color(0xFFEF4444)),
                                 ),
                               ),
@@ -236,7 +237,7 @@ class _WorkerPaymentAccountsScreenState
                             context, '/worker/profile/bank-details');
                       },
                       icon: const Icon(Icons.add_rounded, size: 18),
-                      label: const Text('Add Bank A/C'),
+                      label: Text('add_bank_ac'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2563EB),
                         side: const BorderSide(color: Color(0xFF2563EB)),
@@ -255,7 +256,7 @@ class _WorkerPaymentAccountsScreenState
                             context, '/worker/profile/bank-details');
                       },
                       icon: const Icon(Icons.add_rounded, size: 18),
-                      label: const Text('Add UPI VPA'),
+                      label: Text('add_upi_vpa'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF0EA5E9),
                         side: const BorderSide(color: Color(0xFF0EA5E9)),

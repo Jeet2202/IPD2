@@ -6,6 +6,7 @@ import '../../app/routes/app_routes.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../models/booking_model.dart';
+import '../../l10n/app_translations.dart';
 
 class BookingSuccessScreen extends StatelessWidget {
   final BookingModel? booking;
@@ -34,7 +35,7 @@ class BookingSuccessScreen extends StatelessWidget {
         automaticallyImplyLeading: false,        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.close_rounded),
+            icon: Icon(Icons.close_rounded),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.customerHome,
@@ -45,47 +46,45 @@ class BookingSuccessScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Success Green Badge / Animation Placeholder
             Container(
               width: 88,
               height: 88,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color(0xFFDCFCE7),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle_rounded,
                 color: Color(0xFF16A34A),
                 size: 56,
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-            const Text(
-              'Booking Successful!',
+            Text('booking_successful'.tr(context),
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Your booking request has been submitted successfully.',
+            SizedBox(height: 6),
+            Text('your_booking_request_has_been'.tr(context),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Booking Number Badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(14),
@@ -94,30 +93,30 @@ class BookingSuccessScreen extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Booking ID: ', style: TextStyle(fontSize: 13)),
+                  Text('booking_id_2'.tr(context), style: TextStyle(fontSize: 13)),
                   Text(
                     bookingNumber,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.primary),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.primary),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: bookingNumber));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Booking ID copied to clipboard')),
+                        const SnackBar(content: Text('booking_id_copied_to_clipboard'.tr(context))),
                       );
                     },
-                    child: const Icon(Icons.copy_rounded, size: 16, color: AppColors.primary),
+                    child: Icon(Icons.copy_rounded, size: 16, color: AppColors.primary),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
 
             // Booking Summary Details Card
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -137,37 +136,37 @@ class BookingSuccessScreen extends StatelessWidget {
                     label: 'Service',
                     value: serviceName,
                   ),
-                  const Divider(height: 20, color: AppColors.divider),
+                  Divider(height: 20, color: AppColors.divider),
                   _buildDetailRow(
                     icon: Icons.location_on_rounded,
                     label: 'Address',
                     value: addressLine,
                   ),
-                  const Divider(height: 20, color: AppColors.divider),
+                  Divider(height: 20, color: AppColors.divider),
                   _buildDetailRow(
                     icon: Icons.calendar_month_rounded,
                     label: 'Scheduled Date',
                     value: scheduledDate,
                   ),
-                  const Divider(height: 20, color: AppColors.divider),
+                  Divider(height: 20, color: AppColors.divider),
                   _buildDetailRow(
                     icon: Icons.access_time_rounded,
                     label: 'Scheduled Time',
                     value: scheduledTime,
                   ),
-                  const Divider(height: 20, color: AppColors.divider),
+                  Divider(height: 20, color: AppColors.divider),
                   _buildDetailRow(
                     icon: Icons.info_outline_rounded,
                     label: 'Status',
                     valueWidget: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEF3C7),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         status,
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFFD97706)),
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFFD97706)),
                       ),
                     ),
                   ),
@@ -175,7 +174,7 @@ class BookingSuccessScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 36),
+            SizedBox(height: 36),
 
             // Navigation Buttons
             SizedBox(
@@ -185,8 +184,8 @@ class BookingSuccessScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, AppRoutes.customerBookings);
                 },
-                icon: const Icon(Icons.list_alt_rounded),
-                label: const Text('View My Bookings', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                icon: Icon(Icons.list_alt_rounded),
+                label: Text('view_my_bookings'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -195,7 +194,7 @@ class BookingSuccessScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             SizedBox(
               width: double.infinity,
@@ -208,8 +207,8 @@ class BookingSuccessScreen extends StatelessWidget {
                     (route) => false,
                   );
                 },
-                icon: const Icon(Icons.home_rounded),
-                label: const Text('Back to Home', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                icon: Icon(Icons.home_rounded),
+                label: Text('back_to_home'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Theme.of(context).dividerColor),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
@@ -217,7 +216,7 @@ class BookingSuccessScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
           ],
         ),
       ),
@@ -233,9 +232,9 @@ class BookingSuccessScreen extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
-        const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 13)),
-        const Spacer(),
+        SizedBox(width: 10),
+        Text(label, style: TextStyle(fontSize: 13)),
+        Spacer(),
         if (valueWidget != null)
           valueWidget
         else
@@ -244,7 +243,7 @@ class BookingSuccessScreen extends StatelessWidget {
               value ?? '',
               textAlign: TextAlign.end,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
           ),
       ],

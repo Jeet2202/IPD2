@@ -16,6 +16,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../models/address_model.dart';
 import '../../../services/address_service.dart';
 import '../../../services/api_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class SavedAddressesScreen extends StatefulWidget {
   const SavedAddressesScreen({super.key});
@@ -172,14 +173,14 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
               color: Colors.white,
               size: 18,
             ),
-            const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(fontSize: 13))),
+            SizedBox(width: 10),
+            Expanded(child: Text(message, style: TextStyle(fontSize: 13))),
           ],
         ),
         backgroundColor: isSuccess ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -193,11 +194,10 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
       appBar: AppBar(        elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
+          icon: Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Saved Addresses',
+        title: Text('saved_addresses'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText),
         ),
         centerTitle: true,
@@ -224,8 +224,8 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         backgroundColor: _blue,
         foregroundColor: Colors.white,
         elevation: 4,
-        icon: const Icon(Icons.add_location_alt_rounded),
-        label: const Text('Add Address', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+        icon: Icon(Icons.add_location_alt_rounded),
+        label: Text('add_address'.tr(context), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
       ),
     );
   }
@@ -235,9 +235,9 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
   Widget _buildList() {
     return ListView.separated(
       physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 100),
       itemCount: _addresses.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 14),
+      separatorBuilder: (_, __) => SizedBox(height: 14),
       itemBuilder: (_, index) => _AddressCard(
         address: _addresses[index],
         onSetDefault: () => _setDefault(_addresses[index]),
@@ -251,9 +251,9 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
 
   Widget _buildSkeleton() {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 100),
       itemCount: 3,
-      separatorBuilder: (_, __) => const SizedBox(height: 14),
+      separatorBuilder: (_, __) => SizedBox(height: 14),
       itemBuilder: (_, __) => const _SkeletonCard(),
     );
   }
@@ -267,7 +267,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         height: MediaQuery.of(context).size.height * 0.7,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -279,28 +279,26 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: const Color(0xFFBFDBFE), width: 2),
                   ),
-                  child: const Icon(Icons.location_off_rounded, size: 44, color: _blue),
+                  child: Icon(Icons.location_off_rounded, size: 44, color: _blue),
                 ),
-                const SizedBox(height: 24),
-                const Text(
-                  'No Saved Addresses',
+                SizedBox(height: 24),
+                Text('no_saved_addresses'.tr(context),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Add your home, office, or any other\ndelivery address to get started.',
+                SizedBox(height: 10),
+                Text('add_your_home_office_or'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: _mutedText, height: 1.5),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 ElevatedButton.icon(
                   onPressed: _navigateToAdd,
-                  icon: const Icon(Icons.add_location_alt_rounded),
-                  label: const Text('Add First Address', style: TextStyle(fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.add_location_alt_rounded),
+                  label: Text('add_first_address'.tr(context), style: TextStyle(fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _blue,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                    padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
@@ -322,7 +320,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         height: MediaQuery.of(context).size.height * 0.7,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -334,28 +332,27 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: const Color(0xFFFECACA), width: 2),
                   ),
-                  child: const Icon(Icons.cloud_off_rounded, size: 44, color: Color(0xFFDC2626)),
+                  child: Icon(Icons.cloud_off_rounded, size: 44, color: Color(0xFFDC2626)),
                 ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Something went wrong',
+                SizedBox(height: 24),
+                Text('something_went_wrong'.tr(context),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
                   _errorMessage ?? 'Unable to load addresses.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 14, color: _mutedText, height: 1.5),
+                  style: TextStyle(fontSize: 14, color: _mutedText, height: 1.5),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 ElevatedButton.icon(
                   onPressed: _loadAddresses,
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: const Text('Try Again', style: TextStyle(fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.refresh_rounded),
+                  label: Text('try_again'.tr(context), style: TextStyle(fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _blue,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                    padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
@@ -406,7 +403,7 @@ class _AddressCard extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
@@ -432,7 +429,7 @@ class _AddressCard extends StatelessWidget {
             children: [
               // Label chip with icon
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: address.isDefault
                       ? const Color(0xFFEFF6FF)
@@ -447,7 +444,7 @@ class _AddressCard extends StatelessWidget {
                       size: 14,
                       color: address.isDefault ? blue : mutedText,
                     ),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5),
                     Text(
                       address.label.toUpperCase(),
                       style: TextStyle(
@@ -460,22 +457,21 @@ class _AddressCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Spacer(),
+              Spacer(),
               // Default badge
               if (address.isDefault)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDCFCE7),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.star_rounded, size: 12, color: Color(0xFF16A34A)),
                       SizedBox(width: 4),
-                      Text(
-                        'DEFAULT',
+                      Text('default'.tr(context),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
@@ -489,53 +485,53 @@ class _AddressCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // ── Full Name ─────────────────────────────────────────────
           Text(
             address.fullName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
               color: darkText,
             ),
           ),
 
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
 
           // ── Address ──────────────────────────────────────────────
           Text(
             address.shortAddress,
-            style: const TextStyle(fontSize: 13, color: mutedText, height: 1.4),
+            style: TextStyle(fontSize: 13, color: mutedText, height: 1.4),
           ),
 
           // ── Landmark ─────────────────────────────────────────────
           if (address.landmark != null && address.landmark!.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.push_pin_rounded, size: 12, color: Color(0xFF94A3B8)),
-                const SizedBox(width: 4),
+                Icon(Icons.push_pin_rounded, size: 12, color: Color(0xFF94A3B8)),
+                SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     address.landmark!,
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                    style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
                   ),
                 ),
               ],
             ),
           ],
 
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
 
           // ── Phone ─────────────────────────────────────────────────
           Row(
             children: [
-              const Icon(Icons.phone_rounded, size: 13, color: Color(0xFF94A3B8)),
-              const SizedBox(width: 5),
+              Icon(Icons.phone_rounded, size: 13, color: Color(0xFF94A3B8)),
+              SizedBox(width: 5),
               Text(
                 address.phone,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF94A3B8),
@@ -544,9 +540,9 @@ class _AddressCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 14),
-          const Divider(color: Color(0xFFF1F5F9), height: 1),
-          const SizedBox(height: 10),
+          SizedBox(height: 14),
+          Divider(color: Color(0xFFF1F5F9), height: 1),
+          SizedBox(height: 10),
 
           // ── Action Row ────────────────────────────────────────────
           Row(
@@ -556,19 +552,18 @@ class _AddressCard extends StatelessWidget {
                 GestureDetector(
                   onTap: onSetDefault,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: const Color(0xFFBFDBFE)),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.star_border_rounded, size: 13, color: blue),
                         SizedBox(width: 5),
-                        Text(
-                          'Set Default',
+                        Text('set_default'.tr(context),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -580,12 +575,11 @@ class _AddressCard extends StatelessWidget {
                   ),
                 ),
               if (address.isDefault)
-                const Row(
+                Row(
                   children: [
                     Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF16A34A)),
                     SizedBox(width: 5),
-                    Text(
-                      'Default Selected',
+                    Text('default_selected'.tr(context),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -595,7 +589,7 @@ class _AddressCard extends StatelessWidget {
                   ],
                 ),
 
-              const Spacer(),
+              Spacer(),
 
               // Edit Button
               _ActionIconBtn(
@@ -604,7 +598,7 @@ class _AddressCard extends StatelessWidget {
                 tooltip: 'Edit',
                 onTap: onEdit,
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
 
               // Delete Button
               _ActionIconBtn(
@@ -644,7 +638,7 @@ class _ActionIconBtn extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(8),
@@ -674,25 +668,24 @@ class _DeleteConfirmDialog extends StatelessWidget {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       icon: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: const Color(0xFFFEF2F2),
           shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFFECACA)),
         ),
-        child: const Icon(Icons.delete_outline_rounded, color: Color(0xFFDC2626), size: 28),
+        child: Icon(Icons.delete_outline_rounded, color: Color(0xFFDC2626), size: 28),
       ),
-      title: const Text(
-        'Delete Address?',
+      title: Text('delete_address'.tr(context),
         textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
       ),
       content: Text(
         'Are you sure you want to delete the $addressLabel address for $fullName? This cannot be undone.',
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
+        style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
       ),
-      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      actionsPadding: EdgeInsets.fromLTRB(20, 0, 20, 20),
       actions: [
         Row(
           children: [
@@ -700,28 +693,27 @@ class _DeleteConfirmDialog extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context, false),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: Color(0xFFE2E8F0)),
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  side: BorderSide(color: Color(0xFFE2E8F0)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text(
-                  'Cancel',
+                child: Text('cancel'.tr(context),
                   style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF64748B)),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: const Color(0xFFDC2626),
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w800)),
+                child: Text('delete'.tr(context), style: TextStyle(fontWeight: FontWeight.w800)),
               ),
             ),
           ],
@@ -771,7 +763,7 @@ class _SkeletonCardState extends State<_SkeletonCard>
       animation: _animation,
       builder: (_, __) {
         return Container(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(22),
@@ -781,15 +773,15 @@ class _SkeletonCardState extends State<_SkeletonCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _bar(80, 16, _animation.value),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _bar(140, 14, _animation.value),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _bar(double.infinity, 12, _animation.value),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               _bar(200, 12, _animation.value),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               _bar(120, 12, _animation.value),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _bar(100, 32, _animation.value, radius: 10),
             ],
           ),

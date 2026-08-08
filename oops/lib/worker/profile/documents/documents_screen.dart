@@ -1,6 +1,8 @@
 // File: lib/worker/profile/documents/documents_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerDocumentsScreen extends StatelessWidget {
   const WorkerDocumentsScreen({super.key});
@@ -9,11 +11,11 @@ class WorkerDocumentsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Document Manager',
+        title: Text(
+          'document_manager'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -21,23 +23,29 @@ class WorkerDocumentsScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Overall Status Banner
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFFD1FAE5),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3)),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(Icons.verified_rounded,
                         color: Color(0xFF10B981), size: 24),
@@ -47,7 +55,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'All Mandatory Documents Verified',
+                            'mandatory_docs_verified'.tr(context),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -56,7 +64,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'Your partner account is active and clear for work',
+                            'account_active_clear'.tr(context),
                             style: TextStyle(
                               fontSize: 12,
                               color: Color(0xFF047857),
@@ -69,10 +77,10 @@ class WorkerDocumentsScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
-              const Text(
-                'Uploaded Documents',
+              Text(
+                'uploaded_documents'.tr(context),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
@@ -80,42 +88,42 @@ class WorkerDocumentsScreen extends StatelessWidget {
                   letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               _buildDocumentCard(
-                title: 'Aadhaar Card',
-                status: 'Verified',
-                date: 'Uploaded 15 Jan 2026',
+                title: 'aadhaar_card'.tr(context),
+                status: 'verified'.tr(context),
+                date: '${'uploaded_on_prefix'.tr(context)}15 Jan 2026',
                 icon: Icons.badge_rounded,
                 isVerified: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildDocumentCard(
-                title: 'PAN Card',
-                status: 'Verified',
-                date: 'Uploaded 15 Jan 2026',
+                title: 'pan_card'.tr(context),
+                status: 'verified'.tr(context),
+                date: '${'uploaded_on_prefix'.tr(context)}15 Jan 2026',
                 icon: Icons.credit_card_rounded,
                 isVerified: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildDocumentCard(
-                title: 'Police Clearance Certificate',
-                status: 'Expires in 45 Days',
-                date: 'Uploaded 20 Feb 2026',
+                title: 'police_clearance'.tr(context),
+                status: 'expires_in_45_days'.tr(context),
+                date: '${'uploaded_on_prefix'.tr(context)}20 Feb 2026',
                 icon: Icons.security_rounded,
                 isVerified: false,
                 isWarning: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildDocumentCard(
-                title: 'ITI Trade Certificate',
-                status: 'Verified',
-                date: 'Uploaded 15 Jan 2026',
+                title: 'iti_trade_cert'.tr(context),
+                status: 'verified'.tr(context),
+                date: '${'uploaded_on_prefix'.tr(context)}15 Jan 2026',
                 icon: Icons.workspace_premium_rounded,
                 isVerified: true,
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Upload New Document Button
               SizedBox(
@@ -123,11 +131,11 @@ class WorkerDocumentsScreen extends StatelessWidget {
                 height: 52,
                 child: OutlinedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, '/worker/verification/kyc'),
-                  icon: const Icon(Icons.upload_file_rounded, size: 18),
-                  label: const Text('Upload Additional Certificate / Document'),
+                  icon: Icon(Icons.upload_file_rounded, size: 18),
+                  label: Text('upload_additional_doc'.tr(context)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF2563EB),
-                    side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                    side: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -135,7 +143,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -156,7 +164,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
         : (isWarning ? const Color(0xFFF59E0B) : const Color(0xFF64748B));
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -171,30 +179,30 @@ class WorkerDocumentsScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: statusColor.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: statusColor, size: 22),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   date,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     color: Color(0xFF64748B),
                   ),
@@ -203,7 +211,7 @@ class WorkerDocumentsScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: statusColor.withOpacity(0.12),
               borderRadius: BorderRadius.circular(8),

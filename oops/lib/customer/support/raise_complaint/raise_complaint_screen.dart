@@ -5,6 +5,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../models/booking_model.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/support_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class RaiseComplaintScreen extends StatefulWidget {
   const RaiseComplaintScreen({super.key});
@@ -136,45 +137,43 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Raise a Complaint / Ticket',
+        title: Text('raise_a_complaint_ticket'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+            ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
             : SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Select Related Booking ─────────────────────────────
-                    const Text('Related Booking (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 6),
+                    Text('related_booking_optional'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    SizedBox(height: 6),
 
                     if (_userBookings.isEmpty)
                       Container(
-                        padding: const EdgeInsets.all(14),
+                        padding: EdgeInsets.all(14),
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: const Color(0xFFCBD5E1)),
                         ),
-                        child: const Text(
-                          'No recent bookings found. Raising a general support ticket.',
+                        child: Text('no_recent_bookings_found_raising'.tr(context),
                           style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                         ),
                       )
                     else
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -184,17 +183,17 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                           child: DropdownButton<BookingModel?>(
                             value: _noBookingSelected ? null : _selectedBooking,
                             isExpanded: true,
-                            hint: const Text('None (General Query)', style: TextStyle(fontSize: 13)),
+                            hint: Text('none_general_query'.tr(context), style: TextStyle(fontSize: 13)),
                             items: [
                               const DropdownMenuItem<BookingModel?>(
                                 value: null,
-                                child: Text('None (General Query)', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                                child: Text('none_general_query'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
                               ),
                               ..._userBookings.map((b) => DropdownMenuItem<BookingModel?>(
                                     value: b,
                                     child: Text(
                                       '#${b.bookingNumber.isNotEmpty ? b.bookingNumber : b.id.substring(0, 8)} • ${b.serviceSnapshot.name.isNotEmpty ? b.serviceSnapshot.name : "Service"}',
-                                      style: const TextStyle(fontSize: 13),
+                                      style: TextStyle(fontSize: 13),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   )),
@@ -214,13 +213,13 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                         ),
                       ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ── Complaint Category ──────────────────────────────────
-                    const Text('Ticket Category', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 6),
+                    Text('ticket_category'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -231,18 +230,18 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                           value: _selectedCategory,
                           isExpanded: true,
                           items: _categories
-                              .map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(fontSize: 13))))
+                              .map((c) => DropdownMenuItem(value: c, child: Text(c, style: TextStyle(fontSize: 13))))
                               .toList(),
                           onChanged: (val) => setState(() => _selectedCategory = val!),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ── Priority Chips ──────────────────────────────────────
-                    const Text('Priority Level', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 8),
+                    Text('priority_level'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    SizedBox(height: 8),
 
                     Row(
                       children: [
@@ -252,30 +251,30 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ── Subject ─────────────────────────────────────────────
-                    const Text('Ticket Subject', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 6),
+                    Text('ticket_subject'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    SizedBox(height: 6),
                     TextField(
                       controller: _subjectController,
                       decoration: InputDecoration(
                         hintText: 'Brief summary of your issue...',
                         fillColor: Colors.white,
                         filled: true,
-                        contentPadding: const EdgeInsets.all(14),
+                        contentPadding: EdgeInsets.all(14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                          borderSide: BorderSide(color: Color(0xFFCBD5E1)),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ── Description ─────────────────────────────────────────
-                    const Text('Detailed Description', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 6),
+                    Text('detailed_description'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                    SizedBox(height: 6),
                     TextField(
                       controller: _descriptionController,
                       maxLines: 5,
@@ -283,15 +282,15 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                         hintText: 'Explain what happened in detail so support admin can assist you...',
                         fillColor: Colors.white,
                         filled: true,
-                        contentPadding: const EdgeInsets.all(14),
+                        contentPadding: EdgeInsets.all(14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                          borderSide: BorderSide(color: Color(0xFFCBD5E1)),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
 
                     // ── Submit Button ───────────────────────────────────────
                     SizedBox(
@@ -306,16 +305,16 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         child: _isSubmitting
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                               )
-                            : const Text('Submit Ticket & Start Admin Chat', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                            : Text('submit_ticket_start_admin_chat'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -326,7 +325,7 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
   Widget _buildPriorityChip(String label, String value) {
     final isSelected = _priority == value;
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
+      padding: EdgeInsets.only(right: 8.0),
       child: ChoiceChip(
         label: Text(label),
         selected: isSelected,

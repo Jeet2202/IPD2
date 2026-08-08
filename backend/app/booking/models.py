@@ -376,6 +376,14 @@ class Booking(Document):
         default=None,
         description="[Phase 4.7] Payment ObjectId or Razorpay Payment ID string.",
     )
+    razorpay_order_id: str | None = Field(
+        default=None,
+        description="Razorpay order ID string (e.g., 'order_xxxxx').",
+    )
+    razorpay_payment_id: str | None = Field(
+        default=None,
+        description="Razorpay payment ID string (e.g., 'pay_xxxxx').",
+    )
 
     # ── Job Execution & Completion (Phase 4.7.2) ──────────────────────────────
 

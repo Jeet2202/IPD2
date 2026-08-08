@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminPaymentsScreen extends StatelessWidget {
   const AdminPaymentsScreen({super.key});
@@ -6,8 +7,8 @@ class AdminPaymentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Payments Screen')),
-      body: const Center(child: Text('Admin Payments Screen')),
+      appBar: AppBar(title: Text('admin_payments_screen'.tr(context))),
+      body: const Center(child: Text('admin_payments_screen'.tr(context))),
     );
   }
 }

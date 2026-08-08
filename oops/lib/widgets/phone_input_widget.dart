@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_translations.dart';
 
 class CountryInfo {
   final String name;
@@ -307,8 +308,7 @@ class _CountryPickerBottomSheetState extends State<_CountryPickerBottomSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Select Country / Country Code',
+            Text('select_country_country_code'.tr(context),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,

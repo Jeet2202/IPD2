@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
+import '../../l10n/app_translations.dart';
 
 class AddressForm extends StatefulWidget {
   final VoidCallback? onSave;
@@ -77,8 +78,7 @@ class _AddressFormState extends State<AddressForm> {
             validator: (v) => v == null || v.length < 6 ? 'Enter valid 6-digit pincode' : null,
           ),
           const SizedBox(height: AppDimensions.md),
-          Text(
-            'Save Address As',
+          Text('save_address_as'.tr(context),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

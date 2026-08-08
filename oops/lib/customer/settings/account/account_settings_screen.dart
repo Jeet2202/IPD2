@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   const AccountSettingsScreen({super.key});
@@ -6,8 +7,8 @@ class AccountSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('A c c o u n t S e t t i n g s S c r e e n')),
-      body: const Center(child: Text('A c c o u n t S e t t i n g s S c r e e n')),
+      appBar: AppBar(title: Text('a_c_c_o_u'.tr(context))),
+      body: Center(child: Text('a_c_c_o_u'.tr(context))),
     );
   }
 }

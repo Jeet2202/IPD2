@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -6,8 +7,8 @@ class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Dashboard Screen')),
-      body: const Center(child: Text('Admin Dashboard Screen')),
+      appBar: AppBar(title: Text('admin_dashboard_screen'.tr(context))),
+      body: const Center(child: Text('admin_dashboard_screen'.tr(context))),
     );
   }
 }

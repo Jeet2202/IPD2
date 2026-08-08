@@ -6,6 +6,8 @@ import '../../../services/api_service.dart';
 import '../../../services/location_service.dart';
 import '../../../widgets/location_search_bar.dart';
 import '../../../customer/address/map_picker_screen.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerServiceAreaScreen extends StatefulWidget {
   const WorkerServiceAreaScreen({super.key});
@@ -55,7 +57,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
           setState(() {
             _detectedLocation = LatLng(lat, lng);
             _detectedAddress =
-                'Saved location (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
+                '${'saved_location'.tr(context)} (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
           });
         }
       }
@@ -82,13 +84,13 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
         _detectedLocation = loc;
         _detectedAddress = addressParts.isNotEmpty
             ? addressParts.join(', ')
-            : 'Location detected (${loc.latitude.toStringAsFixed(4)}, ${loc.longitude.toStringAsFixed(4)})';
+            : '${'location_detected'.tr(context)} (${loc.latitude.toStringAsFixed(4)}, ${loc.longitude.toStringAsFixed(4)})';
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_detectedAddress ?? 'Location detected!'),
+            content: Text(_detectedAddress ?? '${'location_detected'.tr(context)}!'),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
           ),
@@ -129,7 +131,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Map location selected: $addressLine'),
+            content: Text('${'map_location_selected'.tr(context)}$addressLine'),
             backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
           ),
@@ -157,9 +159,9 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Service area saved successfully!'),
-            backgroundColor: Color(0xFF10B981),
+          SnackBar(
+            content: Text('service_area_saved_success'.tr(context)),
+            backgroundColor: const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -188,11 +190,11 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Service Area & Location',
+        title: Text(
+          'service_area_location'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w800,
@@ -200,12 +202,18 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
           : SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.0),
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +221,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                     // ── Modern Hero Header Banner ────────────────────────────
                     _buildHeroHeader(),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Location Search Bar ─────────────────────────────────
                     LocationSearchBar(
@@ -225,7 +233,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // ── Quick Location Action Buttons (GPS & Map Picker) ───
                     Row(
@@ -234,7 +242,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                           child: OutlinedButton.icon(
                             onPressed: _isDetectingLocation ? null : _detectMyLocation,
                             icon: _isDetectingLocation
-                                ? const SizedBox(
+                                ? SizedBox(
                                     width: 16,
                                     height: 16,
                                     child: CircularProgressIndicator(
@@ -242,28 +250,28 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                                       color: Color(0xFF2563EB),
                                     ),
                                   )
-                                : const Icon(Icons.my_location_rounded, size: 18),
-                            label: Text(_isDetectingLocation ? 'Detecting...' : 'Detect GPS'),
+                                : Icon(Icons.my_location_rounded, size: 18),
+                            label: Text(_isDetectingLocation ? 'detecting_gps'.tr(context) : 'detect_gps'.tr(context)),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF2563EB),
-                              side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _pickOnMap,
-                            icon: const Icon(Icons.map_rounded, size: 18),
-                            label: const Text('Pick on Map'),
+                            icon: Icon(Icons.map_rounded, size: 18),
+                            label: Text('pick_on_map'.tr(context)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1E293B),
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -274,43 +282,43 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Map Preview & Service Radius Card ────────────────────
                     _buildMapVisualizerCard(),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Active Selected Location Card ────────────────────────
                     _buildSelectedLocationCard(),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Service Radius & Distance Chips Card ─────────────────
                     _buildRadiusControlCard(),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Travel Settings Card ─────────────────────────────────
                     _buildCardContainer(
-                      title: 'Travel Allowance & Preferences',
+                      title: 'travel_allowance_preferences'.tr(context),
                       child: Row(
                         children: [
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Charge Travel Allowance',
+                                Text(
+                                  'charge_travel_allowance'.tr(context),
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFF0F172A),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'Standard travel fee applied for jobs outside 10km radius.',
+                                SizedBox(height: 4),
+                                Text(
+                                  'standard_travel_fee_desc'.tr(context),
                                   style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                                 ),
                               ],
@@ -325,7 +333,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // ── Save Service Area Primary Action ─────────────────────
                     SizedBox(
@@ -344,7 +352,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                           ),
                         ),
                         child: _isSaving
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22,
                                 height: 22,
                                 child: CircularProgressIndicator(
@@ -352,13 +360,13 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Row(
+                            : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.check_circle_rounded, size: 20),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Save Service Area & Location',
+                                    'save_service_area_location'.tr(context),
                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                                   ),
                                 ],
@@ -366,7 +374,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -377,7 +385,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
   Widget _buildHeroHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
@@ -399,35 +407,35 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.radar_rounded, color: Colors.white, size: 24),
+                child: Icon(Icons.radar_rounded, color: Colors.white, size: 24),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Work Radius & Coverage',
+                    Text(
+                      'work_radius_coverage'.tr(context),
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
-                      'Active operating zone: ${_radius.round()} km radius',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
+                      '${'active_operating_zone_prefix'.tr(context)}${_radius.round()} ${'km_radius'.tr(context)}',
+                      style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'Set your location and radius to get matched with nearby jobs in real-time.',
+          SizedBox(height: 12),
+          Text(
+            'set_location_radius_desc'.tr(context),
             style: TextStyle(fontSize: 12, color: Color(0xFFE0E7FF), height: 1.4),
           ),
         ],
@@ -460,7 +468,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6),
-              itemBuilder: (ctx, idx) => Container(margin: const EdgeInsets.all(1), color: Colors.blueGrey),
+              itemBuilder: (ctx, idx) => Container(margin: EdgeInsets.all(1), color: Colors.blueGrey),
             ),
           ),
           // Pulsing Radius Visualizer Circle
@@ -476,7 +484,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
           ),
           // Location Pin Marker
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: _detectedLocation != null ? const Color(0xFF10B981) : const Color(0xFF2563EB),
               shape: BoxShape.circle,
@@ -488,14 +496,14 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.place_rounded, color: Colors.white, size: 24),
+            child: Icon(Icons.place_rounded, color: Colors.white, size: 24),
           ),
           // Floating Coverage Badge
           Positioned(
             bottom: 14,
             right: 14,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -510,11 +518,11 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.share_location_rounded, size: 14, color: Color(0xFF2563EB)),
-                  const SizedBox(width: 6),
+                  Icon(Icons.share_location_rounded, size: 14, color: Color(0xFF2563EB)),
+                  SizedBox(width: 6),
                   Text(
-                    '${_radius.round()} Km Radius',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
+                    '${_radius.round()} ${'km_radius'.tr(context)}',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
                   ),
                 ],
               ),
@@ -527,13 +535,13 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
 
   Widget _buildSelectedLocationCard() {
     return _buildCardContainer(
-      title: 'Current Operating Base',
+      title: 'current_operating_base'.tr(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_detectedAddress != null) ...[
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: const Color(0xFFECFDF5),
                 borderRadius: BorderRadius.circular(14),
@@ -541,12 +549,12 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on_rounded, color: Color(0xFF059669), size: 22),
-                  const SizedBox(width: 10),
+                  Icon(Icons.location_on_rounded, color: Color(0xFF059669), size: 22),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _detectedAddress!,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF065F46), height: 1.3),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF065F46), height: 1.3),
                     ),
                   ),
                 ],
@@ -554,19 +562,19 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
             ),
           ] else ...[
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFFBEB),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: const Color(0xFFFDE68A)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(Icons.location_off_rounded, color: Color(0xFFD97706), size: 22),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'No location set. Use GPS or Pick on Map to receive nearby job alerts.',
+                      'no_location_set_desc'.tr(context),
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
                     ),
                   ),
@@ -581,24 +589,24 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
 
   Widget _buildRadiusControlCard() {
     return _buildCardContainer(
-      title: 'Working Distance Radius',
+      title: 'working_distance_radius'.tr(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Maximum Coverage Radius',
+              Text(
+                'max_coverage_radius'.tr(context),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
               ),
               Text(
-                '${_radius.round()} Km',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB)),
+                '${_radius.round()} ${'km'.tr(context)}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB)),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Presets Chips
           Wrap(
@@ -606,7 +614,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
             children: _presetDistances.map((dist) {
               final isSelected = _radius.round() == dist;
               return ChoiceChip(
-                label: Text('${dist}km'),
+                label: Text('$dist${'km'.tr(context)}'),
                 selected: isSelected,
                 selectedColor: const Color(0xFF2563EB),
                 backgroundColor: const Color(0xFFF1F5F9),
@@ -622,7 +630,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
             }).toList(),
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
@@ -638,11 +646,11 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
               onChanged: (val) => setState(() => _radius = val),
             ),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('2 km', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-              Text('40 km', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+              Text('2 ${'km'.tr(context)}', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+              Text('40 ${'km'.tr(context)}', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
             ],
           ),
         ],
@@ -652,7 +660,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
 
   Widget _buildCardContainer({required String title, required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -670,9 +678,9 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           child,
         ],
       ),

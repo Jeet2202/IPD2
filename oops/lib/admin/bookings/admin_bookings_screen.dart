@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminBookingsScreen extends StatelessWidget {
   const AdminBookingsScreen({super.key});
@@ -6,8 +7,8 @@ class AdminBookingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Bookings Screen')),
-      body: const Center(child: Text('Admin Bookings Screen')),
+      appBar: AppBar(title: Text('admin_bookings_screen'.tr(context))),
+      body: const Center(child: Text('admin_bookings_screen'.tr(context))),
     );
   }
 }

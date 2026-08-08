@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/job_application_model.dart';
 import '../../services/job_application_service.dart';
 import '../quotations/quotation_form_screen.dart';
+import '../../l10n/app_translations.dart';
 
 class WorkerApplicationsScreen extends StatefulWidget {
   const WorkerApplicationsScreen({super.key});
@@ -69,9 +70,9 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
-        title: const Text(
-          'My Applications',
-          style: TextStyle(
+        title: Text(
+          'my_applications'.tr(context),
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
             color: Color(0xFF0F172A),
@@ -115,9 +116,9 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                 children: [
                   const Icon(Icons.error_outline_rounded, size: 52, color: Color(0xFFEF4444)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Failed to Load Applications',
-                    style: TextStyle(
+                  Text(
+                    'failed_to_load_applications'.tr(context),
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),
@@ -133,7 +134,7 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                   ElevatedButton.icon(
                     onPressed: _loadApplications,
                     icon: const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Try Again'),
+                    label: Text('try_again'.tr(context)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
                       foregroundColor: Colors.white,
@@ -175,19 +176,19 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Text(
-                    'No Job Applications Yet',
-                    style: TextStyle(
+                  Text(
+                    'no_job_applications_yet'.tr(context),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'You have not applied for any marketplace jobs yet. Browse available jobs in the Marketplace tab to get started.',
+                  Text(
+                    'no_job_applications_desc'.tr(context),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF64748B),
                       height: 1.4,
@@ -215,16 +216,16 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
   Widget _buildApplicationCard(JobApplicationItem item) {
     Color statusBg = const Color(0xFFFEF3C7);
     Color statusFg = const Color(0xFFD97706);
-    String statusText = 'Pending Review';
+    String statusText = 'pending_review'.tr(context);
 
     if (item.isAccepted) {
       statusBg = const Color(0xFFD1FAE5);
       statusFg = const Color(0xFF059669);
-      statusText = 'Selected';
+      statusText = 'selected'.tr(context);
     } else if (item.isRejected) {
       statusBg = const Color(0xFFFEE2E2);
       statusFg = const Color(0xFFDC2626);
-      statusText = 'Rejected';
+      statusText = 'rejected'.tr(context);
     }
 
     return Container(
@@ -284,7 +285,7 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
 
           // Booking Ref Number
           Text(
-            'Ref: ${item.bookingNumber}',
+            '${'ref_prefix'.tr(context)}${item.bookingNumber}',
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -305,14 +306,14 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: const Color(0xFFA7F3D0)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.emoji_events_rounded, color: Color(0xFF059669), size: 20),
-                  SizedBox(width: 10),
+                  const Icon(Icons.emoji_events_rounded, color: Color(0xFF059669), size: 20),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Congratulations! You have been selected for this booking.',
-                      style: TextStyle(
+                      'congrats_selected'.tr(context),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF047857),
@@ -336,9 +337,9 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Applied On',
-                          style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
+                        Text(
+                          'applied_on'.tr(context),
+                          style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
                         ),
                         Text(
                           '${item.appliedAt.day}/${item.appliedAt.month}/${item.appliedAt.year}',
@@ -361,12 +362,12 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Scheduled Date',
-                          style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
+                        Text(
+                          'scheduled_date'.tr(context),
+                          style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
                         ),
                         Text(
-                          item.scheduledDate ?? 'On-Demand',
+                          item.scheduledDate ?? 'on_demand'.tr(context),
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -425,7 +426,7 @@ class _WorkerApplicationsScreenState extends State<WorkerApplicationsScreen> {
                 }
               },
               icon: const Icon(Icons.request_quote_rounded, size: 18),
-              label: const Text('Manage Quotation'),
+              label: Text('manage_quotation'.tr(context)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0F172A),
                 foregroundColor: Colors.white,

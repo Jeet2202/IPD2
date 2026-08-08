@@ -1,6 +1,7 @@
 // File: lib/worker/earnings/transaction_details/transaction_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
 
 class WorkerTransactionDetailsScreen extends StatelessWidget {
   const WorkerTransactionDetailsScreen({super.key});
@@ -12,9 +13,9 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Transaction Details',
-          style: TextStyle(
+        title: Text(
+          'transaction_details'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -50,9 +51,9 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                           color: Colors.white, size: 28),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      '+ ₹ 850.00',
-                      style: TextStyle(
+                    Text(
+                      'amount_850'.tr(context),
+                      style: const TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFF065F46),
@@ -60,9 +61,9 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Credited to Wallet • 31 Jul 2026, 4:15 PM',
-                      style: TextStyle(
+                    Text(
+                      'credited_to_wallet_mock'.tr(context),
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF047857),
@@ -76,16 +77,16 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
 
               // Job & Customer Summary Box
               _buildDetailSection(
-                title: 'Associated Job Details',
+                title: 'associated_job_details'.tr(context),
                 child: Column(
                   children: [
-                    _buildRowItem('Booking ID', '#JOB-8821'),
+                    _buildRowItem('booking_id'.tr(context), 'job_id_mock'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Service', 'MCB Short Circuit Repair'),
+                    _buildRowItem('service'.tr(context), 'mcb_short_circuit_repair'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Customer', 'Sunil Verma'),
+                    _buildRowItem('customer'.tr(context), 'mock_customer_name'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Location', 'Dwarka Sector 15, New Delhi'),
+                    _buildRowItem('location'.tr(context), 'dwarka_new_delhi_mock'.tr(context)),
                   ],
                 ),
               ),
@@ -94,33 +95,33 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
 
               // Financial Breakdown Box
               _buildDetailSection(
-                title: 'Earnings Breakdown',
+                title: 'earnings_breakdown'.tr(context),
                 child: Column(
                   children: [
-                    _buildRowItem('Gross Labour Charges', '₹ 850.00'),
+                    _buildRowItem('gross_labour_charges'.tr(context), 'amount_850_00'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Customer Tip', '₹ 100.00'),
+                    _buildRowItem('customer_tip'.tr(context), 'amount_100_00'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Ally Platform Fee (0%)', '₹ 0.00'),
+                    _buildRowItem('platform_fee_0'.tr(context), 'amount_0_00'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('TDS / Tax Deducted (0%)', '₹ 0.00'),
+                    _buildRowItem('tds_tax_deducted_0'.tr(context), 'amount_0_00'.tr(context)),
                     const SizedBox(height: 10),
                     const Divider(color: Color(0xFFE2E8F0)),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Net Earned Amount',
-                          style: TextStyle(
+                        Text(
+                          'net_earned_amount'.tr(context),
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF0F172A),
                           ),
                         ),
-                        const Text(
-                          '₹ 950.00',
-                          style: TextStyle(
+                        Text(
+                          'amount_950_00'.tr(context),
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
                             color: Color(0xFF10B981),
@@ -136,14 +137,14 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
 
               // Payment Technical References Box
               _buildDetailSection(
-                title: 'Payment References',
+                title: 'payment_references'.tr(context),
                 child: Column(
                   children: [
-                    _buildRowItem('Payment Method', 'Online Prepaid (Escrow)'),
+                    _buildRowItem('payment_method'.tr(context), 'online_prepaid_escrow'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Transaction ID', 'TXN-992019482910'),
+                    _buildRowItem('transaction_id'.tr(context), 'mock_txn_id'.tr(context)),
                     const SizedBox(height: 8),
-                    _buildRowItem('Gateway Reference', 'pay_P10293849102'),
+                    _buildRowItem('gateway_reference'.tr(context), 'mock_gateway_ref'.tr(context)),
                   ],
                 ),
               ),
@@ -157,14 +158,14 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Downloading Tax Invoice PDF...'),
-                            backgroundColor: Color(0xFF2563EB),
+                          SnackBar(
+                            content: Text('downloading_tax_invoice'.tr(context)),
+                            backgroundColor: const Color(0xFF2563EB),
                           ),
                         );
                       },
                       icon: const Icon(Icons.download_rounded, size: 18),
-                      label: const Text('Invoice PDF'),
+                      label: Text('invoice_pdf'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2563EB),
                         side: const BorderSide(color: Color(0xFF2563EB)),
@@ -180,14 +181,14 @@ class WorkerTransactionDetailsScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Sharing transaction receipt...'),
-                            backgroundColor: Color(0xFF2563EB),
+                          SnackBar(
+                            content: Text('sharing_transaction_receipt'.tr(context)),
+                            backgroundColor: const Color(0xFF2563EB),
                           ),
                         );
                       },
                       icon: const Icon(Icons.share_rounded, size: 18),
-                      label: const Text('Share Receipt'),
+                      label: Text('share_receipt'.tr(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,

@@ -2,6 +2,7 @@
 // lib/customer/recently_viewed/recently_viewed_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class RecentlyViewedScreen extends StatelessWidget {
   const RecentlyViewedScreen({super.key});
@@ -39,8 +40,7 @@ class RecentlyViewedScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Recently Viewed',
+        title: Text('recently_viewed'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -80,7 +80,7 @@ class RecentlyViewedScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Recently Viewed Section ─────────────────────────────
-              const Text('Your Browsing History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              Text('your_browsing_history'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
               const SizedBox(height: 12),
 
               Column(
@@ -129,7 +129,7 @@ class RecentlyViewedScreen extends StatelessWidget {
                             OutlinedButton.icon(
                               onPressed: () {},
                               icon: const Icon(Icons.favorite_border_rounded, size: 16),
-                              label: const Text('Save', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                              label: Text('save'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(color: Color(0xFFCBD5E1)),
                                 foregroundColor: const Color(0xFF0F172A),
@@ -144,7 +144,7 @@ class RecentlyViewedScreen extends StatelessWidget {
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
-                              child: const Text('Book Now', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                              child: Text('book_now'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                             ),
                           ],
                         ),

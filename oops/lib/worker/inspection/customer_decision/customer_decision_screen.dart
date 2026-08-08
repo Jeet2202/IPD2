@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/customer_decision/customer_decision_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerCustomerDecisionScreen extends StatefulWidget {
   const WorkerCustomerDecisionScreen({super.key});
@@ -21,15 +23,22 @@ class _WorkerCustomerDecisionScreenState
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Customer Decision Tracker',
-          style: TextStyle(
+        title: Text(
+          'customer_decision_tracker'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -69,9 +78,9 @@ class _WorkerCustomerDecisionScreenState
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
-                            'QUOTATION #Q-4902',
-                            style: TextStyle(
+                          child: Text(
+                            'quotation_id_mock'.tr(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -86,9 +95,9 @@ class _WorkerCustomerDecisionScreenState
                             color: const Color(0xFFF59E0B),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
-                            'UNDER REVIEW',
-                            style: TextStyle(
+                          child: Text(
+                            'under_review'.tr(context),
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -98,9 +107,9 @@ class _WorkerCustomerDecisionScreenState
                       ],
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Pooja Sharma is Reviewing Quote',
-                      style: TextStyle(
+                    Text(
+                      'customer_reviewing_quote'.tr(context),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -108,7 +117,7 @@ class _WorkerCustomerDecisionScreenState
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Quotation Total: ₹ 1,298 • Submitted Today, 3:45 PM',
+                      'quotation_total_submitted'.tr(context),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.85),
@@ -121,9 +130,9 @@ class _WorkerCustomerDecisionScreenState
               const SizedBox(height: 24),
 
               // Status Timeline Section
-              const Text(
-                'Proposal Status Timeline',
-                style: TextStyle(
+              Text(
+                'proposal_status_timeline'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -133,28 +142,28 @@ class _WorkerCustomerDecisionScreenState
               const SizedBox(height: 14),
 
               _buildTimelineStep(
-                title: 'Quotation Submitted',
-                subtitle: '3:45 PM • Estimate sent to customer app',
+                title: 'timeline_quotation_submitted'.tr(context),
+                subtitle: 'timeline_quotation_submitted_sub'.tr(context),
                 isDone: true,
               ),
               _buildTimelineStep(
-                title: 'Customer Viewed Proposal',
-                subtitle: '3:48 PM • Pooja opened the detailed report',
+                title: 'timeline_customer_viewed'.tr(context),
+                subtitle: 'timeline_customer_viewed_sub'.tr(context),
                 isDone: true,
               ),
               _buildTimelineStep(
-                title: 'Decision Pending / Under Review',
-                subtitle: 'Customer is reviewing material costs & warranty terms',
+                title: 'timeline_decision_pending'.tr(context),
+                subtitle: 'timeline_decision_pending_sub'.tr(context),
                 isCurrent: true,
               ),
               _buildTimelineStep(
-                title: 'Accepted / Approved',
-                subtitle: 'Customer pays initial deposit to lock repair slot',
+                title: 'timeline_accepted'.tr(context),
+                subtitle: 'timeline_accepted_sub'.tr(context),
                 isPending: true,
               ),
               _buildTimelineStep(
-                title: 'Negotiation / Revision Request',
-                subtitle: 'Customer suggests cost adjustment or terms chat',
+                title: 'timeline_negotiation'.tr(context),
+                subtitle: 'timeline_negotiation_sub'.tr(context),
                 isPending: true,
                 isLast: true,
               ),
@@ -173,14 +182,14 @@ class _WorkerCustomerDecisionScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.chat_bubble_outline_rounded,
+                        const Icon(Icons.chat_bubble_outline_rounded,
                             color: Color(0xFF2563EB), size: 20),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Direct Customer Communication',
-                          style: TextStyle(
+                          'direct_customer_communication'.tr(context),
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF2563EB),
@@ -189,9 +198,9 @@ class _WorkerCustomerDecisionScreenState
                       ],
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'Pooja can request price negotiation or clarify parts replacement before approving.',
-                      style: TextStyle(
+                    Text(
+                      'pooja_can_request'.tr(context),
+                      style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF475569),
                         height: 1.4,
@@ -207,7 +216,7 @@ class _WorkerCustomerDecisionScreenState
                               context, '/worker/inspection/negotiation-chat');
                         },
                         icon: const Icon(Icons.chat_rounded, size: 18),
-                        label: const Text('Open Negotiation Chat'),
+                        label: Text('open_negotiation_chat'.tr(context)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2563EB),
                           foregroundColor: Colors.white,
@@ -228,21 +237,21 @@ class _WorkerCustomerDecisionScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Push Notification Alert',
-                        style: TextStyle(
+                        'push_notification_alert'.tr(context),
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF0F172A),
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Notify instantly on customer decision',
-                        style: TextStyle(
+                        'notify_on_customer_decision'.tr(context),
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF64748B),
                         ),
@@ -275,9 +284,9 @@ class _WorkerCustomerDecisionScreenState
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Return to Partner Dashboard',
-                    style: TextStyle(
+                  child: Text(
+                    'return_to_partner_dashboard'.tr(context),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF475569),

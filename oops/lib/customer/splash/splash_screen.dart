@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../utils/token_storage.dart';
+import '../../l10n/app_translations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -106,8 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // Tagline / Subtitle
                   const SizedBox(height: 16),
-                  const Text(
-                    'Trusted Professionals at Your Doorstep',
+                  Text('trusted_professionals_at_your_doorstep'.tr(context),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -146,8 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                       color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'v 1.0.0',
+                    child: Text('v_100'.tr(context),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,

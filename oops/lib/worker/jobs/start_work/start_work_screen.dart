@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/start_work/start_work_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerStartWorkScreen extends StatefulWidget {
   const WorkerStartWorkScreen({super.key});
@@ -22,11 +23,11 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
 
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Start Job #JOB-8821',
+        title: Text(
+          'start_job_mock'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -37,14 +38,14 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Summary Header Banner
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(20),
@@ -54,24 +55,24 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
                         color: Color(0xFF2563EB),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.engineering_rounded,
                         color: Colors.white,
                         size: 26,
                       ),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'MCB Tripping Repair',
+                            'mcb_tripping_repair'.tr(context),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -80,7 +81,7 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                           ),
                           SizedBox(height: 2),
                           Text(
-                            'Customer: Sunil Verma • Dwarka',
+                            'mock_customer_name_dwarka'.tr(context),
                             style: TextStyle(
                               fontSize: 12,
                               color: Color(0xFF64748B),
@@ -93,11 +94,11 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Safety & Pre-work Checklist
-              const Text(
-                'Pre-Start Verification',
+              Text(
+                'pre_start_verification'.tr(context),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
@@ -105,47 +106,47 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                   letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               _buildCheckItem(
-                title: 'Insulated Safety Gloves & Rubber Boots Worn',
+                title: 'checklist_safety_gear'.tr(context),
                 value: _safetyGear,
                 onChanged: (val) => setState(() => _safetyGear = val),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildCheckItem(
-                title: 'Multi-meter & Tester Tools Ready',
+                title: 'checklist_tools_ready'.tr(context),
                 value: _toolsCheck,
                 onChanged: (val) => setState(() => _toolsCheck = val),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildCheckItem(
-                title: 'Replacement MCB (32A Single Pole) On-hand',
+                title: 'checklist_materials_ready'.tr(context),
                 value: _materialsReady,
                 onChanged: (val) => setState(() => _materialsReady = val),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Capture Before Photos Card
-              const Text(
-                'Capture Before Work Photos',
+              Text(
+                'capture_before_work_photos'.tr(context),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF0F172A),
                 ),
               ),
-              const SizedBox(height: 6),
-              const Text(
-                'Mandatory: Take 2 clear photos of damaged DB box before touching wire connections.',
+              SizedBox(height: 6),
+              Text(
+                'capture_before_work_desc'.tr(context),
                 style: TextStyle(
                   fontSize: 12,
                   color: Color(0xFF64748B),
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Row(
                 children: [
@@ -153,7 +154,7 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                     return Container(
                       width: 84,
                       height: 84,
-                      margin: const EdgeInsets.only(right: 12),
+                      margin: EdgeInsets.only(right: 12),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD1FAE5),
                         borderRadius: BorderRadius.circular(16),
@@ -162,18 +163,18 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          const Icon(Icons.image_rounded,
+                          Icon(Icons.image_rounded,
                               color: Color(0xFF10B981), size: 32),
                           Positioned(
                             top: 4,
                             right: 4,
                             child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
+                              padding: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
                                 color: Color(0xFF10B981),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.check,
+                              child: Icon(Icons.check,
                                   color: Colors.white, size: 10),
                             ),
                           ),
@@ -196,14 +197,14 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                         border: Border.all(
                             color: const Color(0xFF2563EB), width: 1.5),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add_a_photo_outlined,
                               color: Color(0xFF2563EB), size: 24),
                           SizedBox(height: 4),
                           Text(
-                            'Add Photo',
+                            'add_photo'.tr(context),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -217,7 +218,7 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                 ],
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Start Work Button
               SizedBox(
@@ -240,13 +241,13 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.play_arrow_rounded, size: 24),
                       SizedBox(width: 8),
                       Text(
-                        'Start Work Timer',
+                        'start_work_timer'.tr(context),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -257,7 +258,7 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -271,7 +272,7 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: value ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
@@ -290,11 +291,11 @@ class _WorkerStartWorkScreenState extends State<WorkerStartWorkScreen> {
             ),
             onChanged: (v) => onChanged(v ?? false),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF0F172A),

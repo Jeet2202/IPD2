@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/api_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerEditProfileScreen extends StatefulWidget {
   const WorkerEditProfileScreen({super.key});
@@ -94,7 +95,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load worker profile: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${'failed_load_worker_profile'.tr(context)}$e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -126,7 +127,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Worker profile photo updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('worker_profile_photo_updated'.tr(context)), backgroundColor: const Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -136,7 +137,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo upload failed: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${'photo_upload_failed'.tr(context)}$e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -158,7 +159,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Worker profile photo removed.'), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('worker_profile_photo_removed'.tr(context)), backgroundColor: const Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -168,7 +169,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete photo: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${'failed_delete_photo'.tr(context)}$e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -186,13 +187,13 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
             padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Wrap(
               children: [
-                const Center(
-                  child: Text('Partner Profile Photo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Center(
+                  child: Text('partner_profile_photo'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                 ),
                 const SizedBox(height: 24),
                 ListTile(
                   leading: const Icon(Icons.photo_camera_rounded, color: Color(0xFF2563EB)),
-                  title: const Text('Take Photo (Camera)'),
+                  title: Text('take_photo_camera'.tr(context)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickAndUploadPhoto(ImageSource.camera);
@@ -200,7 +201,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF2563EB)),
-                  title: const Text('Choose from Gallery'),
+                  title: Text('choose_from_gallery'.tr(context)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickAndUploadPhoto(ImageSource.gallery);
@@ -209,7 +210,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                 if (_profilePhotoUrl != null && _profilePhotoUrl!.isNotEmpty)
                   ListTile(
                     leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                    title: const Text('Remove Photo', style: TextStyle(color: Colors.red)),
+                    title: Text('remove_photo'.tr(context), style: const TextStyle(color: Colors.red)),
                     onTap: () {
                       Navigator.pop(context);
                       _deletePhoto();
@@ -257,7 +258,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Partner profile updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('partner_profile_updated_success'.tr(context)), backgroundColor: const Color(0xFF16A34A)),
         );
         Navigator.pop(context);
       }
@@ -272,7 +273,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update partner profile: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${'failed_update_partner_profile'.tr(context)}$e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -295,9 +296,9 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Partner Profile',
-          style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
+        title: Text(
+          'edit_partner_profile'.tr(context),
+          style: const TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),
@@ -352,17 +353,17 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       const SizedBox(height: 28),
 
                       // Full Name
-                      const Text('Full Name *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      Text('full_name_star'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          hintText: 'Enter full name',
+                          hintText: 'enter_full_name'.tr(context),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                         validator: (v) {
-                          if (v == null || v.trim().length < 2) return 'Full name must be at least 2 characters';
+                          if (v == null || v.trim().length < 2) return 'name_min_chars'.tr(context);
                           return null;
                         },
                       ),
@@ -370,7 +371,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       const SizedBox(height: 20),
 
                       // Availability Dropdown
-                      const Text('Availability Status', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      Text('availability_status'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String>(
                         value: _availability,
@@ -398,13 +399,13 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Experience (Years)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                Text('experience_years'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                                 const SizedBox(height: 6),
                                 TextFormField(
                                   controller: _experienceController,
                                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                   decoration: InputDecoration(
-                                    hintText: 'e.g. 5.5',
+                                    hintText: 'eg_5_5'.tr(context),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                   ),
@@ -412,7 +413,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                     if (v != null && v.trim().isNotEmpty) {
                                       final numVal = double.tryParse(v.trim());
                                       if (numVal == null || numVal < 0 || numVal > 50) {
-                                        return '0-50 yrs';
+                                        return 'zero_to_fifty_yrs'.tr(context);
                                       }
                                     }
                                     return null;
@@ -426,13 +427,13 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Hourly Rate (₹/hr)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                                Text('hourly_rate_per_hr'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                                 const SizedBox(height: 6),
                                 TextFormField(
                                   controller: _hourlyRateController,
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
-                                    hintText: 'e.g. 350',
+                                    hintText: 'eg_350'.tr(context),
                                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                   ),
@@ -440,7 +441,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                                     if (v != null && v.trim().isNotEmpty) {
                                       final numVal = double.tryParse(v.trim());
                                       if (numVal == null || numVal < 0) {
-                                        return 'Invalid rate';
+                                        return 'invalid_rate'.tr(context);
                                       }
                                     }
                                     return null;
@@ -458,8 +459,8 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Service Radius (km)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                          Text('${_workingRadiusKm.toInt()} km', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                          Text('service_radius_km'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                          Text('${_workingRadiusKm.toInt()} ${'km_radius'.tr(context)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                         ],
                       ),
                       Slider(
@@ -474,7 +475,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       const SizedBox(height: 16),
 
                       // Offered Skills & Services (Multi-select Chips)
-                      const Text('Offered Skills & Services', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      Text('offered_services_skills'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -505,7 +506,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                             child: TextField(
                               controller: _customSkillController,
                               decoration: InputDecoration(
-                                hintText: 'Add custom skill (e.g. solar_wiring)',
+                                hintText: 'add_custom_skill_hint'.tr(context),
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                               ),
@@ -522,7 +523,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       const SizedBox(height: 20),
 
                       // Spoken Languages
-                      const Text('Spoken Languages', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      Text('spoken_languages'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -550,14 +551,14 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       const SizedBox(height: 20),
 
                       // Bio
-                      const Text('Professional Bio', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      Text('professional_bio'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _bioController,
                         maxLines: 4,
                         maxLength: 1000,
                         decoration: InputDecoration(
-                          hintText: 'Describe your expertise, certifications, and past experience...',
+                          hintText: 'describe_expertise_hint'.tr(context),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           contentPadding: const EdgeInsets.all(14),
                         ),
@@ -578,7 +579,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                           ),
                           child: _isSaving
                               ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text('Save Partner Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              : Text('save_partner_profile'.tr(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
                       const SizedBox(height: 24),

@@ -51,7 +51,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load partner profile. Please try again.';
+          _errorMessage = 'failed_load_profile_retry'.tr(context);
           _isLoading = false;
         });
       }
@@ -74,37 +74,37 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   String _getAvailabilityLabel(String availability) {
     switch (availability.toLowerCase()) {
       case 'available':
-        return 'Available for Jobs';
+        return 'available_jobs'.tr(context);
       case 'on_job':
-        return 'Currently On Job';
+        return 'currently_on_job'.tr(context);
       case 'busy':
-        return 'Busy';
+        return 'busy'.tr(context);
       case 'unavailable':
       default:
-        return 'Unavailable';
+        return 'unavailable'.tr(context);
     }
   }
 
   String _getCompletionText(int percentage) {
-    if (percentage >= 100) return 'Profile Complete';
-    if (percentage >= 70) return 'Almost Complete';
-    if (percentage >= 31) return 'Keep Going';
-    return 'Getting Started';
+    if (percentage >= 100) return 'profile_complete'.tr(context);
+    if (percentage >= 70) return 'almost_complete'.tr(context);
+    if (percentage >= 31) return 'keep_going'.tr(context);
+    return 'getting_started'.tr(context);
   }
 
   List<String> _getSuggestions(Map<String, dynamic> data) {
     final suggestions = <String>[];
-    if (data['profile_photo_url'] == null) suggestions.add('Add partner photo (+10%)');
+    if (data['profile_photo_url'] == null) suggestions.add('add_partner_photo_10'.tr(context));
     final bio = data['bio'] as String?;
-    if (bio == null || bio.trim().length < 20) suggestions.add('Write detailed professional bio (+15%)');
+    if (bio == null || bio.trim().length < 20) suggestions.add('write_detailed_bio_15'.tr(context));
     final skills = data['skills'] as List?;
-    if (skills == null || skills.isEmpty) suggestions.add('Add offered skills & services (+20%)');
+    if (skills == null || skills.isEmpty) suggestions.add('add_skills_services_20'.tr(context));
     final exp = (data['experience_years'] as num?)?.toDouble() ?? 0.0;
-    if (exp <= 0) suggestions.add('Add years of experience (+10%)');
+    if (exp <= 0) suggestions.add('add_years_experience_10'.tr(context));
     final langs = data['languages'] as List?;
-    if (langs == null || langs.isEmpty) suggestions.add('Add spoken languages (+10%)');
+    if (langs == null || langs.isEmpty) suggestions.add('add_spoken_languages_10'.tr(context));
     final rate = (data['hourly_rate'] as num?)?.toDouble() ?? 0.0;
-    if (rate <= 0) suggestions.add('Set hourly service rate (+5%)');
+    if (rate <= 0) suggestions.add('set_hourly_rate_5'.tr(context));
     return suggestions;
   }
 
@@ -260,7 +260,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             children: [
               _WorkerHeroStat(title: 'rating'.tr(context), value: rating > 0 ? rating.toStringAsFixed(1) : 'New', icon: Icons.star_rounded),
               _WorkerHeroStat(title: 'experience'.tr(context), value: '${expYears.toStringAsFixed(expYears.truncateToDouble() == expYears ? 0 : 1)} yrs', icon: Icons.work_history_rounded),
-              _WorkerHeroStat(title: 'hourly_rate'.tr(context), value: hourlyRate != null && hourlyRate > 0 ? '₹${hourlyRate.toInt()}/hr' : 'Flexible', icon: Icons.payments_rounded),
+              _WorkerHeroStat(title: 'hourly_rate'.tr(context), value: hourlyRate != null && hourlyRate > 0 ? '₹${hourlyRate.toInt()}/hr' : 'flexible_rate'.tr(context), icon: Icons.payments_rounded),
             ],
           ),
         ],
@@ -326,7 +326,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      isCompleted ? 'Your profile is fully verified for customer matching.' : 'Complete partner profile to rank higher in customer searches.',
+                      isCompleted ? 'profile_fully_verified'.tr(context) : 'complete_profile_rank_higher'.tr(context),
                       style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                     ),
                   ],
@@ -338,9 +338,9 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             const SizedBox(height: 16),
             const Divider(color: Color(0xFFE2E8F0), height: 1),
             const SizedBox(height: 12),
-            const Text(
-              'Suggestions to boost ranking:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+            Text(
+              'suggestions_boost_ranking'.tr(context),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
             ),
             const SizedBox(height: 6),
             ...suggestions.map(
@@ -389,7 +389,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           const Spacer(),
           Icon(Icons.near_me_rounded, size: 14, color: color),
           const SizedBox(width: 4),
-          Text('${radius.toInt()} km radius', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
+          Text('${radius.toInt()} ${'km_radius'.tr(context)}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color)),
         ],
       ),
     );
@@ -425,7 +425,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                   )).toList(),
                 )
-              : const Text('No skills added yet', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+              : Text('no_skills_added'.tr(context), style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
           if (langs.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text('spoken_languages'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
@@ -446,7 +446,7 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
 
   Widget _buildBioSection() {
     final data = _profileData!;
-    final bio = (data['bio'] as String?) ?? 'No professional bio provided yet.';
+    final bio = (data['bio'] as String?) ?? 'no_professional_bio'.tr(context);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -544,9 +544,9 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           children: [
             const Icon(Icons.cloud_off_rounded, size: 64, color: Color(0xFF94A3B8)),
             const SizedBox(height: 16),
-            const Text('Failed to load profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+            Text('failed_load_profile'.tr(context), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
-            Text(_errorMessage ?? 'Network error', textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+            Text(_errorMessage ?? 'network_error'.tr(context), textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _loadProfile,

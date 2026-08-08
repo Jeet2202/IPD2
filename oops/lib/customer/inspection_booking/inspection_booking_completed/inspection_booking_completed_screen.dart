@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionBookingCompletedScreen extends StatefulWidget {
   const InspectionBookingCompletedScreen({super.key});
@@ -20,8 +21,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Booking Complete',
+        title: Text('booking_complete'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -29,43 +29,41 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               // ── Success Celebration Graphic ───────────────────────────
               Container(
                 width: 90,
                 height: 90,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Color(0xFFDCFCE7),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.verified_rounded, size: 60, color: Color(0xFF16A34A)),
+                child: Icon(Icons.verified_rounded, size: 60, color: Color(0xFF16A34A)),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
-              const Text(
-                'Repair Successfully Completed! 🎉',
+              Text('repair_successfully_completed'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), letterSpacing: -0.4),
               ),
 
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
 
-              const Text(
-                'Your Main DB Box repair is complete & tested with a 30-day warranty.',
+              Text('your_main_db_box_repair'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Rating Professional Card ──────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -76,8 +74,8 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                 ),
                 child: Column(
                   children: [
-                    const Text('Rate Sunil\'s Work', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 12),
+                    Text('rate_sunils_work'.tr(context), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                    SizedBox(height: 12),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -94,17 +92,17 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                       }),
                     ),
 
-                    const SizedBox(height: 6),
-                    const Text('Great Quality Work!', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
+                    SizedBox(height: 6),
+                    Text('great_quality_work'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ── Payment & Invoice Summary ──────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -112,41 +110,41 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                 ),
                 child: Column(
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Amount Paid', style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
-                        Text('₹4,850.00', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                        Text('total_amount_paid'.tr(context), style: TextStyle(fontSize: 14, color: Color(0xFF64748B))),
+                        Text('485000'.tr(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 16),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 14),
 
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
-                            icon: const Icon(Icons.receipt_long_rounded, size: 18),
-                            label: const Text('Download Invoice'),
+                            icon: Icon(Icons.receipt_long_rounded, size: 18),
+                            label: Text('download_invoice'.tr(context)),
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: const BorderSide(color: Color(0xFFE2E8F0)),
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              side: BorderSide(color: Color(0xFFE2E8F0)),
                               foregroundColor: const Color(0xFF0F172A),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionReport),
-                            icon: const Icon(Icons.assessment_outlined, size: 18),
-                            label: const Text('Full Report'),
+                            icon: Icon(Icons.assessment_outlined, size: 18),
+                            label: Text('full_report'.tr(context)),
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: const BorderSide(color: Color(0xFFE2E8F0)),
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              side: BorderSide(color: Color(0xFFE2E8F0)),
                               foregroundColor: const Color(0xFF0F172A),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
@@ -158,7 +156,7 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Action Buttons ─────────────────────────────────────────
               SizedBox(
@@ -174,18 +172,18 @@ class _InspectionBookingCompletedScreenState extends State<InspectionBookingComp
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text('Return to Home', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  child: Text('return_to_home'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, AppRoutes.customerServices),
-                child: const Text('Book Another Inspection / Service', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                child: Text('book_another_inspection_service'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

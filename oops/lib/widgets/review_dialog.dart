@@ -119,13 +119,11 @@ class _ReviewDialogState extends State<ReviewDialog> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'rate_review_worker'.tr(context),
+          Text('ratereviewworker'.tr(context).tr(context),
             style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          Text(
-            'Your feedback helps maintain quality standards.',
+          Text('your_feedback_helps_maintain_quality'.tr(context),
             style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 16),
@@ -157,7 +155,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
           const SizedBox(height: 12),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Would recommend this worker to others'),
+            title: Text('would_recommend_this_worker_to'.tr(context)),
             value: _wouldRecommend,
             onChanged: (val) => setState(() => _wouldRecommend = val),
           ),
@@ -193,7 +191,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                  : Text('submit_review'.tr(context), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  : Text('submitreview'.tr(context).tr(context), style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],

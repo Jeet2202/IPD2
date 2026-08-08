@@ -73,7 +73,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to load jobs. Please check your connection.';
+        _errorMessage = 'failed_to_load_jobs'.tr(context);
         _isLoading = false;
       });
     }
@@ -88,7 +88,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Applied for "${job.serviceName}" successfully!'),
+          content: Text('${'applied_for_prefix'.tr(context)}${job.serviceName}${'applied_successfully_suffix'.tr(context)}'),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
         ),
@@ -116,12 +116,12 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
   }
 
   String _badgeLabel(MarketplaceBookingItem job) {
-    if (job.isInspection) return 'Inspection';
+    if (job.isInspection) return 'inspection'.tr(context);
     final price = job.estimatedPrice ?? 0;
-    if (price > 1000) return 'High Paying';
+    if (price > 1000) return 'high_paying_filter'.tr(context);
     final dist = job.distanceKm ?? 99;
-    if (dist < 3) return 'Nearby';
-    return 'Standard';
+    if (dist < 3) return 'nearby_filter'.tr(context);
+    return 'standard'.tr(context);
   }
 
   @override
@@ -169,7 +169,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                     if (val.isEmpty || val.length > 2) _fetchJobs();
                   },
                   decoration: InputDecoration(
-                    hintText: 'Search by service type...',
+                    hintText: 'search_by_service_type'.tr(context),
                     hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
                     prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF64748B)),
                     filled: true,
@@ -200,7 +200,13 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: FilterChip(
-                        label: Text(filter),
+                        label: Text(
+                          filter == 'All' ? 'all_filter'.tr(context) :
+                          filter == 'Nearby' ? 'nearby_filter'.tr(context) :
+                          filter == 'High Paying' ? 'high_paying_filter'.tr(context) :
+                          filter == 'Inspection' ? 'inspection'.tr(context) :
+                          filter == 'Scheduled' ? 'scheduled'.tr(context) : filter,
+                        ),
                         selected: isSelected,
                         selectedColor: const Color(0xFFEFF6FF),
                         backgroundColor: const Color(0xFFF8FAFC),
@@ -256,7 +262,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
               ElevatedButton.icon(
                 onPressed: _fetchJobs,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                label: Text('retry'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),
                   foregroundColor: Colors.white,
@@ -285,15 +291,15 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                     child: const Icon(Icons.work_outline_rounded, size: 48, color: Color(0xFF2563EB)),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'No Jobs Available',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                  Text(
+                    'no_jobs_available'.tr(context),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'No open job requests in your area right now.\nSet your location and radius in profile to see nearby jobs.',
+                  Text(
+                    'no_open_job_requests'.tr(context),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5),
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5),
                   ),
                 ],
               ),
@@ -359,7 +365,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                         color: const Color(0xFFD1FAE5),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('Applied', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF065F46))),
+                      child: Text('applied'.tr(context), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF065F46))),
                     ),
                   ],
                 ],
@@ -409,7 +415,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Est. Earnings', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                      Text('est_earnings'.tr(context), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
                       const SizedBox(height: 2),
                       Text(priceText, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF10B981))),
                     ],
@@ -420,7 +426,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text('Scheduled', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                      Text('scheduled'.tr(context), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
                       const SizedBox(height: 2),
                       Text(timeText, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)), overflow: TextOverflow.ellipsis),
                     ],
@@ -445,7 +451,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  child: const Text('View Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF475569))),
+                  child: Text('view_details'.tr(context), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF475569))),
                 ),
               ),
               const SizedBox(width: 12),
@@ -462,7 +468,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                   child: Text(
-                    job.hasApplied ? '✓ Applied' : 'Apply Now',
+                    job.hasApplied ? 'applied_check'.tr(context) : 'apply_now'.tr(context),
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                 ),

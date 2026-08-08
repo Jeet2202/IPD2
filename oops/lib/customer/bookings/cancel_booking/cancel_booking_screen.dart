@@ -2,6 +2,7 @@
 // lib/customer/bookings/cancel_booking/cancel_booking_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class CancelBookingScreen extends StatefulWidget {
   const CancelBookingScreen({super.key});
@@ -33,15 +34,14 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text('Cancel Booking?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-        content: const Text(
-          'Are you sure you want to cancel booking #BK-90214? ₹4,850 will be refunded to your wallet instantly.',
+        title: Text('cancel_booking'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+        content: Text('are_you_sure_you_want'.tr(context),
           style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Keep Booking', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
+            child: Text('keep_booking'.tr(context), style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -53,7 +53,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Yes, Cancel Now', style: TextStyle(fontWeight: FontWeight.w700)),
+            child: Text('yes_cancel_now'.tr(context), style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -66,11 +66,10 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Cancel Booking',
+        title: Text('cancel_booking_2'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -79,19 +78,19 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Refund Banner ──────────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDCFCE7),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: const Color(0xFF86EFAC)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF16A34A), size: 28),
                       SizedBox(width: 14),
@@ -99,9 +98,9 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('100% REFUND ELIGIBLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
+                            Text('100_refund_eligible'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
                             SizedBox(height: 2),
-                            Text('Full ₹4,850 credited to Ally Pay', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
+                            Text('full_4850_credited_to_ally'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
                           ],
                         ),
                       ),
@@ -109,11 +108,11 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Select Reason ──────────────────────────────────────
-                const Text('Reason for Cancellation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 12),
+                Text('reason_for_cancellation'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 12),
 
                 Container(
                   decoration: BoxDecoration(
@@ -135,14 +134,14 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // ── Additional Comments ────────────────────────────────
-                const Text('Additional Comments (Optional)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 8),
+                Text('additional_comments_optional'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 8),
 
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -151,7 +150,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                   child: TextField(
                     controller: _commentsController,
                     maxLines: 3,
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A)),
+                    style: TextStyle(fontSize: 13, color: Color(0xFF0F172A)),
                     decoration: const InputDecoration(
                       hintText: 'Tell us how we can improve our service...',
                       hintStyle: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
@@ -160,7 +159,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -171,7 +170,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -189,7 +188,7 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text('Confirm Cancellation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  child: Text('confirm_cancellation'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 ),
               ),
             ),

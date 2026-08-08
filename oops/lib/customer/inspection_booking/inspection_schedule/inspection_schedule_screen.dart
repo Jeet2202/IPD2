@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionScheduleScreen extends StatefulWidget {
   const InspectionScheduleScreen({super.key});
@@ -35,11 +36,10 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Schedule Visit',
+        title: Text('schedule_visit'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -48,7 +48,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +56,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                 GestureDetector(
                   onTap: () => setState(() => _isExpressVisit = !_isExpressVisit),
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _isExpressVisit ? const Color(0xFFEFF6FF) : Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -68,21 +68,21 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: _isExpressVisit ? const Color(0xFF2563EB) : const Color(0xFFF1F5F9),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(Icons.flash_on_rounded, color: _isExpressVisit ? Colors.white : const Color(0xFF2563EB), size: 22),
                         ),
-                        const SizedBox(width: 14),
-                        const Expanded(
+                        SizedBox(width: 14),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Express Inspection (Within 45 Mins)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              Text('express_inspection_within_45_mins'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                               SizedBox(height: 2),
-                              Text('Nearest expert assigned immediately', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text('nearest_expert_assigned_immediately'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                             ],
                           ),
                         ),
@@ -96,12 +96,12 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 if (!_isExpressVisit) ...[
                   // ── Date Selector ────────────────────────────────────
-                  const Text('Select Date', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 12),
+                  Text('select_date'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                  SizedBox(height: 12),
 
                   SizedBox(
                     height: 80,
@@ -116,7 +116,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                           onTap: () => setState(() => _selectedDateIndex = index),
                           child: Container(
                             width: 72,
-                            margin: const EdgeInsets.only(right: 12),
+                            margin: EdgeInsets.only(right: 12),
                             decoration: BoxDecoration(
                               color: isSelected ? const Color(0xFF2563EB) : Colors.white,
                               borderRadius: BorderRadius.circular(18),
@@ -132,7 +132,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                                     color: isSelected ? const Color(0xFFDBEAFE) : const Color(0xFF64748B),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   item['date']!,
                                   style: TextStyle(
@@ -149,24 +149,24 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // ── Time Slots ───────────────────────────────────────
-                  const Text('Select Time Slot', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 12),
+                  Text('select_time_slot'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                  SizedBox(height: 12),
 
                   _buildSlotGroup('Morning', _morningSlots),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildSlotGroup('Afternoon', _afternoonSlots),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildSlotGroup('Evening', _eveningSlots),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                 ],
 
                 // ── Technician Preferences ────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -174,15 +174,15 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: Color(0xFFFBBF24), size: 24),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      Icon(Icons.star_rounded, color: Color(0xFFFBBF24), size: 24),
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Assign Top-Rated Inspector', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('assign_toprated_inspector'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
-                            Text('4.8+ rated certified experts only', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                            Text('48_rated_certified_experts_only'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                           ],
                         ),
                       ),
@@ -195,11 +195,11 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // ── Address Preview ──────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -208,30 +208,30 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(12)),
-                        child: const Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 20),
+                        child: Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 20),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Inspection Address', style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+                            Text('inspection_address'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
                             SizedBox(height: 2),
-                            Text('House #402, Green Avenue, HSR Sector 6', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('house_402_green_avenue_hsr'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           ],
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pushNamed(context, AppRoutes.savedAddresses),
-                        child: const Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                        child: Text('change'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -242,7 +242,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -260,8 +260,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    'Confirm & Find Inspector (₹99)',
+                  child: Text('confirm_find_inspector_99'.tr(context),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -277,8 +276,8 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(groupTitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF94A3B8))),
-        const SizedBox(height: 6),
+        Text(groupTitle, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF94A3B8))),
+        SizedBox(height: 6),
         Wrap(
           spacing: 8,
           runSpacing: 8,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class SecurityScreen extends StatelessWidget {
   const SecurityScreen({super.key});
@@ -6,8 +7,8 @@ class SecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('S e c u r i t y S c r e e n')),
-      body: const Center(child: Text('S e c u r i t y S c r e e n')),
+      appBar: AppBar(title: Text('s_e_c_u_r'.tr(context))),
+      body: Center(child: Text('s_e_c_u_r'.tr(context))),
     );
   }
 }

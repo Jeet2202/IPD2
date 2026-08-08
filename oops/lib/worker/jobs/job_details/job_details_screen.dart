@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/job_details/job_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerJobDetailsScreen extends StatelessWidget {
   const WorkerJobDetailsScreen({super.key});
@@ -9,11 +10,11 @@ class WorkerJobDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Job Details #JOB-8821',
+        title: Text(
+          '${'job_details'.tr(context)} #JOB-8821',
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -27,14 +28,14 @@ class WorkerJobDetailsScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Customer Card
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(20),
@@ -52,7 +53,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                                   color: const Color(0xFF2563EB).withOpacity(0.3),
                                   width: 1.5),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 'SV',
                                 style: TextStyle(
@@ -63,7 +64,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 14),
+                          SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,16 +79,16 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                                         color: Color(0xFF0F172A),
                                       ),
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
+                                      padding: EdgeInsets.symmetric(
                                           horizontal: 6, vertical: 2),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFD1FAE5),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
-                                      child: const Text(
-                                        'Verified Customer',
+                                      child: Text(
+                                        'verified_customer'.tr(context),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w700,
@@ -97,14 +98,14 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 4),
-                                const Row(
+                                SizedBox(height: 4),
+                                Row(
                                   children: [
                                     Icon(Icons.star_rounded,
                                         size: 16, color: Color(0xFFF59E0B)),
                                     SizedBox(width: 4),
                                     Text(
-                                      '4.8 (12 bookings)',
+                                      '4.8 (12 ${'bookings_count'.tr(context)})',
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -120,20 +121,20 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Problem & Service Description
-                    const Text(
-                      'Service Category & Issue',
+                    Text(
+                      'service_category_and_issue'.tr(context),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
@@ -151,14 +152,14 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFEFF6FF),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Text(
-                                  'Electrician',
+                                child: Text(
+                                  'electrician'.tr(context),
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -166,16 +167,16 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFEE2E2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Text(
-                                  'Emergency Repair',
+                                child: Text(
+                                  'emergency_repair'.tr(context),
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -185,18 +186,18 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'MCB Tripping & Short Circuit Issue',
+                          SizedBox(height: 12),
+                          Text(
+                            'mcb_tripping_issue'.tr(context),
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            'Main MCB switch trips repeatedly whenever AC is turned on in main bedroom. Smelled burnt plastic near main DB box.',
+                          SizedBox(height: 6),
+                          Text(
+                            'mcb_issue_desc'.tr(context),
                             style: TextStyle(
                               fontSize: 13,
                               color: Color(0xFF475569),
@@ -207,37 +208,37 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Customer Uploaded Image Placeholders
-                    const Text(
-                      'Customer Uploaded Photos',
+                    Text(
+                      'customer_uploaded_photos'.tr(context),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF334155),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Row(
                       children: List.generate(3, (idx) {
                         return Container(
                           width: 80,
                           height: 80,
-                          margin: const EdgeInsets.only(right: 12),
+                          margin: EdgeInsets.only(right: 12),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: const Color(0xFFE2E8F0)),
                           ),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.image_outlined,
                                   color: Color(0xFF94A3B8), size: 24),
                               SizedBox(height: 4),
                               Text(
-                                'Photo',
+                                'photo'.tr(context),
                                 style: TextStyle(
                                     fontSize: 10, color: Color(0xFF94A3B8)),
                               ),
@@ -247,18 +248,18 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       }),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Address & Map Card
-                    const Text(
-                      'Service Location',
+                    Text(
+                      'service_location'.tr(context),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -277,14 +278,14 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                           Container(
                             height: 130,
                             width: double.infinity,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: Color(0xFFE2E8F0),
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(20),
                                 topRight: Radius.circular(20),
                               ),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -292,7 +293,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                                       color: Color(0xFF2563EB), size: 36),
                                   SizedBox(height: 4),
                                   Text(
-                                    '2.4 km away (Approx 10 mins drive)',
+                                    'distance_approx'.tr(context),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
@@ -304,15 +305,15 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(14.0),
+                            padding: EdgeInsets.all(14.0),
                             child: Row(
                               children: [
-                                const Icon(Icons.place_outlined,
+                                Icon(Icons.place_outlined,
                                     color: Color(0xFF64748B), size: 20),
-                                const SizedBox(width: 8),
-                                const Expanded(
+                                SizedBox(width: 8),
+                                Expanded(
                                   child: Text(
-                                    'Flat 402, Tower B, Shanti Heights, Sector 15, Dwarka, New Delhi - 110075',
+                                    'customer_address_mock'.tr(context),
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
@@ -327,24 +328,24 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Price & Payment Details Card
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                             color: const Color(0xFF2563EB).withOpacity(0.2)),
                       ),
-                      child: const Column(
+                      child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Suggested Price / Earnings',
+                                'suggested_price_earnings'.tr(context),
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -367,10 +368,10 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Payment Method:',
+                              Text('payment_method'.tr(context),
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xFF64748B))),
-                              Text('Online Prepaid (Ally Escrow)',
+                              Text('online_prepaid'.tr(context),
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
@@ -381,10 +382,10 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Est. Work Duration:',
+                              Text('est_work_duration'.tr(context),
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xFF64748B))),
-                              Text('45 – 60 Mins',
+                              Text('45_60_mins'.tr(context),
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
@@ -395,7 +396,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -403,8 +404,8 @@ class WorkerJobDetailsScreen extends StatelessWidget {
 
             // Bottom Sticky Accept / Reject Action Bar
             Container(
-              padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
-              decoration: const BoxDecoration(
+              padding: EdgeInsets.fromLTRB(24, 14, 24, 24),
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
                   top: BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
@@ -419,15 +420,15 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                             context, '/worker/jobs/accept-reject');
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
+                        side: BorderSide(
                             color: Color(0xFFEF4444), width: 1.5),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text(
-                        'Decline',
+                      child: Text(
+                        'decline'.tr(context),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -436,7 +437,7 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -448,18 +449,18 @@ class WorkerJobDetailsScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.check_circle_rounded, size: 20),
                           SizedBox(width: 8),
                           Text(
-                            'Accept Request',
+                            'accept_request'.tr(context),
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,

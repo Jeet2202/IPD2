@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionIntroScreen extends StatelessWidget {
   const InspectionIntroScreen({super.key});
@@ -11,11 +12,10 @@ class InspectionIntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Expert Inspection',
+        title: Text('expert_inspection'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -24,13 +24,13 @@ class InspectionIntroScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Hero Banner Card ──────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(22),
+                  padding: EdgeInsets.all(22),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF1E40AF), Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -53,47 +53,44 @@ class InspectionIntroScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Text(
-                                'UNIQUE FEATURE',
+                              child: Text('unique_feature'.tr(context),
                                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white),
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'Not Sure What\'s Wrong?',
+                            SizedBox(height: 10),
+                            Text('not_sure_what'.tr(context)s Wrong?',
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.4),
                             ),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'Get a certified expert to visit, inspect, diagnose the issue & provide a transparent repair quote.',
+                            SizedBox(height: 6),
+                            Text('get_a_certified_expert_to'.tr(context),
                               style: TextStyle(fontSize: 12, color: Color(0xFFE0F2FE), height: 1.4),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.saved_search_rounded, color: Colors.white, size: 42),
+                        child: Icon(Icons.saved_search_rounded, color: Colors.white, size: 42),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Fee & Refund Notice Card ──────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(20),
@@ -102,22 +99,20 @@ class InspectionIntroScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
-                        child: const Icon(Icons.payments_rounded, color: Colors.white, size: 20),
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
+                        child: Icon(Icons.payments_rounded, color: Colors.white, size: 20),
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
+                      SizedBox(width: 14),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Nominal Diagnosis Fee: ₹99',
+                            Text('nominal_diagnosis_fee_99'.tr(context),
                               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                             ),
                             SizedBox(height: 2),
-                            Text(
-                              '100% waived off when you approve the repair quotation!',
+                            Text('100_waived_off_when_you'.tr(context),
                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB)),
                             ),
                           ],
@@ -127,23 +122,22 @@ class InspectionIntroScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── How It Works Steps ────────────────────────────────
-                const Text(
-                  'How Inspection Works',
+                Text('how_inspection_works'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
                       _StepItem(step: '1', title: 'Book Inspection', desc: 'Select problem category & preferred date/time slot.'),
                       SizedBox(height: 16),
@@ -158,22 +152,21 @@ class InspectionIntroScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Ally Guarantees ───────────────────────────────
-                const Text(
-                  'Why Choose Ally Inspection?',
+                Text('why_choose_ally_inspection'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 const _BenefitRow(icon: Icons.verified_user_rounded, title: 'No Hidden Charges', desc: 'You decide whether to proceed after seeing the full quotation.'),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 const _BenefitRow(icon: Icons.speed_rounded, title: 'Express Arrival', desc: 'Expert arrives at your doorstep in under 45 minutes.'),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 const _BenefitRow(icon: Icons.shield_rounded, title: '30-Day Service Guarantee', desc: 'All diagnosed & approved repairs come with warranty.'),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -184,7 +177,7 @@ class InspectionIntroScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -202,10 +195,10 @@ class InspectionIntroScreen extends StatelessWidget {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Book Inspection (₹99)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      Text('book_inspection_99'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),
                     ],
@@ -235,19 +228,19 @@ class _StepItem extends StatelessWidget {
         Container(
           width: 28,
           height: 28,
-          decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
           child: Center(
-            child: Text(step, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white)),
+            child: Text(step, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),
-        const SizedBox(width: 14),
+        SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 2),
-              Text(desc, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
+              Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 2),
+              Text(desc, style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
             ],
           ),
         ),
@@ -266,7 +259,7 @@ class _BenefitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -275,14 +268,14 @@ class _BenefitRow extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: const Color(0xFF2563EB), size: 22),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 2),
-                Text(desc, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 2),
+                Text(desc, style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
               ],
             ),
           ),

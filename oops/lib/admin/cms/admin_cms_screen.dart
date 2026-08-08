@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminCmsScreen extends StatelessWidget {
   const AdminCmsScreen({super.key});
@@ -6,8 +7,8 @@ class AdminCmsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Cms Screen')),
-      body: const Center(child: Text('Admin Cms Screen')),
+      appBar: AppBar(title: Text('admin_cms_screen'.tr(context))),
+      body: const Center(child: Text('admin_cms_screen'.tr(context))),
     );
   }
 }

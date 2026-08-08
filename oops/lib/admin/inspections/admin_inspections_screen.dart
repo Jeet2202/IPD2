@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminInspectionsScreen extends StatelessWidget {
   const AdminInspectionsScreen({super.key});
@@ -6,8 +7,8 @@ class AdminInspectionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Inspections Screen')),
-      body: const Center(child: Text('Admin Inspections Screen')),
+      appBar: AppBar(title: Text('admin_inspections_screen'.tr(context))),
+      body: const Center(child: Text('admin_inspections_screen'.tr(context))),
     );
   }
 }

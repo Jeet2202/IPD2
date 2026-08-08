@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionTrackingScreen extends StatelessWidget {
   const InspectionTrackingScreen({super.key});
@@ -6,8 +7,8 @@ class InspectionTrackingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('I n s p e c t i o n T r a c k i n g S c r e e n')),
-      body: const Center(child: Text('I n s p e c t i o n T r a c k i n g S c r e e n')),
+      appBar: AppBar(title: Text('i_n_s_p_e_2'.tr(context))),
+      body: Center(child: Text('i_n_s_p_e_2'.tr(context))),
     );
   }
 }

@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/create_report/create_report_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerCreateReportScreen extends StatefulWidget {
   const WorkerCreateReportScreen({super.key});
@@ -11,18 +13,22 @@ class WorkerCreateReportScreen extends StatefulWidget {
 }
 
 class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
-  String _rootCause = 'Drain Pipe Clogged with Debris';
-  String _severity = 'Moderate';
+  late String _rootCause;
+  late String _severity;
 
-  final List<String> _rootCauses = [
-    'Drain Pipe Clogged with Debris',
-    'Refrigerant Gas Leakage',
-    'Faulty Blower Motor',
-    'Compressor Capacitor Failure',
-    'Damaged Insulation Coil',
+  List<String> get _rootCauses => [
+    'root_cause_drain_pipe_clogged'.tr(context),
+    'root_cause_refrigerant_gas_leakage'.tr(context),
+    'root_cause_faulty_blower_motor'.tr(context),
+    'root_cause_compressor_capacitor_failure'.tr(context),
+    'root_cause_damaged_insulation_coil'.tr(context),
   ];
 
-  final List<String> _severities = ['Minor', 'Moderate', 'Critical'];
+  List<String> get _severities => [
+    'severity_minor'.tr(context),
+    'severity_moderate'.tr(context),
+    'severity_critical'.tr(context),
+  ];
 
   final _findingsController = TextEditingController(
       text: 'Water drain outlet completely blocked by dust accumulation over 8 months. Minor oil residue found on suction valve indicating mild gas seep.');
@@ -30,6 +36,13 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
       text: 'Deep chemical jet cleaning of drain line + Pressure testing & R32 gas refill (250g).');
   final _materialsController = TextEditingController(
       text: '1x Flexible Drain Pipe 3ft, R32 Refrigerant Can (250g), Foam Cleaner Spray');
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _rootCause = 'root_cause_drain_pipe_clogged'.tr(context);
+    _severity = 'severity_moderate'.tr(context);
+  }
 
   @override
   void dispose() {
@@ -46,15 +59,22 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Prepare Inspection Report',
-          style: TextStyle(
+        title: Text(
+          'prepare_inspection_report'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF8B5CF6)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -98,9 +118,9 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Step 2 of 3: Formal Technical Report',
-                style: TextStyle(
+              Text(
+                'step_2_of_3_formal_technical_report'.tr(context),
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF8B5CF6),
@@ -110,7 +130,7 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
               const SizedBox(height: 24),
 
               // Root Cause Dropdown Card
-              _buildFieldLabel('Identified Root Cause'),
+              _buildFieldLabel('identified_root_cause'.tr(context)),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 value: _rootCause,
@@ -156,14 +176,14 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
               const SizedBox(height: 20),
 
               // Issue Severity Selector
-              _buildFieldLabel('Issue Severity Level'),
+              _buildFieldLabel('issue_severity_level'.tr(context)),
               const SizedBox(height: 8),
               Row(
                 children: _severities.map((sev) {
                   final isSelected = _severity == sev;
-                  final color = sev == 'Critical'
+                  final color = sev == 'severity_critical'.tr(context)
                       ? const Color(0xFFEF4444)
-                      : (sev == 'Moderate'
+                      : (sev == 'severity_moderate'.tr(context)
                           ? const Color(0xFFF59E0B)
                           : const Color(0xFF10B981));
 
@@ -206,31 +226,31 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
               const SizedBox(height: 20),
 
               // Inspection Findings
-              _buildFieldLabel('Detailed Technical Findings'),
+              _buildFieldLabel('detailed_technical_findings'.tr(context)),
               const SizedBox(height: 8),
               _buildTextArea(
                 controller: _findingsController,
-                hintText: 'Describe physical state of components...',
+                hintText: 'describe_physical_state_hint'.tr(context),
               ),
 
               const SizedBox(height: 18),
 
               // Recommended Solution
-              _buildFieldLabel('Recommended Solution & Repairs'),
+              _buildFieldLabel('recommended_solution_repairs'.tr(context)),
               const SizedBox(height: 8),
               _buildTextArea(
                 controller: _recommendationsController,
-                hintText: 'Outline action plan for repair...',
+                hintText: 'outline_action_plan_hint'.tr(context),
               ),
 
               const SizedBox(height: 18),
 
               // Required Spare Parts / Materials
-              _buildFieldLabel('Required Materials & Spare Parts'),
+              _buildFieldLabel('required_materials_spare_parts'.tr(context)),
               const SizedBox(height: 8),
               _buildTextArea(
                 controller: _materialsController,
-                hintText: 'List parts needed with specifications...',
+                hintText: 'list_parts_needed_hint'.tr(context),
               ),
 
               const SizedBox(height: 32),
@@ -252,18 +272,18 @@ class _WorkerCreateReportScreenState extends State<WorkerCreateReportScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Generate Price Quotation',
-                        style: TextStyle(
+                        'generate_price_quotation'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 20),
                     ],
                   ),
                 ),

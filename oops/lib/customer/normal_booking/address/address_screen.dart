@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class AddressScreen extends StatelessWidget {
   const AddressScreen({super.key});
@@ -6,8 +7,8 @@ class AddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('A d d r e s s S c r e e n')),
-      body: const Center(child: Text('A d d r e s s S c r e e n')),
+      appBar: AppBar(title: Text('a_d_d_r_e'.tr(context))),
+      body: Center(child: Text('a_d_d_r_e'.tr(context))),
     );
   }
 }

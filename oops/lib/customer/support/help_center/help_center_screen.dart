@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class HelpCenterScreen extends StatelessWidget {
   const HelpCenterScreen({super.key});
@@ -6,8 +7,8 @@ class HelpCenterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('H e l p C e n t e r S c r e e n')),
-      body: const Center(child: Text('H e l p C e n t e r S c r e e n')),
+      appBar: AppBar(title: Text('h_e_l_p_c'.tr(context))),
+      body: Center(child: Text('h_e_l_p_c'.tr(context))),
     );
   }
 }

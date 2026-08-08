@@ -2,6 +2,7 @@
 // lib/customer/inspection_booking/revised_quotation/revised_quotation_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class RevisedQuotationScreen extends StatelessWidget {
   const RevisedQuotationScreen({super.key});
@@ -12,11 +13,10 @@ class RevisedQuotationScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Revised Quotation',
+        title: Text('revised_quotation'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -25,19 +25,19 @@ class RevisedQuotationScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Success Highlight Banner ───────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDCFCE7),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: const Color(0xFF86EFAC)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.handshake_rounded, color: Color(0xFF16A34A), size: 30),
                       SizedBox(width: 14),
@@ -45,9 +45,9 @@ class RevisedQuotationScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('REVISED OFFER READY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
+                            Text('revised_offer_ready'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
                             SizedBox(height: 2),
-                            Text('Sunil submitted a discount offer!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
+                            Text('sunil_submitted_a_discount_offer'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF14532D))),
                           ],
                         ),
                       ),
@@ -55,11 +55,11 @@ class RevisedQuotationScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Savings Highlight Comparison Card ─────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -70,28 +70,27 @@ class RevisedQuotationScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Original Quote', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+                              Text('original_quote'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
                               SizedBox(height: 2),
-                              Text(
-                                '₹5,200',
+                              Text('5200'.tr(context),
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF94A3B8), decoration: TextDecoration.lineThrough),
                               ),
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(8)),
-                            child: const Text('Saved ₹350 (6.7%)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+                            child: Text('saved_350_67'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                           ),
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text('Revised Quote', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text('revised_quote'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                               SizedBox(height: 2),
-                              Text('₹4,850', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                              Text('4850'.tr(context), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                             ],
                           ),
                         ],
@@ -100,20 +99,20 @@ class RevisedQuotationScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Itemized Revised Breakdown ─────────────────────────
-                const Text('Updated Breakdown', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 10),
+                Text('updated_breakdown'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 10),
 
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
                       _CostItem(title: 'Labor & Technical Charges', val: '₹1,800.00'),
                       SizedBox(height: 10),
@@ -126,30 +125,29 @@ class RevisedQuotationScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Final Amount', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                          Text('₹4,850.00', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                          Text('final_amount'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('485000'.tr(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                         ],
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Warranty Card ──────────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.shield_rounded, color: Color(0xFF2563EB), size: 22),
                       SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          'Includes full 30-Day Ally Service Guarantee.',
+                        child: Text('includes_full_30day_ally_service'.tr(context),
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1E40AF)),
                         ),
                       ),
@@ -157,7 +155,7 @@ class RevisedQuotationScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -168,7 +166,7 @@ class RevisedQuotationScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -188,7 +186,7 @@ class RevisedQuotationScreen extends StatelessWidget {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text('Approve & Start Repair (₹4,850)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  child: Text('approve_start_repair_4850'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 ),
               ),
             ),
@@ -210,8 +208,8 @@ class _CostItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A))),
-        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+        Text(title, style: TextStyle(fontSize: 13, color: Color(0xFF0F172A))),
+        Text(val, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
       ],
     );
   }

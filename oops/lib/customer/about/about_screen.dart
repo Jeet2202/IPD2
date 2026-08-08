@@ -2,6 +2,7 @@
 // lib/customer/about/about_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -12,11 +13,10 @@ class AboutScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'About Ally',
+        title: Text('about_ally'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -24,7 +24,7 @@ class AboutScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             children: [
               // ── App Brand Header ─────────────────────────────────────
@@ -51,49 +51,48 @@ class AboutScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    const SizedBox(height: 2),
-                    const Text('Bridging Skill & Service Across India', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 14),
+                    SizedBox(height: 2),
+                    Text('bridging_skill_service_across_india'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(10)),
-                      child: const Text('Version 2.4.0 (Build 9021)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                      child: Text('version_240_build_9021'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Mission Statement ────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Icon(Icons.rocket_launch_rounded, color: Color(0xFF2563EB), size: 22),
                         SizedBox(width: 10),
-                        Text('Our Mission', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                        Text('our_mission'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                       ],
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      'Ally is India\'s premier hyper-local home services platform, empowering local skilled tradespeople while delivering transparent, inspection-first, professional home repairs to millions of households.',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5),
+                    Text('ally_is_indias_premier'.tr(context),
+                      style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Platform Statistics ──────────────────────────────────
               GridView.count(
@@ -103,7 +102,7 @@ class AboutScreen extends StatelessWidget {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.3,
-                children: const [
+                children: [
                   _StatBox(val: '50,000+', title: 'Happy Customers'),
                   _StatBox(val: '10,000+', title: 'Verified Pros'),
                   _StatBox(val: '25+', title: 'Cities Served'),
@@ -111,7 +110,7 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Rating & Sharing Buttons ─────────────────────────────
               Row(
@@ -119,26 +118,26 @@ class AboutScreen extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.star_rounded, size: 18),
-                      label: const Text('Rate on Play Store', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                      icon: Icon(Icons.star_rounded, size: 18),
+                      label: Text('rate_on_play_store'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.share_rounded, size: 18),
-                      label: const Text('Share App', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                      icon: Icon(Icons.share_rounded, size: 18),
+                      label: Text('share_app'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Color(0xFFCBD5E1)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFFCBD5E1)),
                         foregroundColor: const Color(0xFF0F172A),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
@@ -147,7 +146,7 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -165,7 +164,7 @@ class _StatBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -174,9 +173,9 @@ class _StatBox extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(val, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
-          const SizedBox(height: 4),
-          Text(title, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+          Text(val, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+          SizedBox(height: 4),
+          Text(title, style: TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
         ],
       ),
     );

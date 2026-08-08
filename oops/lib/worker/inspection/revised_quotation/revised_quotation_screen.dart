@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/revised_quotation/revised_quotation_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerRevisedQuotationScreen extends StatefulWidget {
   const WorkerRevisedQuotationScreen({super.key});
@@ -55,15 +57,22 @@ class _WorkerRevisedQuotationScreenState
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Revised Quotation Editor',
-          style: TextStyle(
+        title: Text(
+          'revised_quotation_editor'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -83,31 +92,31 @@ class _WorkerRevisedQuotationScreenState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Original Quote',
-                            style: TextStyle(
-                                fontSize: 11, color: Color(0xFF64748B))),
-                        SizedBox(height: 4),
-                        Text(
-                          '₹ 1,298',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF94A3B8),
-                            decoration: TextDecoration.lineThrough,
-                          ),
+                    Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('original_quote_label2'.tr(context),
+                          style: const TextStyle(
+                              fontSize: 11, color: Color(0xFF64748B))),
+                      const SizedBox(height: 4),
+                      const Text(
+                        '₹ 1,298',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF94A3B8),
+                          decoration: TextDecoration.lineThrough,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                     const Icon(Icons.arrow_forward_rounded,
                         color: Color(0xFF2563EB), size: 24),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text('Revised Quote',
-                            style: TextStyle(
+                        Text('revised_quote_label'.tr(context),
+                            style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFF2563EB))),
@@ -128,9 +137,9 @@ class _WorkerRevisedQuotationScreenState
 
               const SizedBox(height: 24),
 
-              const Text(
-                'Adjust Line Items',
-                style: TextStyle(
+              Text(
+                'adjust_line_items'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -140,22 +149,22 @@ class _WorkerRevisedQuotationScreenState
               const SizedBox(height: 14),
 
               _buildCostInputRow(
-                label: 'Spare Parts & Materials',
+                label: 'spare_parts_materials'.tr(context),
                 controller: _materialCostController,
               ),
               const SizedBox(height: 12),
               _buildCostInputRow(
-                label: 'Labour & Repair Charges',
+                label: 'labour_repair_charges'.tr(context),
                 controller: _labourCostController,
               ),
               const SizedBox(height: 12),
               _buildCostInputRow(
-                label: 'Travel & Convenience Fee',
+                label: 'travel_convenience_fee'.tr(context),
                 controller: _travelCostController,
               ),
               const SizedBox(height: 12),
               _buildCostInputRow(
-                label: 'Special Discount / Coupon',
+                label: 'special_discount_coupon'.tr(context),
                 controller: _discountController,
                 isDiscount: true,
               ),
@@ -163,9 +172,9 @@ class _WorkerRevisedQuotationScreenState
               const SizedBox(height: 20),
 
               // Reason for Revision Field
-              const Text(
-                'Reason for Revision (Visible to Customer)',
-                style: TextStyle(
+              Text(
+                'reason_for_revision'.tr(context),
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF334155),
@@ -176,7 +185,7 @@ class _WorkerRevisedQuotationScreenState
                 controller: _reasonController,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'Enter reason for price update...',
+                  hintText: 'enter_reason_price_update'.tr(context),
                   hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                   filled: true,
                   fillColor: const Color(0xFFF8FAFC),
@@ -211,14 +220,14 @@ class _WorkerRevisedQuotationScreenState
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.send_rounded, size: 20),
-                      SizedBox(width: 8),
+                      const Icon(Icons.send_rounded, size: 20),
+                      const SizedBox(width: 8),
                       Text(
-                        'Submit Revised Quotation',
-                        style: TextStyle(
+                        'submit_revised_quotation'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),

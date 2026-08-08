@@ -8,7 +8,7 @@ import '../../../models/booking_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../services/razorpay_service.dart';
-import '../../../utils/token_storage.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionSummaryScreen extends StatefulWidget {
   const InspectionSummaryScreen({super.key});
@@ -81,45 +81,49 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
   Future<void> _handlePaymentAndBooking() async {
     if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing address. Please go back and select an address.')),
+        const SnackBar(content: Text('missing_address_please_go_back'.tr(context))),
       );
       return;
     }
 
-    // First create the booking to get a real booking_id
     setState(() => _isSubmitting = true);
 
     String bookingId;
-    try {
-      final payload = CreateBookingPayload(
-        addressId: _address!.id,
-        bookingType: 'inspection_request',
-        categorySlug: _categorySlug,
-        problemDescription: '[$_typeOfWork] $_problemDescription',
-        problemPhotos: _problemPhotos,
-        scheduledDate: _scheduledDate,
-        scheduledTime: _scheduledTime,
-        customerNotes: _customerNotes,
-      );
-      final result = await _bookingService.createBooking(payload);
-      bookingId = result.id;
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
-      );
-      return;
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not create booking. Please try again.'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
+    if (_pendingBookingId != null && _pendingBookingId!.isNotEmpty) {
+      bookingId = _pendingBookingId!;
+    } else {
+      try {
+        final payload = CreateBookingPayload(
+          addressId: _address!.id,
+          bookingType: 'inspection_request',
+          categorySlug: _categorySlug,
+          problemDescription: '[$_typeOfWork] $_problemDescription',
+          problemPhotos: _problemPhotos,
+          scheduledDate: _scheduledDate,
+          scheduledTime: _scheduledTime,
+          customerNotes: _customerNotes,
+        );
+        final result = await _bookingService.createBooking(payload);
+        bookingId = result.id;
+        _pendingBookingId = bookingId;
+      } on ApiException catch (e) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
+        );
+        return;
+      } catch (_) {
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not create booking. Please try again.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
     }
 
     setState(() => _isSubmitting = false);
@@ -158,11 +162,10 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Inspection Summary',
+        title: Text('inspection_summary'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -171,13 +174,13 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Diagnostic Overview Banner ───────────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -195,20 +198,20 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.assignment_turned_in_rounded, color: Colors.white, size: 36),
-                      const SizedBox(width: 14),
+                      Icon(Icons.assignment_turned_in_rounded, color: Colors.white, size: 36),
+                      SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               '$catTitle Inspection',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text(
                               _typeOfWork,
-                              style: const TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
+                              style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
                             ),
                           ],
                         ),
@@ -217,11 +220,11 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Schedule & Address Details Card ─────────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(22),
@@ -231,31 +234,31 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF2563EB)),
-                          const SizedBox(width: 10),
-                          const Text('Schedule:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          const Spacer(),
+                          Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF2563EB)),
+                          SizedBox(width: 10),
+                          Text('schedule'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          Spacer(),
                           Text(
                             '${_scheduledDate ?? "ASAP"} • ${_scheduledTime ?? "Flexible"}',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      const Divider(color: Color(0xFFF1F5F9), height: 1),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
+                      Divider(color: Color(0xFFF1F5F9), height: 1),
+                      SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.location_on_rounded, size: 18, color: Color(0xFF2563EB)),
-                          const SizedBox(width: 10),
-                          const Text('Location:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          const SizedBox(width: 12),
+                          Icon(Icons.location_on_rounded, size: 18, color: Color(0xFF2563EB)),
+                          SizedBox(width: 10),
+                          Text('location'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               _address != null ? '${_address!.label}: ${_address!.shortAddress}' : 'No address selected',
                               textAlign: TextAlign.right,
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                             ),
                           ),
                         ],
@@ -264,14 +267,14 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Diagnosis Fee Breakdown Card ──────────────────────
-                const Text('Fee Breakdown', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 10),
+                Text('fee_breakdown'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 10),
 
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(22),
@@ -282,49 +285,48 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Diagnostic Visit Charge', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('diagnostic_visit_charge'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Taxes & GST (18%)', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                          Text('Included', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      const Divider(color: Color(0xFFF1F5F9), height: 1),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Payable Now', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                          Text('taxes_gst_18'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                          Text('included'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Divider(color: Color(0xFFF1F5F9), height: 1),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('total_payable_now'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                          Text('₹${_inspectionCharge.toStringAsFixed(2)}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                         ],
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // ── Fee Waiver Highlight ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(color: const Color(0xFFBFDBFE)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.workspace_premium_rounded, color: Color(0xFF2563EB), size: 24),
                       SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          '100% of this ₹99 fee will be deducted from your final repair bill upon quotation approval!',
+                        child: Text('100_of_this_99_fee'.tr(context),
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF1E40AF), height: 1.3),
                         ),
                       ),
@@ -341,7 +343,7 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -361,10 +363,10 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
                   ),
                   child: _isSubmitting
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Row(
+                      : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Pay ₹99 & Book Inspection', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                            Text('pay_99_book_inspection'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                             SizedBox(width: 8),
                             Icon(Icons.arrow_forward_rounded, size: 20),
                           ],

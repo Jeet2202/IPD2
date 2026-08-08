@@ -1,6 +1,8 @@
 // File: lib/worker/onboarding/onboarding_page3.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 
 class WorkerOnboardingPage3 extends StatelessWidget {
   const WorkerOnboardingPage3({super.key});
@@ -33,9 +35,9 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                             size: 18, color: Colors.white),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Ally Partner',
-                        style: TextStyle(
+                      Text(
+                        'ally_partner'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF0F172A),
@@ -43,7 +45,10 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 60),
+                  IconButton(
+                    icon: const Icon(Icons.language_rounded, color: Color(0xFF0F172A), size: 20),
+                    onPressed: () => LanguageSelectorWidget.show(context),
+                  ),
                 ],
               ),
             ),
@@ -76,7 +81,7 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                             child: _buildBadge(
                               icon: Icons.star_rounded,
                               iconColor: const Color(0xFFF59E0B),
-                              label: '5-Star Rating',
+                              label: 'five_star_rating'.tr(context),
                             ),
                           ),
                           Positioned(
@@ -85,7 +90,7 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                             child: _buildBadge(
                               icon: Icons.verified_user_rounded,
                               iconColor: const Color(0xFF2563EB),
-                              label: 'Verified Partner',
+                              label: 'verified_partner'.tr(context),
                             ),
                           ),
                           Container(
@@ -111,10 +116,10 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 36),
-                    const Text(
-                      'Grow Your Business',
+                    Text(
+                      'grow_your_business'.tr(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
@@ -123,10 +128,10 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Build your reputation through ratings, repeat customers and verified work.',
+                    Text(
+                      'build_reputation_desc'.tr(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF64748B),
@@ -184,14 +189,14 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.arrow_back_rounded,
+                            const Icon(Icons.arrow_back_rounded,
                                 size: 18, color: Color(0xFF475569)),
-                            SizedBox(width: 6),
-                            Text('Back',
-                                style: TextStyle(
+                            const SizedBox(width: 6),
+                            Text('back'.tr(context),
+                                style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFF475569))),
@@ -212,14 +217,14 @@ class WorkerOnboardingPage3 extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Get Started',
-                                style: TextStyle(
+                            Text('get_started'.tr(context),
+                                style: const TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.w700)),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_rounded, size: 18),
+                            const SizedBox(width: 6),
+                            const Icon(Icons.arrow_forward_rounded, size: 18),
                           ],
                         ),
                       ),

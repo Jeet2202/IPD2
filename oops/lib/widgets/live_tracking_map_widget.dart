@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
+import '../l10n/app_translations.dart';
 
 class LiveTrackingMapWidget extends StatefulWidget {
   final double customerLat;
@@ -90,8 +91,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
               children: [
                 const Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 20),
                 const SizedBox(width: 8),
-                const Text(
-                  'Live Worker Location',
+                Text('live_worker_location'.tr(context),
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
                 ),
                 const Spacer(),

@@ -1,6 +1,8 @@
 // File: lib/worker/profile/availability/availability_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerAvailabilityScreen extends StatefulWidget {
   const WorkerAvailabilityScreen({super.key});
@@ -42,11 +44,11 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Availability Settings',
+        title: Text(
+          'availability_settings'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -54,17 +56,23 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Online / Offline Master Switch Card
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: _isOnline
                       ? const Color(0xFF2563EB)
@@ -84,7 +92,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
@@ -97,26 +105,26 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                         size: 28,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             _isOnline
-                                ? 'Status: ONLINE'
-                                : 'Status: OFFLINE',
-                            style: const TextStyle(
+                                ? 'status_online'.tr(context)
+                                : 'status_offline'.tr(context),
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             _isOnline
-                                ? 'Receiving new booking requests'
-                                : 'You will not receive new jobs',
+                                ? 'receiving_new_booking_requests'.tr(context)
+                                : 'will_not_receive_new_jobs'.tr(context),
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white.withOpacity(0.85),
@@ -141,29 +149,30 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Working Days Selector
               _buildCardSection(
-                title: 'Working Days',
+                title: 'working_days'.tr(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Select the days you are open for service requests',
+                    Text(
+                      'select_days_open_service'.tr(context),
                       style: TextStyle(
                         fontSize: 13,
                         color: Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: _daysOfWeek.map((day) {
                         final isSelected = _selectedDays.contains(day);
+                        final dayKey = '${day.toLowerCase()}_short';
                         return FilterChip(
-                          label: Text(day),
+                          label: Text(dayKey.tr(context)),
                           selected: isSelected,
                           selectedColor: const Color(0xFFEFF6FF),
                           backgroundColor: const Color(0xFFF8FAFC),
@@ -201,18 +210,18 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Working Hours Card
               _buildCardSection(
-                title: 'Working Hours & Break',
+                title: 'working_hours_break'.tr(context),
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: _buildTimePickerBox(
-                            label: 'Start Time',
+                            label: 'start_time'.tr(context),
                             time: _startTime,
                             onTap: () async {
                               final picked = await showTimePicker(
@@ -225,10 +234,10 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                             },
                           ),
                         ),
-                        const SizedBox(width: 14),
+                        SizedBox(width: 14),
                         Expanded(
                           child: _buildTimePickerBox(
-                            label: 'End Time',
+                            label: 'end_time'.tr(context),
                             time: _endTime,
                             onTap: () async {
                               final picked = await showTimePicker(
@@ -243,17 +252,17 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             Icon(Icons.free_breakfast_outlined,
                                 size: 18, color: Color(0xFF64748B)),
                             SizedBox(width: 8),
                             Text(
-                              'Break Time Slot',
+                              'break_time_slot'.tr(context),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -263,7 +272,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8FAFC),
@@ -272,7 +281,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                           ),
                           child: Text(
                             _breakTime,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
@@ -285,35 +294,35 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Booking Preferences Card
               _buildCardSection(
-                title: 'Booking Preferences',
+                title: 'booking_preferences'.tr(context),
                 child: Column(
                   children: [
                     _buildSwitchTile(
-                      title: 'Instant Booking Acceptance',
-                      subtitle: 'Auto-accept instant job requests within radius',
+                      title: 'instant_booking_acceptance'.tr(context),
+                      subtitle: 'auto_accept_instant_jobs'.tr(context),
                       value: _instantBooking,
                       onChanged: (val) => setState(() => _instantBooking = val),
                     ),
-                    const Divider(height: 24, color: Color(0xFFF1F5F9)),
+                    Divider(height: 24, color: Color(0xFFF1F5F9)),
                     _buildSwitchTile(
-                      title: 'Emergency / After-Hours Jobs',
-                      subtitle: 'Receive urgent jobs with 1.5x higher earnings',
+                      title: 'emergency_after_hours_jobs'.tr(context),
+                      subtitle: 'receive_urgent_jobs_higher_earnings'.tr(context),
                       value: _emergencyJobs,
                       onChanged: (val) => setState(() => _emergencyJobs = val),
                     ),
-                    const Divider(height: 24, color: Color(0xFFF1F5F9)),
+                    Divider(height: 24, color: Color(0xFFF1F5F9)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Max Jobs Per Day',
+                              'max_jobs_per_day'.tr(context),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -322,7 +331,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'Daily job capacity limit',
+                              'daily_job_capacity_limit'.tr(context),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF64748B),
@@ -336,12 +345,12 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                               onPressed: _maxJobsPerDay > 1
                                   ? () => setState(() => _maxJobsPerDay--)
                                   : null,
-                              icon: const Icon(Icons.remove_circle_outline),
+                              icon: Icon(Icons.remove_circle_outline),
                               color: const Color(0xFF2563EB),
                             ),
                             Text(
                               '$_maxJobsPerDay',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFF0F172A),
@@ -351,7 +360,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                               onPressed: _maxJobsPerDay < 15
                                   ? () => setState(() => _maxJobsPerDay++)
                                   : null,
-                              icon: const Icon(Icons.add_circle_outline),
+                              icon: Icon(Icons.add_circle_outline),
                               color: const Color(0xFF2563EB),
                             ),
                           ],
@@ -362,7 +371,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Save Availability Button
               SizedBox(
@@ -371,9 +380,9 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Availability settings updated successfully!'),
-                        backgroundColor: Color(0xFF10B981),
+                      SnackBar(
+                        content: Text('availability_settings_updated_success'.tr(context)),
+                        backgroundColor: const Color(0xFF10B981),
                       ),
                     );
                   },
@@ -385,8 +394,8 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Save Availability',
+                  child: Text(
+                    'save_availability'.tr(context),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -395,7 +404,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -408,7 +417,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
     required Widget child,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -426,13 +435,13 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: Color(0xFF0F172A),
             ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           child,
         ],
       ),
@@ -447,7 +456,7 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(14),
@@ -458,25 +467,25 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF64748B),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   time.format(context),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
                   ),
                 ),
-                const Icon(Icons.access_time_rounded,
+                Icon(Icons.access_time_rounded,
                     size: 16, color: Color(0xFF2563EB)),
               ],
             ),
@@ -500,16 +509,16 @@ class _WorkerAvailabilityScreenState extends State<WorkerAvailabilityScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF0F172A),
                 ),
               ),
-              const SizedBox(height: 3),
+              SizedBox(height: 3),
               Text(
                 subtitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: Color(0xFF64748B),
                 ),

@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/accept_reject/accept_reject_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerAcceptRejectScreen extends StatefulWidget {
   const WorkerAcceptRejectScreen({super.key});
@@ -16,12 +17,12 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
   bool _travelConfirmed = true;
 
   String _selectedReason = 'Distance too far';
-  final List<String> _declineReasons = [
-    'Distance too far',
-    'Currently busy on another job',
-    'Price offered is low',
-    'Lack required equipment',
-    'Personal emergency',
+  List<String> get _declineReasons => [
+    'distance_too_far'.tr(context),
+    'currently_busy_another_job'.tr(context),
+    'price_offered_low'.tr(context),
+    'lack_required_equipment'.tr(context),
+    'personal_emergency'.tr(context),
   ];
 
   @override
@@ -34,9 +35,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Confirm Decision',
-          style: TextStyle(
+        title: Text(
+          'confirm_decision'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -72,9 +73,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'MCB Tripping & Short Circuit Repair',
-                      style: TextStyle(
+                    Text(
+                      'mcb_tripping_repair'.tr(context),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -82,7 +83,7 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Customer: Sunil Verma • Dwarka Sector 15',
+                      '${'customer_prefix'.tr(context)}Sunil Verma • ${'dwarka_sec_15'.tr(context)}',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.85),
@@ -92,9 +93,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildSummaryMetric('EST. EARNINGS', '₹ 850'),
-                        _buildSummaryMetric('DISTANCE', '2.4 Km'),
-                        _buildSummaryMetric('DURATION', '45 Mins'),
+                        _buildSummaryMetric('est_earnings_caps'.tr(context), '₹ 850'),
+                        _buildSummaryMetric('distance_caps'.tr(context), '2.4 Km'),
+                        _buildSummaryMetric('duration_caps'.tr(context), '45 Mins'),
                       ],
                     ),
                   ],
@@ -104,9 +105,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
               const SizedBox(height: 28),
 
               // Acceptance Checklist Section
-              const Text(
-                'Pre-Acceptance Checklist',
-                style: TextStyle(
+              Text(
+                'pre_acceptance_checklist'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -116,23 +117,23 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
               const SizedBox(height: 12),
 
               _buildCheckTile(
-                title: 'Professional Tools Ready',
-                subtitle: 'I have testing meters, screwdrivers, spare MCBs',
+                title: 'professional_tools_ready'.tr(context),
+                subtitle: 'tools_ready_desc'.tr(context),
                 value: _toolsReady,
                 onChanged: (val) => setState(() => _toolsReady = val),
               ),
               const SizedBox(height: 10),
               _buildCheckTile(
-                title: 'Immediate Availability',
-                subtitle: 'Can reach location within 20 minutes',
+                title: 'immediate_availability'.tr(context),
+                subtitle: 'availability_desc'.tr(context),
                 value: _availabilityConfirmed,
                 onChanged: (val) =>
                     setState(() => _availabilityConfirmed = val),
               ),
               const SizedBox(height: 10),
               _buildCheckTile(
-                title: 'Travel & Route Confirmed',
-                subtitle: 'Accept 2.4 km distance for service trip',
+                title: 'travel_route_confirmed'.tr(context),
+                subtitle: 'travel_route_desc'.tr(context),
                 value: _travelConfirmed,
                 onChanged: (val) => setState(() => _travelConfirmed = val),
               ),
@@ -159,14 +160,14 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.check_circle_rounded, size: 22),
-                      SizedBox(width: 8),
+                      const Icon(Icons.check_circle_rounded, size: 22),
+                      const SizedBox(width: 8),
                       Text(
-                        'Confirm & Accept Job',
-                        style: TextStyle(
+                        'confirm_accept_job'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -187,11 +188,11 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                       color: const Color(0xFFE2E8F0),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      'OR DECLINE',
-                      style: TextStyle(
+                      'or_decline'.tr(context),
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF94A3B8),
@@ -211,9 +212,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
               const SizedBox(height: 24),
 
               // Decline Section
-              const Text(
-                'Decline Reason (Optional)',
-                style: TextStyle(
+              Text(
+                'decline_reason_optional'.tr(context),
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF0F172A),
@@ -279,9 +280,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Decline This Job Request',
-                    style: TextStyle(
+                  child: Text(
+                    'decline_this_job_request'.tr(context),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFFEF4444),
@@ -403,19 +404,19 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Job Accepted!',
-              style: TextStyle(
+            Text(
+              'job_accepted'.tr(context),
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'You have accepted MCB Tripping Repair. Please start navigation to reach customer location on time.',
+            Text(
+              'job_accepted_desc'.tr(context),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Color(0xFF64748B),
                 height: 1.5,
@@ -437,9 +438,9 @@ class _WorkerAcceptRejectScreenState extends State<WorkerAcceptRejectScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Go to Active Jobs',
-                  style: TextStyle(
+                child: Text(
+                  'go_to_active_jobs'.tr(context),
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),

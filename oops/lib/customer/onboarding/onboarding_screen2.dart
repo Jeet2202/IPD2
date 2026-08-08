@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import 'onboarding_widgets.dart';
+import '../../l10n/app_translations.dart';
 
 class OnboardingPage2 extends StatelessWidget {
   const OnboardingPage2({super.key});
@@ -22,10 +23,10 @@ class OnboardingPage2 extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Container(
                       height: 270,
                       width: double.infinity,
@@ -62,7 +63,7 @@ class OnboardingPage2 extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(24),
+                                padding: EdgeInsets.all(24),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
@@ -75,15 +76,15 @@ class OnboardingPage2 extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.receipt_long_rounded,
                                   size: 62,
                                   color: Color(0xFF0EA5E9),
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 9),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
@@ -92,14 +93,14 @@ class OnboardingPage2 extends StatelessWidget {
                                       color: const Color(0xFFBAE6FD),
                                       width: 1.5),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text('Estimated: ',
+                                    Text('estimated'.tr(context),
                                         style: TextStyle(
                                             fontSize: 13,
                                             color: Color(0xFF64748B))),
-                                    Text('₹299',
+                                    Text('299'.tr(context),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w800,
@@ -114,10 +115,9 @@ class OnboardingPage2 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 36),
+                    SizedBox(height: 36),
 
-                    const Text(
-                      'Transparent Pricing',
+                    Text('transparent_pricing'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28,
@@ -128,10 +128,9 @@ class OnboardingPage2 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
-                    const Text(
-                      'Know estimated market prices before\nconfirming any booking. No surprises.',
+                    Text('know_estimated_market_prices_beforenconfirming'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -141,7 +140,7 @@ class OnboardingPage2 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                   ],
                 ),
               ),

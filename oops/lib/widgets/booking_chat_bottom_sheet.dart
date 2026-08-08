@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../app/theme/app_colors.dart';
 import '../../services/booking_chat_service.dart';
+import '../l10n/app_translations.dart';
 
 class BookingChatBottomSheet extends StatefulWidget {
   final BookingChatService chatService;
@@ -118,18 +119,18 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
           child: Wrap(
             children: [
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: AppColors.primary),
-                title: const Text('Camera'),
+                leading: Icon(Icons.camera_alt, color: AppColors.primary),
+                title: Text('camera'.tr(context)),
                 onTap: () => _pickImage(ImageSource.camera),
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library, color: AppColors.primary),
-                title: const Text('Gallery'),
+                leading: Icon(Icons.photo_library, color: AppColors.primary),
+                title: Text('gallery'.tr(context)),
                 onTap: () => _pickImage(ImageSource.gallery),
               ),
               ListTile(
-                leading: const Icon(Icons.insert_drive_file, color: AppColors.primary),
-                title: const Text('Document (PDF)'),
+                leading: Icon(Icons.insert_drive_file, color: AppColors.primary),
+                title: Text('document_pdf'.tr(context)),
                 onTap: _pickDocument,
               ),
             ],
@@ -170,7 +171,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -178,22 +179,21 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: const BoxDecoration(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Live Chat',
+                Text('live_chat'.tr(context),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(Icons.close_rounded),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -204,7 +204,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final msg = messages[index];
@@ -212,8 +212,8 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                 return Align(
                   alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.75,
                     ),
@@ -233,7 +233,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                           GestureDetector(
                             onTap: () => _showImageFullScreen(msg.mediaUrl!),
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
+                              padding: EdgeInsets.only(bottom: 8.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.network(
@@ -246,7 +246,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                                     return Container(
                                       width: 200, height: 200,
                                       color: Colors.black12,
-                                      child: const Center(child: CircularProgressIndicator()),
+                                      child: Center(child: CircularProgressIndicator()),
                                     );
                                   },
                                 ),
@@ -257,8 +257,8 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                           GestureDetector(
                             onTap: () => _openUrl(msg.mediaUrl!),
                             child: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: EdgeInsets.all(12),
+                              margin: EdgeInsets.only(bottom: 8),
                               decoration: BoxDecoration(
                                 color: isMe ? Colors.white.withOpacity(0.2) : Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -268,7 +268,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(Icons.picture_as_pdf, color: isMe ? Colors.white : Colors.red, size: 28),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Flexible(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +307,7 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                             ),
                           ),
                         if (isMe) ...[
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Icon(
                             msg.isRead ? Icons.done_all : Icons.check,
                             size: 14,
@@ -323,19 +323,18 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
           ),
 
           if (_isUploading)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('Uploading media...', style: TextStyle(fontSize: 12)),
+              child: Text('uploading_media'.tr(context), style: TextStyle(fontSize: 12)),
             ),
 
           // Typing Indicator
           if (isTyping)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  'Typing...',
+                child: Text('typing'.tr(context),
                   style: TextStyle(
                     fontSize: 12,
                     fontStyle: FontStyle.italic,
@@ -353,14 +352,14 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                 right: 16,
                 top: 12,
               ),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
               ),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.attach_file, color: AppColors.primary),
+                    icon: Icon(Icons.attach_file, color: AppColors.primary),
                     onPressed: _showAttachmentOptions,
                   ),
                   Expanded(
@@ -377,25 +376,25 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                         ),
                         filled: true,
                         fillColor: const Color(0xFFF1F5F9),
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 14,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   InkWell(
                     onTap: _sendMessage,
                     borderRadius: BorderRadius.circular(24),
                     child: Container(
                       width: 48,
                       height: 48,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.send_rounded,
                         color: Colors.white,
                         size: 20,
@@ -412,12 +411,11 @@ class _BookingChatBottomSheetState extends State<BookingChatBottomSheet> {
                 bottom: MediaQuery.of(context).viewInsets.bottom + 24,
                 top: 24,
               ),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color(0xFFF8FAFC),
                 border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
               ),
-              child: const Text(
-                'This booking session has ended.\nMedia sharing is no longer available.',
+              child: Text('this_booking_session_has_endednmedia'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                                     fontSize: 14,

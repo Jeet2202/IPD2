@@ -1,7 +1,7 @@
 // File: lib/worker/jobs/work_progress/work_progress_screen.dart
 
-import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerWorkProgressScreen extends StatefulWidget {
   const WorkerWorkProgressScreen({super.key});
@@ -16,8 +16,15 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
   late Timer _timer;
   double _progressValue = 0.65;
   int _progressPhotos = 3;
-  final _updateNotesController =
-      TextEditingController(text: 'Replaced faulty 32A MCB switch and repaired loose wiring junction.');
+  late final TextEditingController _updateNotesController;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateNotesController = TextEditingController(
+      text: 'mock_work_progress_notes'.tr(context)
+    );
+  }
 
   @override
   void initState() {
@@ -46,11 +53,11 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Work in Progress',
+        title: Text(
+          'work_in_progress'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -61,14 +68,14 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Live Work Timer Card Header
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -89,8 +96,8 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'ELAPSED WORK TIME',
+                        Text(
+                          'elapsed_work_time'.tr(context),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
@@ -99,19 +106,19 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
                               CircleAvatar(
                                   radius: 4, backgroundColor: Color(0xFF10B981)),
                               SizedBox(width: 6),
                               Text(
-                                'LIVE TIMER',
+                                'live_timer'.tr(context),
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,
@@ -123,17 +130,17 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       _formatTimer(_secondsElapsed),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 44,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
                         letterSpacing: -1.0,
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
@@ -144,14 +151,14 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                             Color(0xFF10B981)),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Progress: ${(_progressValue * 100).round()}%',
-                            style: const TextStyle(
+                        Text('progress_percentage'.tr(context).replaceAll('{}', '${(_progressValue * 100).round()}'),
+                            style: TextStyle(
                                 fontSize: 11, color: Colors.white)),
-                        const Text('Est. remaining: ~15 mins',
+                        Text('est_remaining_mock'.tr(context),
                             style: TextStyle(fontSize: 11, color: Colors.white)),
                       ],
                     ),
@@ -159,11 +166,11 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Upload Current Progress Media Card
-              const Text(
-                'Work Progress Proof',
+              Text(
+                'work_progress_proof'.tr(context),
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
@@ -171,7 +178,7 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                   letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Row(
                 children: [
@@ -179,19 +186,19 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                     return Container(
                       width: 80,
                       height: 80,
-                      margin: const EdgeInsets.only(right: 10),
+                      margin: EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: const Color(0xFFCBD5E1)),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.photo_outlined,
                               color: Color(0xFF2563EB), size: 24),
                           SizedBox(height: 4),
-                          Text('Photo',
+                          Text('photo'.tr(context),
                               style: TextStyle(
                                   fontSize: 10, color: Color(0xFF64748B))),
                         ],
@@ -213,13 +220,13 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                         border: Border.all(
                             color: const Color(0xFF2563EB), width: 1.5),
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add_a_photo_rounded,
                               color: Color(0xFF2563EB), size: 22),
                           SizedBox(height: 4),
-                          Text('Add Media',
+                          Text('add_media'.tr(context),
                               style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
@@ -231,39 +238,39 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Work Progress Notes Field
-              const Text(
-                'Work Notes / Parts Replaced',
+              Text(
+                'work_notes_parts_replaced'.tr(context),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF334155),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               TextField(
                 controller: _updateNotesController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Describe progress or newly installed parts...',
-                  hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                  hintText: 'work_notes_hint'.tr(context),
+                  hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                   filled: true,
                   fillColor: const Color(0xFFF8FAFC),
-                  contentPadding: const EdgeInsets.all(14),
+                  contentPadding: EdgeInsets.all(14),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: Color(0xFFE2E8F0)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                    borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Customer Progress Notification Button
               SizedBox(
@@ -272,17 +279,17 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Customer updated with live progress!'),
-                        backgroundColor: Color(0xFF2563EB),
+                      SnackBar(
+                        content: Text('customer_updated_progress'.tr(context)),
+                        backgroundColor: const Color(0xFF2563EB),
                       ),
                     );
                   },
-                  icon: const Icon(Icons.send_rounded, size: 18),
-                  label: const Text('Send Progress Update to Customer'),
+                  icon: Icon(Icons.send_rounded, size: 18),
+                  label: Text('send_progress_update'.tr(context)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF2563EB),
-                    side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                    side: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -290,7 +297,7 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // Complete Job Button
               SizedBox(
@@ -308,13 +315,13 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.check_circle_rounded, size: 22),
                       SizedBox(width: 8),
                       Text(
-                        'Mark Work Completed',
+                        'mark_work_completed'.tr(context),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -325,7 +332,7 @@ class _WorkerWorkProgressScreenState extends State<WorkerWorkProgressScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),

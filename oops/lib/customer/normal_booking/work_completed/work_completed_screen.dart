@@ -2,6 +2,7 @@
 // lib/customer/normal_booking/work_completed/work_completed_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkCompletedScreen extends StatelessWidget {
   const WorkCompletedScreen({super.key});
@@ -10,11 +11,10 @@ class WorkCompletedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Service Completed',
+        title: Text('service_completed'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -23,11 +23,11 @@ class WorkCompletedScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 // ── Hero Success Graphic / Badge ───────────────────────
                 Container(
@@ -40,30 +40,28 @@ class WorkCompletedScreen extends StatelessWidget {
                       BoxShadow(color: const Color(0xFF16A34A).withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 6)),
                     ],
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(Icons.task_alt_rounded, color: Color(0xFF16A34A), size: 60),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                const Text(
-                  'Work Completed Successfully!',
+                Text('work_completed_successfully'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), letterSpacing: -0.4),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Ramesh Kumar has finished the assigned electrical repairs.',
+                SizedBox(height: 6),
+                Text('ramesh_kumar_has_finished_the'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Duration & Summary Card ───────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(24),
@@ -71,21 +69,20 @@ class WorkCompletedScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Icon(Icons.electrical_services_rounded, color: Color(0xFF2563EB), size: 22),
                           SizedBox(width: 10),
                           Expanded(
-                            child: Text(
-                              'Switchboard & Wiring Repair',
+                            child: Text('switchboard_wiring_repair'.tr(context),
                               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const Divider(color: Color(0xFFE2E8F0), height: 1),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
+                      Divider(color: Color(0xFFE2E8F0), height: 1),
+                      SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -98,17 +95,16 @@ class WorkCompletedScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Before & After Photos Gallery ──────────────────────
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Before & After Proof Photos',
+                  child: Text('before_after_proof_photos'.tr(context),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Row(
                   children: [
@@ -120,17 +116,17 @@ class WorkCompletedScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(color: const Color(0xFFFCA5A5)),
                         ),
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.broken_image_rounded, color: Color(0xFFEF4444), size: 30),
                             SizedBox(height: 6),
-                            Text('BEFORE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+                            Text('before'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    SizedBox(width: 14),
                     Expanded(
                       child: Container(
                         height: 110,
@@ -139,12 +135,12 @@ class WorkCompletedScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(color: const Color(0xFF86EFAC)),
                         ),
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.verified_rounded, color: Color(0xFF16A34A), size: 30),
                             SizedBox(height: 6),
-                            Text('AFTER', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+                            Text('after'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                           ],
                         ),
                       ),
@@ -152,26 +148,25 @@ class WorkCompletedScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Completed Checklist Summary ────────────────────────
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Completed Tasks List',
+                  child: Text('completed_tasks_list'.tr(context),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
                       _TaskRow(title: 'Replaced faulty 16A modular switchboard'),
                       SizedBox(height: 8),
@@ -182,7 +177,7 @@ class WorkCompletedScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -193,7 +188,7 @@ class WorkCompletedScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -213,11 +208,10 @@ class WorkCompletedScreen extends StatelessWidget {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Proceed to Payment (₹377)',
+                      Text('proceed_to_payment_377'.tr(context),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(width: 8),
@@ -237,9 +231,9 @@ class WorkCompletedScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-        const SizedBox(height: 2),
-        Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+        Text(title, style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+        SizedBox(height: 2),
+        Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
       ],
     );
   }
@@ -253,9 +247,9 @@ class _TaskRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 18),
-        const SizedBox(width: 10),
-        Expanded(child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)))),
+        Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 18),
+        SizedBox(width: 10),
+        Expanded(child: Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)))),
       ],
     );
   }

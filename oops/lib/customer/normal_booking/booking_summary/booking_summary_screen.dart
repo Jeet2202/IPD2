@@ -9,6 +9,8 @@ import '../../../models/booking_model.dart';
 import '../../../models/service_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class BookingSummaryScreen extends StatefulWidget {
   final ServiceModel? service;
@@ -92,14 +94,14 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   Future<void> _confirmAndBook() async {
     if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing address details. Please go back and select.')),
+        const SnackBar(content: Text('missing_address_details_please_go'.tr(context))),
       );
       return;
     }
 
     if (_bookingType == 'normal_service' && _service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing service selection. Please go back and select a service.')),
+        const SnackBar(content: Text('missing_service_selection_please_go'.tr(context))),
       );
       return;
     }
@@ -158,7 +160,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Network error. Please check your connection and try again.'),
+          content: Text('network_error_please_check_your'.tr(context)),
           backgroundColor: AppColors.error,
         ),
       );
@@ -172,18 +174,18 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
     if (address == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Booking Summary')),
+        appBar: AppBar(title: Text('booking_summary'.tr(context))),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.info_outline_rounded, size: 48, color: AppColors.warning),
-              const SizedBox(height: 12),
-              const Text('Incomplete booking information.', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
+              Icon(Icons.info_outline_rounded, size: 48, color: AppColors.warning),
+              SizedBox(height: 12),
+              Text('incomplete_booking_information'.tr(context), style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Go Back'),
+                child: Text('go_back'.tr(context)),
               ),
             ],
           ),
@@ -198,37 +200,43 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Column(
+        title: Column(
           children: [
-            Text(
-              'Step 2 of 2',
+            Text('bookingsummarystep2'.tr(context).tr(context),
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
             ),
-            Text(
-              'Booking Summary',
+            Text('bookingsummary'.tr(context).tr(context),
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
             ),
           ],
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: AppColors.primary),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (_submitError != null) ...[
                   Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(12),
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFEF2F2),
                       borderRadius: BorderRadius.circular(12),
@@ -236,12 +244,12 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
-                        const SizedBox(width: 8),
+                        Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
+                        SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _submitError!,
-                            style: const TextStyle(fontSize: 13, color: AppColors.error),
+                            style: TextStyle(fontSize: 13, color: AppColors.error),
                           ),
                         ),
                       ],
@@ -265,7 +273,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                               ? Image.network(
                                   service.resolvedImage,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.handyman_rounded, color: AppColors.primary, size: 24),
+                                  errorBuilder: (_, __, ___) => Icon(Icons.handyman_rounded, color: AppColors.primary, size: 24),
                                 )
                               : Icon(
                                   _bookingType == 'inspection_request'
@@ -276,32 +284,32 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                                 ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               displayTitle,
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text(
                               'Category: ${(service?.categorySlug ?? "general").replaceAll('-', ' ').toUpperCase()}',
-                              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                             ),
                           ],
                         ),
                       ),
                       Text(
                         priceDisplay,
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // ── Address Card ──────────────────────────────────────
                 _buildSummaryCard(
@@ -315,22 +323,22 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                         children: [
                           Text(
                             address.label,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                           ),
-                          const SizedBox(width: 8),
-                          Text('(${address.fullName} • ${address.phone})', style: const TextStyle(fontSize: 12)),
+                          SizedBox(width: 8),
+                          Text('(${address.fullName} • ${address.phone})', style: TextStyle(fontSize: 12)),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         address.shortAddress,
-                        style: const TextStyle(fontSize: 13, height: 1.3),
+                        style: TextStyle(fontSize: 13, height: 1.3),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // ── Date, Time & Booking Type Card ─────────────────────
                 _buildSummaryCard(
@@ -340,15 +348,15 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                   content: Column(
                     children: [
                       _buildRow('Booking Type', _bookingType == 'inspection_request' ? 'Inspection Visit' : 'Normal Service', isBold: true),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       _buildRow('Scheduled Date', _scheduledDate ?? 'ASAP'),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       _buildRow('Scheduled Time', _scheduledTime ?? 'Flexible'),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // ── Customer Notes Card ───────────────────────────────
                 if (_customerNotes != null && _customerNotes!.isNotEmpty) ...[
@@ -358,10 +366,10 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     onChangeTap: () => Navigator.pop(context),
                     content: Text(
                       '"$_customerNotes"',
-                      style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                      style: TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                 ],
 
                 // ── Estimated Price Breakdown Card ────────────────────
@@ -376,22 +384,22 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                             ? '₹${service.basePrice.toStringAsFixed(0)}'
                             : (_customBudget != null ? '₹${_customBudget!.toStringAsFixed(0)}' : 'To be quoted'),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       _buildRow(
                         'Estimated Duration',
                         service != null
                             ? (service.durationDisplay.isNotEmpty ? service.durationDisplay : '${service.estimatedDurationMinutes} mins')
                             : 'Site visit / Quote dependent',
                       ),
-                      const SizedBox(height: 8),
-                      const Divider(color: AppColors.divider, height: 1),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
+                      Divider(color: AppColors.divider, height: 1),
+                      SizedBox(height: 8),
                       _buildRow('Total Estimated Pay', priceDisplay, isBold: true),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 120),
+                SizedBox(height: 120),
               ],
             ),
           ),
@@ -402,7 +410,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -419,15 +427,15 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Total Estimated', style: TextStyle(fontSize: 11)),
-                      const SizedBox(height: 2),
+                      Text('estimatedprice'.tr(context).tr(context), style: TextStyle(fontSize: 11)),
+                      SizedBox(height: 2),
                       Text(
                         priceDisplay,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: 20),
                   Expanded(
                     child: SizedBox(
                       height: 52,
@@ -442,13 +450,12 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
                           ),
                         ),
                         child: _isSubmitting
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22,
                                 height: 22,
                                 child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                               )
-                            : const Text(
-                                'Confirm & Book',
+                            : Text('confirmandbook'.tr(context).tr(context),
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                       ),
@@ -470,7 +477,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
     VoidCallback? onChangeTap,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -485,21 +492,21 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
               Row(
                 children: [
                   Icon(icon, size: 18, color: AppColors.primary),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
                   ),
                 ],
               ),
               if (onChangeTap != null)
                 GestureDetector(
                   onTap: onChangeTap,
-                  child: const Text('Edit', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  child: Text('edit'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           content,
         ],
       ),

@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({super.key});
@@ -58,8 +59,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
-        title: const Text(
-          'Complete Profile',
+        title: Text('complete_profile'.tr(context),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -141,8 +141,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
 
               const SizedBox(height: 12),
-              const Text(
-                'Upload Profile Photo',
+              Text('upload_profile_photo'.tr(context),
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -249,8 +248,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Continue',
+                  child: Text('continue'.tr(context),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,

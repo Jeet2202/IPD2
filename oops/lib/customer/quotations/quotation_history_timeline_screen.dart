@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../models/quotation_model.dart';
 import '../../services/quotation_service.dart';
+import '../../l10n/app_translations.dart';
 
 class QuotationHistoryTimelineScreen extends StatefulWidget {
   final String quotationId;
@@ -64,14 +65,13 @@ class _QuotationHistoryTimelineScreenState
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Audit Trail & History',
+            Text('audit_trail_history'.tr(context),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -80,7 +80,7 @@ class _QuotationHistoryTimelineScreenState
             ),
             Text(
               'Ref: ${widget.bookingNumber}',
-              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
             ),
           ],
         ),
@@ -90,7 +90,7 @@ class _QuotationHistoryTimelineScreenState
           onRefresh: _loadHistory,
           color: const Color(0xFF2563EB),
           child: _isLoading
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(color: Color(0xFF2563EB)),
                 )
               : _errorMessage != null
@@ -101,7 +101,7 @@ class _QuotationHistoryTimelineScreenState
                           physics: const AlwaysScrollableScrollPhysics(
                             parent: BouncingScrollPhysics(),
                           ),
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 20.0,
                             vertical: 24.0,
                           ),
@@ -124,26 +124,26 @@ class _QuotationHistoryTimelineScreenState
       child: Container(
         height: MediaQuery.of(context).size.height * 0.7,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded,
+            Icon(Icons.error_outline_rounded,
                 size: 56, color: Color(0xFFDC2626)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _loadHistory,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Retry'),
+              child: Text('retry'.tr(context)),
             ),
           ],
         ),
@@ -157,14 +157,13 @@ class _QuotationHistoryTimelineScreenState
       child: Container(
         height: MediaQuery.of(context).size.height * 0.7,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(32.0),
-        child: const Column(
+        padding: EdgeInsets.all(32.0),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.history_rounded, size: 64, color: Color(0xFF94A3B8)),
             SizedBox(height: 16),
-            Text(
-              'No History Events Found',
+            Text('no_history_events_found'.tr(context),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -172,8 +171,7 @@ class _QuotationHistoryTimelineScreenState
               ),
             ),
             SizedBox(height: 8),
-            Text(
-              'Audit log entries for this quotation will appear here as status updates occur.',
+            Text('audit_log_entries_for_this'.tr(context),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
@@ -218,13 +216,13 @@ class _QuotationHistoryTimelineScreenState
             ],
           ),
 
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
 
           // Event Card Box
           Expanded(
             child: Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              padding: const EdgeInsets.all(16),
+              margin: EdgeInsets.only(bottom: 20),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
@@ -246,7 +244,7 @@ class _QuotationHistoryTimelineScreenState
                     children: [
                       Text(
                         eventStyle.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF0F172A),
@@ -256,12 +254,12 @@ class _QuotationHistoryTimelineScreenState
                     ],
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
 
                   // Timestamp text
                   Text(
                     _formatTimestamp(log.createdAt),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF64748B),
@@ -270,12 +268,12 @@ class _QuotationHistoryTimelineScreenState
 
                   if (log.previousStatus != null ||
                       log.newStatus.isNotEmpty) ...[
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Row(
                       children: [
                         if (log.previousStatus != null) ...[
                           _buildStatusPill(log.previousStatus!, isOld: true),
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.symmetric(horizontal: 6),
                             child: Icon(Icons.arrow_forward_rounded,
                                 size: 14, color: Color(0xFF94A3B8)),
@@ -287,17 +285,17 @@ class _QuotationHistoryTimelineScreenState
                   ],
 
                   if (log.notes != null && log.notes!.isNotEmpty) ...[
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         log.notes!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF334155),
                           height: 1.3,
@@ -337,7 +335,7 @@ class _QuotationHistoryTimelineScreenState
             : const Color(0xFF7C3AED);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
@@ -351,7 +349,7 @@ class _QuotationHistoryTimelineScreenState
 
   Widget _buildStatusPill(String status, {required bool isOld}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: isOld ? const Color(0xFFE2E8F0) : const Color(0xFFE0F2FE),
         borderRadius: BorderRadius.circular(6),

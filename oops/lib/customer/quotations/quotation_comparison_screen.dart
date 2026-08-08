@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../models/quotation_model.dart';
+import '../../l10n/app_translations.dart';
 
 class QuotationComparisonScreen extends StatelessWidget {
   final String bookingNumber;
@@ -25,8 +26,7 @@ class QuotationComparisonScreen extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Quotation Comparison',
+            Text('quotation_comparison'.tr(context),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -161,8 +161,7 @@ class QuotationComparisonScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                const Text(
-                  'TOTAL AMOUNT',
+                Text('total_amount_2'.tr(context),
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white70),
                 ),
                 const SizedBox(height: 2),
@@ -198,8 +197,7 @@ class QuotationComparisonScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Scope of Work
-          const Text(
-            'Scope of Work:',
+          Text('scope_of_work'.tr(context),
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF475569)),
           ),
           const SizedBox(height: 4),

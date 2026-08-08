@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class FaqScreen extends StatelessWidget {
   const FaqScreen({super.key});
@@ -6,8 +7,8 @@ class FaqScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('F a q S c r e e n')),
-      body: const Center(child: Text('F a q S c r e e n')),
+      appBar: AppBar(title: Text('f_a_q_s_c'.tr(context))),
+      body: Center(child: Text('f_a_q_s_c'.tr(context))),
     );
   }
 }

@@ -2,6 +2,7 @@
 // Shared widgets used across all onboarding screens.
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 // ── Floating Badge ────────────────────────────────────────────────────────────
 class OnboardingFloatingBadge extends StatelessWidget {
@@ -237,8 +238,7 @@ class OnboardingTopBar extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Ally',
+              Text('ally'.tr(context),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -261,7 +261,7 @@ class OnboardingTopBar extends StatelessWidget {
                       const BorderSide(color: Color(0xFFE2E8F0), width: 1),
                 ),
               ),
-              child: const Text('Skip',
+              child: Text('skip'.tr(context),
                   style:
                       TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             )

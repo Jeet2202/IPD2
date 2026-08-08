@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/arrival/mark_arrival_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerMarkArrivalScreen extends StatefulWidget {
   const WorkerMarkArrivalScreen({super.key});
@@ -28,9 +29,9 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Confirm Arrival',
-          style: TextStyle(
+        title: Text(
+          'confirm_arrival'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -62,9 +63,9 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
 
               const SizedBox(height: 20),
 
-              const Text(
-                'You Have Arrived!',
-                style: TextStyle(
+              Text(
+                'you_have_arrived'.tr(context),
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -72,9 +73,9 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'dwarka sector 15, block b, flat 402',
-                style: TextStyle(
+              Text(
+                'mock_arrival_address'.tr(context),
+                style: const TextStyle(
                   fontSize: 13,
                   color: Color(0xFF64748B),
                 ),
@@ -111,8 +112,8 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                     Expanded(
                       child: Text(
                         _gpsVerified
-                            ? 'GPS Location Match Confirmed (< 50 meters)'
-                            : 'Verifying GPS proximity...',
+                            ? 'gps_location_confirmed'.tr(context)
+                            : 'verifying_gps_proximity'.tr(context),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -168,9 +169,9 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Arrival Selfie Photo',
-                            style: TextStyle(
+                          Text(
+                            'arrival_selfie_photo'.tr(context),
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
@@ -179,8 +180,8 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                           const SizedBox(height: 2),
                           Text(
                             _selfieCaptured
-                                ? 'Photo attached successfully'
-                                : 'Optional verification photo',
+                                ? 'photo_attached_successfully'.tr(context)
+                                : 'optional_verification_photo'.tr(context),
                             style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF64748B),
@@ -204,7 +205,7 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                         ),
                       ),
                       child: Text(
-                        _selfieCaptured ? 'Retake' : 'Capture',
+                        _selfieCaptured ? 'retake'.tr(context) : 'capture'.tr(context),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -219,11 +220,11 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
               const SizedBox(height: 20),
 
               // Customer Note / Gate Instructions Field
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Arrival Remarks / Gate Note',
-                  style: TextStyle(
+                  'arrival_remarks'.tr(context),
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF334155),
@@ -235,7 +236,7 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                 controller: _arrivalNotesController,
                 maxLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'e.g. Waiting at security gate / ringed doorbell',
+                  hintText: 'arrival_remarks_hint'.tr(context),
                   hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                   filled: true,
                   fillColor: const Color(0xFFF8FAFC),
@@ -269,18 +270,18 @@ class _WorkerMarkArrivalScreenState extends State<WorkerMarkArrivalScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Proceed to Start Work',
-                        style: TextStyle(
+                        'proceed_to_start_work'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 20),
                     ],
                   ),
                 ),

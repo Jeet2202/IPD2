@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_service.dart';
+import '../../l10n/app_translations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -67,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Preferences updated'), backgroundColor: Color(0xFF16A34A)),
+          const SnackBar(content: Text('preferences_updated'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -90,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text('Change Password', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            title: Text('change_password'.tr(context), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
             content: Form(
               key: _changePwdFormKey,
               child: SingleChildScrollView(
@@ -106,7 +107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     TextFormField(
                       controller: _newPwdController,
                       obscureText: true,
@@ -119,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     TextFormField(
                       controller: _confirmPwdController,
                       obscureText: true,
@@ -139,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+                child: Text('cancel'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
               ),
               ElevatedButton(
                 onPressed: _isActionLoading
@@ -156,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Password changed successfully! Please log in again.'),
+                                content: Text('password_changed_successfully_please_log'.tr(context)),
                                 backgroundColor: Color(0xFF16A34A),
                               ),
                             );
@@ -180,8 +181,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isActionLoading
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text('Update Password'),
+                    ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text('update_password'.tr(context)),
               ),
             ],
           );
@@ -195,12 +196,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Logout All Devices', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text('Are you sure you want to revoke all active sessions across all devices?'),
+        title: Text('logout_all_devices'.tr(context), style: TextStyle(fontWeight: FontWeight.w800)),
+        content: Text('are_you_sure_you_want_3'.tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -208,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               await AuthService.instance.logoutAll();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Logged out from all devices.'), backgroundColor: Color(0xFF16A34A)),
+                  const SnackBar(content: Text('logged_out_from_all_devices'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                 );
                 Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
               }
@@ -218,7 +219,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Logout All'),
+            child: Text('logout_all'.tr(context)),
           ),
         ],
       ),
@@ -233,11 +234,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Row(
+            title: Row(
               children: [
                 Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444)),
                 SizedBox(width: 8),
-                Text('Delete Account', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+                Text('delete_account'.tr(context), style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
               ],
             ),
             content: Form(
@@ -246,13 +247,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'This action is permanent and irreversible. All your profile details, booking history, and stored data will be deleted.',
+                  Text('this_action_is_permanent_and'.tr(context),
                     style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
                   ),
-                  const SizedBox(height: 16),
-                  const Text('Enter your password to confirm:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 16),
+                  Text('enter_your_password_to_confirm'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                  SizedBox(height: 8),
                   TextFormField(
                     controller: _deletePasswordController,
                     obscureText: true,
@@ -268,7 +268,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+                child: Text('cancel'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
               ),
               ElevatedButton(
                 onPressed: _isActionLoading
@@ -281,7 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Account permanently deleted.'), backgroundColor: Color(0xFF16A34A)),
+                              const SnackBar(content: Text('account_permanently_deleted'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                             );
                             Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
                           }
@@ -303,8 +303,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isActionLoading
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Text('Permanently Delete'),
+                    ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text('permanently_delete'.tr(context)),
               ),
             ],
           );
@@ -335,30 +335,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Settings & Account',
+        title: Text('settings_account'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── ACCOUNT SECTION ─────────────────────────────────────
-              const Text('ACCOUNT INFORMATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('account_information'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -373,33 +372,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           backgroundColor: const Color(0xFFDBEAFE),
                           backgroundImage: (photoUrl != null && photoUrl.isNotEmpty) ? NetworkImage(photoUrl) : null,
                           child: (photoUrl == null || photoUrl.isEmpty)
-                              ? const Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB))
+                              ? Icon(Icons.person_rounded, size: 32, color: Color(0xFF2563EB))
                               : null,
                         ),
-                        const SizedBox(width: 14),
+                        SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                              const SizedBox(height: 2),
-                              Text(email, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                              Text(phone, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text(fullName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                              SizedBox(height: 2),
+                              Text(email, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text(phone, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                             ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 14),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Profile Completion: $completion%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
+                        Text('Profile Completion: $completion%', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context, AppRoutes.customerProfile),
-                          child: const Text('View Full Profile'),
+                          child: Text('view_full_profile'.tr(context)),
                         ),
                       ],
                     ),
@@ -407,11 +406,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── SECURITY SECTION ────────────────────────────────────
-              const Text('SECURITY & SESSIONS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('security_sessions'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -427,14 +426,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: 'Update your login password',
                       onTap: _showChangePasswordDialog,
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.devices_rounded,
                       title: 'Logout All Devices',
                       subtitle: 'Revoke active sessions across all devices',
                       onTap: _showLogoutAllDialog,
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.logout_rounded,
                       title: 'Logout Current Session',
@@ -451,11 +450,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── PREFERENCES SECTION ──────────────────────────────────
-              const Text('APP PREFERENCES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('app_preferences'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -466,7 +465,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Push Notifications', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      title: Text('push_notifications'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       value: _pushNotifications,
                       activeThumbColor: const Color(0xFF2563EB),
                       onChanged: (val) {
@@ -474,9 +473,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _updateNotificationPreferences();
                       },
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     SwitchListTile(
-                      title: const Text('Email Alerts', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      title: Text('email_alerts'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       value: _emailNotifications,
                       activeThumbColor: const Color(0xFF2563EB),
                       onChanged: (val) {
@@ -484,9 +483,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _updateNotificationPreferences();
                       },
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     SwitchListTile(
-                      title: const Text('SMS Updates', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      title: Text('sms_updates'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       value: _smsNotifications,
                       activeThumbColor: const Color(0xFF2563EB),
                       onChanged: (val) {
@@ -498,11 +497,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── SUPPORT & LEGAL SECTION ─────────────────────────────
-              const Text('SUPPORT & LEGAL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('support_legal'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -517,19 +516,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: 'Help & Support Center',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.policy_rounded,
                       title: 'Privacy Policy',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.description_outlined,
                       title: 'Terms & Conditions',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.termsConditions),
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     _SettingTile(
                       icon: Icons.info_outline_rounded,
                       title: 'About Ally',
@@ -540,11 +539,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── DANGER ZONE ──────────────────────────────────────────
-              const Text('DANGER ZONE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
-              const SizedBox(height: 10),
+              Text('danger_zone'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -561,7 +560,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
             ],
           ),
         ),
@@ -592,8 +591,8 @@ class _SettingTile extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF2563EB)),
         title: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isRed ? const Color(0xFFEF4444) : const Color(0xFF0F172A))),
-        subtitle: subtitle != null ? Text(subtitle!, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))) : null,
-        trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+        subtitle: subtitle != null ? Text(subtitle!, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))) : null,
+        trailing: Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
         onTap: onTap,
       ),
     );

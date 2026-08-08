@@ -3,6 +3,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
 import '../../widgets/app_card.dart';
 import '../utils/category_helper.dart';
+import '../../l10n/app_translations.dart';
 
 class ServiceCard extends StatelessWidget {
   final String title;
@@ -101,8 +102,7 @@ class ServiceCard extends StatelessWidget {
                           bottomRight: Radius.circular(AppDimensions.radiusSm),
                         ),
                       ),
-                      child: const Text(
-                        '★',
+                      child: Text('text'.tr(context),
                         style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -136,8 +136,7 @@ class ServiceCard extends StatelessWidget {
                             color: const Color(0xFFFEF3C7),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Text(
-                            'FEATURED',
+                          child: Text('featured'.tr(context),
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w800,
@@ -232,7 +231,7 @@ class ServiceCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                   ),
                 ),
-                child: const Text('Add', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                child: Text('add'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
               ),
             ],
           ],

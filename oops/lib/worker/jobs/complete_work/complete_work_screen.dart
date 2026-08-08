@@ -1,6 +1,7 @@
 // File: lib/worker/jobs/complete_work/complete_work_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerCompleteWorkScreen extends StatefulWidget {
   const WorkerCompleteWorkScreen({super.key});
@@ -13,8 +14,21 @@ class WorkerCompleteWorkScreen extends StatefulWidget {
 class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
   final _labourChargeController = TextEditingController(text: '850');
   final _partsChargeController = TextEditingController(text: '350');
-  final _completionNotesController = TextEditingController(
-      text: 'Replaced burnt MCB unit with 32A Havells single pole switch. Tested voltage across all phases.');
+  late final TextEditingController _completionNotesController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use addPostFrameCallback if context is not available immediately, but in initState for a stateful widget, we can access context in didChangeDependencies. Wait, actually we can just leave it uninitialized and initialize it in didChangeDependencies or build. Better yet, let's just initialize it empty here and set text in initState if possible? No, we can't use tr(context) in initState.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _completionNotesController = TextEditingController(
+      text: 'mock_completion_notes'.tr(context)
+    );
+  }
 
   int get _totalAmount {
     final l = int.tryParse(_labourChargeController.text) ?? 0;
@@ -34,11 +48,11 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Complete Job & Invoice',
+        title: Text(
+          'complete_job_invoice'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -49,7 +63,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,19 +75,19 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                     Container(
                       width: 90,
                       height: 90,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Color(0xFFD1FAE5),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.verified_rounded,
                         size: 52,
                         color: Color(0xFF10B981),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Work Finished Successfully!',
+                    SizedBox(height: 14),
+                    Text(
+                      'work_finished_successfully'.tr(context),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -81,9 +95,9 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Job Duration: 38 Minutes',
+                    SizedBox(height: 4),
+                    Text(
+                      'job_duration_mock'.tr(context),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -94,18 +108,18 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // Final Bill Breakdown Card
               _buildCardSection(
-                title: 'Payment & Invoice Breakdown',
+                title: 'payment_invoice_breakdown'.tr(context),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Labour / Service Charge',
+                        Text(
+                          'labour_service_charge'.tr(context),
                           style: TextStyle(
                             fontSize: 13,
                             color: Color(0xFF64748B),
@@ -118,24 +132,24 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                             controller: _labourChargeController,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.end,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                             decoration: InputDecoration(
                               prefixText: '₹ ',
-                              contentPadding: const EdgeInsets.symmetric(
+                              contentPadding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 8),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFFE2E8F0)),
+                                    BorderSide(color: Color(0xFFE2E8F0)),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFF2563EB)),
+                                    BorderSide(color: Color(0xFF2563EB)),
                               ),
                             ),
                             onChanged: (_) => setState(() {}),
@@ -143,12 +157,12 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Materials / Spare Parts',
+                        Text(
+                          'materials_spare_parts'.tr(context),
                           style: TextStyle(
                             fontSize: 13,
                             color: Color(0xFF64748B),
@@ -161,24 +175,24 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                             controller: _partsChargeController,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.end,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                             decoration: InputDecoration(
                               prefixText: '₹ ',
-                              contentPadding: const EdgeInsets.symmetric(
+                              contentPadding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 8),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFFE2E8F0)),
+                                    BorderSide(color: Color(0xFFE2E8F0)),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide:
-                                    const BorderSide(color: Color(0xFF2563EB)),
+                                    BorderSide(color: Color(0xFF2563EB)),
                               ),
                             ),
                             onChanged: (_) => setState(() {}),
@@ -186,14 +200,14 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    const Divider(color: Color(0xFFE2E8F0)),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 12),
+                    Divider(color: Color(0xFFE2E8F0)),
+                    SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Total Receivable Amount',
+                        Text(
+                          'total_receivable_amount'.tr(context),
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
@@ -202,7 +216,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                         ),
                         Text(
                           '₹ $_totalAmount',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
                             color: Color(0xFF10B981),
@@ -214,11 +228,11 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Upload After Photos Card
               _buildCardSection(
-                title: 'Upload After Work Photos',
+                title: 'upload_after_work_photos'.tr(context),
                 child: Row(
                   children: [
                     Container(
@@ -229,16 +243,16 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: const Color(0xFF10B981)),
                       ),
-                      child: const Icon(Icons.check_circle_rounded,
+                      child: Icon(Icons.check_circle_rounded,
                           color: Color(0xFF10B981), size: 32),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Photo attached successfully!'),
-                            backgroundColor: Color(0xFF10B981),
+                          SnackBar(
+                            content: Text('photo_attached_successfully'.tr(context)),
+                            backgroundColor: const Color(0xFF10B981),
                           ),
                         );
                       },
@@ -251,13 +265,13 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                           border: Border.all(
                               color: const Color(0xFF2563EB), width: 1.5),
                         ),
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_a_photo_outlined,
                                 color: Color(0xFF2563EB), size: 22),
                             SizedBox(height: 4),
-                            Text('Add Photo',
+                            Text('add_photo'.tr(context),
                                 style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
@@ -270,11 +284,11 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Customer Signature Placeholder Card
               _buildCardSection(
-                title: 'Customer Sign-off Signature',
+                title: 'customer_sign_off_signature'.tr(context),
                 child: Container(
                   height: 100,
                   width: double.infinity,
@@ -283,7 +297,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFCBD5E1)),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -291,7 +305,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                             color: Color(0xFF94A3B8), size: 22),
                         SizedBox(width: 8),
                         Text(
-                          'Customer Signature Verified (Sunil V.)',
+                          'customer_signature_verified'.tr(context),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -304,35 +318,35 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Completion Notes
               _buildCardSection(
-                title: 'Completion Report Remarks',
+                title: 'completion_report_remarks'.tr(context),
                 child: TextField(
                   controller: _completionNotesController,
                   maxLines: 2,
                   decoration: InputDecoration(
-                    hintText: 'Final remarks on work done...',
+                    hintText: 'final_remarks_hint'.tr(context),
                     hintStyle:
-                        const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                        TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
-                    contentPadding: const EdgeInsets.all(12),
+                    contentPadding: EdgeInsets.all(12),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      borderSide: BorderSide(color: Color(0xFFE2E8F0)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide:
-                          const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                          BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Mark Job Completed Button
               SizedBox(
@@ -350,13 +364,13 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.task_alt_rounded, size: 24),
                       SizedBox(width: 8),
                       Text(
-                        'Submit Final Invoice & Finish',
+                        'submit_final_invoice'.tr(context),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -367,7 +381,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -380,7 +394,7 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
     required Widget child,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -398,13 +412,13 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Color(0xFF0F172A),
             ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           child,
         ],
       ),
@@ -420,39 +434,39 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               width: 80,
               height: 80,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Color(0xFFD1FAE5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.stars_rounded,
                 size: 52,
                 color: Color(0xFF10B981),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              '₹ 1,200 Earned!',
+            SizedBox(height: 20),
+            Text(
+              'mock_earned_amount'.tr(context),
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF10B981),
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Payment credited to Ally Wallet.',
+            SizedBox(height: 6),
+            Text(
+              'payment_credited_to_wallet'.tr(context),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
                 color: Color(0xFF64748B),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -468,8 +482,8 @@ class _WorkerCompleteWorkScreenState extends State<WorkerCompleteWorkScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Back to Partner Dashboard',
+                child: Text(
+                  'back_to_partner_dashboard'.tr(context),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/negotiation_chat/negotiation_chat_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerNegotiationChatScreen extends StatefulWidget {
   const WorkerNegotiationChatScreen({super.key});
@@ -88,21 +90,21 @@ class _WorkerNegotiationChatScreenState
               ),
             ),
             const SizedBox(width: 10),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Pooja Sharma',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF0F172A),
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
-                  'Online • Quote #Q-4902',
-                  style: TextStyle(
+                  'online_quote'.tr(context),
+                  style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF10B981),
                     fontWeight: FontWeight.w600,
@@ -121,6 +123,11 @@ class _WorkerNegotiationChatScreenState
                   context, '/worker/inspection/revised-quotation');
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
         ],
       ),
       body: SafeArea(
@@ -133,21 +140,21 @@ class _WorkerNegotiationChatScreenState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Original Quote: ₹ 1,298',
-                        style: TextStyle(
+                        'original_quote_amount'.tr(context),
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF475569),
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Status: Negotiation In Progress',
-                        style: TextStyle(
+                        'negotiation_in_progress'.tr(context),
+                        style: const TextStyle(
                           fontSize: 11,
                           color: Color(0xFF2563EB),
                           fontWeight: FontWeight.w600,
@@ -170,10 +177,9 @@ class _WorkerNegotiationChatScreenState
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Revise Quote',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    child: Text(
+                      'revise_quote'.tr(context),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],
@@ -281,9 +287,9 @@ class _WorkerNegotiationChatScreenState
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Row(
                 children: [
-                  _buildQuickReplyChip('I can offer ₹100 discount'),
-                  _buildQuickReplyChip('Parts price is non-negotiable'),
-                  _buildQuickReplyChip('Sending revised quote now'),
+                  _buildQuickReplyChip('quick_reply_offer_100'.tr(context)),
+                  _buildQuickReplyChip('quick_reply_parts_non_neg'.tr(context)),
+                  _buildQuickReplyChip('quick_reply_sending_revised'.tr(context)),
                 ],
               ),
             ),
@@ -298,7 +304,7 @@ class _WorkerNegotiationChatScreenState
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Type your message...',
+                        hintText: 'type_your_message'.tr(context),
                         hintStyle: const TextStyle(
                             color: Color(0xFF94A3B8), fontSize: 14),
                         filled: true,

@@ -9,6 +9,7 @@ import '../../shared/cards/service_card.dart';
 import '../../shared/utils/category_helper.dart';
 import '../../shared/modals/service_filter_modal.dart';
 import '../../shared/widgets/active_filter_chips_bar.dart';
+import '../../l10n/app_translations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -241,12 +242,12 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         titleSpacing: 0,
         title: Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: EdgeInsets.only(right: 16.0),
           child: Container(
             height: 44,
             decoration: BoxDecoration(
@@ -258,14 +259,14 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               autofocus: true,
               onChanged: _onSearchChanged,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               decoration: InputDecoration(
                 hintText: 'Search services, e.g. Fan, Tap, Cleaning...',
-                hintStyle: const TextStyle(fontSize: 13),
-                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
+                hintStyle: TextStyle(fontSize: 13),
+                prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary, size: 20),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.cancel_rounded, size: 18),
+                        icon: Icon(Icons.cancel_rounded, size: 18),
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -274,7 +275,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     : null,
                 border: InputBorder.none,
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                contentPadding: EdgeInsets.symmetric(vertical: 12),
               ),
             ),
           ),
@@ -285,19 +286,19 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             if (_isSearching)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: AppDimensions.sm),
+                padding: EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: AppDimensions.sm),
                 color: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       '$_totalResults Services Found',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                     ),
                     IconButton(
                       onPressed: _openFilterModal,
                       icon: Container(
-                        padding: const EdgeInsets.all(6),
+                        padding: EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: _filterData.hasActiveFilters
                               ? AppColors.primary.withValues(alpha: 0.15)
@@ -308,9 +309,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Row(
                           children: [
                             Icon(Icons.tune_rounded, size: 16, color: _filterData.hasActiveFilters ? AppColors.primary : AppColors.textPrimary),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Filter & Sort',
+                            SizedBox(width: 4),
+                            Text('filter_sort'.tr(context),
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -330,7 +330,7 @@ class _SearchScreenState extends State<SearchScreen> {
               onRemoveFilter: _removeFilter,
               onClearAll: _clearAllFilters,
             ),
-            if (_isSearching) const Divider(height: 1, thickness: 1, color: AppColors.divider),
+            if (_isSearching) Divider(height: 1, thickness: 1, color: AppColors.divider),
             Expanded(
               child: _isSearching ? _buildSearchResultsView() : _buildInitialSearchSuggestions(),
             ),
@@ -343,7 +343,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildInitialSearchSuggestions() {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: EdgeInsets.all(AppDimensions.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -352,53 +352,50 @@ class _SearchScreenState extends State<SearchScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Recent Searches',
+                Text('recent_searches'.tr(context),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 GestureDetector(
                   onTap: () => setState(() => _recentSearches.clear()),
-                  child: const Text(
-                    'Clear History',
+                  child: Text('clear_history'.tr(context),
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.error),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Column(
               children: _recentSearches.map((term) {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   dense: true,
-                  leading: const Icon(Icons.history_rounded, color: AppColors.textHint, size: 20),
-                  title: Text(term, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                  trailing: const Icon(Icons.north_west_rounded, color: AppColors.textHint, size: 16),
+                  leading: Icon(Icons.history_rounded, color: AppColors.textHint, size: 20),
+                  title: Text(term, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  trailing: Icon(Icons.north_west_rounded, color: AppColors.textHint, size: 16),
                   onTap: () => _onSelectSearchTerm(term),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
 
           // Popular Searches
-          const Text(
-            'Popular Searches 🔥',
+          Text('popular_searches'.tr(context),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: _popularSearches.map((term) {
               return ActionChip(
                 label: Text(term),
-                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                labelStyle: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 backgroundColor: const Color(0xFFF1F5F9),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  side: const BorderSide(color: Colors.transparent),
+                  side: BorderSide(color: Colors.transparent),
                 ),
                 onPressed: () => _onSelectSearchTerm(term),
               );
@@ -424,10 +421,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
     return ListView.separated(
       controller: _scrollController,
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: EdgeInsets.all(AppDimensions.md),
       physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       itemCount: _searchResults.length + (_hasMorePages ? 1 : 0),
-      separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.sm),
+      separatorBuilder: (_, __) => SizedBox(height: AppDimensions.sm),
       itemBuilder: (context, index) {
         if (index == _searchResults.length) {
           return _buildPaginationLoader();
@@ -471,9 +468,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSkeletonList() {
     return ListView.separated(
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: EdgeInsets.all(AppDimensions.md),
       itemCount: 6,
-      separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.sm),
+      separatorBuilder: (_, __) => SizedBox(height: AppDimensions.sm),
       itemBuilder: (_, __) => Container(
         height: 88,
         decoration: BoxDecoration(
@@ -482,7 +479,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         child: Row(
           children: [
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Container(
               width: 64,
               height: 64,
@@ -491,16 +488,16 @@ class _SearchScreenState extends State<SearchScreen> {
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(width: 80, height: 10, color: Colors.grey.shade200),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(width: 140, height: 14, color: Colors.grey.shade200),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(width: 100, height: 12, color: Colors.grey.shade200),
                 ],
               ),
@@ -513,9 +510,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildPaginationLoader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: 16),
       alignment: Alignment.center,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
@@ -524,8 +521,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
           ),
           SizedBox(width: 10),
-          Text(
-            'Loading more matches...',
+          Text('loading_more_matches'.tr(context),
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
@@ -540,30 +536,29 @@ class _SearchScreenState extends State<SearchScreen> {
         height: MediaQuery.of(context).size.height * 0.6,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
-                const SizedBox(height: 16),
-                const Text(
-                  'Search Failed',
+                Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
+                SizedBox(height: 16),
+                Text('search_failed'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _errorMessage ?? 'Unable to fetch search results.',
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => _performSearch(query: _currentQuery, page: 1),
-                  icon: const Icon(Icons.refresh_rounded, size: 18),
-                  label: const Text('Try Again'),
+                  icon: Icon(Icons.refresh_rounded, size: 18),
+                  label: Text('try_again'.tr(context)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                   ),
                 ),
@@ -582,32 +577,30 @@ class _SearchScreenState extends State<SearchScreen> {
         height: MediaQuery.of(context).size.height * 0.6,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.search_off_rounded, size: 72, color: AppColors.textHint),
-                const SizedBox(height: 16),
-                const Text(
-                  'No matching services found',
+                Icon(Icons.search_off_rounded, size: 72, color: AppColors.textHint),
+                SizedBox(height: 16),
+                Text('no_matching_services_found_2'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'We couldn\'t find any matches for "$_currentQuery". Try clearing your active filters or searching for another term.',
+                SizedBox(height: 8),
+                Text('we_couldn'.tr(context)t find any matches for "$_currentQuery". Try clearing your active filters or searching for another term.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                 ),
                 if (_filterData.hasActiveFilters) ...[
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _clearAllFilters,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                     ),
-                    child: const Text('Clear All Filters'),
+                    child: Text('clear_all_filters'.tr(context)),
                   ),
                 ],
               ],

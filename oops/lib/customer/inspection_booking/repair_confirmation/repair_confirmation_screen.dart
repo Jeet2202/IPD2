@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class RepairConfirmationScreen extends StatelessWidget {
   const RepairConfirmationScreen({super.key});
@@ -13,8 +14,7 @@ class RepairConfirmationScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Repair Confirmed',
+        title: Text('repair_confirmed'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -22,42 +22,40 @@ class RepairConfirmationScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               // ── Hero Celebration Icon ─────────────────────────────────
               Container(
                 width: 80,
                 height: 80,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Color(0xFFDCFCE7),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle_rounded, size: 54, color: Color(0xFF16A34A)),
+                child: Icon(Icons.check_circle_rounded, size: 54, color: Color(0xFF16A34A)),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
-              const Text(
-                'Quotation Approved!',
+              Text('quotation_approved'.tr(context),
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), letterSpacing: -0.4),
               ),
 
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
 
-              const Text(
-                'Sunil Verma has received your approval and is starting repair work on-site immediately.',
+              Text('sunil_verma_has_received_your'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Summary Card ───────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -68,63 +66,63 @@ class RepairConfirmationScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Booking ID', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
-                        Text('#REP-94812', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                        Text('booking_id'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+                        Text('rep94812'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 12),
 
                     Row(
                       children: [
                         Container(
                           width: 44,
                           height: 44,
-                          decoration: const BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
-                          child: const Icon(Icons.engineering_rounded, color: Color(0xFF2563EB), size: 24),
+                          decoration: BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
+                          child: Icon(Icons.engineering_rounded, color: Color(0xFF2563EB), size: 24),
                         ),
-                        const SizedBox(width: 12),
-                        const Expanded(
+                        SizedBox(width: 12),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Sunil Verma', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              Text('sunil_verma'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                               SizedBox(height: 2),
-                              Text('Senior Electrical Technician', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                              Text('senior_electrical_technician'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                             ],
                           ),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 16),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 16),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 12),
 
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Agreed Total:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                        Text('₹4,850.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                        Text('agreed_total'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                        Text('485000'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                       ],
                     ),
-                    const SizedBox(height: 6),
-                    const Row(
+                    SizedBox(height: 6),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Est. Work Duration:', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                        Text('~45 Minutes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                        Text('est_work_duration'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                        Text('45_minutes'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                       ],
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Action Buttons ─────────────────────────────────────
               SizedBox(
@@ -132,8 +130,8 @@ class RepairConfirmationScreen extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.repairTracking),
-                  icon: const Icon(Icons.speed_rounded, size: 20),
-                  label: const Text('Track Live Repair Progress', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.speed_rounded, size: 20),
+                  label: Text('track_live_repair_progress'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
@@ -143,7 +141,7 @@ class RepairConfirmationScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               SizedBox(
                 width: double.infinity,
@@ -152,14 +150,14 @@ class RepairConfirmationScreen extends StatelessWidget {
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingDetails),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF64748B),
-                    side: const BorderSide(color: Color(0xFFCBD5E1)),
+                    side: BorderSide(color: Color(0xFFCBD5E1)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text('View Booking Summary', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  child: Text('view_booking_summary'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

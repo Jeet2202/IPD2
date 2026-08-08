@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../l10n/app_translations.dart';
 
 class OffersScreen extends StatefulWidget {
   const OffersScreen({super.key});
@@ -49,11 +50,10 @@ class _OffersScreenState extends State<OffersScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Offers & Coupons',
+        title: Text('offers_coupons'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -61,13 +61,13 @@ class _OffersScreenState extends State<OffersScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Search Coupon Input ──────────────────────────────────
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -75,9 +75,9 @@ class _OffersScreenState extends State<OffersScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.confirmation_number_outlined, color: Color(0xFF2563EB)),
-                    const SizedBox(width: 12),
-                    const Expanded(
+                    Icon(Icons.confirmation_number_outlined, color: Color(0xFF2563EB)),
+                    SizedBox(width: 12),
+                    Expanded(
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Enter coupon promo code...',
@@ -89,16 +89,16 @@ class _OffersScreenState extends State<OffersScreen> {
                     TextButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Promo code applied successfully! 🎉'), backgroundColor: Color(0xFF16A34A)),
+                          const SnackBar(content: Text('promo_code_applied_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                         );
                       },
-                      child: const Text('APPLY', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+                      child: Text('apply'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // ── Categories ──────────────────────────────────────────
               SizedBox(
@@ -110,7 +110,7 @@ class _OffersScreenState extends State<OffersScreen> {
                     final cat = _categories[index];
                     final isSelected = _selectedCategory == cat;
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: EdgeInsets.only(right: 8.0),
                       child: ChoiceChip(
                         label: Text(cat),
                         selected: isSelected,
@@ -126,13 +126,13 @@ class _OffersScreenState extends State<OffersScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Offer Cards ─────────────────────────────────────────
               Column(
                 children: _offers.map((offer) {
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 20),
+                    margin: EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24),
@@ -145,7 +145,7 @@ class _OffersScreenState extends State<OffersScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: (offer['color'] as Color).withOpacity(0.08),
                             borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
@@ -154,30 +154,30 @@ class _OffersScreenState extends State<OffersScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(offer['tag'] as String, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: offer['color'] as Color)),
-                              Text(offer['valid'] as String, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                              Text(offer['valid'] as String, style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                             ],
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(18),
+                          padding: EdgeInsets.all(18),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(offer['title'] as String, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                              const SizedBox(height: 4),
-                              Text(offer['desc'] as String, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
-                              const SizedBox(height: 16),
+                              Text(offer['title'] as String, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                              SizedBox(height: 4),
+                              Text(offer['desc'] as String, style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
+                              SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFF1F5F9),
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid),
                                     ),
-                                    child: Text(offer['code'] as String, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1, color: Color(0xFF0F172A))),
+                                    child: Text(offer['code'] as String, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1, color: Color(0xFF0F172A))),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -192,7 +192,7 @@ class _OffersScreenState extends State<OffersScreen> {
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     ),
-                                    child: const Text('Apply Offer', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                                    child: Text('apply_offer'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                                   ),
                                 ],
                               ),
@@ -205,7 +205,7 @@ class _OffersScreenState extends State<OffersScreen> {
                 }).toList(),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

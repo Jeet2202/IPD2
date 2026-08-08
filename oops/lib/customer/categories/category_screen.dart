@@ -9,6 +9,7 @@ import '../../shared/cards/service_card.dart';
 import '../../shared/modals/service_filter_modal.dart';
 import '../../shared/utils/category_helper.dart';
 import '../../shared/widgets/active_filter_chips_bar.dart';
+import '../../l10n/app_translations.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String categoryId;
@@ -456,13 +457,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
               child: const Icon(Icons.inventory_2_outlined, size: 48, color: Color(0xFF2563EB)),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No Matching Services Found',
+            Text('no_matching_services_found'.tr(context),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'No services match your active filter criteria under this category.',
+            Text('no_services_match_your_active'.tr(context),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
@@ -475,7 +474,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Clear All Filters'),
+                child: Text('clear_all_filters'.tr(context)),
               ),
             ],
           ],
@@ -493,8 +492,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFEF4444)),
             const SizedBox(height: 12),
-            const Text(
-              'Unable to Load Category Services',
+            Text('unable_to_load_category_services'.tr(context),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
             ),
             const SizedBox(height: 6),
@@ -507,7 +505,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ElevatedButton.icon(
               onPressed: _initialLoad,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Try Again'),
+              label: Text('try_again'.tr(context)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,

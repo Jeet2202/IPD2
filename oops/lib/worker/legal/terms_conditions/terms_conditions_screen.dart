@@ -1,6 +1,8 @@
 // File: lib/worker/legal/terms_conditions/terms_conditions_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerTermsConditionsScreen extends StatelessWidget {
   const WorkerTermsConditionsScreen({super.key});
@@ -9,11 +11,11 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Worker Terms & Conditions',
+        title: Text(
+          'worker_terms_conditions'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -21,32 +23,38 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                             color: const Color(0xFF2563EB).withOpacity(0.2)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(Icons.gavel_rounded,
                               color: Color(0xFF2563EB), size: 20),
                           SizedBox(width: 10),
                           Text(
-                            'Last Updated: July 1, 2026 • Version 1.4',
+                            'last_updated_terms'.tr(context),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -57,35 +65,30 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     _buildLegalSection(
-                      title: '1. Partner Registration & KYC Verification',
-                      content:
-                          'All service partners must upload valid government identity proof (Aadhaar Card & PAN Card) along with trade skill certifications. Account activation is contingent on background verification.',
+                      title: 'term1_title'.tr(context),
+                      content: 'term1_content'.tr(context),
                     ),
                     _buildLegalSection(
-                      title: '2. Inspection & Quotation Standards',
-                      content:
-                          'When accepting pre-repair inspection jobs, partners must conduct honest diagnostics, generate itemized quotations using the Ally app, and strictly honor approved estimates.',
+                      title: 'term2_title'.tr(context),
+                      content: 'term2_content'.tr(context),
                     ),
                     _buildLegalSection(
-                      title: '3. Payments & Weekly Escrow Settlements',
-                      content:
-                          'Payments for completed jobs are credited to Ally wallet upon customer sign-off. Weekly payouts are processed every Monday directly to registered bank accounts.',
+                      title: 'term3_title'.tr(context),
+                      content: 'term3_content'.tr(context),
                     ),
                     _buildLegalSection(
-                      title: '4. Code of Conduct & Customer Safety',
-                      content:
-                          'Partners must maintain professional decorum, arrive punctually at customer premises, wear proper safety gear, and adhere to Ally safety protocols.',
+                      title: 'term4_title'.tr(context),
+                      content: 'term4_content'.tr(context),
                     ),
                     _buildLegalSection(
-                      title: '5. Cancellation & Deactivation Policy',
-                      content:
-                          'Repeated job cancellations after acceptance (>5% cancellation rate) or customer safety violations will result in temporary suspension or permanent account deactivation.',
+                      title: 'term5_title'.tr(context),
+                      content: 'term5_content'.tr(context),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -93,8 +96,8 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
 
             // Accept & Download Buttons Bar
             Container(
-              padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
-              decoration: const BoxDecoration(
+              padding: EdgeInsets.fromLTRB(24, 14, 24, 24),
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
                   top: BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
@@ -106,25 +109,25 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Downloading Terms PDF...'),
-                            backgroundColor: Color(0xFF2563EB),
+                          SnackBar(
+                            content: Text('downloading_terms_pdf'.tr(context)),
+                            backgroundColor: const Color(0xFF2563EB),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.download_rounded, size: 16),
-                      label: const Text('Download PDF'),
+                      icon: Icon(Icons.download_rounded, size: 16),
+                      label: Text('download_pdf'.tr(context)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2563EB),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFF2563EB)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
@@ -132,13 +135,13 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: const Text(
-                        'I Accept Terms',
+                      child: Text(
+                        'i_accept_terms'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -157,8 +160,8 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
 
   Widget _buildLegalSection({required String title, required String content}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(18),
@@ -169,16 +172,16 @@ class WorkerTermsConditionsScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: Color(0xFF0F172A),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: Color(0xFF475569),
               height: 1.5,

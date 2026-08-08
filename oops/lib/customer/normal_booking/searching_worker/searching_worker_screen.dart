@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class SearchingWorkerScreen extends StatefulWidget {
   const SearchingWorkerScreen({super.key});
@@ -40,12 +41,11 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text(
-          'Finding Professional',
+        title: Text('finding_professional'.tr(context),
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
       ),
@@ -55,11 +55,11 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Animated Radar / Pulse Graphic ──────────────────
                     AnimatedBuilder(
@@ -111,18 +111,17 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
                                   ),
                                 ],
                               ),
-                              child: const Icon(Icons.search_rounded, color: Colors.white, size: 44),
+                              child: Icon(Icons.search_rounded, color: Colors.white, size: 44),
                             ),
                           ],
                         );
                       },
                     ),
 
-                    const SizedBox(height: 36),
+                    SizedBox(height: 36),
 
                     // ── Title & Subtitle ──────────────────────────────
-                    const Text(
-                      'Finding the Best Professional',
+                    Text('finding_the_best_professional'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22,
@@ -131,18 +130,17 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'We are notifying top-rated electricians near HSR Layout Sector 6...',
+                    SizedBox(height: 8),
+                    Text('we_are_notifying_toprated_electricians'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4),
                     ),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
 
                     // ── Live Search Checklist Card ─────────────────────
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(24),
@@ -151,27 +149,27 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
                       child: Column(
                         children: [
                           _buildStatusItem(title: 'Searching nearby professionals', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Matching required electrical skills', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Checking time slot availability', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Assigning nearest verified worker', isDone: false, isCurrent: true),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
 
                     // ── Estimated Waiting Timer Badge ──────────────────
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: const Color(0xFFBFDBFE)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
@@ -183,15 +181,14 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
                             ),
                           ),
                           SizedBox(width: 10),
-                          Text(
-                            'Est. Waiting Time: ~01:30 mins',
+                          Text('est_waiting_time_0130_mins'.tr(context),
                             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -199,18 +196,17 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
 
             // ── Bottom Cancel Button ──────────────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 10, 24, 20),
+              padding: EdgeInsets.fromLTRB(24, 10, 24, 20),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+                    side: BorderSide(color: Color(0xFFEF4444), width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    'Cancel Search',
+                  child: Text('cancel_search'.tr(context),
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFFEF4444)),
                   ),
                 ),
@@ -236,9 +232,9 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
           ),
           child: Center(
             child: isDone
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                ? Icon(Icons.check_rounded, color: Colors.white, size: 16)
                 : (isCurrent
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 12,
                         height: 12,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
@@ -246,7 +242,7 @@ class _SearchingWorkerScreenState extends State<SearchingWorkerScreen> with Sing
                     : null),
           ),
         ),
-        const SizedBox(width: 14),
+        SizedBox(width: 14),
         Expanded(
           child: Text(
             title,

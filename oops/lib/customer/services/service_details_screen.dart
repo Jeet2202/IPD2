@@ -8,6 +8,7 @@ import '../../models/service_model.dart';
 import '../../services/api_service.dart';
 import '../../shared/cards/service_card.dart';
 import '../../shared/utils/category_helper.dart';
+import '../../l10n/app_translations.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
   final String? serviceId;
@@ -126,7 +127,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -143,30 +144,30 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                   size: 24,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 isInspection ? 'Request Inspection (Phase 5)' : 'Book Service (Phase 5)',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 isInspection
                     ? 'In Phase 5, an expert will visit your doorstep for an on-site inspection and provide an exact job quote.'
                     : 'In Phase 5, you will be able to select your preferred date, time slot, address, and place a direct booking.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, height: 1.5),
+                style: TextStyle(fontSize: 13, height: 1.5),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                   ),
-                  child: const Text('Got It', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  child: Text('got_it'.tr(context), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
               ),
             ],
@@ -231,12 +232,12 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 iconColor: _isBookmarked ? AppColors.primary : AppColors.textPrimary,
                                 onTap: () => setState(() => _isBookmarked = !_isBookmarked),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10),
                               _buildCircleIconButton(
                                 icon: Icons.share_outlined,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Service link copied to clipboard')),
+                                    const SnackBar(content: Text('service_link_copied_to_clipboard'.tr(context))),
                                   );
                                 },
                               ),
@@ -250,7 +251,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
                 // Main Details Container
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -258,30 +259,29 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: const Color(0xFFEFF6FF),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               service.categorySlug.replaceAll('-', ' ').toUpperCase(),
-                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
+                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primary),
                             ),
                           ),
                           if (service.isFeatured) ...[
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFEF3C7),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Row(
+                              child: Row(
                                 children: [
                                   Icon(Icons.star_rounded, size: 12, color: Color(0xFFD97706)),
                                   SizedBox(width: 3),
-                                  Text(
-                                    'FEATURED',
+                                  Text('featured'.tr(context),
                                     style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFD97706)),
                                   ),
                                 ],
@@ -290,41 +290,41 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
 
                       // Service Title
                       Text(
                         service.name,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
                       ),
                       if (service.shortDescription.isNotEmpty) ...[
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Text(
                           service.shortDescription,
-                          style: const TextStyle(fontSize: 14, height: 1.4),
+                          style: TextStyle(fontSize: 14, height: 1.4),
                         ),
                       ],
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       // Rating & Reviews Stats Row
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded, size: 18, color: Color(0xFFFBBF24)),
-                          const SizedBox(width: 4),
-                          Text('${service.rating}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
-                          Text(' (${service.reviewCount} reviews)', style: const TextStyle(fontSize: 12)),
-                          const SizedBox(width: 16),
-                          Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFFCBD5E1), shape: BoxShape.circle)),
-                          const SizedBox(width: 16),
-                          const Text('Verified Pros', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
+                          Icon(Icons.star_rounded, size: 18, color: Color(0xFFFBBF24)),
+                          SizedBox(width: 4),
+                          Text('${service.rating}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                          Text(' (${service.reviewCount} reviews)', style: TextStyle(fontSize: 12)),
+                          SizedBox(width: 16),
+                          Container(width: 4, height: 4, decoration: BoxDecoration(color: Color(0xFFCBD5E1), shape: BoxShape.circle)),
+                          SizedBox(width: 16),
+                          Text('verified_pros'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF10B981))),
                         ],
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       // Price & Duration Banner Card
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(16),
@@ -338,40 +338,39 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Base Market Price', style: TextStyle(fontSize: 12)),
-                                    const SizedBox(height: 2),
+                                    Text('base_market_price'.tr(context), style: TextStyle(fontSize: 12)),
+                                    SizedBox(height: 2),
                                     Text(
                                       priceDisplay,
-                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.primary),
+                                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.primary),
                                     ),
                                   ],
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const Text('Est. Duration', style: TextStyle(fontSize: 12)),
-                                    const SizedBox(height: 4),
+                                    Text('est_duration'.tr(context), style: TextStyle(fontSize: 12)),
+                                    SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(Icons.schedule_rounded, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(durationDisplay, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                                        Icon(Icons.schedule_rounded, size: 16),
+                                        SizedBox(width: 4),
+                                        Text(durationDisplay, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                                       ],
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-                            const Divider(height: 1, color: AppColors.divider),
-                            const SizedBox(height: 8),
-                            const Row(
+                            SizedBox(height: 10),
+                            Divider(height: 1, color: AppColors.divider),
+                            SizedBox(height: 8),
+                            Row(
                               children: [
                                 Icon(Icons.info_outline_rounded, size: 14, color: AppColors.textHint),
                                 SizedBox(width: 6),
                                 Expanded(
-                                  child: Text(
-                                    'Final price may vary depending on actual work required.',
+                                  child: Text('final_price_may_vary_depending_2'.tr(context),
                                     style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
                                   ),
                                 ),
@@ -381,87 +380,87 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
                       // About Service Section
                       if (service.description.isNotEmpty) ...[
                         _buildSectionTitle('About Service'),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           service.description,
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.6),
+                          style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.6),
                         ),
-                        const SizedBox(height: 28),
+                        SizedBox(height: 28),
                       ],
 
                       // What's Included
                       _buildSectionTitle('What\'s Included'),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Column(
                         children: service.whatsIncluded.map((item) {
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
+                            padding: EdgeInsets.only(bottom: 10.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  margin: const EdgeInsets.only(top: 2),
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
-                                  child: const Icon(Icons.check_rounded, size: 14, color: Color(0xFF16A34A)),
+                                  margin: EdgeInsets.only(top: 2),
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
+                                  child: Icon(Icons.check_rounded, size: 14, color: Color(0xFF16A34A)),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF334155), height: 1.4))),
+                                SizedBox(width: 12),
+                                Expanded(child: Text(item, style: TextStyle(fontSize: 14, color: Color(0xFF334155), height: 1.4))),
                               ],
                             ),
                           );
                         }).toList(),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // What's Not Included
                       _buildSectionTitle('What\'s Not Included'),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       Column(
                         children: service.whatsNotIncluded.map((item) {
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
+                            padding: EdgeInsets.only(bottom: 10.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  margin: const EdgeInsets.only(top: 2),
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(color: Color(0xFFFEE2E2), shape: BoxShape.circle),
-                                  child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFDC2626)),
+                                  margin: EdgeInsets.only(top: 2),
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(color: Color(0xFFFEE2E2), shape: BoxShape.circle),
+                                  child: Icon(Icons.close_rounded, size: 14, color: Color(0xFFDC2626)),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(child: Text(item, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4))),
+                                SizedBox(width: 12),
+                                Expanded(child: Text(item, style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4))),
                               ],
                             ),
                           );
                         }).toList(),
                       ),
 
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
                       // Trust & Assurance Section
                       _buildSectionTitle('Why Choose Ally?'),
-                      const SizedBox(height: 14),
+                      SizedBox(height: 14),
                       _buildTrustCard(Icons.shield_rounded, '30-Day Service Guarantee', 'Free re-service if any issue recurs within 30 days.'),
                       _buildTrustCard(Icons.verified_user_rounded, 'Background Verified Pros', 'Every professional is ID verified and skill-certified.'),
                       _buildTrustCard(Icons.receipt_long_rounded, 'Transparent Rate Card', 'No hidden charges. Standardized rate card upfront.'),
 
                       // Related Services
                       if (_relatedServices.isNotEmpty) ...[
-                        const SizedBox(height: 28),
+                        SizedBox(height: 28),
                         _buildSectionTitle('Related Services'),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Column(
                           children: _relatedServices.map((relSrv) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
+                              padding: EdgeInsets.only(bottom: 12),
                               child: ServiceCard(
                                 title: relSrv.name,
                                 category: relSrv.categorySlug.replaceAll('-', ' '),
@@ -486,7 +485,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                         ),
                       ],
 
-                      const SizedBox(height: 140), // Spacing for sticky bottom CTA
+                      SizedBox(height: 140), // Spacing for sticky bottom CTA
                     ],
                   ),
                 ),
@@ -500,7 +499,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -534,8 +533,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                       ),
-                      child: const Text(
-                        'Book Service',
+                      child: Text('book_service'.tr(context),
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -568,7 +566,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.all(28),
+          padding: EdgeInsets.all(28),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.15),
             shape: BoxShape.circle,
@@ -585,8 +583,8 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
 
   Widget _buildTrustCard(IconData icon, String title, String subtitle) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
@@ -595,21 +593,21 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.primary, size: 22),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12)),
+                Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                SizedBox(height: 2),
+                Text(subtitle, style: TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -621,7 +619,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.4),
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.4),
     );
   }
 
@@ -633,7 +631,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
@@ -649,16 +647,16 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   Widget _buildSkeletonLoader() {
     return Scaffold(      appBar: AppBar(backgroundColor: Colors.white, elevation: 0.5),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(height: 200, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(16))),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Container(height: 24, width: 180, color: Colors.grey.shade200),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(height: 16, width: 280, color: Colors.grey.shade200),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Container(height: 80, decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(16))),
           ],
         ),
@@ -671,23 +669,23 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
       appBar: AppBar(title: Text(widget.serviceTitle)),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
-              const SizedBox(height: 16),
-              const Text('Failed to load service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(_errorMessage ?? 'Unexpected error', textAlign: TextAlign.center, style: const TextStyle()),
-              const SizedBox(height: 20),
+              Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
+              SizedBox(height: 16),
+              Text('failed_to_load_service'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              Text(_errorMessage ?? 'Unexpected error', textAlign: TextAlign.center, style: TextStyle()),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_resolvedServiceId != null) {
                     _fetchServiceDetails(_resolvedServiceId!);
                   }
                 },
-                child: const Text('Try Again'),
+                child: Text('try_again'.tr(context)),
               ),
             ],
           ),

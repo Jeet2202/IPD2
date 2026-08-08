@@ -98,8 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
           },
         ),
-        title: Text(
-          'profile'.tr(context),
+        title: Text('profile'.tr(context).tr(context),
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -301,8 +300,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
             const Divider(color: Colors.white24, height: 1),
             const SizedBox(height: 12),
-            const Text(
-              'Suggestions to reach 100%:',
+            Text('suggestions_to_reach_100'.tr(context),
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 6),
@@ -349,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('customer_profile'.tr(context), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          Text('customerprofile'.tr(context).tr(context), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 16),
           _InfoRow(icon: Icons.phone_android_rounded, label: 'alternate_phone'.tr(context), value: altPhone),
           const SizedBox(height: 12),
@@ -459,14 +457,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             const Icon(Icons.cloud_off_rounded, size: 64, color: Color(0xFF94A3B8)),
             const SizedBox(height: 16),
-            const Text('Failed to load profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+            Text('failed_to_load_profile'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Text(_errorMessage ?? 'Network error', textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _loadProfile,
               icon: const Icon(Icons.refresh_rounded),
-              label: Text('retry'.tr(context)),
+              label: Text('retry_2'.tr(context).tr(context)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
@@ -484,12 +482,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('confirm_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
-        content: Text('confirm_logout'.tr(context)),
+        title: Text('confirmlogout'.tr(context).tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
+        content: Text('confirmlogout'.tr(context).tr(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('cancel'.tr(context), style: const TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel_2'.tr(context).tr(context), style: const TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -504,7 +502,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text('yes_logout'.tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
+            child: Text('yeslogout'.tr(context).tr(context), style: const TextStyle(fontWeight: FontWeight.w800)),
           ),
         ],
       ),

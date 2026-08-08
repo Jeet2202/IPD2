@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class RepairTrackingScreen extends StatelessWidget {
   const RepairTrackingScreen({super.key});
@@ -13,11 +14,10 @@ class RepairTrackingScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Live Repair Progress',
+        title: Text('live_repair_progress'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -25,13 +25,13 @@ class RepairTrackingScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Active Status Highlight ──────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -46,18 +46,18 @@ class RepairTrackingScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                      child: const Icon(Icons.build_circle_rounded, color: Colors.white, size: 32),
+                      child: Icon(Icons.build_circle_rounded, color: Colors.white, size: 32),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('REPAIR IN PROGRESS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                          Text('repair_in_progress'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                           SizedBox(height: 2),
-                          Text('Replacing 32A MCB (~65%)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
+                          Text('replacing_32a_mcb_65'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
                         ],
                       ),
                     ),
@@ -65,11 +65,11 @@ class RepairTrackingScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Worker Header ────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -80,37 +80,37 @@ class RepairTrackingScreen extends StatelessWidget {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: const BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
-                      child: const Icon(Icons.engineering_rounded, size: 28, color: Color(0xFF2563EB)),
+                      decoration: BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
+                      child: Icon(Icons.engineering_rounded, size: 28, color: Color(0xFF2563EB)),
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
+                    SizedBox(width: 12),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Sunil Verma', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('sunil_verma'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           SizedBox(height: 2),
-                          Text('Est. 25 Mins Remaining', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                          Text('est_25_mins_remaining'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                         ],
                       ),
                     ),
                     IconButton(
                       icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                        child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                        child: Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                          const SnackBar(content: Text('calling_inspector_sunil_verma_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                         );
                       },
                     ),
                     IconButton(
                       icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                        child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                        child: Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                     ),
@@ -118,25 +118,25 @@ class RepairTrackingScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Repair OTP Card ──────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Completion Verification OTP', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                        Text('completion_verification_otp'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                         SizedBox(height: 2),
-                        Text('8 4 9 2', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), letterSpacing: 4)),
+                        Text('8_4_9_2'.tr(context), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), letterSpacing: 4)),
                       ],
                     ),
                     Icon(Icons.shield_rounded, color: Color(0xFF16A34A), size: 28),
@@ -144,20 +144,20 @@ class RepairTrackingScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Checklist & Progress Timeline ───────────────────────
-              const Text('Active Repair Tasks', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 12),
+              Text('active_repair_tasks'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 12),
 
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
                     _TaskRow(title: 'Inspection & Root Cause', isDone: true),
                     SizedBox(height: 12),
@@ -170,15 +170,15 @@ class RepairTrackingScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionCompleted),
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
-                  label: const Text('Complete Repair & View Summary', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.check_circle_outline_rounded, size: 20),
+                  label: Text('complete_repair_view_summary'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF16A34A),
                     foregroundColor: Colors.white,
@@ -188,7 +188,7 @@ class RepairTrackingScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -217,11 +217,11 @@ class _TaskRow extends StatelessWidget {
           ),
           child: Center(
             child: isDone
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
-                : (isActive ? Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)) : null),
+                ? Icon(Icons.check_rounded, color: Colors.white, size: 14)
+                : (isActive ? Container(width: 6, height: 6, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle)) : null),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Text(
             title,
