@@ -137,11 +137,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,23 +156,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Row(
+              SizedBox(height: 16),
+              Row(
                 children: [
                   Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
                   SizedBox(width: 10),
-                  Text(
-                    'Emergency Assistance',
+                  Text('emergency_assistance'.tr(context),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF991B1B)),
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
-              const Text(
-                'If you are in immediate physical danger, contact emergency services right away.',
+              SizedBox(height: 6),
+              Text('if_you_are_in_immediate'.tr(context),
                 style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               _EmergencyButton(
                 icon: Icons.local_police_rounded,
@@ -181,7 +179,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 color: const Color(0xFF1E3A8A),
                 onTap: () => _makePhoneCall(sos?.policeHelpline ?? '112'),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _EmergencyButton(
                 icon: Icons.female_rounded,
                 title: 'Women Helpline',
@@ -189,7 +187,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 color: const Color(0xFFBE185D),
                 onTap: () => _makePhoneCall(sos?.womenHelpline ?? '1091'),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _EmergencyButton(
                 icon: Icons.medical_services_rounded,
                 title: 'Ambulance',
@@ -197,7 +195,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 color: const Color(0xFFDC2626),
                 onTap: () => _makePhoneCall(sos?.ambulanceHelpline ?? '108'),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         );
@@ -215,7 +213,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -224,38 +222,37 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             }
           },
         ),
-        title: Text(
-          'help_support'.tr(context),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: Text('helpsupport'.tr(context).tr(context),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',
             onPressed: () => LanguageSelectorWidget.show(context),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0F172A)),
+            icon: Icon(Icons.refresh_rounded, color: Color(0xFF0F172A)),
             onPressed: _loadSupportData,
           ),
         ],
       ),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+            ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
             : RefreshIndicator(
                 onRefresh: _loadSupportData,
                 color: const Color(0xFF2563EB),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (_errorMessage != null) ...[
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFEF2F2),
                             borderRadius: BorderRadius.circular(12),
@@ -263,23 +260,23 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626)),
-                              const SizedBox(width: 10),
+                              Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626)),
+                              SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   _errorMessage!,
-                                  style: const TextStyle(fontSize: 12, color: Color(0xFF991B1B)),
+                                  style: TextStyle(fontSize: 12, color: Color(0xFF991B1B)),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                       ],
 
                       // ── Search Help Bar ──────────────────────────────────────
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
@@ -287,8 +284,8 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.search_rounded, color: Color(0xFF2563EB)),
-                            const SizedBox(width: 10),
+                            Icon(Icons.search_rounded, color: Color(0xFF2563EB)),
+                            SizedBox(width: 10),
                             Expanded(
                               child: TextField(
                                 controller: _searchController,
@@ -302,7 +299,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             ),
                             if (_searchController.text.isNotEmpty)
                               IconButton(
-                                icon: const Icon(Icons.clear_rounded, size: 18, color: Color(0xFF94A3B8)),
+                                icon: Icon(Icons.clear_rounded, size: 18, color: Color(0xFF94A3B8)),
                                 onPressed: () {
                                   _searchController.clear();
                                   _onSearchChanged('');
@@ -312,14 +309,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // ── Active Support Ticket Card ───────────────────────────
-                      const Text(
-                        'Support Ticket & Admin Chat',
+                      Text('support_ticket_admin_chat'.tr(context),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       GestureDetector(
                         onTap: () {
@@ -335,7 +331,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(18),
+                          padding: EdgeInsets.all(18),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(22),
@@ -353,7 +349,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           child: Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(10),
+                                padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: ticket != null ? const Color(0xFFDBEAFE) : const Color(0xFFF1F5F9),
                                   shape: BoxShape.circle,
@@ -364,7 +360,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                   size: 22,
                                 ),
                               ),
-                              const SizedBox(width: 14),
+                              SizedBox(width: 14),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,7 +370,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                       children: [
                                         Text(
                                           ticket != null ? '#${ticket.ticketId}' : 'Raise a Complaint / Ticket',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w800,
                                             color: Color(0xFF0F172A),
@@ -382,7 +378,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                         ),
                                         if (ticket != null)
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                             decoration: BoxDecoration(
                                               color: ticket.isOpen ? const Color(0xFFFEF3C7) : const Color(0xFFDCFCE7),
                                               borderRadius: BorderRadius.circular(8),
@@ -398,33 +394,32 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                           ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4),
                                     Text(
                                       ticket != null
                                           ? ticket.subject
                                           : 'Tap here to raise a ticket and chat with Ally support team.',
-                                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                     ),
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF94A3B8)),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF94A3B8)),
                             ],
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // ── Direct Contact Row ───────────────────────────────────
-                      const Text(
-                        'Contact Support 24/7',
+                      Text('contact_support_247'.tr(context),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       Row(
                         children: [
@@ -448,7 +443,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                               },
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: _ContactBox(
                               icon: Icons.call_rounded,
@@ -461,11 +456,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // ── Emergency SOS Banner ──────────────────────────────────
                       Container(
-                        padding: const EdgeInsets.all(18),
+                        padding: EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFEF2F2),
                           borderRadius: BorderRadius.circular(22),
@@ -473,19 +468,17 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
-                            const SizedBox(width: 14),
-                            const Expanded(
+                            Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 28),
+                            SizedBox(width: 14),
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Emergency Safety SOS 🚨',
+                                  Text('emergency_safety_sos'.tr(context),
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B)),
                                   ),
                                   SizedBox(height: 2),
-                                  Text(
-                                    'Immediate assistance for active safety issues.',
+                                  Text('immediate_assistance_for_active_safety'.tr(context),
                                     style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D)),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
@@ -501,33 +494,31 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               ),
-                              child: const Text('SOS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                              child: Text('sos'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                             ),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // ── FAQs List ───────────────────────────────────────────
-                      const Text(
-                        'Frequently Asked Questions',
+                      Text('frequently_asked_questions'.tr(context),
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       if (_filteredFaqs.isEmpty)
                         Container(
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: const Color(0xFFE2E8F0)),
                           ),
-                          child: const Center(
-                            child: Text(
-                              'No FAQs found matching your search.',
+                          child: Center(
+                            child: Text('no_faqs_found_matching_your'.tr(context),
                               style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                             ),
                           ),
@@ -540,24 +531,24 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           itemBuilder: (context, index) {
                             final faq = _filteredFaqs[index];
                             return Container(
-                              margin: const EdgeInsets.only(bottom: 10),
+                              margin: EdgeInsets.only(bottom: 10),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(color: const Color(0xFFE2E8F0)),
                               ),
                               child: ExpansionTile(
-                                shape: const Border(),
+                                shape: Border(),
                                 title: Text(
                                   faq.question,
-                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                                 ),
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                                     child: Text(
                                       faq.answer,
-                                      style: const TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.5),
+                                      style: TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.5),
                                     ),
                                   ),
                                 ],
@@ -566,7 +557,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           },
                         ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -606,24 +597,24 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: const Color(0xFF2563EB),
           unselectedItemColor: const Color(0xFF94A3B8),
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
           elevation: 0,
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home_rounded),
+              icon: Icon(Icons.home_rounded),
               label: 'home'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_today_rounded),
+              icon: Icon(Icons.calendar_today_rounded),
               label: 'my_bookings'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.headset_mic_rounded),
+              icon: Icon(Icons.headset_mic_rounded),
               label: 'support'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.person_rounded),
+              icon: Icon(Icons.person_rounded),
               label: 'profile'.tr(context),
             ),
           ],
@@ -653,7 +644,7 @@ class _ContactBox extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -662,21 +653,21 @@ class _ContactBox extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     sub,
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                    style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -718,12 +709,12 @@ class _EmergencyButton extends StatelessWidget {
           backgroundColor: color,
           child: Icon(icon, color: Colors.white, size: 20),
         ),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+        title: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
         subtitle: Text(number, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700)),
         trailing: ElevatedButton.icon(
           onPressed: onTap,
-          icon: const Icon(Icons.call_rounded, size: 16),
-          label: const Text('Call'),
+          icon: Icon(Icons.call_rounded, size: 16),
+          label: Text('call'.tr(context)),
           style: ElevatedButton.styleFrom(
             backgroundColor: color,
             foregroundColor: Colors.white,

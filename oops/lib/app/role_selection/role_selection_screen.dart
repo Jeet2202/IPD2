@@ -1,6 +1,7 @@
 // File: lib/app/role_selection/role_selection_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -46,8 +47,7 @@ class RoleSelectionScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-              const Text(
-                'Who are you?',
+              Text('who_are_you'.tr(context),
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -55,8 +55,7 @@ class RoleSelectionScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Select your role to get started',
+              Text('select_your_role_to_get'.tr(context),
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF64748B),
@@ -114,8 +113,7 @@ class RoleSelectionScreen extends StatelessWidget {
                         Icon(Icons.lock_outlined,
                             size: 13, color: Color(0xFF94A3B8)),
                         SizedBox(width: 6),
-                        Text(
-                          'Worker Demo: 9876543210 / partner123',
+                        Text('worker_demo_9876543210_partner123'.tr(context),
                           style: TextStyle(
                             fontSize: 11,
                             color: Color(0xFF94A3B8),

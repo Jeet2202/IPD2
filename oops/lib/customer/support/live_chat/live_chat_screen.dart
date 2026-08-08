@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../models/support_model.dart';
 import '../../../services/support_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class LiveChatScreen extends StatefulWidget {
   const LiveChatScreen({super.key});
@@ -117,7 +118,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       setState(() => _isSending = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to send message. Please try again.')),
+        const SnackBar(content: Text('failed_to_send_message_please'.tr(context))),
       );
     }
   }
@@ -143,29 +144,29 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 18,
               backgroundColor: Color(0xFFDCFCE7),
               child: Icon(Icons.support_agent_rounded, color: Color(0xFF16A34A), size: 22),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     ticket != null ? 'Support (#${ticket.ticketId})' : 'Ally Support Agent',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     ticket != null ? 'Status: ${ticket.status.toUpperCase()}' : 'Connecting...',
-                    style: const TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -174,27 +175,25 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
           : ticket == null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                    padding: EdgeInsets.all(24.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.mark_email_read_outlined, size: 54, color: Color(0xFF94A3B8)),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No Active Ticket Found',
+                        Icon(Icons.mark_email_read_outlined, size: 54, color: Color(0xFF94A3B8)),
+                        SizedBox(height: 16),
+                        Text('no_active_ticket_found'.tr(context),
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                         ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Submit a ticket to start live chatting with our support team.',
+                        SizedBox(height: 6),
+                        Text('submit_a_ticket_to_start'.tr(context),
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () => Navigator.pushReplacementNamed(context, '/customer/support/raise-complaint'),
                           style: ElevatedButton.styleFrom(
@@ -202,7 +201,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
-                          child: const Text('Raise a Complaint / Ticket'),
+                          child: Text('raise_a_complaint_ticket'.tr(context)),
                         ),
                       ],
                     ),
@@ -213,7 +212,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     // Ticket Subject Banner
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       color: ticket.isOpen ? const Color(0xFFEFF6FF) : const Color(0xFFDCFCE7),
                       child: Row(
                         children: [
@@ -222,7 +221,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             color: ticket.isOpen ? const Color(0xFF2563EB) : const Color(0xFF16A34A),
                             size: 18,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               ticket.isOpen
@@ -244,7 +243,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     Expanded(
                       child: ListView(
                         controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         physics: const BouncingScrollPhysics(),
                         children: [
                           // First message: Ticket Description
@@ -272,13 +271,13 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
 
                     // Input Box
                     Container(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
                       color: Colors.white,
                       child: Row(
                         children: [
                           Expanded(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF1F5F9),
                                 borderRadius: BorderRadius.circular(24),
@@ -294,17 +293,17 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           CircleAvatar(
                             backgroundColor: const Color(0xFF2563EB),
                             child: IconButton(
                               icon: _isSending
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       height: 16,
                                       width: 16,
                                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                     )
-                                  : const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                                  : Icon(Icons.send_rounded, color: Colors.white, size: 18),
                               onPressed: _sendMessage,
                             ),
                           ),
@@ -326,8 +325,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       alignment: isAgent ? Alignment.centerLeft : Alignment.centerRight,
       child: Container(
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(14),
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isAgent ? Colors.white : const Color(0xFF2563EB),
           borderRadius: BorderRadius.only(
@@ -352,12 +351,12 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                 color: isAgent ? const Color(0xFF2563EB) : const Color(0xFFDBEAFE),
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               text,
               style: TextStyle(fontSize: 13, color: isAgent ? const Color(0xFF0F172A) : Colors.white, height: 1.4),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               time,
               style: TextStyle(fontSize: 9, color: isAgent ? const Color(0xFF94A3B8) : const Color(0xFFBFDBFE)),

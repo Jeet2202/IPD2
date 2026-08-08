@@ -2,6 +2,7 @@
 // lib/customer/services/service_faq_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class ServiceFaqScreen extends StatefulWidget {
   const ServiceFaqScreen({super.key});
@@ -74,11 +75,10 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Frequently Asked Questions',
+        title: Text('frequently_asked_questions'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -86,7 +86,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -103,7 +103,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                 child: TextField(
                   controller: _faqSearchController,
                   onChanged: (_) => setState(() {}),
-                  style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+                  style: TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
                   decoration: const InputDecoration(
                     hintText: 'Search questions or keywords...',
                     hintStyle: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
@@ -114,7 +114,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ── Category Filter Chips ────────────────────────────────
               SingleChildScrollView(
@@ -124,7 +124,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                   children: _categories.map((cat) {
                     final isSelected = cat == _selectedCategory;
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: EdgeInsets.only(right: 8.0),
                       child: FilterChip(
                         label: Text(cat),
                         selected: isSelected,
@@ -133,7 +133,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                           fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                           color: isSelected ? Colors.white : const Color(0xFF475569),
                         ),                        selectedColor: const Color(0xFF2563EB),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
@@ -145,15 +145,14 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Expandable FAQ Cards List ────────────────────────────
               if (filteredFaqs.isEmpty)
-                const Center(
+                Center(
                   child: Padding(
                     padding: EdgeInsets.all(32.0),
-                    child: Text(
-                      'No matching questions found.',
+                    child: Text('no_matching_questions_found'.tr(context),
                       style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
                     ),
                   ),
@@ -161,11 +160,11 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
               else
                 ...filteredFaqs.map((faq) => _buildFaqCard(faq)),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Still Need Help Card ─────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
@@ -177,26 +176,24 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.headset_mic_rounded, size: 42, color: Color(0xFF2563EB)),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Still Have Questions?',
+                    Icon(Icons.headset_mic_rounded, size: 42, color: Color(0xFF2563EB)),
+                    SizedBox(height: 12),
+                    Text('still_have_questions'.tr(context),
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Our customer support team is available 24/7 to assist you.',
+                    SizedBox(height: 6),
+                    Text('our_customer_support_team_is'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton.icon(
                         onPressed: () {},
-                        icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                        label: const Text('Contact Support', style: TextStyle(fontWeight: FontWeight.w700)),
+                        icon: Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                        label: Text('contact_support'.tr(context), style: TextStyle(fontWeight: FontWeight.w700)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2563EB),
                           foregroundColor: Colors.white,
@@ -209,7 +206,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -219,7 +216,7 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
 
   Widget _buildFaqCard(Map<String, String> faq) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -233,19 +230,19 @@ class _ServiceFaqScreenState extends State<ServiceFaqScreen> {
         child: ExpansionTile(
           iconColor: const Color(0xFF2563EB),
           collapsedIconColor: const Color(0xFF64748B),
-          tilePadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+          tilePadding: EdgeInsets.symmetric(horizontal: 18, vertical: 4),
           title: Text(
             faq['question']!,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
           ),
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+              padding: EdgeInsets.fromLTRB(18, 0, 18, 18),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   faq['answer']!,
-                  style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
+                  style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.5),
                 ),
               ),
             ),

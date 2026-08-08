@@ -2,6 +2,7 @@
 // lib/customer/bookings/reschedule_booking/reschedule_booking_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class RescheduleBookingScreen extends StatefulWidget {
   const RescheduleBookingScreen({super.key});
@@ -30,11 +31,10 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Reschedule Booking',
+        title: Text('reschedule_booking'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -43,19 +43,19 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Current Booking Header Card ────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.calendar_month_rounded, color: Color(0xFF2563EB), size: 28),
                       SizedBox(width: 14),
@@ -63,9 +63,9 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Current Slot: 31 Jul • 11:00 AM', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('current_slot_31_jul_1100'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
-                            Text('Booking ID: #BK-90214 • Electrical DB Box', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            Text('booking_id_bk90214_electrical_db'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           ],
                         ),
                       ),
@@ -73,11 +73,11 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Select New Date ────────────────────────────────────
-                const Text('Select New Date', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 12),
+                Text('select_new_date'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 12),
 
                 SizedBox(
                   height: 50,
@@ -89,8 +89,8 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                       return GestureDetector(
                         onTap: () => setState(() => _selectedDateIndex = index),
                         child: Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          margin: EdgeInsets.only(right: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: isSelected ? const Color(0xFF2563EB) : Colors.white,
                             borderRadius: BorderRadius.circular(14),
@@ -112,11 +112,11 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Select New Time ────────────────────────────────────
-                const Text('Select New Time Slot', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 12),
+                Text('select_new_time_slot'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 12),
 
                 Column(
                   children: List.generate(_timeSlots.length, (index) {
@@ -124,8 +124,8 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                     return GestureDetector(
                       onTap: () => setState(() => _selectedTimeIndex = index),
                       child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        margin: EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
                           color: isSelected ? const Color(0xFFEFF6FF) : Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -146,14 +146,14 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                   }),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // ── Reason Dropdown ────────────────────────────────────
-                const Text('Reason for Rescheduling', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 8),
+                Text('reason_for_rescheduling'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 8),
 
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
@@ -163,28 +163,27 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                     child: DropdownButton<String>(
                       value: _selectedReason,
                       isExpanded: true,
-                      items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r, style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A))))).toList(),
+                      items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r, style: TextStyle(fontSize: 13, color: Color(0xFF0F172A))))).toList(),
                       onChanged: (val) => setState(() => _selectedReason = val!),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // ── Free Policy Card ───────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDCFCE7),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 20),
                       SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          'Free rescheduling available up to 2 hours before start time.',
+                        child: Text('free_rescheduling_available_up_to'.tr(context),
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF14532D)),
                         ),
                       ),
@@ -192,7 +191,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -203,7 +202,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -216,7 +215,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Booking rescheduled successfully!'), backgroundColor: Color(0xFF16A34A)),
+                      SnackBar(content: Text('booking_rescheduled_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                     );
                     Navigator.pop(context);
                   },
@@ -226,7 +225,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text('Confirm New Slot', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                  child: Text('confirm_new_slot'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 ),
               ),
             ),

@@ -6,6 +6,8 @@ import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/validators.dart';
 import '../../../widgets/phone_input_widget.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerRegisterScreen extends StatefulWidget {
   const WorkerRegisterScreen({super.key});
@@ -53,8 +55,8 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
 
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept the Terms of Service and Partner Policy.'),
+        SnackBar(
+          content: Text('please_accept_terms'.tr(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -86,7 +88,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("We've sent a verification code to $email."),
+          content: Text('verification_code_sent'.tr(context).replaceAll('{email}', email)),
           backgroundColor: const Color(0xFF2563EB),
           behavior: SnackBarBehavior.floating,
         ),
@@ -119,7 +121,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Partner registration failed: $e'),
+            content: Text('${'partner_registration_failed'.tr(context)}: $e'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -132,9 +134,10 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -143,10 +146,16 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
           physics: const BouncingScrollPhysics(),
           child: Form(
             key: _formKey,
@@ -174,13 +183,13 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.engineering_rounded,
                           size: 38,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -192,15 +201,15 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                               color: Color(0xFF2563EB),
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
-                              'PARTNER',
+                            child: Text(
+                              'partner'.tr(context).toUpperCase(),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
@@ -210,9 +219,9 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Join as a Service Professional',
+                      SizedBox(height: 6),
+                      Text(
+                        'join_as_service_pro'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF64748B),
@@ -222,55 +231,55 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
-                _buildFieldLabel('Full Name'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('full_name'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
                   keyboardType: TextInputType.name,
                   decoration: _buildInputDecoration(
-                    hintText: 'Enter your full name',
+                    hintText: 'enter_full_name'.tr(context),
                     prefixIcon: Icons.person_outline_rounded,
                     errorText: _serverFieldErrors['first_name'] ?? _serverFieldErrors['full_name'],
                   ),
                   validator: Validators.name,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                _buildFieldLabel('Phone Number'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('phone_number'.tr(context)),
+                SizedBox(height: 8),
                 PhoneInputWidget(
                   controller: _phoneController,
                   errorText: _serverFieldErrors['phone'],
                   onCountryChanged: (c) => setState(() => _selectedCountry = c),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                _buildFieldLabel('Email Address'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('email_address'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: _buildInputDecoration(
-                    hintText: 'name@example.com',
+                    hintText: 'email_example'.tr(context),
                     prefixIcon: Icons.email_outlined,
                     errorText: _serverFieldErrors['email'],
                   ),
                   validator: Validators.email,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                _buildFieldLabel('Password'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('password'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: _buildInputDecoration(
-                    hintText: 'Min 8 chars (A-Z, a-z, 0-9, @#\$)',
+                    hintText: 'password_hint'.tr(context),
                     prefixIcon: Icons.lock_outline_rounded,
                     errorText: _serverFieldErrors['password'],
                     suffixIcon: IconButton(
@@ -281,15 +290,15 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                   validator: Validators.password,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
-                _buildFieldLabel('Confirm Password'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('confirm_password'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: _buildInputDecoration(
-                    hintText: 'Re-enter password',
+                    hintText: 're_enter_password'.tr(context),
                     prefixIcon: Icons.lock_outline_rounded,
                     suffixIcon: IconButton(
                       icon: Icon(_obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
@@ -299,7 +308,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                   validator: (v) => Validators.confirmPassword(v, _passwordController.text),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 Row(
                   children: [
@@ -312,17 +321,17 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                         activeColor: const Color(0xFF2563EB),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Expanded(
+                    SizedBox(width: 8),
+                    Expanded(
                       child: Text(
-                        'I agree to the Terms of Service & Partner Policy',
+                        'agree_terms_policy'.tr(context),
                         style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
@@ -338,36 +347,36 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                           )
-                        : const Text(
-                            'Create Account',
+                        : Text(
+                            'create_account'.tr(context),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already registered? ', style: TextStyle(color: Color(0xFF64748B))),
+                    Text('already_registered'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
                     GestureDetector(
                       onTap: _isLoading
                           ? null
                           : () => Navigator.pushReplacementNamed(context, '/worker/auth/login'),
-                      child: const Text(
-                        'Sign In',
+                      child: Text(
+                        'sign_in'.tr(context),
                         style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -379,7 +388,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
     );
   }
 
@@ -396,22 +405,22 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
       errorText: errorText,
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
     );
   }

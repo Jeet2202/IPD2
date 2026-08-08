@@ -58,8 +58,7 @@ class BookingLifecycleStepper extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Booking Cancelled',
+                    Text('statuscancelled'.tr(context).tr(context),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.red.shade900,
@@ -67,7 +66,7 @@ class BookingLifecycleStepper extends StatelessWidget {
                     ),
                     if (booking.cancellationReason != null)
                       Text(
-                        'Reason: ${booking.cancellationReason}',
+                        '${'status_cancelled'.tr(context)}: ${booking.cancellationReason}',
                         style: theme.textTheme.bodySmall?.copyWith(color: Colors.red.shade800),
                       ),
                   ],
@@ -80,13 +79,13 @@ class BookingLifecycleStepper extends StatelessWidget {
     }
 
     final steps = [
-      {'title': 'Requested', 'subtitle': 'Booking Created'},
-      {'title': 'Assigned', 'subtitle': 'Worker Accepted'},
-      {'title': 'En-Route', 'subtitle': 'On the Way'},
-      {'title': 'Arrived', 'subtitle': 'At Location'},
-      {'title': 'In-Progress', 'subtitle': 'Work Underway'},
-      {'title': 'Completed', 'subtitle': 'Work Finished'},
-      {'title': 'Confirmed', 'subtitle': 'Accepted by You'},
+      {'title': 'status_pending'.tr(context), 'subtitle': 'status_pending'.tr(context)},
+      {'title': 'status_assigned'.tr(context), 'subtitle': 'worker_assigned'.tr(context)},
+      {'title': 'status_en_route'.tr(context), 'subtitle': 'status_en_route'.tr(context)},
+      {'title': 'status_arrived'.tr(context), 'subtitle': 'status_arrived'.tr(context)},
+      {'title': 'status_in_progress'.tr(context), 'subtitle': 'status_in_progress'.tr(context)},
+      {'title': 'status_work_completed'.tr(context), 'subtitle': 'status_work_completed'.tr(context)},
+      {'title': 'status_completed'.tr(context), 'subtitle': 'status_completed'.tr(context)},
     ];
 
     return Card(
@@ -100,8 +99,7 @@ class BookingLifecycleStepper extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Service Journey',
+                Text('bookingdetails'.tr(context).tr(context),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class QuotationDecisionScreen extends StatefulWidget {
   const QuotationDecisionScreen({super.key});
@@ -35,11 +36,10 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Quotation Decision',
+        title: Text('quotation_decision'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -47,13 +47,13 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Quote Summary Highlight Card ────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -65,17 +65,17 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                     BoxShadow(color: const Color(0xFF2563EB).withOpacity(0.28), blurRadius: 16, offset: const Offset(0, 6)),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('FINAL QUOTATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                        Text('final_quotation'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                         SizedBox(height: 4),
-                        Text('₹1,250.00', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white)),
+                        Text('125000'.tr(context), style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white)),
                         SizedBox(height: 2),
-                        Text('Includes Havells MCB + 30-Day Warranty', style: TextStyle(fontSize: 11, color: Color(0xFFE0F2FE))),
+                        Text('includes_havells_mcb_30day_warranty'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFFE0F2FE))),
                       ],
                     ),
                     Icon(Icons.gavel_rounded, color: Colors.white, size: 36),
@@ -83,10 +83,10 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
-              const Text('Select Action', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 14),
+              Text('select_action'.tr(context), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 14),
 
               // ── 1. Accept Button ────────────────────────────────────
               SizedBox(
@@ -94,8 +94,8 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 height: 56,
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
-                  icon: const Icon(Icons.check_circle_rounded, size: 22),
-                  label: const Text('Accept Quote & Start Repair', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.check_circle_rounded, size: 22),
+                  label: Text('accept_quote_start_repair'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF16A34A),
                     foregroundColor: Colors.white,
@@ -105,25 +105,25 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               // ── 2. Negotiate Accordion ──────────────────────────────
               OutlinedButton.icon(
                 onPressed: () => setState(() => _isNegotiating = !_isNegotiating),
-                icon: const Icon(Icons.handshake_outlined, size: 20),
+                icon: Icon(Icons.handshake_outlined, size: 20),
                 label: Text(_isNegotiating ? 'Hide Negotiation Panel' : 'Negotiate / Counter Offer'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 52),
                   foregroundColor: const Color(0xFF2563EB),
-                  side: const BorderSide(color: Color(0xFF2563EB)),
+                  side: BorderSide(color: Color(0xFF2563EB)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                 ),
               ),
 
               if (_isNegotiating) ...[
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -132,23 +132,23 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Your Counter Offer (₹)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 6),
+                      Text('your_counter_offer'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      SizedBox(height: 6),
                       TextField(
                         controller: _counterAmountController,
                         keyboardType: TextInputType.number,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.currency_rupee_rounded, color: Color(0xFF2563EB), size: 18),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          prefixIcon: Icon(Icons.currency_rupee_rounded, color: Color(0xFF2563EB), size: 18),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      const Text('Reason for Counter Offer', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 14),
+                      Text('reason_for_counter_offer'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      SizedBox(height: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        padding: EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFFCBD5E1)),
@@ -157,12 +157,12 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                           child: DropdownButton<String>(
                             value: _selectedReason,
                             isExpanded: true,
-                            items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r, style: const TextStyle(fontSize: 13)))).toList(),
+                            items: _reasons.map((r) => DropdownMenuItem(value: r, child: Text(r, style: TextStyle(fontSize: 13)))).toList(),
                             onChanged: (val) => setState(() => _selectedReason = val!),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 14),
+                      SizedBox(height: 14),
                       SizedBox(
                         width: double.infinity,
                         height: 46,
@@ -173,7 +173,7 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: const Text('Send Counter Offer', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                          child: Text('send_counter_offer'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                         ),
                       ),
                     ],
@@ -181,7 +181,7 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 ),
               ],
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               // ── 3. Reject Button ────────────────────────────────────
               SizedBox(
@@ -192,48 +192,47 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Reject Quotation?'),
-                        content: const Text('Are you sure you want to decline this quote? Sunil Verma will finish the inspection process.'),
+                        title: Text('reject_quotation'.tr(context)),
+                        content: Text('are_you_sure_you_want_2'.tr(context)),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('cancel'.tr(context))),
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(ctx);
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-                            child: const Text('Reject'),
+                            child: Text('reject'.tr(context)),
                           ),
                         ],
                       ),
                     );
                   },
-                  icon: const Icon(Icons.cancel_outlined, size: 20),
-                  label: const Text('Reject Quotation', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  icon: Icon(Icons.cancel_outlined, size: 20),
+                  label: Text('reject_quotation_2'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFFEF4444),
-                    side: const BorderSide(color: Color(0xFFEF4444)),
+                    side: BorderSide(color: Color(0xFFEF4444)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Info Cards ──────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 20),
                     SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        'Upon accepting, Sunil will immediately initiate repair work on site.',
+                      child: Text('upon_accepting_sunil_will_immediately'.tr(context),
                         style: TextStyle(fontSize: 12, color: Color(0xFF1E40AF), height: 1.3),
                       ),
                     ),
@@ -241,7 +240,7 @@ class _QuotationDecisionScreenState extends State<QuotationDecisionScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

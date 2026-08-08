@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/api_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -140,7 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile photo updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+          const SnackBar(content: Text('profile_photo_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -172,7 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile photo removed.'), backgroundColor: Color(0xFF16A34A)),
+          const SnackBar(content: Text('profile_photo_removed'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -197,24 +198,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Wrap(
               children: [
-                const Center(
-                  child: Text('Profile Photo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                Center(
+                  child: Text('profile_photo'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 ListTile(
-                  leading: const Icon(Icons.photo_camera_rounded, color: Color(0xFF2563EB)),
-                  title: const Text('Take Photo (Camera)'),
+                  leading: Icon(Icons.photo_camera_rounded, color: Color(0xFF2563EB)),
+                  title: Text('take_photo_camera'.tr(context)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickAndUploadPhoto(ImageSource.camera);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.photo_library_rounded, color: Color(0xFF2563EB)),
-                  title: const Text('Choose from Gallery'),
+                  leading: Icon(Icons.photo_library_rounded, color: Color(0xFF2563EB)),
+                  title: Text('choose_from_gallery'.tr(context)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickAndUploadPhoto(ImageSource.gallery);
@@ -222,8 +223,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 if (_profilePhotoUrl != null && _profilePhotoUrl!.isNotEmpty)
                   ListTile(
-                    leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                    title: const Text('Remove Photo', style: TextStyle(color: Colors.red)),
+                    leading: Icon(Icons.delete_outline_rounded, color: Colors.red),
+                    title: Text('remove_photo'.tr(context), style: TextStyle(color: Colors.red)),
                     onTap: () {
                       Navigator.pop(context);
                       _deletePhoto();
@@ -260,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+          const SnackBar(content: Text('profile_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
         Navigator.pop(context);
       }
@@ -293,21 +294,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Edit Profile',
+        title: Text('edit_profile'.tr(context),
           style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 18),
         ),
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
           : SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -328,16 +328,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: _isUploadingPhoto
                                     ? const CircularProgressIndicator(color: Color(0xFF2563EB))
                                     : ((_profilePhotoUrl == null || _profilePhotoUrl!.isEmpty)
-                                        ? const Icon(Icons.person_rounded, size: 54, color: Color(0xFF2563EB))
+                                        ? Icon(Icons.person_rounded, size: 54, color: Color(0xFF2563EB))
                                         : null),
                               ),
                               Positioned(
                                 bottom: 0,
                                 right: 0,
                                 child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
-                                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
+                                  child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
                                 ),
                               ),
                             ],
@@ -345,17 +345,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
                       // Full Name
-                      const Text('Full Name *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 6),
+                      Text('full_name'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 6),
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
                           hintText: 'Enter full name',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                         validator: (v) {
                           if (v == null || v.trim().length < 2) return 'Full name must be at least 2 characters';
@@ -363,18 +363,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Alternate Phone
-                      const Text('Alternate Phone Number', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 6),
+                      Text('alternate_phone_number'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 6),
                       TextFormField(
                         controller: _altPhoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           hintText: '+91 9876543210',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                         validator: (v) {
                           if (v != null && v.trim().isNotEmpty) {
@@ -386,28 +386,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Date of Birth
-                      const Text('Date of Birth', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 6),
+                      Text('date_of_birth'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 6),
                       TextFormField(
                         controller: _dobController,
                         readOnly: true,
                         onTap: _selectDateOfBirth,
                         decoration: InputDecoration(
                           hintText: 'YYYY-MM-DD',
-                          suffixIcon: const Icon(Icons.calendar_today_rounded, color: Color(0xFF2563EB)),
+                          suffixIcon: Icon(Icons.calendar_today_rounded, color: Color(0xFF2563EB)),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Gender Selection
-                      const Text('Gender', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 8),
+                      Text('gender'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: _genders.map((g) {
@@ -424,11 +424,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         }).toList(),
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Preferred Language
-                      const Text('Preferred App Language', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 8),
+                      Text('preferred_app_language'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -446,31 +446,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         }).toList(),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       // Notification Preferences
-                      const Text('Notification Settings', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-                      const SizedBox(height: 8),
+                      Text('notification_settings'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                      SizedBox(height: 8),
                       SwitchListTile(
-                        title: const Text('Push Notifications', style: TextStyle(fontSize: 13)),
+                        title: Text('push_notifications'.tr(context), style: TextStyle(fontSize: 13)),
                         value: _pushNotifications,
                         activeThumbColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _pushNotifications = val),
                       ),
                       SwitchListTile(
-                        title: const Text('Email Alerts', style: TextStyle(fontSize: 13)),
+                        title: Text('email_alerts'.tr(context), style: TextStyle(fontSize: 13)),
                         value: _emailNotifications,
                         activeThumbColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _emailNotifications = val),
                       ),
                       SwitchListTile(
-                        title: const Text('SMS Updates', style: TextStyle(fontSize: 13)),
+                        title: Text('sms_updates'.tr(context), style: TextStyle(fontSize: 13)),
                         value: _smsNotifications,
                         activeThumbColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _smsNotifications = val),
                       ),
 
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
 
                       // Save Button
                       SizedBox(
@@ -485,10 +485,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           child: _isSaving
                               ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              : Text('save_changes'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                     ],
                   ),
                 ),

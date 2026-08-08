@@ -24,8 +24,7 @@ class LanguageSelectorWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'select_language'.tr(context),
+                  Text('selectlanguage'.tr(context).tr(context),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,

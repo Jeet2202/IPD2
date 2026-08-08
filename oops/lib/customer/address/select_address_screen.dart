@@ -5,6 +5,7 @@ import '../../app/routes/app_routes.dart';
 import '../../models/address_model.dart';
 import '../../services/address_service.dart';
 import '../../services/api_service.dart';
+import '../../l10n/app_translations.dart';
 
 class SelectAddressScreen extends StatefulWidget {
   const SelectAddressScreen({super.key});
@@ -73,7 +74,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   void _confirmSelection() {
     if (_savedAddresses.isEmpty || _selectedIndex >= _savedAddresses.length) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select or add a service address.')),
+        SnackBar(content: Text('please_select_or_add_a'.tr(context))),
       );
       return;
     }
@@ -98,17 +99,16 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
+          icon: Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Select Address',
+        title: Text('select_address'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_location_alt_rounded, color: _blue),
+            icon: Icon(Icons.add_location_alt_rounded, color: _blue),
             onPressed: _navigateToAddAddress,
           ),
         ],
@@ -124,7 +124,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -132,18 +132,16 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Saved Addresses',
+                            Text('saved_addresses'.tr(context),
                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText, letterSpacing: -0.4),
                             ),
                             GestureDetector(
                               onTap: _navigateToAddAddress,
-                              child: const Row(
+                              child: Row(
                                 children: [
                                   Icon(Icons.add_rounded, size: 18, color: _blue),
                                   SizedBox(width: 4),
-                                  Text(
-                                    'Add New',
+                                  Text('add_new'.tr(context),
                                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _blue),
                                   ),
                                 ],
@@ -152,7 +150,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         if (_isLoading)
                           _buildLoadingView()
@@ -163,7 +161,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                         else
                           _buildAddressList(),
 
-                        const SizedBox(height: 100),
+                        SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -179,7 +177,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
               right: 0,
               bottom: 0,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+                padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -197,8 +195,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    child: const Text(
-                      'Confirm Address',
+                    child: Text('confirm_address'.tr(context),
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -215,7 +212,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       children: List.generate(
         3,
         (_) => Container(
-          margin: const EdgeInsets.only(bottom: 14),
+          margin: EdgeInsets.only(bottom: 14),
           height: 100,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -229,7 +226,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
 
   Widget _buildErrorView() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFFFEF2F2),
         borderRadius: BorderRadius.circular(16),
@@ -237,18 +234,18 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       ),
       child: Column(
         children: [
-          const Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626), size: 36),
-          const SizedBox(height: 10),
+          Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626), size: 36),
+          SizedBox(height: 10),
           Text(
             _errorMessage ?? 'Unable to load addresses.',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13, color: _mutedText),
+            style: TextStyle(fontSize: 13, color: _mutedText),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           ElevatedButton.icon(
             onPressed: _loadAddresses,
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: const Text('Try Again'),
+            icon: Icon(Icons.refresh_rounded, size: 16),
+            label: Text('try_again'.tr(context)),
             style: ElevatedButton.styleFrom(
               backgroundColor: _blue,
               foregroundColor: Colors.white,
@@ -263,7 +260,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   Widget _buildEmptyView() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -271,27 +268,25 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       ),
       child: Column(
         children: [
-          const Icon(Icons.location_off_rounded, size: 48, color: _blue),
-          const SizedBox(height: 12),
-          const Text(
-            'No Saved Addresses Found',
+          Icon(Icons.location_off_rounded, size: 48, color: _blue),
+          SizedBox(height: 12),
+          Text('no_saved_addresses_found'.tr(context),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _darkText),
           ),
-          const SizedBox(height: 6),
-          const Text(
-            'Please add a service address to proceed with booking.',
+          SizedBox(height: 6),
+          Text('please_add_a_service_address'.tr(context),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: _mutedText),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _navigateToAddAddress,
-            icon: const Icon(Icons.add_location_alt_rounded, size: 18),
-            label: const Text('Add New Address', style: TextStyle(fontWeight: FontWeight.w800)),
+            icon: Icon(Icons.add_location_alt_rounded, size: 18),
+            label: Text('add_new_address'.tr(context), style: TextStyle(fontWeight: FontWeight.w800)),
             style: ElevatedButton.styleFrom(
               backgroundColor: _blue,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
@@ -310,8 +305,8 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
           onTap: () => setState(() => _selectedIndex = index),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            margin: const EdgeInsets.only(bottom: 14),
-            padding: const EdgeInsets.all(16),
+            margin: EdgeInsets.only(bottom: 14),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -336,7 +331,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                   activeColor: _blue,
                   onChanged: (val) => setState(() => _selectedIndex = val!),
                 ),
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,36 +339,35 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                       Row(
                         children: [
                           Icon(_getLabelIcon(addr.label), size: 18, color: _blue),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             addr.label,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: _darkText),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: _darkText),
                           ),
                           if (addr.isDefault) ...[
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFDCFCE7),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: const Text(
-                                'DEFAULT',
+                              child: Text('default'.tr(context),
                                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF16A34A)),
                               ),
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       Text(
                         '${addr.fullName} • ${addr.phone}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _darkText),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _darkText),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         addr.shortAddress,
-                        style: const TextStyle(fontSize: 13, color: _mutedText, height: 1.4),
+                        style: TextStyle(fontSize: 13, color: _mutedText, height: 1.4),
                       ),
                     ],
                   ),

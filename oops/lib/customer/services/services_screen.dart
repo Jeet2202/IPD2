@@ -8,6 +8,7 @@ import '../../shared/cards/service_card.dart';
 import '../../shared/utils/category_helper.dart';
 import '../../shared/modals/service_filter_modal.dart';
 import '../../shared/widgets/active_filter_chips_bar.dart';
+import '../../l10n/app_translations.dart';
 
 class ServicesScreen extends StatefulWidget {
   const ServicesScreen({super.key});
@@ -197,8 +198,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(
-        title: const Text(
-          'Browse All Services',
+        title: Text('browse_all_services'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,        elevation: 0.5,
@@ -208,7 +208,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         children: [
           // Search Bar & Filter Button
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: AppDimensions.sm),
+            padding: EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: AppDimensions.sm),
             color: Colors.white,
             child: Column(
               children: [
@@ -224,14 +224,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         child: TextField(
                           controller: _searchController,
                           onChanged: _onSearchChanged,
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14),
                           decoration: InputDecoration(
                             hintText: 'Search services, e.g. Fan, Tap, Cleaning...',
-                            hintStyle: const TextStyle(fontSize: 13),
-                            prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                            hintStyle: TextStyle(fontSize: 13),
+                            prefixIcon: Icon(Icons.search_rounded, size: 20),
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded, size: 18),
+                                    icon: Icon(Icons.clear_rounded, size: 18),
                                     onPressed: () {
                                       _searchController.clear();
                                       _onSearchChanged('');
@@ -239,19 +239,19 @@ class _ServicesScreenState extends State<ServicesScreen> {
                                   )
                                 : null,
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                            contentPadding: EdgeInsets.symmetric(vertical: 12),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     // Filter Button with Badge
                     Stack(
                       children: [
                         IconButton(
                           onPressed: _openFilterModal,
                           icon: Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: _filterData.hasActiveFilters
                                   ? AppColors.primary.withValues(alpha: 0.15)
@@ -273,14 +273,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                             right: 4,
                             top: 4,
                             child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
                                 color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
                               child: Text(
                                 '${_filterData.activeFilterCount}',
-                                style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -288,7 +288,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 // Sorting Choice Chips
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -296,7 +296,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     children: _sortOptions.entries.map((entry) {
                       final isSelected = _filterData.sortBy == entry.key;
                       return Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.only(right: 8),
                         child: ChoiceChip(
                           label: Text(entry.value),
                           selected: isSelected,
@@ -332,7 +332,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
             onClearAll: _clearAllFilters,
           ),
 
-          const Divider(height: 1, thickness: 1, color: AppColors.divider),
+          Divider(height: 1, thickness: 1, color: AppColors.divider),
 
           // Main Content
           Expanded(
@@ -362,10 +362,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
     return ListView.separated(
       controller: _scrollController,
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: EdgeInsets.all(AppDimensions.md),
       physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       itemCount: _services.length + (_hasMorePages ? 1 : 0),
-      separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.sm),
+      separatorBuilder: (_, __) => SizedBox(height: AppDimensions.sm),
       itemBuilder: (context, index) {
         if (index == _services.length) {
           return _buildPaginationLoader();
@@ -409,9 +409,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   Widget _buildSkeletonList() {
     return ListView.separated(
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: EdgeInsets.all(AppDimensions.md),
       itemCount: 6,
-      separatorBuilder: (_, __) => const SizedBox(height: AppDimensions.sm),
+      separatorBuilder: (_, __) => SizedBox(height: AppDimensions.sm),
       itemBuilder: (_, __) => Container(
         height: 88,
         decoration: BoxDecoration(
@@ -420,7 +420,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
         ),
         child: Row(
           children: [
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Container(
               width: 64,
               height: 64,
@@ -429,16 +429,16 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(width: 80, height: 10, color: Colors.grey.shade200),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(width: 140, height: 14, color: Colors.grey.shade200),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(width: 100, height: 12, color: Colors.grey.shade200),
                 ],
               ),
@@ -451,9 +451,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   Widget _buildPaginationLoader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: 16),
       alignment: Alignment.center,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
@@ -462,8 +462,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
             child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
           ),
           SizedBox(width: 10),
-          Text(
-            'Loading more services...',
+          Text('loading_more_services'.tr(context),
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
@@ -478,30 +477,29 @@ class _ServicesScreenState extends State<ServicesScreen> {
         height: MediaQuery.of(context).size.height * 0.6,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
-                const SizedBox(height: 16),
-                const Text(
-                  'Connection Error',
+                Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.error),
+                SizedBox(height: 16),
+                Text('connection_error'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _errorMessage ?? 'Unable to fetch services.',
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => _fetchServices(page: 1),
-                  icon: const Icon(Icons.refresh_rounded, size: 18),
-                  label: const Text('Try Again'),
+                  icon: Icon(Icons.refresh_rounded, size: 18),
+                  label: Text('try_again'.tr(context)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                   ),
                 ),
@@ -522,26 +520,24 @@ class _ServicesScreenState extends State<ServicesScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.home_repair_service_outlined, size: 72, color: AppColors.textHint),
-              const SizedBox(height: 16),
-              const Text(
-                'No matching services found.',
+              Icon(Icons.home_repair_service_outlined, size: 72, color: AppColors.textHint),
+              SizedBox(height: 16),
+              Text('no_matching_services_found_3'.tr(context),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'We couldn\'t find any services matching your filter criteria.',
+              SizedBox(height: 8),
+              Text('we_couldn'.tr(context)t find any services matching your filter criteria.',
                 style: TextStyle(fontSize: 13),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _clearAllFilters,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                 ),
-                child: const Text('Clear All Filters'),
+                child: Text('clear_all_filters'.tr(context)),
               ),
             ],
           ),

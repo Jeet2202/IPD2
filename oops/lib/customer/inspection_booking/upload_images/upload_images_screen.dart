@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class UploadImagesScreen extends StatelessWidget {
   const UploadImagesScreen({super.key});
@@ -6,8 +7,8 @@ class UploadImagesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('U p l o a d I m a g e s S c r e e n')),
-      body: const Center(child: Text('U p l o a d I m a g e s S c r e e n')),
+      appBar: AppBar(title: Text('u_p_l_o_a'.tr(context))),
+      body: Center(child: Text('u_p_l_o_a'.tr(context))),
     );
   }
 }

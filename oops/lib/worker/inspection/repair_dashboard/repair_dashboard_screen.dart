@@ -1,6 +1,7 @@
 // File: lib/worker/inspection/repair_dashboard/repair_dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerRepairDashboardScreen extends StatefulWidget {
   const WorkerRepairDashboardScreen({super.key});
@@ -14,33 +15,33 @@ class _WorkerRepairDashboardScreenState
     extends State<WorkerRepairDashboardScreen> {
   int _currentNavIndex = 1;
 
-  final List<Map<String, String>> _repairs = [
+  List<Map<String, String>> get _repairs => [
     {
       'id': 'REPAIR-102',
       'customer': 'Pooja Sharma',
-      'service': 'AC Water Leak & Drain Line Repair',
-      'status': 'Approved • Ready to Start',
+      'service': 'ac_water_leak_repair'.tr(context),
+      'status': 'approved_ready_to_start'.tr(context),
       'statusColor': '0xFF10B981',
       'amount': '₹ 1,198',
-      'address': 'Dwarka Sector 15',
+      'address': 'dwarka_sec_15'.tr(context),
     },
     {
       'id': 'REPAIR-105',
       'customer': 'Vikram Singh',
-      'service': 'Main DB Board Wiring Overhaul',
-      'status': 'Quotation Under Review',
+      'service': 'main_db_board_wiring'.tr(context),
+      'status': 'quotation_under_review'.tr(context),
       'statusColor': '0xFFF59E0B',
       'amount': '₹ 2,400',
-      'address': 'Green Park Main',
+      'address': 'green_park_main'.tr(context),
     },
     {
       'id': 'REPAIR-098',
       'customer': 'Sunil Verma',
-      'service': 'MCB Switch Replacement',
-      'status': 'Completed Today',
+      'service': 'mcb_switch_replacement'.tr(context),
+      'status': 'completed_today'.tr(context),
       'statusColor': '0xFF2563EB',
       'amount': '₹ 850',
-      'address': 'Dwarka Sector 15',
+      'address': 'dwarka_sec_15'.tr(context),
     },
   ];
 
@@ -48,9 +49,9 @@ class _WorkerRepairDashboardScreenState
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Inspection & Repair Dashboard',
-          style: TextStyle(
+        title: Text(
+          'inspection_repair_dashboard'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w800,
             fontSize: 18,
@@ -77,8 +78,8 @@ class _WorkerRepairDashboardScreenState
                 children: [
                   Expanded(
                     child: _buildMetricTile(
-                      label: "Today's Repairs",
-                      value: '2 Ready',
+                      label: 'todays_repairs'.tr(context),
+                      value: 'two_ready'.tr(context),
                       icon: Icons.build_rounded,
                       color: const Color(0xFF2563EB),
                     ),
@@ -86,8 +87,8 @@ class _WorkerRepairDashboardScreenState
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildMetricTile(
-                      label: 'Quotes Pending',
-                      value: '1 Review',
+                      label: 'quotes_pending'.tr(context),
+                      value: 'one_review'.tr(context),
                       icon: Icons.hourglass_top_rounded,
                       color: const Color(0xFFF59E0B),
                     ),
@@ -99,8 +100,8 @@ class _WorkerRepairDashboardScreenState
                 children: [
                   Expanded(
                     child: _buildMetricTile(
-                      label: 'Completed Repairs',
-                      value: '18 This Month',
+                      label: 'completed_repairs'.tr(context),
+                      value: 'eighteen_this_month'.tr(context),
                       icon: Icons.check_circle_rounded,
                       color: const Color(0xFF10B981),
                     ),
@@ -108,7 +109,7 @@ class _WorkerRepairDashboardScreenState
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildMetricTile(
-                      label: 'Est. Revenue',
+                      label: 'est_revenue'.tr(context),
                       value: '₹ 14,450',
                       icon: Icons.account_balance_wallet_rounded,
                       color: const Color(0xFF0EA5E9),
@@ -120,9 +121,9 @@ class _WorkerRepairDashboardScreenState
               const SizedBox(height: 24),
 
               // Repair Job List Header
-              const Text(
-                'Active Repairs & Inspection Quotes',
-                style: TextStyle(
+              Text(
+                'active_repairs_quotes'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -213,8 +214,8 @@ class _WorkerRepairDashboardScreenState
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text('View Report',
-                                  style: TextStyle(
+                              child: Text('view_report'.tr(context),
+                                  style: const TextStyle(
                                       fontSize: 12,
                                       color: Color(0xFF475569))),
                             ),
@@ -234,8 +235,8 @@ class _WorkerRepairDashboardScreenState
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text('Start Work',
-                                  style: TextStyle(
+                              child: Text('start_work'.tr(context),
+                                  style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700)),
                             ),
@@ -268,22 +269,22 @@ class _WorkerRepairDashboardScreenState
             Navigator.pushReplacementNamed(context, '/worker/profile');
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_rounded),
-            label: 'Home',
+            icon: const Icon(Icons.dashboard_rounded),
+            label: 'home'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.handyman_rounded),
-            label: 'Repairs',
+            icon: const Icon(Icons.handyman_rounded),
+            label: 'repairs'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_rounded),
-            label: 'Earnings',
+            icon: const Icon(Icons.account_balance_wallet_rounded),
+            label: 'earnings'.tr(context),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: const Icon(Icons.person_rounded),
+            label: 'profile'.tr(context),
           ),
         ],
       ),

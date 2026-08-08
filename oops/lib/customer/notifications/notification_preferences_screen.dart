@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/notification_service.dart';
+import '../../l10n/app_translations.dart';
 
 class NotificationPreferencesScreen extends StatefulWidget {
   const NotificationPreferencesScreen({super.key});
@@ -66,7 +67,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Preferences saved successfully!'),
+            content: Text('preferences_saved_successfully'.tr(context)),
             backgroundColor: Color(0xFF10B981),
           ),
         );
@@ -88,18 +89,17 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
-        title: const Text(
-          'Notification Preferences',
+        title: Text('notification_preferences'.tr(context),
           style: TextStyle(color: Color(0xFF0F172A), fontSize: 18, fontWeight: FontWeight.w700),
         ),
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
           : _errorMessage != null
-              ? Center(child: Text('Error: $_errorMessage', style: const TextStyle(color: Colors.red)))
+              ? Center(child: Text('Error: $_errorMessage', style: TextStyle(color: Colors.red)))
               : ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   children: [
                     _buildSectionHeader('Notification Types'),
                     _buildSwitchTile('Booking Updates', 'Status changes and reminders', _booking, (val) {
@@ -118,14 +118,14 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                       setState(() => _promotional = val);
                       _savePreferences();
                     }),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     _buildSectionHeader('Quiet Hours'),
                     _buildSwitchTile('Enable Quiet Hours', 'Mute non-system notifications during these hours', _quietHoursEnabled, (val) {
                       setState(() => _quietHoursEnabled = val);
                       _savePreferences();
                     }),
                     if (_quietHoursEnabled) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       _buildTimeSelector('Start Time', _quietHoursStart, (val) {
                         setState(() => _quietHoursStart = val);
                         _savePreferences();
@@ -142,10 +142,10 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Color(0xFF64748B),
@@ -157,16 +157,16 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Widget _buildSwitchTile(String title, String subtitle, bool value, ValueChanged<bool> onChanged) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: SwitchListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF0F172A))),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF0F172A))),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
         value: value,
         activeColor: const Color(0xFF2563EB),
         onChanged: onChanged,
@@ -176,8 +176,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Widget _buildTimeSelector(String label, String time, ValueChanged<String> onTimeSelected) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -186,7 +186,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF0F172A))),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF0F172A))),
           InkWell(
             onTap: () async {
               final timeParts = time.split(':');
@@ -199,14 +199,14 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
               }
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 time,
-                style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF2563EB)),
+                style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF2563EB)),
               ),
             ),
           ),

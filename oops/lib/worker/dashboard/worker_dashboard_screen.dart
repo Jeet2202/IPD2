@@ -170,9 +170,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 children: [
                   const Icon(Icons.cloud_off_rounded, size: 52, color: Color(0xFFEF4444)),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Failed to Load Dashboard',
-                    style: TextStyle(
+                  Text(
+                    'failed_to_load_dashboard'.tr(context),
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF0F172A),
@@ -188,7 +188,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                   ElevatedButton.icon(
                     onPressed: _loadDashboardData,
                     icon: const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Retry Loading'),
+                    label: Text('retry_loading'.tr(context)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
                       foregroundColor: Colors.white,

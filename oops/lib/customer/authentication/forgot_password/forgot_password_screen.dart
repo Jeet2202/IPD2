@@ -6,6 +6,7 @@ import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_text_field.dart';
+import '../../../l10n/app_translations.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -60,7 +61,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(
-        title: const Text('Forgot Password'),        elevation: 0,
+        title: Text('forgot_password'.tr(context)),        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppDimensions.lg),
@@ -70,10 +71,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              const Text('Reset Password', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+              Text('reset_password'.tr(context), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              const Text(
-                'Enter your registered email address to receive a 6-digit OTP code.',
+              Text('enter_your_registered_email_address'.tr(context),
                 style: TextStyle(),
               ),
               const SizedBox(height: 32),

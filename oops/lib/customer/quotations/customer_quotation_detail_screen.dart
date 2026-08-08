@@ -5,6 +5,7 @@ import '../../models/quotation_model.dart';
 import '../../services/quotation_service.dart';
 
 import 'quotation_history_timeline_screen.dart';
+import '../../l10n/app_translations.dart';
 
 class CustomerQuotationDetailScreen extends StatefulWidget {
   final String quotationId;
@@ -62,14 +63,13 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Quotation Details',
+            Text('quotation_details'.tr(context),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -78,13 +78,13 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
             ),
             Text(
               'Ref: ${widget.bookingNumber}',
-              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history_rounded, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.history_rounded, color: Color(0xFF2563EB)),
             tooltip: 'View Audit Trail',
             onPressed: () {
               Navigator.push(
@@ -102,39 +102,39 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
           : _errorMessage != null
               ? _buildErrorView()
               : _item == null
-                  ? const Center(child: Text('Quotation not found.'))
+                  ? Center(child: Text('quotation_not_found'.tr(context)))
                   : SafeArea(
                       child: ListView(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(20.0),
                         children: [
                           // Worker Profile Card
                           _buildWorkerCard(_item!.worker),
 
-                          const SizedBox(height: 18),
+                          SizedBox(height: 18),
 
                           // Total Cost Summary Card
                           _buildCostSummaryCard(_item!.quotation),
 
-                          const SizedBox(height: 18),
+                          SizedBox(height: 18),
 
                           // Detailed Cost Breakdown Table
                           _buildCostBreakdownCard(_item!.quotation),
 
-                          const SizedBox(height: 18),
+                          SizedBox(height: 18),
 
                           // Schedule & Validity Card
                           _buildScheduleCard(_item!.quotation),
 
-                          const SizedBox(height: 18),
+                          SizedBox(height: 18),
 
                           // Scope of Work Card
                           _buildScopeCard(_item!.quotation),
 
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24),
 
                           // Acceptance Action or Status Badge
                           if (_item!.quotation.isSubmitted)
@@ -142,7 +142,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
                           else
                             _buildStatusBadge(_item!.quotation),
 
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -156,21 +156,21 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.check_circle_outline_rounded, color: Color(0xFF059669)),
             SizedBox(width: 8),
-            Text('Accept Quotation?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('accept_quotation'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         content: Text(
           'Are you sure you want to accept this quotation from ${_item!.worker.fullName} for ₹${_item!.quotation.totalAmount.toStringAsFixed(0)}?\n\nThis will assign ${_item!.worker.fullName} to your booking.',
-          style: const TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
+          style: TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text('cancel'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -179,7 +179,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Confirm & Accept'),
+            child: Text('confirm_accept'.tr(context)),
           ),
         ],
       ),
@@ -220,20 +220,20 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       child: ElevatedButton.icon(
         onPressed: _isAccepting ? null : _showAcceptConfirmationDialog,
         icon: _isAccepting
-            ? const SizedBox(
+            ? SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               )
-            : const Icon(Icons.check_circle_rounded, size: 20),
+            : Icon(Icons.check_circle_rounded, size: 20),
         label: Text(
           _isAccepting ? 'Processing...' : 'Accept Quotation & Assign Worker',
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF059669),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -265,7 +265,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
             : q.quotationStatus.toUpperCase();
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: bgColor,
@@ -282,22 +282,22 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
   Widget _buildErrorView() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 56, color: Color(0xFFDC2626)),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline_rounded, size: 56, color: Color(0xFFDC2626)),
+            SizedBox(height: 16),
             Text(
               _errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _loadDetail,
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
-              child: const Text('Retry'),
+              child: Text('retry'.tr(context)),
             ),
           ],
         ),
@@ -307,7 +307,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
 
   Widget _buildWorkerCard(WorkerSummary w) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -325,32 +325,32 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
                 child: w.profilePhotoUrl == null
                     ? Text(
                         w.fullName.isNotEmpty ? w.fullName[0].toUpperCase() : 'W',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
                       )
                     : null,
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       w.fullName,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 16, color: Color(0xFFEAB308)),
-                        const SizedBox(width: 4),
+                        Icon(Icons.star_rounded, size: 16, color: Color(0xFFEAB308)),
+                        SizedBox(width: 4),
                         Text(
                           w.rating.toStringAsFixed(1),
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           '•  ${w.experienceYears.toStringAsFixed(0)} Years Experience',
-                          style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                         ),
                       ],
                     ),
@@ -360,20 +360,20 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
             ],
           ),
           if (w.skills.isNotEmpty) ...[
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: w.skills.map((skill) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     skill,
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
                   ),
                 );
               }).toList(),
@@ -386,7 +386,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
 
   Widget _buildCostSummaryCard(QuotationItem q) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
@@ -405,20 +405,19 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Total Quotation Amount', style: TextStyle(fontSize: 13, color: Colors.white70)),
+              Text('total_quotation_amount'.tr(context), style: TextStyle(fontSize: 13, color: Colors.white70)),
               SizedBox(height: 4),
-              Text(
-                'Includes taxes & discount',
+              Text('includes_taxes_discount'.tr(context),
                 style: TextStyle(fontSize: 11, color: Colors.white38),
               ),
             ],
           ),
           Text(
             '₹${q.totalAmount.toStringAsFixed(0)}',
-            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Color(0xFF38BDF8)),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Color(0xFF38BDF8)),
           ),
         ],
       ),
@@ -429,7 +428,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
     final subtotal = q.labourCost + q.materialCost + q.inspectionCharge + q.additionalCharges;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -438,22 +437,21 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.receipt_long_rounded, size: 18, color: Color(0xFF2563EB)),
               SizedBox(width: 8),
-              Text(
-                'Itemized Pricing Breakdown',
+              Text('itemized_pricing_breakdown'.tr(context),
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           _buildBreakdownRow('Labour Cost', '₹${q.labourCost.toStringAsFixed(0)}'),
           _buildBreakdownRow('Material Cost', '₹${q.materialCost.toStringAsFixed(0)}'),
           _buildBreakdownRow('Inspection Charge', '₹${q.inspectionCharge.toStringAsFixed(0)}'),
           _buildBreakdownRow('Additional Charges', '₹${q.additionalCharges.toStringAsFixed(0)}'),
-          const Divider(height: 18, color: Color(0xFFE2E8F0)),
+          Divider(height: 18, color: Color(0xFFE2E8F0)),
           _buildBreakdownRow('Subtotal', '₹${subtotal.toStringAsFixed(0)}', isBold: true),
           _buildBreakdownRow('Taxes & Levies', '+ ₹${q.taxAmount.toStringAsFixed(0)}'),
           _buildBreakdownRow('Discount Offered', '- ₹${q.discountAmount.toStringAsFixed(0)}', isHighlight: true),
@@ -464,7 +462,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
 
   Widget _buildBreakdownRow(String label, String value, {bool isBold = false, bool isHighlight = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: EdgeInsets.symmetric(vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -495,7 +493,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
 
   Widget _buildScheduleCard(QuotationItem q) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -504,17 +502,16 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.date_range_rounded, size: 18, color: Color(0xFF2563EB)),
               SizedBox(width: 8),
-              Text(
-                'Schedule & Validity',
+              Text('schedule_validity'.tr(context),
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           _buildBreakdownRow('Estimated Duration', q.estimatedDuration),
           _buildBreakdownRow('Earliest Work Start', q.workStartDate ?? 'Immediate / Flexible'),
           _buildBreakdownRow('Quotation Valid Until', q.validityDate),
@@ -525,7 +522,7 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
 
   Widget _buildScopeCard(QuotationItem q) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -534,30 +531,29 @@ class _CustomerQuotationDetailScreenState extends State<CustomerQuotationDetailS
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.description_outlined, size: 18, color: Color(0xFF2563EB)),
               SizedBox(width: 8),
-              Text(
-                'Scope of Work & Terms',
+              Text('scope_of_work_terms'.tr(context),
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text('Work Description:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-          const SizedBox(height: 4),
+          SizedBox(height: 12),
+          Text('work_description'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+          SizedBox(height: 4),
           Text(
             q.workDescription ?? 'No specific scope description provided.',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4),
+            style: TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4),
           ),
           if (q.termsAndConditions != null && q.termsAndConditions!.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            const Text('Terms & Conditions:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
-            const SizedBox(height: 4),
+            SizedBox(height: 14),
+            Text('terms_conditions_2'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+            SizedBox(height: 4),
             Text(
               q.termsAndConditions!,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4),
+              style: TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.4),
             ),
           ],
         ],

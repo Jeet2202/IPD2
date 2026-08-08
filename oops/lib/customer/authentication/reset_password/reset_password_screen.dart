@@ -5,6 +5,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/validators.dart';
+import '../../../l10n/app_translations.dart';
 
 class CustomerResetPasswordScreen extends StatefulWidget {
   const CustomerResetPasswordScreen({super.key});
@@ -46,8 +47,8 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
 
     if (_resetToken.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password reset session expired. Please request a new reset OTP.'),
+        SnackBar(
+          content: Text('password_reset_session_expired_please'.tr(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -65,8 +66,8 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password reset successfully! Please log in with your new password.'),
+        SnackBar(
+          content: Text('password_reset_successfully_please_log'.tr(context)),
           backgroundColor: Color(0xFF2563EB),
           duration: Duration(seconds: 3),
         ),
@@ -92,7 +93,7 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -102,14 +103,14 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
           physics: const BouncingScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 Container(
                   width: 72,
@@ -129,17 +130,16 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.lock_reset_rounded,
                     size: 38,
                     color: Colors.white,
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                const Text(
-                  'Set New Password',
+                Text('set_new_password'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
@@ -148,34 +148,33 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   _email.isNotEmpty ? 'Creating a new password for $_email' : 'Please enter your new password below',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     color: Color(0xFF64748B),
                   ),
                 ),
 
-                const SizedBox(height: 36),
+                SizedBox(height: 36),
 
                 // New Password
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'New Password',
+                  child: Text('new_password'.tr(context),
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: 'Min 8 chars (A-Z, a-z, 0-9, @#\$)',
-                    hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF94A3B8), size: 20),
+                    hintStyle: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                    prefixIcon: Icon(Icons.lock_outline_rounded, color: Color(0xFF94A3B8), size: 20),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -186,37 +185,36 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
                     ),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     ),
                   ),
                   validator: Validators.password,
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Confirm Password
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Confirm New Password',
+                  child: Text('confirm_new_password'.tr(context),
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     hintText: 'Re-enter your new password',
-                    hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Color(0xFF94A3B8), size: 20),
+                    hintStyle: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                    prefixIcon: Icon(Icons.lock_outline_rounded, color: Color(0xFF94A3B8), size: 20),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -227,20 +225,20 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
                     ),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     ),
                   ),
                   validator: (v) => Validators.confirmPassword(v, _passwordController.text),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 SizedBox(
                   width: double.infinity,
@@ -256,19 +254,18 @@ class _CustomerResetPasswordScreenState extends State<CustomerResetPasswordScree
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                           )
-                        : const Text(
-                            'Reset Password',
+                        : Text('reset_password'.tr(context),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
               ],
             ),
           ),

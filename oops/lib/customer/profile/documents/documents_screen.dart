@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class DocumentsScreen extends StatelessWidget {
   const DocumentsScreen({super.key});
@@ -6,8 +7,8 @@ class DocumentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('D o c u m e n t s S c r e e n')),
-      body: const Center(child: Text('D o c u m e n t s S c r e e n')),
+      appBar: AppBar(title: Text('d_o_c_u_m'.tr(context))),
+      body: Center(child: Text('d_o_c_u_m'.tr(context))),
     );
   }
 }

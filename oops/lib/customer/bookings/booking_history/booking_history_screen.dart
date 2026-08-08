@@ -2,6 +2,7 @@
 // lib/customer/bookings/booking_history/booking_history_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class BookingHistoryScreen extends StatelessWidget {
   const BookingHistoryScreen({super.key});
@@ -42,8 +43,7 @@ class BookingHistoryScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Completed History',
+        title: Text('completed_history'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -82,7 +82,7 @@ class BookingHistoryScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Search & Header ─────────────────────────────────────
-              const Text('Past Bookings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              Text('past_bookings'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
               const SizedBox(height: 12),
 
               Column(
@@ -135,7 +135,7 @@ class BookingHistoryScreen extends StatelessWidget {
                                 OutlinedButton.icon(
                                   onPressed: () {},
                                   icon: const Icon(Icons.download_rounded, size: 14),
-                                  label: const Text('Invoice', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+                                  label: Text('invoice'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                     side: const BorderSide(color: Color(0xFFCBD5E1)),
@@ -153,7 +153,7 @@ class BookingHistoryScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                   ),
-                                  child: const Text('Book Again', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                                  child: Text('book_again'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
                                 ),
                               ],
                             ),

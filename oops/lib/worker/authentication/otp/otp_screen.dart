@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerOtpScreen extends StatefulWidget {
   const WorkerOtpScreen({super.key});
@@ -70,14 +72,14 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('A new 6-digit verification code has been sent to $_targetEmail.'),
+          content: Text('otp_sent'.tr(context).replaceAll('{email}', _targetEmail)),
           backgroundColor: const Color(0xFF2563EB),
         ),
       );
       _startTimer();
     } catch (e) {
       if (!mounted) return;
-      final msg = e is ApiException ? e.message : 'Resend failed: $e';
+      final msg = e is ApiException ? e.message : '${'resend_failed'.tr(context)}: $e';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: Colors.red),
       );
@@ -88,8 +90,8 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
     final code = _controllers.map((c) => c.text).join();
     if (code.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter the full 6-digit verification code.'),
+        SnackBar(
+          content: Text('please_enter_full_otp'.tr(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -98,8 +100,8 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
 
     if (_targetEmail.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Target email address is missing. Please register again.'),
+        SnackBar(
+          content: Text('target_email_missing'.tr(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -116,9 +118,9 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
         );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP verified! Please set your new password.'),
-            backgroundColor: Color(0xFF2563EB),
+          SnackBar(
+            content: Text('otp_verified_set_password'.tr(context)),
+            backgroundColor: const Color(0xFF2563EB),
           ),
         );
         Navigator.pushReplacementNamed(
@@ -134,9 +136,9 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email verified successfully! Welcome to Ally Partner Network.'),
-            backgroundColor: Color(0xFF2563EB),
+          SnackBar(
+            content: Text('email_verified_welcome'.tr(context)),
+            backgroundColor: const Color(0xFF2563EB),
           ),
         );
 
@@ -148,7 +150,7 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      final msg = e is ApiException ? e.message : 'Verification failed: $e';
+      final msg = e is ApiException ? e.message : '${'verification_failed'.tr(context)}: $e';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: Colors.red),
       );
@@ -171,24 +173,31 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               Container(
                 width: 120,
@@ -203,12 +212,12 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                 ),
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.all(18),
+                    decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.mark_email_read_rounded,
                       size: 48,
                       color: Color(0xFF2563EB),
@@ -217,10 +226,10 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
-              const Text(
-                'Partner Verification',
+              Text(
+                'partner_verification'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 26,
@@ -228,21 +237,21 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                   color: Color(0xFF0F172A),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Enter the 6-digit verification code sent to your email:\n',
-                  style: const TextStyle(
+                  text: 'enter_6_digit_otp_sent_to'.tr(context) + '\n',
+                  style: TextStyle(
                     fontSize: 14,
                     color: Color(0xFF64748B),
                     height: 1.5,
                   ),
                   children: [
                     TextSpan(
-                      text: _targetEmail.isNotEmpty ? _targetEmail : 'your email address',
-                      style: const TextStyle(
+                      text: _targetEmail.isNotEmpty ? _targetEmail : 'your_email_address'.tr(context),
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
@@ -252,7 +261,7 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              SizedBox(height: 36),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -267,7 +276,7 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
@@ -279,11 +288,11 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                         contentPadding: EdgeInsets.zero,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: BorderSide(color: Color(0xFFE2E8F0)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2),
+                          borderSide: BorderSide(color: Color(0xFF2563EB), width: 2),
                         ),
                       ),
                       onChanged: (value) {
@@ -298,20 +307,20 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                 }),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Didn't receive code? ",
+                  Text(
+                    'did_not_receive_code'.tr(context),
                     style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
                   ),
                   _canResend
                       ? GestureDetector(
                           onTap: _handleResend,
-                          child: const Text(
-                            'Resend OTP',
+                          child: Text(
+                            'resend_otp'.tr(context),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -320,8 +329,8 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                           ),
                         )
                       : Text(
-                          'Resend in ${_secondsRemaining}s',
-                          style: const TextStyle(
+                          'resend_in'.tr(context).replaceAll('{seconds}', _secondsRemaining.toString()),
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF0EA5E9),
@@ -330,7 +339,7 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                 ],
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
 
               SizedBox(
                 width: double.infinity,
@@ -346,19 +355,19 @@ class _WorkerOtpScreenState extends State<WorkerOtpScreen> {
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text(
-                          'Verify & Continue',
+                      : Text(
+                          'verify_continue'.tr(context),
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                         ),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

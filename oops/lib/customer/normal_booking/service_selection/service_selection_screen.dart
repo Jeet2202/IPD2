@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class ServiceSelectionScreen extends StatefulWidget {
   const ServiceSelectionScreen({super.key});
@@ -51,17 +52,15 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Column(
+        title: Column(
           children: [
-            Text(
-              'Step 1 of 3',
+            Text('step_1_of_3'.tr(context),
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
             ),
-            Text(
-              'Service Selection',
+            Text('service_selection'.tr(context),
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
             ),
           ],
@@ -72,13 +71,13 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Selected Service Summary Card ─────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(20),
@@ -93,20 +92,18 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                           color: const Color(0xFF2563EB),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 30),
+                        child: Icon(Icons.bolt_rounded, color: Colors.white, size: 30),
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
+                      SizedBox(width: 14),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Electrical Repair & Installation',
+                            Text('electrical_repair_installation'.tr(context),
                               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
                             ),
                             SizedBox(height: 3),
-                            Text(
-                              'Est. Price: ₹149 - ₹499 • 30-60 Mins',
+                            Text('est_price_149_499_3060'.tr(context),
                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF2563EB)),
                             ),
                           ],
@@ -116,11 +113,10 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Question Header ───────────────────────────────────
-                const Text(
-                  'What work do you need help with?',
+                Text('what_work_do_you_need'.tr(context),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -128,13 +124,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     letterSpacing: -0.4,
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Select one or multiple tasks so we assign the right expert.',
+                SizedBox(height: 6),
+                Text('select_one_or_multiple_tasks'.tr(context),
                   style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 // ── Multi-select Task Chips ───────────────────────────
                 Wrap(
@@ -154,7 +149,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                       ),
                       backgroundColor: const Color(0xFFF8FAFC),
                       selectedColor: const Color(0xFF2563EB),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: BorderSide(
@@ -167,14 +162,13 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   }).toList(),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Problem Description Field ──────────────────────────
-                const Text(
-                  'Describe your problem (Optional)',
+                Text('describe_your_problem_optional'.tr(context),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
@@ -184,7 +178,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   child: TextField(
                     controller: _problemDescriptionController,
                     maxLines: 4,
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+                    style: TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
                     decoration: const InputDecoration(
                       hintText: 'e.g. Living room switchboard sparking when turning on AC...',
                       hintStyle: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
@@ -194,19 +188,17 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // ── Upload Photos Section ─────────────────────────────
-                const Text(
-                  'Upload Photos of the Issue (Optional)',
+                Text('upload_photos_of_the_issue'.tr(context),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Helps the professional bring proper spare parts.',
+                SizedBox(height: 6),
+                Text('helps_the_professional_bring_proper'.tr(context),
                   style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                 ),
-                const SizedBox(height: 14),
+                SizedBox(height: 14),
 
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -225,25 +217,25 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid, width: 1.5),
                           ),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add_a_photo_rounded, color: Color(0xFF2563EB), size: 26),
                               SizedBox(height: 4),
-                              Text('Add Photo', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                              Text('add_photo'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                             ],
                           ),
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
 
                       // Uploaded Image Previews
                       ..._dummyImages.map((img) {
                         return Container(
                           width: 84,
                           height: 84,
-                          margin: const EdgeInsets.only(right: 12),
+                          margin: EdgeInsets.only(right: 12),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE0F2FE),
                             borderRadius: BorderRadius.circular(18),
@@ -251,7 +243,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                           ),
                           child: Stack(
                             children: [
-                              const Center(
+                              Center(
                                 child: Icon(Icons.image_rounded, color: Color(0xFF0EA5E9), size: 36),
                               ),
                               Positioned(
@@ -262,12 +254,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                                     setState(() => _dummyImages.remove(img));
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: const BoxDecoration(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
                                       color: Color(0xFFEF4444),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                                    child: Icon(Icons.close_rounded, size: 14, color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -279,7 +271,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 100), // Bottom spacing for fixed button
+                SizedBox(height: 100), // Bottom spacing for fixed button
               ],
             ),
           ),
@@ -290,7 +282,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -312,12 +304,11 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
-                        child: Text(
-                          'Continue to Date & Time',
+                        child: Text('continue_to_date_time'.tr(context),
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.2),
                           overflow: TextOverflow.ellipsis,
                         ),

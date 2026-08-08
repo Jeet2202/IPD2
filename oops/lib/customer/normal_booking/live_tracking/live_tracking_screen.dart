@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class LiveTrackingScreen extends StatelessWidget {
   const LiveTrackingScreen({super.key});
@@ -25,7 +26,7 @@ class LiveTrackingScreen extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -33,7 +34,7 @@ class LiveTrackingScreen extends StatelessWidget {
                             BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 10),
                           ],
                         ),
-                        child: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A), size: 20),
+                        child: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A), size: 20),
                       ),
                     ),
                   ),
@@ -42,7 +43,7 @@ class LiveTrackingScreen extends StatelessWidget {
                     top: 48,
                     right: 20,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -50,11 +51,11 @@ class LiveTrackingScreen extends StatelessWidget {
                           BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 10),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(Icons.directions_bike_rounded, size: 16, color: Color(0xFF2563EB)),
                           SizedBox(width: 6),
-                          Text('1.8 km away', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                          Text('18_km_away'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                         ],
                       ),
                     ),
@@ -70,7 +71,7 @@ class LiveTrackingScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -93,31 +94,31 @@ class LiveTrackingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Arrival Banner Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Ramesh is on the way 🛵', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('ramesh_is_on_the_way'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           SizedBox(height: 2),
-                          Text('Est. Arrival in 12 Minutes', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
+                          Text('est_arrival_in_12_minutes'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(10)),
-                        child: const Text('ON TIME', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
+                        child: Text('on_time'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF16A34A))),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 18),
-                  const Divider(color: Color(0xFFF1F5F9), height: 1),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 18),
+                  Divider(color: Color(0xFFF1F5F9), height: 1),
+                  SizedBox(height: 16),
 
                   // Worker Strip
                   Row(
@@ -130,43 +131,43 @@ class LiveTrackingScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: const Color(0xFF2563EB), width: 1.5),
                         ),
-                        child: const Icon(Icons.person_rounded, size: 30, color: Color(0xFF2563EB)),
+                        child: Icon(Icons.person_rounded, size: 30, color: Color(0xFF2563EB)),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      SizedBox(width: 12),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Ramesh Kumar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('ramesh_kumar'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
-                            Text('Hero Splendor • KA-05-EX-4921', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            Text('hero_splendor_ka05ex4921'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           ],
                         ),
                       ),
                       IconButton(
                         icon: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                          child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 20),
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                          child: Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 20),
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Calling technician Ramesh Kumar (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                            const SnackBar(content: Text('calling_technician_ramesh_kumar_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                           );
                         },
                       ),
                       IconButton(
                         icon: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                          child: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 20),
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                          child: Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF2563EB), size: 20),
                         ),
                         onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   // Action Buttons: Share Location & Cancel
                   Row(
@@ -175,39 +176,39 @@ class LiveTrackingScreen extends StatelessWidget {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Live tracking link copied to clipboard!')),
+                              const SnackBar(content: Text('live_tracking_link_copied_to'.tr(context))),
                             );
                           },
-                          icon: const Icon(Icons.share_location_rounded, size: 18),
-                          label: const Text('Share Live Status'),
+                          icon: Icon(Icons.share_location_rounded, size: 18),
+                          label: Text('share_live_status'.tr(context)),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: Color(0xFFE2E8F0)),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
                             showDialog(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Service Start OTP'),
-                                content: const Text('Share code 4829 with technician Ramesh Kumar when he arrives.'),
+                                title: Text('service_start_otp'.tr(context)),
+                                content: Text('share_code_4829_with_technician'.tr(context)),
                                 actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx), child: Text('ok'.tr(context))),
                                 ],
                               ),
                             );
                           },
-                          icon: const Icon(Icons.qr_code_rounded, size: 18),
-                          label: const Text('Show OTP 4829'),
+                          icon: Icon(Icons.qr_code_rounded, size: 18),
+                          label: Text('show_otp_4829'.tr(context)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             elevation: 0,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),

@@ -2,6 +2,7 @@
 // lib/customer/payment/invoice_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class InvoiceScreen extends StatelessWidget {
   const InvoiceScreen({super.key});
@@ -12,20 +13,19 @@ class InvoiceScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Tax Invoice',
+        title: Text('tax_invoice'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_outlined, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.share_outlined, color: Color(0xFF2563EB)),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sharing Tax Invoice #KS-INV-9812...')),
+                const SnackBar(content: Text('sharing_tax_invoice_ksinv9812'.tr(context))),
               );
             },
           ),
@@ -34,12 +34,12 @@ class InvoiceScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             children: [
               // ── Invoice Card ─────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(22),
+                padding: EdgeInsets.all(22),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -55,27 +55,27 @@ class InvoiceScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             Icon(Icons.handyman_rounded, color: Color(0xFF2563EB), size: 26),
                             SizedBox(width: 8),
-                            Text('Ally', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                            Text('ally'.tr(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(8)),
-                          child: const Text('PAID', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Color(0xFF16A34A))),
+                          child: Text('paid'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Color(0xFF16A34A))),
                         ),
                       ],
                     ),
 
-                    const SizedBox(height: 20),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 20),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 16),
 
                     // Meta Row 1: Invoice & Booking ID
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _MetaText(label: 'Invoice No.', val: '#KS-INV-9812'),
@@ -83,10 +83,10 @@ class InvoiceScreen extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
                     // Meta Row 2: Date & Customer
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _MetaText(label: 'Date', val: '31 July 2026, 11:30 AM'),
@@ -94,52 +94,52 @@ class InvoiceScreen extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 20),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 20),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 16),
 
                     // Professional & Service Info
-                    const Text('Service Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 8),
-                    const Text('Switchboard & Wiring Repair', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
-                    const SizedBox(height: 4),
-                    const Text('Assigned Professional: Ramesh Kumar (Electrician)', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                    Text('service_details'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                    SizedBox(height: 8),
+                    Text('switchboard_wiring_repair'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                    SizedBox(height: 4),
+                    Text('assigned_professional_ramesh_kumar_electrician'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
 
-                    const SizedBox(height: 20),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 20),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
+                    SizedBox(height: 16),
 
                     // Line Items
-                    const Text('Amount Breakdown', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 12),
+                    Text('amount_breakdown'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                    SizedBox(height: 12),
 
                     _buildLineItem('Service Charge', '₹349.00'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     _buildLineItem('Inspection Fee', '₹99.00'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     _buildLineItem('Safety & Platform Fee', '₹29.00'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     _buildLineItem('Taxes & GST (18%)', '₹47.00'),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     _buildLineItem('Discount (ALLY50)', '-₹100.00', isDiscount: true),
 
-                    const SizedBox(height: 16),
-                    const Divider(color: Color(0xFFE2E8F0), height: 1),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 16),
+                    Divider(color: Color(0xFFE2E8F0), height: 1),
+                    SizedBox(height: 14),
 
                     // Grand Total
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Amount Paid', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                        Text('₹377.00', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                        Text('total_amount_paid'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                        Text('37700'.tr(context), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                       ],
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Action Buttons ────────────────────────────────────────
               Row(
@@ -149,32 +149,32 @@ class InvoiceScreen extends StatelessWidget {
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Invoice PDF downloaded to device storage.'),
+                            content: Text('invoice_pdf_downloaded_to_device'.tr(context)),
                             backgroundColor: Color(0xFF2563EB),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.download_rounded, size: 18),
-                      label: const Text('Download PDF'),
+                      icon: Icon(Icons.download_rounded, size: 18),
+                      label: Text('download_pdf'.tr(context)),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFF2563EB)),
                         foregroundColor: const Color(0xFF2563EB),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.home_rounded, size: 18),
-                      label: const Text('Back to Home'),
+                      icon: Icon(Icons.home_rounded, size: 18),
+                      label: Text('back_to_home'.tr(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
@@ -182,7 +182,7 @@ class InvoiceScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -218,9 +218,9 @@ class _MetaText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
-        const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+        Text(label, style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+        SizedBox(height: 2),
+        Text(val, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
       ],
     );
   }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import 'onboarding_widgets.dart';
+import '../../l10n/app_translations.dart';
 
 class OnboardingPage3 extends StatelessWidget {
   const OnboardingPage3({super.key});
@@ -19,10 +20,10 @@ class OnboardingPage3 extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Container(
                       height: 270,
                       width: double.infinity,
@@ -56,7 +57,7 @@ class OnboardingPage3 extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.all(24),
+                            padding: EdgeInsets.all(24),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
@@ -68,7 +69,7 @@ class OnboardingPage3 extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.manage_search_rounded,
                               size: 62,
                               color: Color(0xFF2563EB),
@@ -78,10 +79,9 @@ class OnboardingPage3 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 36),
+                    SizedBox(height: 36),
 
-                    const Text(
-                      'Inspection Before\nRepair',
+                    Text('inspection_beforenrepair'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28,
@@ -92,10 +92,9 @@ class OnboardingPage3 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
 
-                    const Text(
-                      'Not sure what\'s wrong? Book an inspection.\nLet professionals diagnose before repair.',
+                    Text('not_sure_what_2'.tr(context)s wrong? Book an inspection.\nLet professionals diagnose before repair.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -105,7 +104,7 @@ class OnboardingPage3 extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                   ],
                 ),
               ),

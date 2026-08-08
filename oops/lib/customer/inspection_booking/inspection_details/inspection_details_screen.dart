@@ -8,6 +8,7 @@ import '../../../app/theme/app_dimensions.dart';
 import '../../../models/address_model.dart';
 import '../../../services/address_service.dart';
 import '../../../services/api_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionDetailsScreen extends StatefulWidget {
   const InspectionDetailsScreen({super.key});
@@ -91,43 +92,42 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
       builder: (ctx) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Attach Photos or Videos',
+                Text('attach_photos_or_videos'.tr(context),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 ListTile(
-                  leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
-                  title: const Text('Take Photo (Camera)'),
+                  leading: Icon(Icons.camera_alt_rounded, color: AppColors.primary),
+                  title: Text('take_photo_camera'.tr(context)),
                   onTap: () {
                     Navigator.pop(ctx);
                     _pickAndUploadMedia(ImageSource.camera, isVideo: false);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
-                  title: const Text('Choose Photo from Gallery'),
+                  leading: Icon(Icons.photo_library_rounded, color: AppColors.primary),
+                  title: Text('choose_photo_from_gallery'.tr(context)),
                   onTap: () {
                     Navigator.pop(ctx);
                     _pickAndUploadMedia(ImageSource.gallery, isVideo: false);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.videocam_rounded, color: AppColors.primary),
-                  title: const Text('Record Video (Camera)'),
+                  leading: Icon(Icons.videocam_rounded, color: AppColors.primary),
+                  title: Text('record_video_camera'.tr(context)),
                   onTap: () {
                     Navigator.pop(ctx);
                     _pickAndUploadMedia(ImageSource.camera, isVideo: true);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.video_library_rounded, color: AppColors.primary),
-                  title: const Text('Choose Video from Gallery'),
+                  leading: Icon(Icons.video_library_rounded, color: AppColors.primary),
+                  title: Text('choose_video_from_gallery'.tr(context)),
                   onTap: () {
                     Navigator.pop(ctx);
                     _pickAndUploadMedia(ImageSource.gallery, isVideo: true);
@@ -211,7 +211,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
     if (_problemDescController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please describe the problem symptoms for inspection.'),
+          content: Text('please_describe_the_problem_symptoms'.tr(context)),
           backgroundColor: AppColors.error,
         ),
       );
@@ -221,7 +221,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select or add a service address.'),
+          content: Text('please_select_or_add_a'.tr(context)),
           backgroundColor: AppColors.error,
         ),
       );
@@ -261,13 +261,13 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Column(
+        title: Column(
           children: [
-            Text('Step 1 of 2', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
-            Text('Request Inspection (₹99)', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            Text('step_1_of_2'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
+            Text('request_inspection_99'.tr(context), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
           ],
         ),
         centerTitle: true,
@@ -276,19 +276,19 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Diagnostic Header Banner ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFBFDBFE)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.search_rounded, color: AppColors.primary, size: 28),
                       SizedBox(width: 12),
@@ -296,9 +296,9 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Doorstep Technical Inspection', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.primary)),
+                            Text('doorstep_technical_inspection'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.primary)),
                             SizedBox(height: 2),
-                            Text('A verified expert will visit, diagnose the problem, and provide an accurate upfront quotation.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3)),
+                            Text('a_verified_expert_will_visit'.tr(context), style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3)),
                           ],
                         ),
                       ),
@@ -306,11 +306,11 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Category Selection ────────────────────────────────────
-                const Text('Select Category', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 10),
+                Text('select_category'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 10),
                 SizedBox(
                   height: 40,
                   child: ListView.builder(
@@ -320,7 +320,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                       final item = _categories[idx];
                       final isSelected = _selectedCategorySlug == item['slug'];
                       return Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.only(right: 8),
                         child: ChoiceChip(
                           label: Text('${item['icon']} ${item['name']}'),
                           selected: isSelected,
@@ -339,53 +339,53 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Type of Work ──────────────────────────────────────────
-                const Text('Type of Work / Sub-Area', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
+                Text('type_of_work_subarea'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 8),
                 TextField(
                   onChanged: (val) => _selectedTypeOfWork = val,
                   decoration: InputDecoration(
                     hintText: 'e.g. MCB Tripping, Ceiling Leakage, Noise Diagnosis',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Problem Description ──────────────────────────────────
-                const Text('Describe Problem Symptoms *', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
+                Text('describe_problem_symptoms'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 8),
                 TextField(
                   controller: _problemDescController,
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintText: 'Provide details on what issue is occurring so the technician brings right tools...',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    contentPadding: const EdgeInsets.all(14),
+                    contentPadding: EdgeInsets.all(14),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Upload Photos/Videos ──────────────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Upload Photos / Videos', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                    Text('upload_photos_videos'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                     TextButton.icon(
                       onPressed: _isUploadingImage ? null : _showMediaPickerOptions,
                       icon: _isUploadingImage
-                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.add_a_photo_rounded, size: 16),
+                          ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                          : Icon(Icons.add_a_photo_rounded, size: 16),
                       label: Text(_isUploadingImage ? 'Uploading...' : 'Add Media'),
                     ),
                   ],
                 ),
                 if (_uploadedPhotos.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   SizedBox(
                     height: 80,
                     child: ListView.builder(
@@ -397,7 +397,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                             Container(
                               width: 80,
                               height: 80,
-                              margin: const EdgeInsets.only(right: 10),
+                              margin: EdgeInsets.only(right: 10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 image: DecorationImage(
@@ -412,9 +412,9 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                               child: GestureDetector(
                                 onTap: () => _removeImage(idx),
                                 child: Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                                  child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                                  padding: EdgeInsets.all(2),
+                                  decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                                  child: Icon(Icons.close_rounded, size: 14, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -425,18 +425,18 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                   ),
                 ],
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Select Address ────────────────────────────────────────
-                const Text('Select Service Address *', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 10),
+                Text('select_service_address'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 10),
                 if (_isLoadingAddresses)
                   const CircularProgressIndicator()
                 else if (_savedAddresses.isEmpty)
                   TextButton.icon(
                     onPressed: _fetchAddresses,
-                    icon: const Icon(Icons.add_location_alt_rounded),
-                    label: const Text('Refresh / Add Saved Address'),
+                    icon: Icon(Icons.add_location_alt_rounded),
+                    label: Text('refresh_add_saved_address'.tr(context)),
                   )
                 else
                   DropdownButtonFormField<AddressModel>(
@@ -450,27 +450,27 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                     onChanged: (val) => setState(() => _selectedAddress = val),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     ),
                   ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Schedule Visit Date & Time Slot ───────────────────────
-                const Text('Preferred Visit Date & Time *', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 10),
+                Text('preferred_visit_date_time'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: _selectDate,
-                        icon: const Icon(Icons.calendar_today_rounded, size: 18),
+                        icon: Icon(Icons.calendar_today_rounded, size: 18),
                         label: Text('${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
                   children: _timeSlots.map((slot) {
@@ -485,18 +485,18 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                   }).toList(),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Additional Notes ─────────────────────────────────────
-                const Text('Additional Notes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
+                Text('additional_notes'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                SizedBox(height: 8),
                 TextField(
                   controller: _notesController,
                   maxLines: 2,
                   decoration: InputDecoration(
                     hintText: 'Landmark, gate code, or specific instructions for inspector...',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    contentPadding: const EdgeInsets.all(14),
+                    contentPadding: EdgeInsets.all(14),
                   ),
                 ),
               ],
@@ -509,7 +509,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -527,10 +527,10 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Continue to Inspection Summary (₹99)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      Text('continue_to_inspection_summary_99'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),
                     ],

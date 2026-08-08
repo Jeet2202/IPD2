@@ -15,24 +15,24 @@ class WorkerEarningsDashboardScreen extends StatefulWidget {
 
 class _WorkerEarningsDashboardScreenState
     extends State<WorkerEarningsDashboardScreen> {
-  final List<Map<String, String>> _recentTransactions = [
+  List<Map<String, String>> get _recentTransactions => [
     {
-      'title': 'AC Maintenance Repair #JOB-8821',
-      'date': 'Today, 4:15 PM',
+      'title': '${'ac_maintenance_repair'.tr(context)} #JOB-8821',
+      'date': 'today_415pm'.tr(context),
       'amount': '+ ₹ 850',
-      'status': 'Credited',
+      'status': 'credited'.tr(context),
     },
     {
-      'title': 'MCB Switch Replacement #JOB-8814',
-      'date': 'Yesterday, 2:30 PM',
+      'title': '${'mcb_switch_replacement'.tr(context)} #JOB-8814',
+      'date': 'yesterday_230pm'.tr(context),
       'amount': '+ ₹ 1,200',
-      'status': 'Credited',
+      'status': 'credited'.tr(context),
     },
     {
-      'title': 'Weekly Automatic Payout #PAY-9921',
-      'date': '28 Jul 2026',
+      'title': '${'weekly_automatic_payout'.tr(context)} #PAY-9921',
+      'date': 'date_28_jul_2026'.tr(context),
       'amount': '- ₹ 12,400',
-      'status': 'Withdrawn',
+      'status': 'withdrawn'.tr(context),
     },
   ];
 

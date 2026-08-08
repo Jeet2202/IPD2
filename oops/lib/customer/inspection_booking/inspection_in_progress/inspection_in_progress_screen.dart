@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class InspectionInProgressScreen extends StatefulWidget {
   const InspectionInProgressScreen({super.key});
@@ -26,11 +27,10 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Live Inspection Status',
+        title: Text('live_inspection_status'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -38,13 +38,13 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Active Status Highlight ──────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -59,18 +59,18 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                      child: const Icon(Icons.saved_search_rounded, color: Colors.white, size: 30),
+                      child: Icon(Icons.saved_search_rounded, color: Colors.white, size: 30),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('DIAGNOSIS ACTIVE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                          Text('diagnosis_active'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                           SizedBox(height: 2),
-                          Text('Inspecting Main DB (~80%)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
+                          Text('inspecting_main_db_80'.tr(context), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white)),
                         ],
                       ),
                     ),
@@ -78,11 +78,11 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Inspector Profile Card ─────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -93,29 +93,29 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                     Container(
                       width: 50,
                       height: 50,
-                      decoration: const BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
-                      child: const Icon(Icons.engineering_rounded, size: 30, color: Color(0xFF2563EB)),
+                      decoration: BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
+                      child: Icon(Icons.engineering_rounded, size: 30, color: Color(0xFF2563EB)),
                     ),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Sunil Verma', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('sunil_verma'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           SizedBox(height: 2),
-                          Text('Senior Inspector on site', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                          Text('senior_inspector_on_site'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                         ],
                       ),
                     ),
                     IconButton(
                       icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-                        child: const Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
+                        child: Icon(Icons.call_rounded, color: Color(0xFF2563EB), size: 18),
                       ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Calling Inspector Sunil Verma (+91 9876543210)...'), backgroundColor: Color(0xFF16A34A)),
+                          const SnackBar(content: Text('calling_inspector_sunil_verma_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                         );
                       },
                     ),
@@ -123,14 +123,14 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Timeline Card ───────────────────────────────────────
-              const Text('Inspection Timeline', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 12),
+              Text('inspection_timeline'.tr(context), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 12),
 
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -160,9 +160,9 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                                 ),
                                 child: Center(
                                   child: isDone
-                                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
+                                      ? Icon(Icons.check_rounded, color: Colors.white, size: 14)
                                       : (isActive
-                                          ? Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle))
+                                          ? Container(width: 8, height: 8, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle))
                                           : null),
                                 ),
                               ),
@@ -170,16 +170,16 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                                 Expanded(
                                   child: Container(
                                     width: 2,
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin: EdgeInsets.symmetric(vertical: 4),
                                     color: isDone ? const Color(0xFF16A34A) : const Color(0xFFE2E8F0),
                                   ),
                                 ),
                             ],
                           ),
-                          const SizedBox(width: 14),
+                          SizedBox(width: 14),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 18.0),
+                              padding: EdgeInsets.only(bottom: 18.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -215,17 +215,17 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Inspector Notes Card ─────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBEB),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: const Color(0xFFFCD34D)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.notes_rounded, color: Color(0xFFD97706), size: 20),
@@ -234,7 +234,7 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Live Observation by Sunil', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
+                          Text('live_observation_by_sunil'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
                           SizedBox(height: 2),
                           Text(
                             '"Detected thermal burn on 32A DP MCB terminal. Generating itemized repair quote..."',
@@ -247,7 +247,7 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Support Row ──────────────────────────────────────────
               Row(
@@ -255,27 +255,27 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.customerChat),
-                      icon: const Icon(Icons.chat_outlined, size: 18),
-                      label: const Text('Chat with Sunil'),
+                      icon: Icon(Icons.chat_outlined, size: 18),
+                      label: Text('chat_with_sunil'.tr(context)),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFF2563EB)),
                         foregroundColor: const Color(0xFF2563EB),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
-                      icon: const Icon(Icons.support_agent_rounded, size: 18),
-                      label: const Text('Contact Support'),
+                      icon: Icon(Icons.support_agent_rounded, size: 18),
+                      label: Text('contact_support'.tr(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
@@ -283,15 +283,15 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ],
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.inspectionReport),
-                  icon: const Icon(Icons.assessment_rounded, size: 20),
-                  label: const Text('View Diagnostic Report & Quote', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.assessment_rounded, size: 20),
+                  label: Text('view_diagnostic_report_quote'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF16A34A),
                     foregroundColor: Colors.white,
@@ -301,7 +301,7 @@ class _InspectionInProgressScreenState extends State<InspectionInProgressScreen>
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

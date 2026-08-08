@@ -1,6 +1,8 @@
 // File: lib/worker/profile/bank_details/bank_details_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerBankDetailsScreen extends StatefulWidget {
   const WorkerBankDetailsScreen({super.key});
@@ -41,11 +43,11 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Bank Details & Payouts',
+        title: Text(
+          'bank_details_payouts'.tr(context),
           style: TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
@@ -53,17 +55,23 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Bank Header Illustration Card
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -82,33 +90,33 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.account_balance_rounded,
                         color: Colors.white,
                         size: 32,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Direct Bank Settlement',
+                          Text(
+                            'direct_bank_settlement'.tr(context),
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
-                            'Secure automated payouts directly to your savings account',
+                            'secure_automated_payouts'.tr(context),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.white.withOpacity(0.85),
@@ -121,25 +129,25 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Verification Status Banner
               if (_isVerified)
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: const Color(0xFFD1FAE5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                         color: const Color(0xFF10B981).withOpacity(0.3)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.verified_rounded,
                           color: Color(0xFF10B981), size: 20),
                       SizedBox(width: 10),
                       Text(
-                        'Account Status: Verified & Active',
+                        'account_status_verified'.tr(context),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -150,26 +158,26 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                   ),
                 ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Preferred Payout Method Selector
-              _buildFieldLabel('Preferred Payout Method'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('preferred_payout_method'.tr(context)),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: _buildSelectCard(
-                      title: 'Bank Transfer',
+                      title: 'bank_transfer'.tr(context),
                       icon: Icons.account_balance_rounded,
                       isSelected: _preferredMethod == 'Bank Transfer',
                       onTap: () =>
                           setState(() => _preferredMethod = 'Bank Transfer'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: _buildSelectCard(
-                      title: 'UPI / VPA',
+                      title: 'upi_vpa'.tr(context),
                       icon: Icons.qr_code_rounded,
                       isSelected: _preferredMethod == 'UPI / VPA',
                       onTap: () =>
@@ -179,107 +187,107 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 ],
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Account Holder Name
-              _buildFieldLabel('Account Holder Name'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('account_holder_name'.tr(context)),
+              SizedBox(height: 8),
               _buildTextField(
                 controller: _accountHolderController,
-                hintText: 'As per bank records',
+                hintText: 'as_per_bank_records'.tr(context),
                 icon: Icons.person_outline_rounded,
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Bank Name
-              _buildFieldLabel('Bank Name'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('bank_name'.tr(context)),
+              SizedBox(height: 8),
               _buildTextField(
                 controller: _bankNameController,
-                hintText: 'e.g. State Bank of India, HDFC',
+                hintText: 'eg_sbi_hdfc'.tr(context),
                 icon: Icons.account_balance_outlined,
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Account Number
-              _buildFieldLabel('Account Number'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('account_number'.tr(context)),
+              SizedBox(height: 8),
               _buildTextField(
                 controller: _accountNumberController,
-                hintText: 'Enter bank account number',
+                hintText: 'enter_account_number'.tr(context),
                 icon: Icons.numbers_rounded,
                 keyboardType: TextInputType.number,
                 obscureText: true,
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // Confirm Account Number
-              _buildFieldLabel('Confirm Account Number'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('confirm_account_number'.tr(context)),
+              SizedBox(height: 8),
               _buildTextField(
                 controller: _confirmAccountNumberController,
-                hintText: 'Re-enter account number',
+                hintText: 're_enter_account_number'.tr(context),
                 icon: Icons.lock_outline_rounded,
                 keyboardType: TextInputType.number,
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // IFSC Code & Verify Button Row
-              _buildFieldLabel('IFSC Code'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('ifsc_code'.tr(context)),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: _buildTextField(
                       controller: _ifscController,
-                      hintText: 'e.g. SBIN0001234',
+                      hintText: 'eg_sbin'.tr(context),
                       icon: Icons.code_rounded,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('IFSC Verified: SBI Main Branch'),
-                          backgroundColor: Color(0xFF10B981),
+                        SnackBar(
+                          content: Text('ifsc_verified_success'.tr(context)),
+                          backgroundColor: const Color(0xFF10B981),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0EA5E9),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                           horizontal: 16, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text('Verify'),
+                    child: Text('verify'.tr(context)),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
               // UPI ID (Optional)
-              _buildFieldLabel('UPI ID (Optional)'),
-              const SizedBox(height: 8),
+              _buildFieldLabel('upi_id_optional'.tr(context)),
+              SizedBox(height: 8),
               _buildTextField(
                 controller: _upiController,
-                hintText: 'username@upi or mobile@paytm',
+                hintText: 'upi_hint'.tr(context),
                 icon: Icons.phonelink_ring_rounded,
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Payout Frequency Selector Card
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(20),
@@ -288,23 +296,23 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Payout Schedule Frequency',
+                    Text(
+                      'payout_schedule_frequency'.tr(context),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Choose how often your earnings are transferred',
+                    SizedBox(height: 4),
+                    Text(
+                      'choose_how_often_transferred'.tr(context),
                       style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF64748B),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     Row(
                       children: ['Daily', 'Weekly'].map((freq) {
                         final selected = _payoutFrequency == freq;
@@ -316,8 +324,8 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                               });
                             },
                             child: Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              margin: EdgeInsets.only(right: 8),
+                              padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selected
                                     ? const Color(0xFF2563EB)
@@ -332,8 +340,8 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                               child: Center(
                                 child: Text(
                                   freq == 'Daily'
-                                      ? 'Daily (Instant)'
-                                      : 'Weekly (Every Mon)',
+                                      ? 'daily_instant'.tr(context)
+                                      : 'weekly_mon'.tr(context),
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: selected
@@ -354,7 +362,7 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Save Details Button
               SizedBox(
@@ -363,9 +371,9 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Bank details saved securely!'),
-                        backgroundColor: Color(0xFF10B981),
+                      SnackBar(
+                        content: Text('bank_details_saved'.tr(context)),
+                        backgroundColor: const Color(0xFF10B981),
                       ),
                     );
                   },
@@ -377,8 +385,8 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Save Bank Account',
+                  child: Text(
+                    'save_bank_account'.tr(context),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -387,7 +395,7 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -398,7 +406,7 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: Color(0xFF334155),
@@ -419,19 +427,19 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+        hintStyle: TextStyle(color: Color(0xFF94A3B8)),
         prefixIcon: Icon(icon, color: const Color(0xFF64748B)),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderSide: BorderSide(color: Color(0xFFE2E8F0)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+          borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
         ),
       ),
     );
@@ -446,7 +454,7 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(16),
@@ -463,7 +471,7 @@ class _WorkerBankDetailsScreenState extends State<WorkerBankDetailsScreen> {
                 color: isSelected
                     ? const Color(0xFF2563EB)
                     : const Color(0xFF64748B)),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(

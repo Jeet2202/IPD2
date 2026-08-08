@@ -145,7 +145,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -154,14 +154,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             }
           },
         ),
-        title: Text(
-          'my_bookings'.tr(context),
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+        title: Text('mybookings'.tr(context).tr(context),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',
             onPressed: () => LanguageSelectorWidget.show(context),
           ),
@@ -172,8 +171,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           unselectedLabelColor: const Color(0xFF64748B),
           indicatorColor: AppColors.primary,
           indicatorWeight: 3,
-          labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-          tabs: const [
+          labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+          tabs: [
             Tab(text: 'Direct Services'),
             Tab(text: 'Inspection Visits'),
           ],
@@ -184,18 +183,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           // ── Filter Chips ───────────────────────────────────────────────
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 12),
             child: SizedBox(
               height: 38,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 itemCount: _filters.length,
                 itemBuilder: (context, index) {
                   final filter = _filters[index];
                   final isSelected = _selectedFilter == filter;
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: EdgeInsets.only(right: 8.0),
                     child: ChoiceChip(
                       label: Text(filter),
                       selected: isSelected,
@@ -262,24 +261,24 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           },
           type: BottomNavigationBarType.fixed,          selectedItemColor: AppColors.primary,
           unselectedItemColor: const Color(0xFF94A3B8),
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
           elevation: 0,
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home_rounded),
+              icon: Icon(Icons.home_rounded),
               label: 'home'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_today_rounded),
+              icon: Icon(Icons.calendar_today_rounded),
               label: 'my_bookings'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.headset_mic_rounded),
+              icon: Icon(Icons.headset_mic_rounded),
               label: 'support'.tr(context),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.person_rounded),
+              icon: Icon(Icons.person_rounded),
               label: 'profile'.tr(context),
             ),
           ],
@@ -296,9 +295,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         },
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text(
-          'Book New Service',
+        icon: Icon(Icons.add_rounded),
+        label: Text('book_new_service'.tr(context),
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -347,24 +345,23 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     ];
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Predefined Popular Services',
+              Text('predefined_popular_services'.tr(context),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
               ),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, AppRoutes.customerCategories),
-                child: const Text('View All', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                child: Text('view_all'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary)),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SizedBox(
             height: 110,
             child: ListView.builder(
@@ -385,8 +382,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                   },
                   child: Container(
                     width: 145,
-                    margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.all(12),
+                    margin: EdgeInsets.only(right: 12),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -403,16 +400,16 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                           srv.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '₹${srv.basePrice.toStringAsFixed(0)}',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
                             ),
-                            const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.primary),
+                            Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.primary),
                           ],
                         ),
                       ],
@@ -437,8 +434,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
@@ -450,7 +447,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             BoxShadow(color: const Color(0xFF0F766E).withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(Icons.shield_outlined, color: Colors.white, size: 32),
             SizedBox(width: 14),
@@ -458,9 +455,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Unsure what is broken?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text('unsure_what_is_broken'.tr(context), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                   SizedBox(height: 2),
-                  Text('Request an expert technician diagnostic visit (₹99)', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  Text('request_an_expert_technician_diagnostic'.tr(context), style: TextStyle(color: Colors.white70, fontSize: 11)),
                 ],
               ),
             ),
@@ -473,7 +470,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
 
   Widget _buildTabBody(int tabIndex) {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(color: AppColors.primary),
       );
     }
@@ -481,22 +478,22 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
     if (_errorMessage != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 56, color: Color(0xFF94A3B8)),
-              const SizedBox(height: 16),
+              Icon(Icons.cloud_off_rounded, size: 56, color: Color(0xFF94A3B8)),
+              SizedBox(height: 16),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: _fetchBookings,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Retry'),
+                icon: Icon(Icons.refresh_rounded),
+                label: Text('retry'.tr(context)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -518,34 +515,34 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           child: Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 tabIndex == 0 ? _buildPredefinedServicesHeader() : _buildInspectionHeader(),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
                 Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
                     color: Color(0xFFEFF6FF),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.calendar_today_outlined, size: 48, color: AppColors.primary),
+                  child: Icon(Icons.calendar_today_outlined, size: 48, color: AppColors.primary),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 Text(
                   tabIndex == 0 ? 'No Direct Service Bookings' : 'No Inspection Requests',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _selectedFilter == 'All'
                       ? 'You have not placed any service bookings yet.'
                       : 'No bookings found with status "$_selectedFilter".',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     if (tabIndex == 1) {
@@ -561,12 +558,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                   style: ElevatedButton.styleFrom(
                     backgroundColor: tabIndex == 1 ? const Color(0xFF0F766E) : AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
                     tabIndex == 1 ? 'Request Inspection Visit' : 'Browse Predefined Services',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -580,7 +577,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       onRefresh: _fetchBookings,
       color: AppColors.primary,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         itemCount: bookings.length + 1,
         itemBuilder: (context, index) {
@@ -592,8 +589,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
           final statusColor = _getStatusColor(b.status);
 
           return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(18),
+            margin: EdgeInsets.only(bottom: 16),
+            padding: EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(22),
@@ -620,10 +617,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                         children: [
                           Text(
                             b.bookingNumber,
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.primary),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: b.bookingType == 'inspection_request'
                                   ? const Color(0xFFFEF3C7)
@@ -652,9 +649,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -668,49 +665,48 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   b.serviceSnapshot.name,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 16),
-                    const SizedBox(width: 4),
+                    Icon(Icons.location_on_outlined, size: 16),
+                    SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         '${b.addressSnapshot.label} • ${b.addressSnapshot.city}',
-                        style: const TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 12),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.schedule_rounded, size: 16),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 8),
+                    Icon(Icons.schedule_rounded, size: 16),
+                    SizedBox(width: 4),
                     Text(
                       '${b.scheduledDate ?? 'ASAP'} ${b.scheduledTime != null ? '• ${b.scheduledTime}' : ''}',
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
                 if (b.isWorkCompleted) ...[
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF0FDF4),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: const Color(0xFF86EFAC)),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.verified_rounded, size: 16, color: Color(0xFF0D9488)),
                         SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            'Work completed by worker. Tap to review & confirm.',
+                          child: Text('work_completed_by_worker_tap'.tr(context),
                             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF115E59)),
                           ),
                         ),
@@ -720,9 +716,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 ],
                 // ── Applicant count badge (only for PENDING marketplace bookings) ──
                 if (b.isPending && b.applicantCount > 0) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(10),
@@ -730,46 +726,45 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.people_alt_rounded, size: 15, color: Color(0xFF2563EB)),
-                        const SizedBox(width: 8),
+                        Icon(Icons.people_alt_rounded, size: 15, color: Color(0xFF2563EB)),
+                        SizedBox(width: 8),
                         Text(
                           '${b.applicantCount} worker${b.applicantCount == 1 ? '' : 's'} have applied for this job',
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF1D4ED8)),
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF1D4ED8)),
                         ),
                       ],
                     ),
                   ),
                 ],
                 if (b.isPending && b.applicantCount == 0) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFFBEB),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: const Color(0xFFFDE68A)),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.hourglass_empty_rounded, size: 15, color: Color(0xFFD97706)),
                         SizedBox(width: 8),
-                        Text(
-                          'Looking for available workers nearby...',
+                        Text('looking_for_available_workers_nearby'.tr(context),
                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
                         ),
                       ],
                     ),
                   ),
                 ],
-                const SizedBox(height: 14),
-                const Divider(color: Color(0xFFF1F5F9), height: 1),
-                const SizedBox(height: 12),
+                SizedBox(height: 14),
+                Divider(color: Color(0xFFF1F5F9), height: 1),
+                SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       '₹${b.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -787,7 +782,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                       ),
                       child: Text(
                         b.isWorkCompleted ? 'Confirm Work' : 'View Details',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
                       ),
                     ),
                   ],

@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
+import '../../l10n/app_translations.dart';
 
 class FavoriteProfessionalsScreen extends StatefulWidget {
   const FavoriteProfessionalsScreen({super.key});
@@ -54,8 +55,7 @@ class _FavoriteProfessionalsScreenState extends State<FavoriteProfessionalsScree
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Favorite Professionals',
+        title: Text('favorite_professionals'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -178,7 +178,7 @@ class _FavoriteProfessionalsScreenState extends State<FavoriteProfessionalsScree
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                     ),
-                                    child: const Text('Book Again', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                                    child: Text('book_again'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                                   ),
                                 ],
                               ),
@@ -209,9 +209,9 @@ class _FavoriteProfessionalsScreenState extends State<FavoriteProfessionalsScree
               child: const Icon(Icons.favorite_border_rounded, color: Color(0xFFEF4444), size: 40),
             ),
             const SizedBox(height: 16),
-            const Text('No Favorite Professionals Yet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+            Text('no_favorite_professionals_yet'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
             const SizedBox(height: 6),
-            const Text('Start adding your trusted professionals for quick 1-click rebooking.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+            Text('start_adding_your_trusted_professionals'.tr(context), textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
           ],
         ),
       ),

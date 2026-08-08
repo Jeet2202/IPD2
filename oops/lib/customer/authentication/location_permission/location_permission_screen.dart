@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class LocationPermissionScreen extends StatelessWidget {
   const LocationPermissionScreen({super.key});
@@ -11,10 +12,10 @@ class LocationPermissionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
             children: [
-              const Spacer(),
+              Spacer(),
 
               // ── Map Illustration Placeholder ───────────────────────
               Container(
@@ -47,7 +48,7 @@ class LocationPermissionScreen extends StatelessWidget {
 
                     // Floating Location Pin Card
                     Container(
-                      padding: const EdgeInsets.all(22),
+                      padding: EdgeInsets.all(22),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -59,7 +60,7 @@ class LocationPermissionScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.location_on_rounded,
                         size: 64,
                         color: Color(0xFF2563EB),
@@ -70,7 +71,7 @@ class LocationPermissionScreen extends StatelessWidget {
                     Positioned(
                       bottom: 28,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
@@ -82,13 +83,12 @@ class LocationPermissionScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.near_me_rounded, color: Color(0xFF10B981), size: 16),
                             SizedBox(width: 6),
-                            Text(
-                              '120+ Verified Pros Nearby',
+                            Text('120_verified_pros_nearby'.tr(context),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -103,11 +103,10 @@ class LocationPermissionScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
 
               // ── Heading ───────────────────────────────────────────
-              const Text(
-                'Enable Location',
+              Text('enable_location'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
@@ -117,11 +116,10 @@ class LocationPermissionScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // ── Subtitle ──────────────────────────────────────────
-              const Text(
-                'Find trusted professionals near your location for quick service & accurate pricing.',
+              Text('find_trusted_professionals_near_your'.tr(context),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -131,7 +129,7 @@ class LocationPermissionScreen extends StatelessWidget {
                 ),
               ),
 
-              const Spacer(),
+              Spacer(),
 
               // ── Large Allow Location Button ───────────────────────
               SizedBox(
@@ -149,13 +147,12 @@ class LocationPermissionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.my_location_rounded, size: 20),
                       SizedBox(width: 10),
-                      Text(
-                        'Allow Location Access',
+                      Text('allow_location_access'.tr(context),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -167,7 +164,7 @@ class LocationPermissionScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
 
               // ── Enter Location Manually Button ────────────────────
               SizedBox(
@@ -179,13 +176,12 @@ class LocationPermissionScreen extends StatelessWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF475569),
-                    side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+                    side: BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Enter Location Manually',
+                  child: Text('enter_location_manually'.tr(context),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -194,7 +190,7 @@ class LocationPermissionScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
             ],
           ),
         ),

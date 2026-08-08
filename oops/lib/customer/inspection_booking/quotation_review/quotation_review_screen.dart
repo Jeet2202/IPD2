@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class QuotationReviewScreen extends StatelessWidget {
   const QuotationReviewScreen({super.key});
@@ -13,17 +14,16 @@ class QuotationReviewScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Quotation Review',
+        title: Text('quotation_review'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_rounded, color: Color(0xFF2563EB)),
+            icon: Icon(Icons.download_rounded, color: Color(0xFF2563EB)),
             onPressed: () {},
           ),
         ],
@@ -32,13 +32,13 @@ class QuotationReviewScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Professional Header ────────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -49,17 +49,17 @@ class QuotationReviewScreen extends StatelessWidget {
                       Container(
                         width: 48,
                         height: 48,
-                        decoration: const BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
-                        child: const Icon(Icons.engineering_rounded, size: 28, color: Color(0xFF2563EB)),
+                        decoration: BoxDecoration(color: Color(0xFFDBEAFE), shape: BoxShape.circle),
+                        child: Icon(Icons.engineering_rounded, size: 28, color: Color(0xFF2563EB)),
                       ),
-                      const SizedBox(width: 14),
-                      const Expanded(
+                      SizedBox(width: 14),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Quotation by Sunil Verma', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                            Text('quotation_by_sunil_verma'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             SizedBox(height: 2),
-                            Text('Quote Ref: #QT-84920 • 30 July 2026', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                            Text('quote_ref_qt84920_30_july'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                           ],
                         ),
                       ),
@@ -67,14 +67,14 @@ class QuotationReviewScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Itemized Cost Breakdown ────────────────────────────
-                const Text('Itemized Cost Breakdown', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                const SizedBox(height: 10),
+                Text('itemized_cost_breakdown'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                SizedBox(height: 10),
 
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
@@ -83,57 +83,57 @@ class QuotationReviewScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildCostRow('Labor & Repair Charges', '₹450.00'),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       _buildCostRow('Havells 32A DP MCB Breaker', '₹550.00', subtitle: 'Genuine branded spare part'),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       _buildCostRow('4sqmm Heavy Copper Wire (2m)', '₹100.00'),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       _buildCostRow('Inspection Fee Adjustment', '-₹99.00', isDiscount: true, subtitle: '100% inspection fee credited'),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       _buildCostRow('Taxes & Platform GST (18%)', '₹249.00'),
 
-                      const SizedBox(height: 16),
-                      const Divider(color: Color(0xFFE2E8F0), height: 1),
-                      const SizedBox(height: 14),
+                      SizedBox(height: 16),
+                      Divider(color: Color(0xFFE2E8F0), height: 1),
+                      SizedBox(height: 14),
 
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Final Quotation Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
-                          Text('₹1,250.00', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
+                          Text('final_quotation_total'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
+                          Text('125000'.tr(context), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2563EB))),
                         ],
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // ── Warranty & Scope Card ──────────────────────────────
                 Container(
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Icon(Icons.shield_outlined, color: Color(0xFF2563EB), size: 20),
                           SizedBox(width: 8),
-                          Text('Includes 30-Day Warranty', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('includes_30day_warranty'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                         ],
                       ),
                       SizedBox(height: 6),
-                      Text('Covers free re-visit & replacement if MCB trips within 30 days.', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
+                      Text('covers_free_revisit_replacement_if'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 100),
+                SizedBox(height: 100),
               ],
             ),
           ),
@@ -144,7 +144,7 @@ class QuotationReviewScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              padding: EdgeInsets.fromLTRB(20, 14, 20, 24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -162,10 +162,10 @@ class QuotationReviewScreen extends StatelessWidget {
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Make Decision (Accept / Negotiate)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      Text('make_decision_accept_negotiate'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                       SizedBox(width: 8),
                       Icon(Icons.arrow_forward_rounded, size: 20),
                     ],
@@ -198,8 +198,8 @@ class QuotationReviewScreen extends StatelessWidget {
           ],
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 2),
-          Text(subtitle, style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
+          SizedBox(height: 2),
+          Text(subtitle, style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8))),
         ],
       ],
     );

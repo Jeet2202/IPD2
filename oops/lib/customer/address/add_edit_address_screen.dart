@@ -24,6 +24,7 @@ import '../../services/api_service.dart';
 import '../../services/location_service.dart';
 import '../../widgets/location_search_bar.dart';
 import 'map_picker_screen.dart';
+import '../../l10n/app_translations.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   /// Pass an existing [AddressModel] to pre-populate the form for editing.
@@ -368,7 +369,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     side: const BorderSide(color: _border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Cancel',
+                  child: Text('cancel'.tr(context),
                       style: TextStyle(color: _mutedText, fontWeight: FontWeight.w700)),
                 ),
               ),
@@ -387,7 +388,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: Text('settings'.tr(context), style: TextStyle(fontWeight: FontWeight.w700)),
                   ),
                 )
               else if (isDisabled)
@@ -404,7 +405,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Enable GPS', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: Text('enable_gps'.tr(context), style: TextStyle(fontWeight: FontWeight.w700)),
                   ),
                 ),
             ],
@@ -843,8 +844,7 @@ class _LocationPreviewCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Location Pinned',
+                Text('location_pinned'.tr(context),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,

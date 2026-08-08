@@ -1,6 +1,8 @@
 // File: lib/worker/onboarding/onboarding_page1.dart
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
+import '../../widgets/language_selector_widget.dart';
 
 class WorkerOnboardingPage1 extends StatelessWidget {
   const WorkerOnboardingPage1({super.key});
@@ -33,9 +35,9 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                             size: 18, color: Colors.white),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Ally Partner',
-                        style: TextStyle(
+                      Text(
+                        'ally_partner'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF0F172A),
@@ -56,9 +58,13 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                             color: Color(0xFFE2E8F0), width: 1),
                       ),
                     ),
-                    child: const Text('Skip',
-                        style: TextStyle(
+                    child: Text('skip'.tr(context),
+                        style: const TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w600)),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.language_rounded, color: Color(0xFF0F172A), size: 20),
+                    onPressed: () => LanguageSelectorWidget.show(context),
                   ),
                 ],
               ),
@@ -92,7 +98,7 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                             child: _buildBadge(
                               icon: Icons.payments_rounded,
                               iconColor: const Color(0xFF10B981),
-                              label: 'Daily Payouts',
+                              label: 'daily_payouts'.tr(context),
                             ),
                           ),
                           Positioned(
@@ -101,7 +107,7 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                             child: _buildBadge(
                               icon: Icons.schedule_rounded,
                               iconColor: const Color(0xFF2563EB),
-                              label: 'Flexible Hours',
+                              label: 'flexible_hours'.tr(context),
                             ),
                           ),
                           Container(
@@ -127,10 +133,10 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 36),
-                    const Text(
-                      'Start Earning on Your Schedule',
+                    Text(
+                      'start_earning_on_schedule'.tr(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
@@ -139,10 +145,10 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Accept jobs whenever you\'re available and grow your income with verified customers.',
+                    Text(
+                      'accept_jobs_grow_income'.tr(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                         color: Color(0xFF64748B),
@@ -199,14 +205,14 @@ class WorkerOnboardingPage1 extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Next',
-                            style: TextStyle(
+                        Text('next'.tr(context),
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w700)),
-                        SizedBox(width: 6),
-                        Icon(Icons.arrow_forward_rounded, size: 18),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.arrow_forward_rounded, size: 18),
                       ],
                     ),
                   ),

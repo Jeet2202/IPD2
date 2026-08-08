@@ -2,6 +2,7 @@
 // lib/customer/system/system_status/system_status_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 enum SystemState {
   maintenance,
@@ -111,7 +112,7 @@ class _SystemStatusScreenState extends State<SystemStatusScreen> {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('System Status Demo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+        title: Text('system_status_demo'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
         centerTitle: true,
       ),
       body: SafeArea(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class AdminLoginScreen extends StatelessWidget {
   const AdminLoginScreen({super.key});
@@ -6,8 +7,8 @@ class AdminLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Login Screen')),
-      body: const Center(child: Text('Admin Login Screen')),
+      appBar: AppBar(title: Text('admin_login_screen'.tr(context))),
+      body: const Center(child: Text('admin_login_screen'.tr(context))),
     );
   }
 }

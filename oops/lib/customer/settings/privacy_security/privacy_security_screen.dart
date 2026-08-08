@@ -2,6 +2,7 @@
 // lib/customer/settings/privacy_security/privacy_security_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class PrivacySecurityScreen extends StatefulWidget {
   const PrivacySecurityScreen({super.key});
@@ -20,11 +21,10 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Privacy & Security',
+        title: Text('privacy_security'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -32,13 +32,13 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Security Health Score ─────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: const Color(0xFFDCFCE7),
                   borderRadius: BorderRadius.circular(22),
@@ -47,18 +47,18 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle),
-                      child: const Icon(Icons.shield_rounded, color: Colors.white, size: 24),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle),
+                      child: Icon(Icons.shield_rounded, color: Colors.white, size: 24),
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
+                    SizedBox(width: 16),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Security Health: 95%', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF14532D))),
+                          Text('security_health_95'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF14532D))),
                           SizedBox(height: 2),
-                          Text('Your account is highly secure with 2FA enabled.', style: TextStyle(fontSize: 12, color: Color(0xFF15803D))),
+                          Text('your_account_is_highly_secure'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFF15803D))),
                         ],
                       ),
                     ),
@@ -66,11 +66,11 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Security Toggles ─────────────────────────────────────
-              const Text('ACCOUNT PROTECTION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('account_protection'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -81,20 +81,20 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.fingerprint_rounded, color: Color(0xFF2563EB), size: 22),
-                      title: const Text('Biometric Login', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      subtitle: const Text('Unlock app using Face ID or Fingerprint', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                      leading: Icon(Icons.fingerprint_rounded, color: Color(0xFF2563EB), size: 22),
+                      title: Text('biometric_login'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      subtitle: Text('unlock_app_using_face_id'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                       trailing: Switch(
                         value: _biometricEnabled,
                         activeColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _biometricEnabled = val),
                       ),
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     ListTile(
-                      leading: const Icon(Icons.phonelink_lock_rounded, color: Color(0xFF2563EB), size: 22),
-                      title: const Text('Two-Factor Authentication (2FA)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      subtitle: const Text('OTP required for login on new devices', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                      leading: Icon(Icons.phonelink_lock_rounded, color: Color(0xFF2563EB), size: 22),
+                      title: Text('twofactor_authentication_2fa'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      subtitle: Text('otp_required_for_login_on'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                       trailing: Switch(
                         value: _twoFactorEnabled,
                         activeColor: const Color(0xFF2563EB),
@@ -105,14 +105,14 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Active Sessions ──────────────────────────────────────
-              const Text('ACTIVE LOGGED-IN DEVICES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('active_loggedin_devices'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -120,31 +120,31 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.phone_iphone_rounded, color: Color(0xFF2563EB), size: 28),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    Icon(Icons.phone_iphone_rounded, color: Color(0xFF2563EB), size: 28),
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('iPhone 15 Pro (This Device)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                          Text('iphone_15_pro_this_device'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                           SizedBox(height: 2),
-                          Text('Bengaluru, India • Active Now', style: TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
+                          Text('bengaluru_india_active_now'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: const Text('Revoke', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
+                      child: Text('revoke'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFFEF4444))),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Data & Privacy Control ───────────────────────────────
-              const Text('DATA & PRIVACY CONTROL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
-              const SizedBox(height: 10),
+              Text('data_privacy_control'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8))),
+              SizedBox(height: 10),
 
               Container(
                 decoration: BoxDecoration(
@@ -155,26 +155,26 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.download_rounded, color: Color(0xFF2563EB), size: 22),
-                      title: const Text('Download My Data', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
-                      subtitle: const Text('Request a copy of your personal data archive', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                      leading: Icon(Icons.download_rounded, color: Color(0xFF2563EB), size: 22),
+                      title: Text('download_my_data'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      subtitle: Text('request_a_copy_of_your'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                       onTap: () {},
                     ),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    Divider(color: Color(0xFFF1F5F9), height: 1),
                     ListTile(
-                      leading: const Icon(Icons.cleaning_services_rounded, color: Color(0xFF2563EB), size: 22),
-                      title: const Text('Clear Search & Browsing History', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+                      leading: Icon(Icons.cleaning_services_rounded, color: Color(0xFF2563EB), size: 22),
+                      title: Text('clear_search_browsing_history'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                       onTap: () {},
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Delete Account Section ───────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEF2F2),
                   borderRadius: BorderRadius.circular(20),
@@ -182,27 +182,27 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 28),
-                    const SizedBox(width: 14),
-                    const Expanded(
+                    Icon(Icons.delete_forever_rounded, color: Color(0xFFEF4444), size: 28),
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Delete Account Permanently', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B))),
+                          Text('delete_account_permanently'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF991B1B))),
                           SizedBox(height: 2),
-                          Text('Irreversibly delete your profile, booking history & wallet.', style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D))),
+                          Text('irreversibly_delete_your_profile_booking'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF7F1D1D))),
                         ],
                       ),
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: const Text('Delete', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Color(0xFFEF4444))),
+                      child: Text('delete'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Color(0xFFEF4444))),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

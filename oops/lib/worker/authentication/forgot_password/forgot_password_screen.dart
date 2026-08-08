@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerForgotPasswordScreen extends StatefulWidget {
   const WorkerForgotPasswordScreen({super.key});
@@ -34,7 +36,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('If a partner account exists with $email, a password reset code has been sent.'),
+          content: Text('password_reset_code_sent'.tr(context).replaceAll('{email}', email)),
           backgroundColor: const Color(0xFF2563EB),
         ),
       );
@@ -45,7 +47,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
       );
     } catch (e) {
       if (!mounted) return;
-      final msg = e is ApiException ? e.message : 'Request failed: $e';
+      final msg = e is ApiException ? e.message : '${'request_failed'.tr(context)}: $e';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: Colors.red),
       );
@@ -56,26 +58,33 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           physics: const BouncingScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Container(
                   width: 72,
                   height: 72,
@@ -94,15 +103,15 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.lock_reset_rounded,
                     size: 38,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Partner Forgot Password',
+                SizedBox(height: 20),
+                Text(
+                  'partner_forgot_password'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
@@ -110,47 +119,47 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                     color: Color(0xFF0F172A),
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Enter your registered email address to receive a 6-digit OTP code.',
+                SizedBox(height: 8),
+                Text(
+                  'enter_registered_email'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Email Address',
+                  child: Text(
+                    'email_address'.tr(context),
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _emailCtr,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'name@example.com',
-                    hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
-                    prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF94A3B8), size: 20),
+                    hintText: 'email_example'.tr(context),
+                    hintStyle: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                    prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF94A3B8), size: 20),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                      borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Email address is required';
-                    if (!v.contains('@') || !v.contains('.')) return 'Enter a valid email address';
+                    if (v == null || v.trim().isEmpty) return 'email_required'.tr(context);
+                    if (!v.contains('@') || !v.contains('.')) return 'enter_valid_email'.tr(context);
                     return null;
                   },
                 ),
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
                 SizedBox(
                   width: double.infinity,
                   height: 54,
@@ -165,13 +174,13 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
                       ),
                     ),
                     child: _loading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                           )
-                        : const Text(
-                            'Send Reset OTP',
+                        : Text(
+                            'send_reset_otp'.tr(context),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                   ),

@@ -1,13 +1,39 @@
 // File: lib/worker/inspection/submission/submission_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerInspectionSubmissionScreen extends StatelessWidget {
   const WorkerInspectionSubmissionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      body: SafeArea(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          'quotation_submitted'.tr(context),
+          style: const TextStyle(
+            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
+      ),
+      body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           physics: const BouncingScrollPhysics(),
@@ -34,9 +60,9 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
               const SizedBox(height: 28),
 
               // Heading & Subtitle
-              const Text(
-                'Quotation Submitted!',
-                style: TextStyle(
+              Text(
+                'quotation_submitted'.tr(context),
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -44,10 +70,10 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Your formal inspection report & estimate have been sent to Pooja Sharma for approval.',
+              Text(
+                'formal_report_sent_to'.tr(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF64748B),
                   height: 1.5,
@@ -67,9 +93,9 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Live Proposal Status',
-                      style: TextStyle(
+                    Text(
+                      'live_proposal_status'.tr(context),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
@@ -78,24 +104,24 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     _buildStatusTimelineStep(
-                      title: 'Inspection Completed',
-                      subtitle: 'Diagnostic check done on-site',
+                      title: 'submission_inspection_completed'.tr(context),
+                      subtitle: 'submission_inspection_completed_sub'.tr(context),
                       isCompleted: true,
                     ),
                     _buildStatusTimelineStep(
-                      title: 'Quotation Delivered',
-                      subtitle: 'Estimate ₹ 1,298 sent via app notification',
+                      title: 'submission_quotation_delivered'.tr(context),
+                      subtitle: 'submission_quotation_delivered_sub'.tr(context),
                       isCompleted: true,
                     ),
                     _buildStatusTimelineStep(
-                      title: 'Customer Decision Awaited',
-                      subtitle: 'Pooja is reviewing your quote (Valid for 7 days)',
+                      title: 'submission_customer_decision_awaited'.tr(context),
+                      subtitle: 'submission_customer_decision_awaited_sub'.tr(context),
                       isCompleted: false,
                       isInProgress: true,
                     ),
                     _buildStatusTimelineStep(
-                      title: 'Job Approval & Payment',
-                      subtitle: 'Work will commence automatically upon approval',
+                      title: 'submission_job_approval_payment'.tr(context),
+                      subtitle: 'submission_job_approval_payment_sub'.tr(context),
                       isCompleted: false,
                       isLast: true,
                     ),
@@ -131,22 +157,22 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                           color: Color(0xFF2563EB), size: 24),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Inspection_Report_INSP4902.pdf',
-                            style: TextStyle(
+                            'submission_pdf_filename'.tr(context),
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
-                            'Generated on 31 Jul 2026 • 245 KB',
-                            style: TextStyle(
+                            'submission_pdf_meta'.tr(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               color: Color(0xFF64748B),
                             ),
@@ -159,9 +185,9 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                           color: Color(0xFF2563EB)),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Downloading PDF Report...'),
-                            backgroundColor: Color(0xFF2563EB),
+                          SnackBar(
+                            content: Text('downloading_pdf'.tr(context)),
+                            backgroundColor: const Color(0xFF2563EB),
                           ),
                         );
                       },
@@ -189,9 +215,9 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Return to Partner Dashboard',
-                    style: TextStyle(
+                  child: Text(
+                    'return_to_partner_dashboard'.tr(context),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -216,9 +242,9 @@ class WorkerInspectionSubmissionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text(
-                    'Track Proposal Status',
-                    style: TextStyle(
+                  child: Text(
+                    'track_proposal_status'.tr(context),
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF475569),

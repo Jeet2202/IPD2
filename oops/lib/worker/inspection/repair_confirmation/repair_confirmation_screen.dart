@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/repair_confirmation/repair_confirmation_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerRepairConfirmationScreen extends StatelessWidget {
   const WorkerRepairConfirmationScreen({super.key});
@@ -12,15 +14,22 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Quotation Approved!',
-          style: TextStyle(
+        title: Text(
+          'quotation_approved_title'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -46,10 +55,10 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              const Text(
-                'Customer Accepted Your Quote!',
+              Text(
+                'customer_accepted_quote'.tr(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -57,10 +66,10 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Pooja Sharma paid advance ₹ 500. Work is unlocked for immediate execution.',
+              Text(
+                'pooja_paid_advance'.tr(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   color: Color(0xFF64748B),
                   height: 1.4,
@@ -90,22 +99,22 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'FINAL APPROVED AMOUNT',
-                          style: TextStyle(
+                          'final_approved_amount'.tr(context),
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: 0.8,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          '₹ 1,198',
-                          style: TextStyle(
+                          'amount_1198'.tr(context),
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -120,14 +129,14 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.lock_clock_rounded,
+                          const Icon(Icons.lock_clock_rounded,
                               color: Colors.white, size: 16),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            'Escrow Locked',
-                            style: TextStyle(
+                            'escrow_locked'.tr(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -160,9 +169,9 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Repair Schedule & Details',
-                      style: TextStyle(
+                    Text(
+                      'repair_schedule_details'.tr(context),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
@@ -170,13 +179,19 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     _buildDetailRow(
-                        Icons.calendar_today_rounded, 'Schedule:', 'Today, Immediate Start'),
+                        Icons.calendar_today_rounded,
+                        'schedule_label'.tr(context),
+                        'schedule_today_immediate'.tr(context)),
                     const SizedBox(height: 10),
                     _buildDetailRow(
-                        Icons.timer_outlined, 'Est. Duration:', '45 – 60 Minutes'),
+                        Icons.timer_outlined,
+                        'est_duration_label'.tr(context),
+                        'duration_45_60_minutes'.tr(context)),
                     const SizedBox(height: 10),
                     _buildDetailRow(
-                        Icons.location_on_outlined, 'Location:', 'Dwarka Sector 15, Flat 402'),
+                        Icons.location_on_outlined,
+                        'location_label'.tr(context),
+                        'location_dwarka_flat'.tr(context)),
                   ],
                 ),
               ),
@@ -199,14 +214,14 @@ class WorkerRepairConfirmationScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.play_arrow_rounded, size: 24),
-                      SizedBox(width: 8),
+                      const Icon(Icons.play_arrow_rounded, size: 24),
+                      const SizedBox(width: 8),
                       Text(
-                        'Start Repair Work Now',
-                        style: TextStyle(
+                        'start_repair_work_now'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),

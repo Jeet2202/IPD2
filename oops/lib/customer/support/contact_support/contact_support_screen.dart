@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/support_model.dart';
 import '../../../services/support_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class ContactSupportScreen extends StatefulWidget {
   const ContactSupportScreen({super.key});
@@ -82,26 +83,25 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Contact Support',
+        title: Text('contact_support'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
+            ? Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)))
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header Banner
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
@@ -110,7 +110,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                         ),
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           CircleAvatar(
                             radius: 26,
@@ -122,13 +122,11 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'We are here to help!',
+                                Text('we_are_here_to_help'.tr(context),
                                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
                                 ),
                                 SizedBox(height: 4),
-                                Text(
-                                  'Reach out to our 24/7 Ally support team anytime.',
+                                Text('reach_out_to_our_247'.tr(context),
                                   style: TextStyle(fontSize: 12, color: Color(0xFFDBEAFE)),
                                 ),
                               ],
@@ -138,7 +136,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // Contact Options
                     _buildContactCard(
@@ -149,7 +147,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       actionLabel: 'Call Now',
                       onTap: _makePhoneCall,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     _buildContactCard(
                       icon: Icons.email_rounded,
@@ -159,7 +157,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       actionLabel: 'Send Email',
                       onTap: () => _launchUri('mailto:${info?.email ?? 'support@kaamsetu.com'}'),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     if (info?.whatsappNumber != null && info!.whatsappNumber!.isNotEmpty)
                       _buildContactCard(
@@ -174,11 +172,11 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                         },
                       ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // Operating Hours & Address
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -187,31 +185,31 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
                               Icon(Icons.access_time_rounded, color: Color(0xFF64748B), size: 20),
                               SizedBox(width: 10),
-                              Text('Operating Hours', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                              Text('operating_hours'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                             ],
                           ),
-                          const SizedBox(height: 6),
+                          SizedBox(height: 6),
                           Text(
                             info?.operatingHours ?? 'Monday - Saturday: 9:00 AM - 8:00 PM IST',
-                            style: const TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                            style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
                           ),
                           if (info?.address != null && info!.address!.isNotEmpty) ...[
-                            const Divider(height: 28),
-                            const Row(
+                            Divider(height: 28),
+                            Row(
                               children: [
                                 Icon(Icons.location_on_rounded, color: Color(0xFF64748B), size: 20),
                                 SizedBox(width: 10),
-                                Text('Office Address', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                                Text('office_address'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                               ],
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: 6),
                             Text(
                               info.address!,
-                              style: const TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
+                              style: TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
                             ),
                           ],
                         ],
@@ -233,7 +231,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
     required VoidCallback onTap,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -245,14 +243,14 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
             backgroundColor: color.withOpacity(0.1),
             child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                Text(title, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                SizedBox(height: 2),
+                Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
               ],
             ),
           ),

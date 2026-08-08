@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_dimensions.dart';
+import '../../l10n/app_translations.dart';
 
 class ServiceFilterData {
   final double? minPrice;
@@ -166,8 +167,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Filter & Sort Services',
+                Text('filter_sort_services'.tr(context),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
@@ -180,8 +180,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             const SizedBox(height: 16),
 
             // Sort By Section
-            const Text(
-              'Sort By',
+            Text('sort_by'.tr(context),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
@@ -212,8 +211,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             const SizedBox(height: 20),
 
             // Price Range Presets
-            const Text(
-              'Price Range',
+            Text('price_range'.tr(context),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
@@ -231,8 +229,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             const SizedBox(height: 20),
 
             // Estimated Duration Presets
-            const Text(
-              'Max Estimated Duration',
+            Text('max_estimated_duration'.tr(context),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
@@ -255,13 +252,11 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Featured Services Only',
+                    Text('featured_services_only'.tr(context),
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                     SizedBox(height: 2),
-                    Text(
-                      'Show top-rated and admin highlighted services',
+                    Text('show_toprated_and_admin_highlighted'.tr(context),
                       style: TextStyle(fontSize: 12),
                     ),
                   ],
@@ -286,7 +281,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                       side: BorderSide(color: theme.dividerColor),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                     ),
-                    child: const Text('Reset All', style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Text('reset_all'.tr(context), style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -299,7 +294,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
                     ),
-                    child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('apply_filters'.tr(context), style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

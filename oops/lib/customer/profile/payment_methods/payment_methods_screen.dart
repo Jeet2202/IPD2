@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -20,11 +21,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payment Methods',
+        title: Text('payment_methods'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -32,13 +32,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Ally Wallet Banner ───────────────────────────────
               Container(
-                padding: const EdgeInsets.all(18),
+                padding: EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -53,14 +53,14 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ALLY PAY WALLET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                        Text('ally_pay_wallet'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                         SizedBox(height: 4),
-                        Text('₹1,450.00', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white)),
+                        Text('145000'.tr(context), style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.white)),
                         SizedBox(height: 2),
-                        Text('Instant 1-Click Checkout', style: TextStyle(fontSize: 11, color: Color(0xFFE0F2FE))),
+                        Text('instant_1click_checkout'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFFE0F2FE))),
                       ],
                     ),
                     ElevatedButton(
@@ -69,17 +69,17 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('+ Top Up', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                      child: Text('top_up'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Saved UPI ───────────────────────────────────────────
-              const Text('Saved UPI Handles', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 12),
+              Text('saved_upi_handles'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 12),
 
               _PaymentTile(
                 icon: Icons.account_balance_rounded,
@@ -88,7 +88,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 isSelected: _preferredMethod == 'gpay',
                 onTap: () => setState(() => _preferredMethod = 'gpay'),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _PaymentTile(
                 icon: Icons.mobile_friendly_rounded,
                 title: 'PhonePe',
@@ -97,11 +97,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 onTap: () => setState(() => _preferredMethod = 'phonepe'),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Saved Cards ─────────────────────────────────────────
-              const Text('Saved Cards', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-              const SizedBox(height: 12),
+              Text('saved_cards'.tr(context), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+              SizedBox(height: 12),
 
               _PaymentTile(
                 icon: Icons.credit_card_rounded,
@@ -111,7 +111,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 onTap: () => setState(() => _preferredMethod = 'hdfc'),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Add New Option ──────────────────────────────────────
               SizedBox(
@@ -120,20 +120,20 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Add Payment Method dialog opened. Enter UPI/Card details.')),
+                      const SnackBar(content: Text('add_payment_method_dialog_opened'.tr(context))),
                     );
                   },
-                  icon: const Icon(Icons.add_rounded, size: 20),
-                  label: const Text('Add New Card or UPI ID', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                  icon: Icon(Icons.add_rounded, size: 20),
+                  label: Text('add_new_card_or_upi'.tr(context), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF2563EB),
-                    side: const BorderSide(color: Color(0xFF2563EB)),
+                    side: BorderSide(color: Color(0xFF2563EB)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -162,7 +162,7 @@ class _PaymentTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -171,14 +171,14 @@ class _PaymentTile extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: const Color(0xFF2563EB), size: 24),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                  Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                  SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                 ],
               ),
             ),

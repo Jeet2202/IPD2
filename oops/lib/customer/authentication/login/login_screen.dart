@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../l10n/app_translations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -127,8 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Welcome Back!',
+                Text('welcome_back'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
@@ -138,8 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Sign in to manage your bookings and services',
+                Text('sign_in_to_manage_your'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -204,8 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Remember Me',
+                        Text('remember_me'.tr(context),
                           style: TextStyle(
                             fontSize: 13,
                             color: Color(0xFF475569),
@@ -216,8 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, AppRoutes.customerForgotPwd),
-                      child: const Text(
-                        'Forgot Password?',
+                      child: Text('forgot_password_2'.tr(context),
                         style: TextStyle(
                           fontSize: 13,
                           color: Color(0xFF2563EB),
@@ -250,8 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
-                        : const Text(
-                            'Login',
+                        : Text('login'.tr(context),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -273,8 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, AppRoutes.customerRegister),
-                      child: const Text(
-                        'Sign Up',
+                      child: Text('sign_up'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF2563EB),

@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class NegotiationChatScreen extends StatefulWidget {
   const NegotiationChatScreen({super.key});
@@ -51,10 +52,10 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Row(
+        title: Row(
           children: [
             CircleAvatar(
               radius: 18,
@@ -65,8 +66,8 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Sunil Verma', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                Text('Online • Price Negotiation', style: TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
+                Text('sunil_verma'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                Text('online_price_negotiation'.tr(context), style: TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600)),
               ],
             ),
           ],
@@ -77,7 +78,7 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
           // ── Chat List ────────────────────────────────────────────────
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               physics: const BouncingScrollPhysics(),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
@@ -92,8 +93,8 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                   alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
+                    margin: EdgeInsets.only(bottom: 12),
+                    padding: EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: isMe ? const Color(0xFF2563EB) : Colors.white,
                       borderRadius: BorderRadius.only(
@@ -114,7 +115,7 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                           msg['text'] as String,
                           style: TextStyle(fontSize: 13, color: isMe ? Colors.white : const Color(0xFF0F172A), height: 1.4),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           msg['time'] as String,
                           style: TextStyle(fontSize: 10, color: isMe ? const Color(0xFFDBEAFE) : const Color(0xFF94A3B8)),
@@ -129,7 +130,7 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
 
           // ── Negotiation Action Bar ─────────────────────────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             color: Colors.white,
             child: Row(
               children: [
@@ -145,13 +146,13 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                       });
                     },
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF2563EB)),
+                      side: BorderSide(color: Color(0xFF2563EB)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Counter ₹4,700', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
+                    child: Text('counter_4700'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB))),
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
@@ -161,7 +162,7 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Accept ₹4,850', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                    child: Text('accept_4850'.tr(context), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
                   ),
                 ),
               ],
@@ -170,17 +171,17 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
 
           // ── Text Input Field ─────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
             color: Colors.white,
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.attach_file_rounded, color: Color(0xFF64748B)),
+                  icon: Icon(Icons.attach_file_rounded, color: Color(0xFF64748B)),
                   onPressed: () {},
                 ),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    padding: EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(24),
@@ -195,11 +196,11 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 CircleAvatar(
                   backgroundColor: const Color(0xFF2563EB),
                   child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                    icon: Icon(Icons.send_rounded, color: Colors.white, size: 18),
                     onPressed: () {
                       final text = _msgController.text.trim();
                       if (text.isNotEmpty) {
@@ -226,8 +227,8 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
 
   Widget _buildOfferComparisonCard(Map<String, dynamic> msg) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -241,11 +242,11 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('NEGOTIATION STATUS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
-              Text(msg['time'] as String, style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8))),
+              Text('negotiation_status'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),
+              Text(msg['time'] as String, style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8))),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -254,14 +255,14 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
               _buildPriceColumn('Fair Estimate', msg['platformEstimate'] as String, const Color(0xFF16A34A)),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             height: 44,
             child: ElevatedButton.icon(
               onPressed: () => Navigator.pushNamed(context, AppRoutes.repairConfirmation),
-              icon: const Icon(Icons.check_circle_rounded, size: 18),
-              label: const Text('Accept Offer & Start Repair', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+              icon: Icon(Icons.check_circle_rounded, size: 18),
+              label: Text('accept_offer_start_repair'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF16A34A),
                 foregroundColor: Colors.white,
@@ -277,8 +278,8 @@ class _NegotiationChatScreenState extends State<NegotiationChatScreen> {
   Widget _buildPriceColumn(String label, String val, Color color) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-        const SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+        SizedBox(height: 4),
         Text(val, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: color)),
       ],
     );

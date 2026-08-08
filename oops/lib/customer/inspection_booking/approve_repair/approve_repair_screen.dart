@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class ApproveRepairScreen extends StatelessWidget {
   const ApproveRepairScreen({super.key});
@@ -6,8 +7,8 @@ class ApproveRepairScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('A p p r o v e R e p a i r S c r e e n')),
-      body: const Center(child: Text('A p p r o v e R e p a i r S c r e e n')),
+      appBar: AppBar(title: Text('a_p_p_r_o'.tr(context))),
+      body: Center(child: Text('a_p_p_r_o'.tr(context))),
     );
   }
 }

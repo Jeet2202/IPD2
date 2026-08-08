@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../services/booking_chat_service.dart';
 import '../../../widgets/booking_chat_bottom_sheet.dart';
+import '../../../l10n/app_translations.dart';
 
 class WorkerActiveJobsScreen extends StatefulWidget {
   const WorkerActiveJobsScreen({super.key});
@@ -43,9 +44,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
             }
           },
         ),
-        title: const Text(
-          'Active & Scheduled Jobs',
-          style: TextStyle(
+        title: Text(
+          'active_scheduled_jobs'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -59,11 +60,11 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
           indicatorColor: const Color(0xFF2563EB),
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-          tabs: const [
-            Tab(text: 'Ongoing'),
-            Tab(text: 'Scheduled'),
-            Tab(text: 'Inspection'),
-            Tab(text: 'Completed'),
+          tabs: [
+            Tab(text: 'ongoing'.tr(context)),
+            Tab(text: 'scheduled'.tr(context)),
+            Tab(text: 'inspection'.tr(context)),
+            Tab(text: 'completed'.tr(context)),
           ],
         ),
       ),
@@ -74,9 +75,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
             // Ongoing Tab
             _buildOngoingTab(),
             // Scheduled Tab
-            _buildEmptyTab('No scheduled jobs for tomorrow'),
+            _buildEmptyTab('no_scheduled_jobs_tomorrow'.tr(context)),
             // Inspection Tab
-            _buildEmptyTab('No inspection requests pending'),
+            _buildEmptyTab('no_inspection_requests'.tr(context)),
             // Completed Tab
             _buildCompletedTab(),
           ],
@@ -120,9 +121,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                         color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text(
-                        'EN ROUTE TO CUSTOMER',
-                        style: TextStyle(
+                      child: Text(
+                        'en_route_customer'.tr(context),
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF2563EB),
@@ -143,9 +144,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
 
                 const SizedBox(height: 14),
 
-                const Text(
-                  'MCB Tripping & Short Circuit Repair',
-                  style: TextStyle(
+                Text(
+                  'mcb_tripping_repair'.tr(context),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF0F172A),
@@ -153,9 +154,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Customer: Sunil Verma',
-                  style: TextStyle(
+                Text(
+                  '${'customer_prefix'.tr(context)}Sunil Verma',
+                  style: const TextStyle(
                     fontSize: 13,
                     color: Color(0xFF64748B),
                   ),
@@ -191,17 +192,17 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Job Status: On The Way',
-                          style: TextStyle(
+                        Text(
+                          'job_status_on_the_way'.tr(context),
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF2563EB),
                           ),
                         ),
-                        const Text(
-                          'Step 2 of 4',
-                          style: TextStyle(
+                        Text(
+                          'step_2_of_4'.tr(context),
+                          style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF64748B),
                           ),
@@ -233,7 +234,7 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                           Navigator.pushNamed(context, '/worker/jobs/navigation');
                         },
                         icon: const Icon(Icons.navigation_rounded, size: 18),
-                        label: const Text('Navigate'),
+                        label: Text('navigate'.tr(context)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF2563EB),
                           side: const BorderSide(color: Color(0xFF2563EB)),
@@ -252,9 +253,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                           await Clipboard.setData(const ClipboardData(text: phone));
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Copied phone number ($phone) to clipboard! Opening phone app...'),
-                                backgroundColor: Color(0xFF10B981),
+                              SnackBar(
+                                content: Text('${'copied_phone_prefix'.tr(context)}$phone${'copied_phone_suffix'.tr(context)}'),
+                                backgroundColor: const Color(0xFF10B981),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -265,7 +266,7 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                           }
                         },
                         icon: const Icon(Icons.call_rounded, size: 18),
-                        label: const Text('Call'),
+                        label: Text('call'.tr(context)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF10B981),
                           side: const BorderSide(color: Color(0xFF10B981)),
@@ -288,7 +289,7 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                         },
                         icon: const Icon(Icons.chat_bubble_outline_rounded,
                             size: 18),
-                        label: const Text('Chat'),
+                        label: Text('chat'.tr(context)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFF0EA5E9),
                           side: const BorderSide(color: Color(0xFF0EA5E9)),
@@ -311,10 +312,10 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                   child: ElevatedButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content:
-                              Text('Status updated: Arrived at Customer Location'),
-                          backgroundColor: Color(0xFF10B981),
+                              Text('status_arrived_customer_location'.tr(context)),
+                          backgroundColor: const Color(0xFF10B981),
                         ),
                       );
                     },
@@ -326,9 +327,9 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text(
-                      'Mark Arrived at Location',
-                      style: TextStyle(
+                    child: Text(
+                      'mark_arrived_location'.tr(context),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -349,14 +350,14 @@ class _WorkerActiveJobsScreenState extends State<WorkerActiveJobsScreen>
       physics: const BouncingScrollPhysics(),
       children: [
         _buildCompletedJobTile(
-          service: 'AC Servicing & Gas Top-up',
+          service: 'ac_servicing'.tr(context),
           customer: 'Anita Sharma',
           earnings: '₹ 1,450',
           time: 'Today, 11:30 AM',
         ),
         const SizedBox(height: 12),
         _buildCompletedJobTile(
-          service: 'Ceiling Fan Installation',
+          service: 'ceiling_fan_installation'.tr(context),
           customer: 'Rajesh Gupta',
           earnings: '₹ 450',
           time: 'Today, 9:15 AM',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_translations.dart';
 
 class CustomerWalletScreen extends StatelessWidget {
   const CustomerWalletScreen({super.key});
@@ -6,8 +7,8 @@ class CustomerWalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('C u s t o m e r W a l l e t S c r e e n')),
-      body: const Center(child: Text('C u s t o m e r W a l l e t S c r e e n')),
+      appBar: AppBar(title: Text('c_u_s_t_o'.tr(context))),
+      body: Center(child: Text('c_u_s_t_o'.tr(context))),
     );
   }
 }

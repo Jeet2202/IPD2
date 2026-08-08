@@ -6,6 +6,7 @@ import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/validators.dart';
 import '../../../widgets/phone_input_widget.dart';
+import '../../../l10n/app_translations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -53,8 +54,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept the Terms of Service and Privacy Policy.'),
+        SnackBar(
+          content: Text('please_accept_the_terms_of'.tr(context)),
           backgroundColor: Colors.red,
         ),
       );
@@ -135,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -148,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -184,10 +185,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                const Text(
-                  'Create Account',
+                Text('create_account'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
@@ -196,9 +196,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Join Ally to book trusted home services',
+                SizedBox(height: 6),
+                Text('join_ally_to_book_trusted'.tr(context),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -206,11 +205,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Full Name
                 _buildFieldLabel('Full Name'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _fullNameController,
                   keyboardType: TextInputType.name,
@@ -222,22 +221,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: Validators.name,
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
                 // Phone Number with Country Selector
                 _buildFieldLabel('Phone Number'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 PhoneInputWidget(
                   controller: _phoneController,
                   errorText: _serverFieldErrors['phone'],
                   onCountryChanged: (c) => setState(() => _selectedCountry = c),
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
                 // Email
                 _buildFieldLabel('Email Address'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -249,11 +248,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: Validators.email,
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
                 // Password
                 _buildFieldLabel('Password'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -273,11 +272,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: Validators.password,
                 ),
 
-                const SizedBox(height: 18),
+                SizedBox(height: 18),
 
                 // Confirm Password
                 _buildFieldLabel('Confirm Password'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
@@ -296,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   validator: (v) => Validators.confirmPassword(v, _passwordController.text),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Terms Checkbox
                 Row(
@@ -311,30 +310,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          const Text(
-                            'I agree to the ',
+                          Text('i_agree_to_the'.tr(context),
                             style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                           ),
                           GestureDetector(
                             onTap: () => Navigator.pushNamed(context, AppRoutes.termsConditions),
-                            child: const Text(
-                              'Terms of Service',
+                            child: Text('terms_of_service'.tr(context),
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                             ),
                           ),
-                          const Text(
-                            ' and ',
+                          Text('and'.tr(context),
                             style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                           ),
                           GestureDetector(
                             onTap: () => Navigator.pushNamed(context, AppRoutes.privacyPolicy),
-                            child: const Text(
-                              'Privacy Policy',
+                            child: Text('privacy_policy'.tr(context),
                               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                             ),
                           ),
@@ -344,7 +339,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 // Create Account Button
                 SizedBox(
@@ -361,13 +356,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                           )
-                        : const Text(
-                            'Create Account',
+                        : Text('create_account'.tr(context),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -377,14 +371,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Bottom Link: Login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Already have an account? ',
+                    Text('already_have_an_account'.tr(context),
                       style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
                     ),
                     GestureDetector(
@@ -397,8 +390,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 Navigator.pushReplacementNamed(context, AppRoutes.customerLogin);
                               }
                             },
-                      child: const Text(
-                        'Login',
+                      child: Text('login'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF2563EB),
@@ -409,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
               ],
             ),
           ),
@@ -423,7 +415,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       alignment: Alignment.centerLeft,
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: Color(0xFF334155),
@@ -440,7 +432,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: const TextStyle(
+      hintStyle: TextStyle(
         fontSize: 14,
         color: Color(0xFF94A3B8),
         fontWeight: FontWeight.w400,
@@ -450,22 +442,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       errorText: errorText,
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        borderSide: BorderSide(color: Colors.red, width: 1.5),
       ),
     );
   }

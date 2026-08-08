@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../l10n/app_translations.dart';
 
 class SearchingProfessionalScreen extends StatefulWidget {
   const SearchingProfessionalScreen({super.key});
@@ -39,12 +40,11 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.close_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text(
-          'Matching Expert Inspector',
+        title: Text('matching_expert_inspector'.tr(context),
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
       ),
@@ -54,11 +54,11 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // ── Animated Radar / Pulse Graphic ──────────────────
                     AnimatedBuilder(
@@ -110,18 +110,17 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
                                   ),
                                 ],
                               ),
-                              child: const Icon(Icons.engineering_rounded, color: Colors.white, size: 44),
+                              child: Icon(Icons.engineering_rounded, color: Colors.white, size: 44),
                             ),
                           ],
                         );
                       },
                     ),
 
-                    const SizedBox(height: 36),
+                    SizedBox(height: 36),
 
                     // ── Title & Subtitle ──────────────────────────────
-                    const Text(
-                      'Assigning Certified Inspector',
+                    Text('assigning_certified_inspector'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22,
@@ -130,18 +129,17 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Locating top-rated diagnostic specialists equipped with electrical thermal testing tools...',
+                    SizedBox(height: 8),
+                    Text('locating_toprated_diagnostic_specialists_equipped'.tr(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4),
                     ),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
 
                     // ── Live Search Checklist Card ─────────────────────
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(24),
@@ -150,27 +148,27 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
                       child: Column(
                         children: [
                           _buildStatusItem(title: 'Verifying inspection issue scope', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Checking 4.8+ rated senior technicians', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Reserving diagnostic tool kit & equipment', isDone: true),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           _buildStatusItem(title: 'Assigning nearest expert to HSR Layout', isDone: false, isCurrent: true),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
 
                     // ── Estimated Waiting Timer Badge ──────────────────
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: const Color(0xFFBFDBFE)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
@@ -182,15 +180,14 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
                             ),
                           ),
                           SizedBox(width: 10),
-                          Text(
-                            'Est. Waiting Time: ~01:00 min',
+                          Text('est_waiting_time_0100_min'.tr(context),
                             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -198,18 +195,17 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
 
             // ── Bottom Cancel Button ──────────────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 10, 24, 20),
+              padding: EdgeInsets.fromLTRB(24, 10, 24, 20),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+                    side: BorderSide(color: Color(0xFFEF4444), width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    'Cancel Request',
+                  child: Text('cancel_request'.tr(context),
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFFEF4444)),
                   ),
                 ),
@@ -235,9 +231,9 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
           ),
           child: Center(
             child: isDone
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                ? Icon(Icons.check_rounded, color: Colors.white, size: 16)
                 : (isCurrent
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 12,
                         height: 12,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
@@ -245,7 +241,7 @@ class _SearchingProfessionalScreenState extends State<SearchingProfessionalScree
                     : null),
           ),
         ),
-        const SizedBox(width: 14),
+        SizedBox(width: 14),
         Expanded(
           child: Text(
             title,

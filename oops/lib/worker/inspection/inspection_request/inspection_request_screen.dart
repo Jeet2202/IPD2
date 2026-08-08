@@ -1,6 +1,8 @@
 // File: lib/worker/inspection/inspection_request/inspection_request_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_translations.dart';
+import '../../../../widgets/language_selector_widget.dart';
 
 class WorkerInspectionRequestScreen extends StatelessWidget {
   const WorkerInspectionRequestScreen({super.key});
@@ -12,15 +14,22 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Inspection Request #INSP-4902',
-          style: TextStyle(
+        title: Text(
+          'insp_req_screen_title'.tr(context),
+          style: const TextStyle(
             color: Color(0xFF0F172A),
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language_rounded, color: Color(0xFF8B5CF6)),
+            tooltip: 'Select Language',
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -65,23 +74,23 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 14),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'PRE-REPAIR INSPECTION JOB',
-                                  style: TextStyle(
+                                  'pre_repair_inspection_job'.tr(context),
+                                  style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.white,
                                     letterSpacing: 0.8,
                                   ),
                                 ),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(
-                                  'Inspect issue, prepare report & quotation',
-                                  style: TextStyle(
+                                  'inspect_issue_prepare_report'.tr(context),
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     color: Colors.white,
                                   ),
@@ -153,7 +162,7 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Slot: Today, 3:30 PM',
+                                  'slot_today_330'.tr(context),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
@@ -170,9 +179,9 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Issue Summary
-                    const Text(
-                      'Reported Issue Summary',
-                      style: TextStyle(
+                    Text(
+                      'reported_issue_summary'.tr(context),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF0F172A),
@@ -192,21 +201,21 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'AC Water Leakage & Cooling Loss',
-                            style: TextStyle(
+                            'ac_water_leakage_cooling_loss'.tr(context),
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                           ),
-                          SizedBox(height: 6),
+                          const SizedBox(height: 6),
                           Text(
-                            'Water dripping heavily from indoor unit onto living room sofa. Cooling efficiency dropped significantly over last 2 days.',
-                            style: TextStyle(
+                            'water_dripping_desc'.tr(context),
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF475569),
                               height: 1.5,
@@ -226,24 +235,24 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(color: const Color(0xFF10B981).withOpacity(0.4)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Guaranteed Inspection Fee',
-                                style: TextStyle(
+                                'guaranteed_inspection_fee'.tr(context),
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xFF065F46),
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Text(
-                                '₹ 299 (Paid by Customer)',
-                                style: TextStyle(
+                                'fee_299_paid_by_customer'.tr(context),
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
                                   color: Color(0xFF047857),
@@ -251,7 +260,7 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Icon(Icons.monetization_on_rounded,
+                          const Icon(Icons.monetization_on_rounded,
                               color: Color(0xFF10B981), size: 32),
                         ],
                       ),
@@ -260,18 +269,18 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Inspection Guidelines & Tools
-                    const Text(
-                      'Required Inspection Toolkit',
-                      style: TextStyle(
+                    Text(
+                      'required_inspection_toolkit'.tr(context),
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF0F172A),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _buildGuidelineItem('Pressure Gauge & Gas Leak Detector'),
-                    _buildGuidelineItem('Drain Line Cleaning Pump'),
-                    _buildGuidelineItem('Thermal Imaging / Temp Probe'),
+                    _buildGuidelineItem('toolkit_pressure_gauge'.tr(context)),
+                    _buildGuidelineItem('toolkit_drain_line_pump'.tr(context)),
+                    _buildGuidelineItem('toolkit_thermal_probe'.tr(context)),
 
                     const SizedBox(height: 24),
                   ],
@@ -304,14 +313,14 @@ class WorkerInspectionRequestScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.play_arrow_rounded, size: 24),
-                      SizedBox(width: 8),
+                      const Icon(Icons.play_arrow_rounded, size: 24),
+                      const SizedBox(width: 8),
                       Text(
-                        'Start Guided Inspection',
-                        style: TextStyle(
+                        'start_guided_inspection'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),

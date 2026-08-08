@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../l10n/app_translations.dart';
+import '../../../widgets/language_selector_widget.dart';
 
 class WorkerLoginScreen extends StatefulWidget {
   const WorkerLoginScreen({super.key});
@@ -46,7 +48,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Welcome back Partner, ${user.name}!'),
+          content: Text('${'welcome_back_partner'.tr(context)}, ${user.name}!'),
           backgroundColor: const Color(0xFF2563EB),
         ),
       );
@@ -54,7 +56,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
       Navigator.pushReplacementNamed(context, '/worker/dashboard');
     } catch (e) {
       if (!mounted) return;
-      final msg = e is ApiException ? e.message : 'Login failed: $e';
+      final msg = e is ApiException ? e.message : '${'login_failed'.tr(context)}: $e';
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -69,9 +71,10 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -80,17 +83,23 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language_rounded, color: Color(0xFF0F172A)),
+            onPressed: () => LanguageSelectorWidget.show(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
           physics: const BouncingScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Center(
                   child: Column(
                     children: [
@@ -112,13 +121,13 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.engineering_rounded,
                           size: 38,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -130,15 +139,15 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                               color: Color(0xFF2563EB),
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
-                              'PARTNER',
+                            child: Text(
+                              'partner'.tr(context).toUpperCase(),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
@@ -148,9 +157,9 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Partner Sign In',
+                      SizedBox(height: 6),
+                      Text(
+                        'partner_sign_in'.tr(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xFF64748B),
@@ -160,39 +169,39 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
-                _buildFieldLabel('Email or Phone Number'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('email_or_phone'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _identifierController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: _buildInputDecoration(
-                    hintText: 'Enter your email or phone number',
+                    hintText: 'enter_email_or_phone'.tr(context),
                     prefixIcon: Icons.person_outline_rounded,
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter email or phone number' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty) ? 'please_enter_email_or_phone'.tr(context) : null,
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                _buildFieldLabel('Password'),
-                const SizedBox(height: 8),
+                _buildFieldLabel('password'.tr(context)),
+                SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: _buildInputDecoration(
-                    hintText: 'Enter password',
+                    hintText: 'enter_password'.tr(context),
                     prefixIcon: Icons.lock_outline_rounded,
                     suffixIcon: IconButton(
                       icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  validator: (v) => (v == null || v.isEmpty) ? 'Please enter your password' : null,
+                  validator: (v) => (v == null || v.isEmpty) ? 'please_enter_password'.tr(context) : null,
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,24 +217,24 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                             activeColor: const Color(0xFF2563EB),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Remember Me',
+                        SizedBox(width: 8),
+                        Text(
+                          'remember_me'.tr(context),
                           style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
                         ),
                       ],
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/worker/auth/forgot-password'),
-                      child: const Text(
-                        'Forgot Password?',
+                      child: Text(
+                        'forgot_password'.tr(context),
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 28),
 
                 SizedBox(
                   width: double.infinity,
@@ -241,28 +250,28 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
-                        : const Text(
-                            'Sign In',
+                        : Text(
+                            'sign_in'.tr(context),
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have a partner account? ", style: TextStyle(color: Color(0xFF64748B))),
+                    Text('dont_have_partner_account'.tr(context), style: TextStyle(color: Color(0xFF64748B))),
                     GestureDetector(
                       onTap: () => Navigator.pushNamed(context, '/worker/auth/register'),
-                      child: const Text(
-                        'Register Now',
+                      child: Text(
+                        'register_now'.tr(context),
                         style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2563EB)),
                       ),
                     ),
@@ -279,7 +288,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
   Widget _buildFieldLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
     );
   }
 
@@ -294,14 +303,14 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+        borderSide: BorderSide(color: Color(0xFF2563EB), width: 1.5),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class ReportIssueScreen extends StatelessWidget {
   const ReportIssueScreen({super.key});
@@ -6,8 +7,8 @@ class ReportIssueScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('R e p o r t I s s u e S c r e e n')),
-      body: const Center(child: Text('R e p o r t I s s u e S c r e e n')),
+      appBar: AppBar(title: Text('r_e_p_o_r'.tr(context))),
+      body: Center(child: Text('r_e_p_o_r'.tr(context))),
     );
   }
 }

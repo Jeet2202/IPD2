@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../services/ai_service.dart';
 import '../../utils/token_storage.dart';
+import '../../l10n/app_translations.dart';
 
 class AIAssistantScreen extends StatefulWidget {
   const AIAssistantScreen({super.key});
@@ -103,7 +104,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   Widget build(BuildContext context) {
     return Scaffold(      appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -117,21 +118,21 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 18),
+              child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 18),
             ),
-            const SizedBox(width: 10),
-            const Column(
+            SizedBox(width: 10),
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ally AI', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-                Text('Grounded AI Assistant', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                Text('ally_ai'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                Text('grounded_ai_assistant'.tr(context), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
               ],
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: Icon(Icons.refresh_rounded),
             onPressed: () {
               setState(() {
                 _messages.clear();
@@ -156,7 +157,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               itemCount: _messages.length + (_isLoading ? 1 : 0),
               itemBuilder: (context, i) {
                 if (_isLoading && i == _messages.length) {
@@ -208,7 +209,7 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = message.role == 'user';
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -221,16 +222,16 @@ class _MessageBubble extends StatelessWidget {
                 gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 14),
+              child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 14),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
           ],
           Flexible(
             child: Column(
               crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: isUser
                         ? const Color(0xFF2563EB)
@@ -258,36 +259,36 @@ class _MessageBubble extends StatelessWidget {
                 ),
                 if (!isUser && !message.isError)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: EdgeInsets.only(top: 4),
                     child: Row(
                       children: [
                         if (message.grounded)
                           Container(
-                            margin: const EdgeInsets.only(right: 6),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            margin: EdgeInsets.only(right: 6),
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: const Color(0xFFD1FAE5),
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.verified_rounded, size: 10, color: Color(0xFF059669)),
                                 SizedBox(width: 3),
-                                Text('Verified Data', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF059669))),
+                                Text('verified_data'.tr(context), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF059669))),
                               ],
                             ),
                           ),
                         if (message.toolsCalled.isNotEmpty)
                           Text('Tool: ${message.toolsCalled.first}',
-                              style: const TextStyle(fontSize: 9, color: AppColors.textHint, fontWeight: FontWeight.w500)),
+                              style: TextStyle(fontSize: 9, color: AppColors.textHint, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
               ],
             ),
           ),
-          if (isUser) const SizedBox(width: 8),
+          if (isUser) SizedBox(width: 8),
         ],
       ),
     );
@@ -306,11 +307,11 @@ class _TypingBubble extends StatelessWidget {
             gradient: const LinearGradient(colors: [Color(0xFF7C3AED), Color(0xFF2563EB)]),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 14),
+          child: Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 14),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18), bottomRight: Radius.circular(18), bottomLeft: Radius.circular(4)),
@@ -359,7 +360,7 @@ class _DotAnimationState extends State<_DotAnimation> with TickerProviderStateMi
           offset: Offset(0, _anims[i].value),
           child: Padding(
             padding: EdgeInsets.only(right: i < 2 ? 4 : 0),
-            child: const CircleAvatar(radius: 4, backgroundColor: AppColors.textHint),
+            child: CircleAvatar(radius: 4, backgroundColor: AppColors.textHint),
           ),
         ),
       )),
@@ -381,25 +382,25 @@ class _SuggestedPrompts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Suggested Questions', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textHint)),
-          const SizedBox(height: 8),
+          Text('suggested_questions'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textHint)),
+          SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: _prompts.map((p) => GestureDetector(
               onTap: () => onTap(p),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5F3FF),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFDDD6FE)),
                 ),
-                child: Text(p, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF7C3AED))),
+                child: Text(p, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF7C3AED))),
               ),
             )).toList(),
           ),
@@ -419,7 +420,7 @@ class _InputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 10, 16, MediaQuery.of(context).viewInsets.bottom + 12),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: AppColors.divider)),
       ),
@@ -431,18 +432,18 @@ class _InputBar extends StatelessWidget {
               enabled: !isLoading,
               textInputAction: TextInputAction.send,
               onSubmitted: onSend,
-              style: const TextStyle(fontSize: 13),
+              style: TextStyle(fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Ask about bookings, pricing...',                filled: true,
                 fillColor: AppColors.background,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppColors.divider)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppColors.divider)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: Color(0xFF7C3AED), width: 1.5)),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppColors.divider)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppColors.divider)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Color(0xFF7C3AED), width: 1.5)),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: 44,
@@ -455,8 +456,8 @@ class _InputBar extends StatelessWidget {
             child: IconButton(
               onPressed: isLoading ? null : () => onSend(controller.text),
               icon: isLoading
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                  ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : Icon(Icons.send_rounded, color: Colors.white, size: 18),
             ),
           ),
         ],

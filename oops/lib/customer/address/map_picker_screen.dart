@@ -18,6 +18,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
 
 import '../../services/location_service.dart';
+import '../../l10n/app_translations.dart';
 
 /// Result returned by [MapPickerScreen] via Navigator.pop().
 class MapPickerResult {
@@ -198,27 +199,27 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         icon: Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: const Color(0xFFFEF2F2),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.location_off_rounded, color: Color(0xFFDC2626), size: 28),
+          child: Icon(Icons.location_off_rounded, color: Color(0xFFDC2626), size: 28),
         ),
         title: Text(
           isDisabled ? 'GPS Disabled' : 'Location Permission',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w800),
+          style: TextStyle(fontWeight: FontWeight.w800),
         ),
         content: Text(
           _friendlyLocationError(e),
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: _mutedText),
+          style: TextStyle(fontSize: 14, color: _mutedText),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: _mutedText)),
+            child: Text('cancel'.tr(context), style: TextStyle(color: _mutedText)),
           ),
           if (isPermanent)
             ElevatedButton(
@@ -231,7 +232,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Open Settings'),
+              child: Text('open_settings'.tr(context)),
             )
           else if (isDisabled)
             ElevatedButton(
@@ -244,7 +245,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Enable GPS'),
+              child: Text('enable_gps'.tr(context)),
             ),
         ],
       ),
@@ -260,11 +261,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       appBar: AppBar(        elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
+          icon: Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Select Location',
+        title: Text('select_location'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText),
         ),
         centerTitle: true,
@@ -305,7 +305,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           ),
 
           // ── Center Marker (always points at selected location) ───────
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.only(bottom: 40), // offset for pin drop effect
               child: _MapMarker(),
@@ -373,7 +373,7 @@ class _MapMarker extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 24),
+          child: Icon(Icons.location_on_rounded, color: Colors.white, size: 24),
         ),
         // Drop shadow triangle
         CustomPaint(
@@ -421,7 +421,7 @@ class _LocationFab extends StatelessWidget {
       elevation: 4,
       onPressed: isLoading ? null : onPressed,
       child: isLoading
-          ? const SizedBox(
+          ? SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
@@ -429,7 +429,7 @@ class _LocationFab extends StatelessWidget {
                 color: Color(0xFF2563EB),
               ),
             )
-          : const Icon(Icons.my_location_rounded, size: 22),
+          : Icon(Icons.my_location_rounded, size: 22),
     );
   }
 }
@@ -454,7 +454,7 @@ class _ZoomControls extends StatelessWidget {
             mapController.move(mapController.camera.center, zoom.clamp(4.0, 19.0));
           },
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         _ZoomBtn(
           icon: Icons.remove,
           onPressed: () {
@@ -515,7 +515,7 @@ class _BottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -542,14 +542,13 @@ class _BottomPanel extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          const Row(
+          Row(
             children: [
               Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 18),
               SizedBox(width: 8),
-              Text(
-                'Selected Location',
+              Text('selected_location'.tr(context),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -560,10 +559,10 @@ class _BottomPanel extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           if (isLoading)
-            const Row(
+            Row(
               children: [
                 SizedBox(
                   width: 14,
@@ -574,8 +573,7 @@ class _BottomPanel extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 10),
-                Text(
-                  'Fetching address...',
+                Text('fetching_address'.tr(context),
                   style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
                 ),
               ],
@@ -583,7 +581,7 @@ class _BottomPanel extends StatelessWidget {
           else
             Text(
               address ?? 'Move the map to select a location',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF0F172A),
@@ -593,16 +591,15 @@ class _BottomPanel extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           SizedBox(
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
               onPressed: onConfirm,
-              icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
-              label: const Text(
-                'Confirm This Location',
+              icon: Icon(Icons.check_circle_outline_rounded, size: 20),
+              label: Text('confirm_this_location'.tr(context),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
               ),
               style: ElevatedButton.styleFrom(

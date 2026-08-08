@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class CancelledBookingsScreen extends StatelessWidget {
   const CancelledBookingsScreen({super.key});
@@ -6,8 +7,8 @@ class CancelledBookingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('C a n c e l l e d B o o k i n g s S c r e e n')),
-      body: const Center(child: Text('C a n c e l l e d B o o k i n g s S c r e e n')),
+      appBar: AppBar(title: Text('c_a_n_c_e'.tr(context))),
+      body: Center(child: Text('c_a_n_c_e'.tr(context))),
     );
   }
 }

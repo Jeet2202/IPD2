@@ -2,11 +2,12 @@
 // lib/customer/normal_booking/booking_status/booking_status_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../../l10n/app_translations.dart';
 
 class BookingStatusScreen extends StatelessWidget {
   const BookingStatusScreen({super.key});
 
-  final List<Map<String, dynamic>> _timelineSteps = const [
+  final List<Map<String, dynamic>> _timelineSteps = [
     {
       'title': 'Booking Confirmed',
       'time': '10:15 AM',
@@ -45,11 +46,10 @@ class BookingStatusScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Live Booking Status',
+        title: Text('live_booking_status'.tr(context),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
         ),
         centerTitle: true,
@@ -57,13 +57,13 @@ class BookingStatusScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Active Status Highlight Card ─────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
@@ -78,20 +78,20 @@ class BookingStatusScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                      child: const Icon(Icons.engineering_rounded, color: Colors.white, size: 32),
+                      child: Icon(Icons.engineering_rounded, color: Colors.white, size: 32),
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
+                    SizedBox(width: 16),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('CURRENT STATUS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
+                          Text('current_status'.tr(context), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFDBEAFE))),
                           SizedBox(height: 2),
-                          Text('Work In Progress', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white)),
+                          Text('work_in_progress'.tr(context), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white)),
                           SizedBox(height: 2),
-                          Text('Ramesh is currently replacing switchboard', style: TextStyle(fontSize: 12, color: Color(0xFFE0F2FE))),
+                          Text('ramesh_is_currently_replacing_switchboard'.tr(context), style: TextStyle(fontSize: 12, color: Color(0xFFE0F2FE))),
                         ],
                       ),
                     ),
@@ -99,18 +99,17 @@ class BookingStatusScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // ── Timeline Header ──────────────────────────────────────
-              const Text(
-                'Service Progress Timeline',
+              Text('service_progress_timeline'.tr(context),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ── Vertical Timeline ────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -141,9 +140,9 @@ class BookingStatusScreen extends StatelessWidget {
                                 ),
                                 child: Center(
                                   child: isCompleted
-                                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                                      ? Icon(Icons.check_rounded, color: Colors.white, size: 16)
                                       : (isActive
-                                          ? Container(width: 10, height: 10, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle))
+                                          ? Container(width: 10, height: 10, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle))
                                           : null),
                                 ),
                               ),
@@ -151,19 +150,19 @@ class BookingStatusScreen extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     width: 2,
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin: EdgeInsets.symmetric(vertical: 4),
                                     color: isCompleted ? const Color(0xFF16A34A) : const Color(0xFFE2E8F0),
                                   ),
                                 ),
                             ],
                           ),
 
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
 
                           // Content Column
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20.0),
+                              padding: EdgeInsets.only(bottom: 20.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -188,10 +187,10 @@ class BookingStatusScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Text(
                                     step['desc'] as String,
-                                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
+                                    style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
                                   ),
                                 ],
                               ),
@@ -204,7 +203,7 @@ class BookingStatusScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // ── Support & Emergency Button Row ────────────────────────
               Row(
@@ -212,27 +211,27 @@ class BookingStatusScreen extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.help_outline_rounded, size: 18),
-                      label: const Text('Get Support'),
+                      icon: Icon(Icons.help_outline_rounded, size: 18),
+                      label: Text('get_support'.tr(context)),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xFF2563EB)),
                         foregroundColor: const Color(0xFF2563EB),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.sos_rounded, size: 18),
-                      label: const Text('Emergency SOS'),
+                      icon: Icon(Icons.sos_rounded, size: 18),
+                      label: Text('emergency_sos'.tr(context)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFEF4444),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
@@ -240,7 +239,7 @@ class BookingStatusScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),

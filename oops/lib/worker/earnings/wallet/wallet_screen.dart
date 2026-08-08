@@ -12,33 +12,33 @@ class WorkerWalletScreen extends StatefulWidget {
 }
 
 class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
-  final List<Map<String, String>> _walletActivity = [
+  List<Map<String, String>> get _walletActivity => [
     {
-      'title': 'Job Completion #JOB-8821',
-      'type': 'Credit',
-      'amount': '+ ₹ 850',
-      'time': '31 Jul, 4:15 PM',
+      'title': 'job_completion_mock'.tr(context),
+      'type': 'credit'.tr(context),
+      'amount': 'amount_plus_850'.tr(context),
+      'time': 'mock_wallet_date_1'.tr(context),
       'icon': 'credit',
     },
     {
-      'title': 'Tips Received from Sunil V.',
-      'type': 'Bonus',
-      'amount': '+ ₹ 100',
-      'time': '31 Jul, 4:16 PM',
+      'title': 'tips_received_mock'.tr(context),
+      'type': 'bonus'.tr(context),
+      'amount': 'amount_plus_100'.tr(context),
+      'time': 'mock_wallet_date_2'.tr(context),
       'icon': 'bonus',
     },
     {
-      'title': 'Instant Withdrawal to SBI Bank',
-      'type': 'Payout',
-      'amount': '- ₹ 2,000',
-      'time': '30 Jul, 10:30 AM',
+      'title': 'instant_withdrawal_mock'.tr(context),
+      'type': 'payout'.tr(context),
+      'amount': 'amount_minus_2000'.tr(context),
+      'time': 'mock_wallet_date_3'.tr(context),
       'icon': 'payout',
     },
     {
-      'title': 'Partner Referral Reward',
-      'type': 'Reward',
-      'amount': '+ ₹ 500',
-      'time': '28 Jul, 2:00 PM',
+      'title': 'partner_referral_reward'.tr(context),
+      'type': 'reward'.tr(context),
+      'amount': 'amount_plus_500'.tr(context),
+      'time': 'mock_wallet_date_4'.tr(context),
       'icon': 'bonus',
     },
   ];
@@ -108,9 +108,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'TOTAL WALLET BALANCE',
-                          style: TextStyle(
+                        Text(
+                          'total_wallet_balance'.tr(context),
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -124,9 +124,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
-                            'Active Wallet',
-                            style: TextStyle(
+                          child: Text(
+                            'active_wallet'.tr(context),
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -136,9 +136,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      '₹ 3,450.00',
-                      style: TextStyle(
+                    Text(
+                      'amount_3450_00'.tr(context),
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
@@ -154,7 +154,7 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                               _showWithdrawModal(context);
                             },
                             icon: const Icon(Icons.download_rounded, size: 18),
-                            label: const Text('Transfer to Bank'),
+                            label: Text('transfer_to_bank'.tr(context)),
                             style: ElevatedButton.styleFrom(                              foregroundColor: const Color(0xFF2563EB),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               elevation: 0,
@@ -177,9 +177,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                 children: [
                   Expanded(
                     child: _buildSubBalanceCard(
-                      title: 'Pending Escrow',
-                      amount: '₹ 1,298',
-                      subtext: '1 job awaiting sign-off',
+                      title: 'pending_escrow'.tr(context),
+                      amount: 'amount_1298'.tr(context),
+                      subtext: 'job_awaiting_sign_off_mock'.tr(context),
                       icon: Icons.lock_clock_rounded,
                       color: const Color(0xFFF59E0B),
                     ),
@@ -187,9 +187,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildSubBalanceCard(
-                      title: 'Reward & Bonuses',
-                      amount: '₹ 500',
-                      subtext: 'Referral incentive',
+                      title: 'reward_and_bonuses'.tr(context),
+                      amount: 'amount_500'.tr(context),
+                      subtext: 'referral_incentive'.tr(context),
                       icon: Icons.card_giftcard_rounded,
                       color: const Color(0xFF10B981),
                     ),
@@ -220,22 +220,22 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                           color: Colors.white, size: 22),
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Refer a Tradesman Partner',
-                            style: TextStyle(
+                            'refer_partner'.tr(context),
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF0F172A),
                             ),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
-                            'Earn ₹500 for every electrician/plumber who completes 5 jobs.',
-                            style: TextStyle(
+                            'referral_desc'.tr(context),
+                            style: const TextStyle(
                               fontSize: 11,
                               color: Color(0xFF64748B),
                               height: 1.4,
@@ -251,9 +251,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
               const SizedBox(height: 24),
 
               // Wallet Passbook Activity List Header
-              const Text(
-                'Wallet Passbook Activity',
-                style: TextStyle(
+              Text(
+                'wallet_passbook_activity'.tr(context),
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF0F172A),
@@ -431,18 +431,18 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Instant Withdrawal to Bank',
-              style: TextStyle(
+            Text(
+              'instant_withdrawal_title'.tr(context),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF0F172A),
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Funds will be transferred to SBI A/C ending ...4321',
-              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            Text(
+              'funds_transfer_desc'.tr(context),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -483,9 +483,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                 onPressed: () {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Instant Payout Initiated to SBI Bank!'),
-                      backgroundColor: Color(0xFF10B981),
+                    SnackBar(
+                      content: Text('instant_payout_success'.tr(context)),
+                      backgroundColor: const Color(0xFF10B981),
                     ),
                   );
                 },
@@ -496,9 +496,9 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Confirm Transfer',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                child: Text(
+                  'confirm_transfer'.tr(context),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
