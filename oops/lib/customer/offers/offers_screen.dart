@@ -89,7 +89,7 @@ class _OffersScreenState extends State<OffersScreen> {
                     TextButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('promo_code_applied_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                          SnackBar(content: Text('promo_code_applied_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                         );
                       },
                       child: Text('apply'.tr(context), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF2563EB))),

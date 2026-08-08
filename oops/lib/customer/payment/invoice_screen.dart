@@ -25,7 +25,7 @@ class InvoiceScreen extends StatelessWidget {
             icon: Icon(Icons.share_outlined, color: Color(0xFF2563EB)),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('sharing_tax_invoice_ksinv9812'.tr(context))),
+                SnackBar(content: Text('sharing_tax_invoice_ksinv9812'.tr(context))),
               );
             },
           ),
@@ -148,7 +148,7 @@ class InvoiceScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('invoice_pdf_downloaded_to_device'.tr(context)),
                             backgroundColor: Color(0xFF2563EB),
                           ),

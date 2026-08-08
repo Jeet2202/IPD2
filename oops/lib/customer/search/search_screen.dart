@@ -587,7 +587,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
-                Text('we_couldn'.tr(context)t find any matches for "$_currentQuery". Try clearing your active filters or searching for another term.',
+                Text('${'we_couldn'.tr(context)}t find any matches for "$_currentQuery". Try clearing your active filters or searching for another term.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13),
                 ),

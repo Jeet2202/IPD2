@@ -94,14 +94,14 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
   Future<void> _confirmAndBook() async {
     if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('missing_address_details_please_go'.tr(context))),
+        SnackBar(content: Text('missing_address_details_please_go'.tr(context))),
       );
       return;
     }
 
     if (_bookingType == 'normal_service' && _service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('missing_service_selection_please_go'.tr(context))),
+        SnackBar(content: Text('missing_service_selection_please_go'.tr(context))),
       );
       return;
     }
@@ -159,7 +159,7 @@ class _BookingSummaryScreenState extends State<BookingSummaryScreen> {
         _submitError = 'An unexpected error occurred. Please try again.';
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('network_error_please_check_your'.tr(context)),
           backgroundColor: AppColors.error,
         ),

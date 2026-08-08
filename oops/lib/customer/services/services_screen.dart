@@ -526,7 +526,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text('we_couldn'.tr(context)t find any services matching your filter criteria.',
+              Text('${'we_couldn'.tr(context)}t find any services matching your filter criteria.',
                 style: TextStyle(fontSize: 13),
               ),
               SizedBox(height: 16),

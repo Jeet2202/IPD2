@@ -39,7 +39,7 @@ class NoInternetScreen extends StatelessWidget {
 
               SizedBox(height: 8),
 
-              Text('we_couldn'.tr(context)t connect to Ally servers. Please check your cellular data or Wi-Fi network and try again.',
+              Text('${'we_couldn'.tr(context)}t connect to Ally servers. Please check your cellular data or Wi-Fi network and try again.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
               ),

@@ -118,7 +118,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       setState(() => _isSending = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('failed_to_send_message_please'.tr(context))),
+        SnackBar(content: Text('failed_to_send_message_please'.tr(context))),
       );
     }
   }

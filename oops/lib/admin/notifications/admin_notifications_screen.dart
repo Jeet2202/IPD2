@@ -8,7 +8,7 @@ class AdminNotificationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('admin_notifications_screen'.tr(context))),
-      body: const Center(child: Text('admin_notifications_screen'.tr(context))),
+      body: Center(child: Text('admin_notifications_screen'.tr(context))),
     );
   }
 }

@@ -63,7 +63,7 @@ class InspectionIntroScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text('not_sure_what'.tr(context)s Wrong?',
+                            Text('${'not_sure_what'.tr(context)}s Wrong?',
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.4),
                             ),
                             SizedBox(height: 6),

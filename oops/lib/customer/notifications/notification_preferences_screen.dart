@@ -66,7 +66,7 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('preferences_saved_successfully'.tr(context)),
             backgroundColor: Color(0xFF10B981),
           ),

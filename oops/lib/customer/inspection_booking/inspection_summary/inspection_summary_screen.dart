@@ -81,7 +81,7 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
   Future<void> _handlePaymentAndBooking() async {
     if (_address == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('missing_address_please_go_back'.tr(context))),
+        SnackBar(content: Text('missing_address_please_go_back'.tr(context))),
       );
       return;
     }
@@ -117,7 +117,7 @@ class _InspectionSummaryScreenState extends State<InspectionSummaryScreen> {
         if (!mounted) return;
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Could not create booking. Please try again.'),
             backgroundColor: AppColors.error,
           ),

@@ -210,7 +210,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
   void _proceedToSummary() {
     if (_problemDescController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('please_describe_the_problem_symptoms'.tr(context)),
           backgroundColor: AppColors.error,
         ),
@@ -220,7 +220,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
 
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('please_select_or_add_a'.tr(context)),
           backgroundColor: AppColors.error,
         ),

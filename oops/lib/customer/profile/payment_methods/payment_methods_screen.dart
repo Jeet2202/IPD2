@@ -120,7 +120,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('add_payment_method_dialog_opened'.tr(context))),
+                      SnackBar(content: Text('add_payment_method_dialog_opened'.tr(context))),
                     );
                   },
                   icon: Icon(Icons.add_rounded, size: 20),

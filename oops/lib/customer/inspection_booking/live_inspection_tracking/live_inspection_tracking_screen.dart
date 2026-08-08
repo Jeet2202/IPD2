@@ -146,7 +146,7 @@ class LiveInspectionTrackingScreen extends StatelessWidget {
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('calling_inspector_sunil_verma_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                            SnackBar(content: Text('calling_inspector_sunil_verma_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                           );
                         },
                       ),
@@ -170,7 +170,7 @@ class LiveInspectionTrackingScreen extends StatelessWidget {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('inspection_tracking_link_copied_to'.tr(context))),
+                              SnackBar(content: Text('inspection_tracking_link_copied_to'.tr(context))),
                             );
                           },
                           icon: Icon(Icons.share_location_rounded, size: 18),

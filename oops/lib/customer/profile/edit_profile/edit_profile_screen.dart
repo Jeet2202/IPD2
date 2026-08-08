@@ -141,7 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('profile_photo_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('profile_photo_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -173,7 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('profile_photo_removed'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('profile_photo_removed'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -261,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('profile_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('profile_updated_successfully'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
         Navigator.pop(context);
       }

@@ -82,7 +82,7 @@ class ReferEarnScreen extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('Referral code "KAAM-RAHUL99" copied to clipboard!'),
                             backgroundColor: Color(0xFF2563EB),
                           ),
@@ -157,7 +157,7 @@ class ReferEarnScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text('sharing_ally_invite_link'.tr(context)),
                         backgroundColor: Color(0xFF16A34A),
                       ),

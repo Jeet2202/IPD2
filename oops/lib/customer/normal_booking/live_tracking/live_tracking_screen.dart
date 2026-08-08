@@ -152,7 +152,7 @@ class LiveTrackingScreen extends StatelessWidget {
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('calling_technician_ramesh_kumar_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                            SnackBar(content: Text('calling_technician_ramesh_kumar_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                           );
                         },
                       ),
@@ -176,7 +176,7 @@ class LiveTrackingScreen extends StatelessWidget {
                         child: OutlinedButton.icon(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('live_tracking_link_copied_to'.tr(context))),
+                              SnackBar(content: Text('live_tracking_link_copied_to'.tr(context))),
                             );
                           },
                           icon: Icon(Icons.share_location_rounded, size: 18),

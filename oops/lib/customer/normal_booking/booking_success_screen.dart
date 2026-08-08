@@ -103,7 +103,7 @@ class BookingSuccessScreen extends StatelessWidget {
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: bookingNumber));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('booking_id_copied_to_clipboard'.tr(context))),
+                        SnackBar(content: Text('booking_id_copied_to_clipboard'.tr(context))),
                       );
                     },
                     child: Icon(Icons.copy_rounded, size: 16, color: AppColors.primary),

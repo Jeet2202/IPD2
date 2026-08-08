@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/environment.dart';
 
 class AIServiceException implements Exception {
   final String message;
@@ -18,9 +19,7 @@ class AIService {
   AIService._();
   static final AIService instance = AIService._();
 
-  // AI service runs on a separate port from the main backend
-  // For Android emulator use 10.0.2.2; for physical devices use your LAN IP
-  static const String _baseUrl = 'http://192.168.29.147:8001';
+  static String get _baseUrl => EnvironmentConfig.aiServiceUrl;
 
   final _client = http.Client();
 

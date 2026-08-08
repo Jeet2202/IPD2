@@ -185,7 +185,7 @@ class _RaiseComplaintScreenState extends State<RaiseComplaintScreen> {
                             isExpanded: true,
                             hint: Text('none_general_query'.tr(context), style: TextStyle(fontSize: 13)),
                             items: [
-                              const DropdownMenuItem<BookingModel?>(
+                              DropdownMenuItem<BookingModel?>(
                                 value: null,
                                 child: Text('none_general_query'.tr(context), style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
                               ),

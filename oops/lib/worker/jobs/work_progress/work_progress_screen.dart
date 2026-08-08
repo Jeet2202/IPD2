@@ -1,3 +1,4 @@
+import 'dart:async';
 // File: lib/worker/jobs/work_progress/work_progress_screen.dart
 
 import 'package:flutter/material.dart';

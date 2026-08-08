@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
-  const PrivacyPolicyScreen({super.key});
+  PrivacyPolicyScreen({super.key});
 
   final List<Map<String, String>> _privacySections = [
     {
@@ -42,7 +42,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
 
 class BookingStatusScreen extends StatelessWidget {
-  const BookingStatusScreen({super.key});
+  BookingStatusScreen({super.key});
 
   final List<Map<String, dynamic>> _timelineSteps = [
     {
@@ -56,7 +56,7 @@ class BookingStatusScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

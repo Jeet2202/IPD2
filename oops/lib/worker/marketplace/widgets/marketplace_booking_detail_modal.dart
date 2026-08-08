@@ -458,7 +458,7 @@ class _MarketplaceBookingDetailModalState
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Application submitted successfully!'),
           backgroundColor: Color(0xFF059669),
         ),

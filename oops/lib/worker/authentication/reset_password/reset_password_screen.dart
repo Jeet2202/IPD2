@@ -91,6 +91,7 @@ class _WorkerResetPasswordScreenState extends State<WorkerResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
@@ -107,7 +108,6 @@ class _WorkerResetPasswordScreenState extends State<WorkerResetPasswordScreen> {
             onPressed: () => LanguageSelectorWidget.show(context),
           ),
         ],
-      ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

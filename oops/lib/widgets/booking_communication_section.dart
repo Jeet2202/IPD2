@@ -59,7 +59,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
     if (cleanPhone.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('phone_number_not_available'.tr(context))),
+          SnackBar(content: Text('phone_number_not_available'.tr(context))),
         );
       }
       return;
@@ -87,7 +87,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('phone_number_copied_but_could'.tr(context))),
+          SnackBar(content: Text('phone_number_copied_but_could'.tr(context))),
         );
       }
     }
@@ -185,7 +185,7 @@ class _BookingCommunicationSectionState extends State<BookingCommunicationSectio
                   onPressed: () {
                     // Navigate to Live Tracking screen (Phase 4 / Phase 7.1)
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('live_tracking_will_be_launched'.tr(context))),
+                      SnackBar(content: Text('live_tracking_will_be_launched'.tr(context))),
                     );
                   },
                   icon: Icon(Icons.location_on_rounded, size: 20, color: Color(0xFF0D9488)),

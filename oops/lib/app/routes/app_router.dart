@@ -465,10 +465,10 @@ class AppRouter {
         return _build(const AboutScreen(), settings);
 
       case AppRoutes.termsConditions:
-        return _build(const TermsConditionsScreen(), settings);
+        return _build(TermsConditionsScreen(), settings);
 
       case AppRoutes.privacyPolicy:
-        return _build(const PrivacyPolicyScreen(), settings);
+        return _build(PrivacyPolicyScreen(), settings);
 
       case '/customer/system/no-internet':
         return _build(const NoInternetScreen(), settings);
@@ -534,7 +534,7 @@ class AppRouter {
         return _build(const PaymentMethodsScreen(), settings);
 
       case AppRoutes.customerWallet:
-        return _build(const WalletScreen(), settings);
+        return _build(WalletScreen(), settings);
 
       // ── Address & Chat & Payment & Review ──────────────────────────────────
       case AppRoutes.selectAddress:
@@ -658,7 +658,7 @@ class AppRouter {
         return _build(const WorkerDashboardScreen(), settings);
 
       case AppRoutes.workInProgress:
-        return _build(const BookingStatusScreen(), settings);
+        return _build(BookingStatusScreen(), settings);
 
       // ── AI Assistant (Phase 5.5) ──────────────────────────────────────
       case AppRoutes.customerAIAssistant:
@@ -667,28 +667,31 @@ class AppRouter {
       // ── Fallback ────────────────────────────────────────────────────────────
       default:
         return _build(
-          Scaffold(            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.map_outlined, size: 48, color: Color(0xFFCBD5E1)),
-                  const SizedBox(height: 16),
-                  Text('page_not_found'.tr(context),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+          Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.map_outlined, size: 48, color: Color(0xFFCBD5E1)),
+                    const SizedBox(height: 16),
+                    Text('page_not_found'.tr(context),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'No route for "${settings.name}"',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF64748B),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No route for "${settings.name}"',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

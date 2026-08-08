@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
 
 class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
+  WalletScreen({super.key});
 
   final List<Map<String, dynamic>> _transactions = [
     {
@@ -44,7 +44,7 @@ class WalletScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +113,7 @@ class WalletScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('opening_payment_gateway_to_add'.tr(context)),
                             backgroundColor: Color(0xFF2563EB),
                           ),
@@ -135,7 +135,7 @@ class WalletScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('withdrawal_request_of_1000_initiated'.tr(context)),
                             backgroundColor: Color(0xFF0F172A),
                           ),

@@ -8,7 +8,7 @@ class AdminDisputesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('admin_disputes_screen'.tr(context))),
-      body: const Center(child: Text('admin_disputes_screen'.tr(context))),
+      body: Center(child: Text('admin_disputes_screen'.tr(context))),
     );
   }
 }

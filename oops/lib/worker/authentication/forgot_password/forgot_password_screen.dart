@@ -58,6 +58,7 @@ class _WorkerForgotPasswordScreenState extends State<WorkerForgotPasswordScreen>
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(

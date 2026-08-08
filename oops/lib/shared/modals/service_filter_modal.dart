@@ -249,7 +249,7 @@ class _ServiceFilterModalState extends State<ServiceFilterModal> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('featured_services_only'.tr(context),

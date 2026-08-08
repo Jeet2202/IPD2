@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
 
 class TermsConditionsScreen extends StatelessWidget {
-  const TermsConditionsScreen({super.key});
+  TermsConditionsScreen({super.key});
 
   final List<Map<String, String>> _terms = [
     {
@@ -42,7 +42,7 @@ class TermsConditionsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

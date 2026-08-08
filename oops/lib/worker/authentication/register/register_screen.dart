@@ -134,6 +134,7 @@ class _WorkerRegisterScreenState extends State<WorkerRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(

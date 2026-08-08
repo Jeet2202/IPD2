@@ -84,7 +84,7 @@ class MarketPriceComparisonScreen extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('sunil'.tr(context)s Quote', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                              Text('${'sunil'.tr(context)}s Quote', style: TextStyle(fontSize: 12, color: Color(0xFF64748B))),
                               SizedBox(height: 4),
                               Text('1250'.tr(context), style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Color(0xFF0F172A))),
                             ],

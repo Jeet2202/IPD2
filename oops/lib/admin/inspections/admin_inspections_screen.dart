@@ -8,7 +8,7 @@ class AdminInspectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('admin_inspections_screen'.tr(context))),
-      body: const Center(child: Text('admin_inspections_screen'.tr(context))),
+      body: Center(child: Text('admin_inspections_screen'.tr(context))),
     );
   }
 }

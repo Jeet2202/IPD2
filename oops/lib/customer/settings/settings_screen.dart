@@ -68,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('preferences_updated'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+          SnackBar(content: Text('preferences_updated'.tr(context)), backgroundColor: Color(0xFF16A34A)),
         );
       }
     } catch (e) {
@@ -156,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('password_changed_successfully_please_log'.tr(context)),
                                 backgroundColor: Color(0xFF16A34A),
                               ),
@@ -209,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               await AuthService.instance.logoutAll();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('logged_out_from_all_devices'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                  SnackBar(content: Text('logged_out_from_all_devices'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                 );
                 Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
               }
@@ -281,7 +281,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (mounted) {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('account_permanently_deleted'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                              SnackBar(content: Text('account_permanently_deleted'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                             );
                             Navigator.pushNamedAndRemoveUntil(context, AppRoutes.customerLogin, (r) => false);
                           }

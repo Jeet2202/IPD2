@@ -71,6 +71,7 @@ class _WorkerLoginScreenState extends State<WorkerLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(

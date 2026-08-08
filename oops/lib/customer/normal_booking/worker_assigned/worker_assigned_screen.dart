@@ -141,7 +141,7 @@ class WorkerAssignedScreen extends StatelessWidget {
                           child: OutlinedButton.icon(
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('calling_technician_ramesh_kumar_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
+                                SnackBar(content: Text('calling_technician_ramesh_kumar_91'.tr(context)), backgroundColor: Color(0xFF16A34A)),
                               );
                             },
                             icon: Icon(Icons.call_rounded, size: 18),

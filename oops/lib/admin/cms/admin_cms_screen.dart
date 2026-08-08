@@ -8,7 +8,7 @@ class AdminCmsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('admin_cms_screen'.tr(context))),
-      body: const Center(child: Text('admin_cms_screen'.tr(context))),
+      body: Center(child: Text('admin_cms_screen'.tr(context))),
     );
   }
 }

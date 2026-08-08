@@ -280,21 +280,21 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   void _proceedToSummary() {
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('please_select_or_add_a'.tr(context))),
+        SnackBar(content: Text('please_select_or_add_a'.tr(context))),
       );
       return;
     }
 
     if (_bookingType == 'normal_service' && _service == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('please_select_a_valid_service'.tr(context))),
+        SnackBar(content: Text('please_select_a_valid_service'.tr(context))),
       );
       return;
     }
 
     if (_bookingType == 'custom_service' && _customTitleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('please_enter_a_service_title'.tr(context)),
           backgroundColor: AppColors.error,
         ),
@@ -304,7 +304,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     if (_bookingType == 'inspection_request' && _problemDescController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('please_provide_a_problem_description'.tr(context)),
           backgroundColor: AppColors.error,
         ),

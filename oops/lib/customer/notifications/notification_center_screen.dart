@@ -150,7 +150,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
               if (val == 'read_all') _markAllRead();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'read_all',
                 child: Text('mark_all_as_read'.tr(context)),
               ),
@@ -261,7 +261,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
             ),
           ),
           SizedBox(height: 8),
-          Text('when_you_get_notifications_they'.tr(context)ll show up here.',
+          Text('${'when_you_get_notifications_they'.tr(context)}ll show up here.',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade500,

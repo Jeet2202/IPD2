@@ -237,7 +237,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                                 icon: Icons.share_outlined,
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('service_link_copied_to_clipboard'.tr(context))),
+                                    SnackBar(content: Text('service_link_copied_to_clipboard'.tr(context))),
                                   );
                                 },
                               ),

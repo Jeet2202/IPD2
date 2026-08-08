@@ -94,7 +94,7 @@ class OnboardingPage3 extends StatelessWidget {
 
                     SizedBox(height: 14),
 
-                    Text('not_sure_what_2'.tr(context)s wrong? Book an inspection.\nLet professionals diagnose before repair.',
+                    Text('${'not_sure_what_2'.tr(context)}s wrong? Book an inspection.\nLet professionals diagnose before repair.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
