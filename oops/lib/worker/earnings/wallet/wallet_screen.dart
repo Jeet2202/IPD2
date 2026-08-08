@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
 import '../../../widgets/language_selector_widget.dart';
+import '../../../widgets/worker_voice_summary_button.dart';
 
 class WorkerWalletScreen extends StatefulWidget {
   const WorkerWalletScreen({super.key});
@@ -62,6 +63,17 @@ class _WorkerWalletScreenState extends State<WorkerWalletScreen> {
         ),
         centerTitle: true,
         actions: [
+          WorkerVoiceSummaryButton(
+            screenName: 'wallet',
+            getScreenData: () => {
+              'wallet_balance': '₹5,750',
+              'total_earned_this_month': '₹12,300',
+              'pending_payout': '₹2,500',
+              'recent_transactions': _walletActivity.length,
+              'last_transaction':
+                  _walletActivity.isNotEmpty ? _walletActivity.first['title'] : 'None',
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',

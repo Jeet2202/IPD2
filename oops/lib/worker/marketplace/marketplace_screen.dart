@@ -8,6 +8,7 @@ import '../../services/marketplace_service.dart';
 import '../../utils/token_storage.dart';
 import '../../l10n/app_translations.dart';
 import '../../widgets/language_selector_widget.dart';
+import '../../widgets/worker_voice_summary_button.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
 import 'widgets/marketplace_booking_card.dart';
 import 'widgets/marketplace_booking_detail_modal.dart';
@@ -162,6 +163,21 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           ],
         ),
         actions: [
+          WorkerVoiceSummaryButton(
+            screenName: 'marketplace',
+            getScreenData: () => {
+              'total_open_jobs': _totalBookings,
+              'showing_jobs': _bookings.length,
+              'recommended_count':
+                  _bookings.where((b) => b.isRecommended).length,
+              'sort_by': _selectedSort,
+              'has_active_filters': _filterData.hasActiveFilters,
+              if (_bookings.isNotEmpty) ...{
+                'top_job_service': _bookings.first.serviceName,
+                'top_job_price': _bookings.first.estimatedPrice,
+              },
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',

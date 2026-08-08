@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     # Third Party
     GROQ_API_KEY: str = Field(default="")
 
+    # ElevenLabs TTS (Phase — Worker Voice Summary)
+    ELEVENLABS_API_KEY: str = Field(default="")
+    # eleven_multilingual_v2 voice IDs — configure real IDs in .env
+    ELEVENLABS_VOICE_ID_EN: str = Field(default="21m00Tcm4TlvDq8ikWAM")   # Rachel (English)
+    ELEVENLABS_VOICE_ID_HI: str = Field(default="pNInz6obpgDQGcFmaJgB")   # Adam multilingual (Hindi)
+
     # File System
     MODEL_DIRECTORY: str = Field(default="./trained_models")
     DATASET_DIRECTORY: str = Field(default="./datasets")

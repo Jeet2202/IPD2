@@ -67,5 +67,8 @@ class ApiEndpoints {
   static const String paymentsCreateOrder = '/payments/create-order';
   static const String paymentsVerify      = '/payments/verify';
   static const String paymentsRefund      = '/payments/refund';
+
+  // ── AI Service (ai-service on port 8001) ─────────────
+  static const String workerVoiceSummary  = '/ai/worker/voice-summary';
 }
 

@@ -6,6 +6,7 @@ import '../../services/worker_dashboard_service.dart';
 import '../../widgets/notification_bell.dart';
 import '../../l10n/app_translations.dart';
 import '../../widgets/language_selector_widget.dart';
+import '../../widgets/worker_voice_summary_button.dart';
 import '../applications/worker_applications_screen.dart';
 import '../marketplace/widgets/marketplace_booking_card.dart';
 import '../marketplace/widgets/marketplace_booking_detail_modal.dart';
@@ -109,22 +110,40 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
+        titleSpacing: 0,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.build_circle_rounded, color: Color(0xFF2563EB), size: 24),
+            const SizedBox(width: 16),
+            const Icon(Icons.build_circle_rounded, color: Color(0xFF2563EB), size: 22),
             const SizedBox(width: 8),
-            Text(
-              'worker_dashboard'.tr(context),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
+            Flexible(
+              child: Text(
+                'worker_dashboard'.tr(context),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF0F172A),
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
         actions: [
+          WorkerVoiceSummaryButton(
+            screenName: 'dashboard',
+            getScreenData: () => {
+              'worker_name': _dashboardData?.workerName ?? '',
+              'availability': _dashboardData?.availability ?? 'unknown',
+              'available_jobs': _dashboardData?.stats.availableJobs ?? 0,
+              'active_applications': _dashboardData?.stats.activeApplications ?? 0,
+              'recommended_jobs': _dashboardData?.stats.recommendedJobs ?? 0,
+              'profile_completed': _dashboardData?.profileCompleted ?? false,
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.language_rounded, color: Color(0xFF2563EB)),
             tooltip: 'Select Language',
@@ -136,7 +155,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             tooltip: 'Refresh Dashboard',
           ),
           const NotificationBell(),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(

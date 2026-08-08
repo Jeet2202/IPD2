@@ -14,6 +14,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import '../../widgets/review_display_card.dart';
 import '../../widgets/booking_communication_section.dart';
+import '../../widgets/worker_voice_summary_button.dart';
 import '../../services/socket_service.dart';
 import '../quotations/quotation_form_screen.dart';
 import 'worker_complete_job_dialog.dart';
@@ -276,6 +277,22 @@ class _WorkerBookingDetailScreenState
             ],
           ),
           actions: [
+            WorkerVoiceSummaryButton(
+              screenName: 'booking_detail',
+              getScreenData: () => {
+                'booking_number': _booking.bookingNumber,
+                'service': _booking.serviceSnapshot.name,
+                'status': _booking.status,
+                'customer_city': _booking.addressSnapshot.city,
+                'scheduled_date': _booking.scheduledDate?.toString() ?? 'ASAP',
+                'scheduled_time': _booking.scheduledTime ?? 'Flexible',
+                'estimated_price': _booking.estimatedPrice ?? 0,
+                'is_inspection': _booking.isInspectionRequest,
+                if (_distanceMeters != null)
+                  'distance_km': (_distanceMeters! / 1000).toStringAsFixed(1),
+                if (_etaMinutes != null) 'eta_minutes': _etaMinutes,
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
               onPressed: _fetchReviewIfCompleted,

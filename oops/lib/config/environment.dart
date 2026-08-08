@@ -68,6 +68,18 @@ class EnvironmentConfig {
     return _normalizeBaseUrl(configuredUrl);
   }
 
+  /// Base URL for the AI microservice (port 8001 by default).
+  /// Reads AI_SERVICE_URL from the active .env file.
+  static String get aiServiceUrl {
+    final dotenvUrl = (dotenv.env['AI_SERVICE_URL'] ?? '').trim();
+    if (dotenvUrl.isNotEmpty) {
+      return _normalizeBaseUrl(dotenvUrl);
+    }
+    // Fallback: derive from API_BASE_URL — replace port 8000 with 8001
+    final fallback = baseUrl.replaceFirst(':8000', ':8001').replaceFirst('/api/v1', '');
+    return fallback;
+  }
+
   static String get environmentName {
     switch (_currentEnvironment) {
       case AppEnvironment.development:

@@ -9,6 +9,7 @@ import '../../models/booking_model.dart';
 import '../../services/booking_service.dart';
 import '../../l10n/app_translations.dart';
 import '../../widgets/language_selector_widget.dart';
+import '../../widgets/worker_voice_summary_button.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
 import 'worker_booking_detail_screen.dart';
 
@@ -90,6 +91,19 @@ class _WorkerWorkScreenState extends State<WorkerWorkScreen>
         backgroundColor: AppColors.surface,
         elevation: 0,
         actions: [
+          WorkerVoiceSummaryButton(
+            screenName: 'my_jobs',
+            getScreenData: () => {
+              'active_jobs': _activeBookings.length,
+              'pending_confirmation': _waitingBookings.length,
+              'completed_jobs': _completedBookings.length,
+              'total_jobs': _allBookings.length,
+              if (_activeBookings.isNotEmpty) ...{
+                'next_job_service': _activeBookings.first.serviceSnapshot.name,
+                'next_job_status': _activeBookings.first.status,
+              },
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.language_rounded, color: AppColors.primary),
             tooltip: 'Select Language',

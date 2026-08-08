@@ -15,6 +15,7 @@ from app.assistant.api.assistant_router import router as assistant_router
 from app.api.analytics import router as analytics_router
 from app.api.admin_dashboard import router as admin_dashboard_router
 from app.api.mlops import router as mlops_router
+from app.api.worker_voice_summary import router as worker_voice_summary_router
 from app.utils.backend_client import BackendClient
 from app.utils.model_loader import ModelLoader
 
@@ -62,6 +63,7 @@ def create_app() -> FastAPI:
     app.include_router(analytics_router)
     app.include_router(admin_dashboard_router)
     app.include_router(mlops_router)
+    app.include_router(worker_voice_summary_router)
 
     return app
 
