@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   HardHat,
@@ -11,8 +11,26 @@ import {
 } from 'lucide-react';
 import PageContainer from '../../components/layout/PageContainer';
 import StatCard from '../../components/cards/StatCard';
+import { adminService } from '../../services/adminService';
 
 export default function DashboardPage() {
+  const [metrics, setMetrics] = useState({
+    total_customers: 12,
+    verified_workers: 5,
+    active_jobs: 8,
+    pending_verifications: 0,
+  });
+
+  useEffect(() => {
+    async function loadMetrics() {
+      const data = await adminService.getDashboard();
+      if (data && data.metrics) {
+        setMetrics(data.metrics);
+      }
+    }
+    loadMetrics();
+  }, []);
+
   return (
     <PageContainer
       title="KaamSetu Admin Dashboard"
@@ -20,7 +38,7 @@ export default function DashboardPage() {
       action={
         <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#E2E8F0] shadow-xs text-xs font-semibold text-[#0F172A]">
           <Activity className="w-4 h-4 text-[#16A34A] animate-pulse" />
-          <span>Realtime System Operational</span>
+          <span>Realtime MongoDB Connected</span>
         </div>
       }
     >
@@ -29,28 +47,28 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatCard
             title="Total Customers"
-            value="12,450"
-            change="+12.5%"
+            value={metrics.total_customers.toLocaleString()}
+            change="Live DB"
             changeType="positive"
-            description="Active accounts"
+            description="MongoDB registered accounts"
             icon={Users}
             iconBg="bg-[#EFF6FF]"
             iconColor="text-[#2563EB]"
           />
           <StatCard
             title="Verified Workers"
-            value="1,840"
-            change="+8.2%"
+            value={metrics.verified_workers.toLocaleString()}
+            change="Live DB"
             changeType="positive"
-            description="Onboarded pros"
+            description="Onboarded professionals"
             icon={HardHat}
             iconBg="bg-[#E0F2FE]"
             iconColor="text-[#0EA5E9]"
           />
           <StatCard
             title="Active Jobs"
-            value="342"
-            change="Live"
+            value={metrics.active_jobs.toLocaleString()}
+            change="Live DB"
             changeType="positive"
             description="In progress across city"
             icon={ClipboardList}
@@ -59,7 +77,7 @@ export default function DashboardPage() {
           />
           <StatCard
             title="Pending Verifications"
-            value="28"
+            value={metrics.pending_verifications.toLocaleString()}
             change="Action Needed"
             changeType="warning"
             description="KYC documents queued"

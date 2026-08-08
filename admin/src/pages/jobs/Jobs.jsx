@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -20,17 +20,41 @@ import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { JOBS_DATA } from '../../data/jobs';
+import { adminService } from '../../services/adminService';
 
 export default function Jobs() {
   const navigate = useNavigate();
 
-  const [jobs, setJobs] = useState(JOBS_DATA);
+  const [jobs, setJobs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All'); // All | Normal | Inspection-Converted
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [paymentFilter, setPaymentFilter] = useState('All');
   const [modalConfig, setModalConfig] = useState({ isOpen: false });
+
+  useEffect(() => {
+    async function loadJobs() {
+      setIsLoading(true);
+      const data = await adminService.getJobs();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(j => ({
+          id: j.booking_number || j.id,
+          customerName: j.customer_name || 'Customer User',
+          workerName: j.worker_name || 'Pending Assignment',
+          service: j.service_title || 'Home Service',
+          type: j.booking_type === 'inspection' ? 'Inspection-Converted' : 'Normal',
+          status: j.status ? j.status.charAt(0).toUpperCase() + j.status.slice(1) : 'In Progress',
+          amount: j.amount || 499.0,
+          paymentStatus: j.status === 'completed' ? 'Paid' : 'Escrow Held',
+          date: j.created_at ? j.created_at.split('T')[0] : 'Today',
+        }));
+        setJobs(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadJobs();
+  }, []);
 
   // Filter Jobs
   const filteredJobs = useMemo(() => {

@@ -136,6 +136,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     )
     from app.worker.models import WorkerProfile
     from app.notifications.models import DeviceToken, Notification, NotificationPreference
+    from app.admin.models import (
+        WorkerVerification as AdminWorkerVerification,
+        AppSettings,
+        AuditLog as AdminAuditLog,
+    )
 
     await connect_to_database(
         document_models=[
@@ -161,6 +166,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
             SafetyFlag,
             VerificationHistory,
             WorkerVerification,
+            AdminWorkerVerification,
+            AppSettings,
+            AdminAuditLog,
             VerificationDocument,
             VerificationReview,
             VerificationBadge,

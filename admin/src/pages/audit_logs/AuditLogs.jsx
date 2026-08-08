@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ScrollText,
   Search,
@@ -19,9 +19,11 @@ import AuditSeverityBadge from '../../components/common/AuditSeverityBadge';
 import Modal from '../../components/common/Modal';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
-import { AUDIT_LOGS_SUMMARY, AUDIT_LOGS_LIST } from '../../data/auditLogs';
+import { adminService } from '../../services/adminService';
 
 export default function AuditLogs() {
+  const [logsList, setLogsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState('All Admins');
   const [selectedAction, setSelectedAction] = useState('All Actions');
@@ -31,6 +33,28 @@ export default function AuditLogs() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    async function loadAuditLogs() {
+      setIsLoading(true);
+      const data = await adminService.getAuditLogs();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map((l, i) => ({
+          id: `LOG-${l.id.slice(-6).toUpperCase()}`,
+          timestamp: l.timestamp ? l.timestamp.replace('T', ' ').substring(0, 16) : 'Just now',
+          admin: l.user_id ? `Admin (${l.user_id.slice(-4)})` : 'Super Admin',
+          adminRole: 'System Security',
+          action: l.action || 'AUTH_LOGIN',
+          severity: l.status === 'failed' ? 'High' : 'Low',
+          ipAddress: l.ip_address || '127.0.0.1',
+          details: `Event ${l.action} performed with status ${l.status}.`,
+        }));
+        setLogsList(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadAuditLogs();
+  }, []);
 
   const actionTypes = [
     'All Actions',
@@ -54,13 +78,11 @@ export default function AuditLogs() {
   ];
 
   // Filter logs
-  const filteredLogs = AUDIT_LOGS_LIST.filter((log) => {
+  const filteredLogs = logsList.filter((log) => {
     const matchesSearch =
       log.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.admin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.module.toLowerCase().includes(searchQuery.toLowerCase());
+      log.action.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesAdmin =
       selectedAdmin === 'All Admins' || log.admin === selectedAdmin;

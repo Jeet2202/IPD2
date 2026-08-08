@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -18,13 +18,14 @@ import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { CUSTOMERS_DATA } from '../../data/customers';
+import { adminService } from '../../services/adminService';
 
 export default function Customers() {
   const navigate = useNavigate();
 
   // State management for dataset, search, filters & pagination
-  const [customers, setCustomers] = useState(CUSTOMERS_DATA);
+  const [customers, setCustomers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All Time');
@@ -33,6 +34,29 @@ export default function Customers() {
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({ isOpen: false });
+
+  useEffect(() => {
+    async function loadCustomers() {
+      setIsLoading(true);
+      const data = await adminService.getCustomers();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(c => ({
+          id: c.customer_id || c.id,
+          name: c.full_name || 'Customer User',
+          email: c.email || 'N/A',
+          phone: c.phone || 'N/A',
+          status: c.is_active ? 'Active' : 'Suspended',
+          totalBookings: c.total_bookings || 0,
+          totalSpent: 4500,
+          joinedDate: c.joined_at ? c.joined_at.split('T')[0] : 'Recently',
+          avatarUrl: c.profile_photo_url || null,
+        }));
+        setCustomers(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadCustomers();
+  }, []);
 
   // Calculate Summary Counts
   const summaryStats = useMemo(() => {

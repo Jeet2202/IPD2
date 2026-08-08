@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -17,11 +17,12 @@ import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { SERVICES_DATA } from '../../data/services';
-import { SERVICE_CATEGORIES } from '../../data/serviceCategories';
+import { adminService } from '../../services/adminService';
 
 export default function Services() {
-  const [services, setServices] = useState(SERVICES_DATA);
+  const [services, setServices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -39,6 +40,36 @@ export default function Services() {
     estimatedDuration: '45 mins',
   });
   const [modalConfig, setModalConfig] = useState({ isOpen: false });
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      const [svcData, catData] = await Promise.all([
+        adminService.getServices(),
+        adminService.getCategories(),
+      ]);
+      if (Array.isArray(svcData) && svcData.length > 0) {
+        const normalized = svcData.map(s => ({
+          id: s.service_id || s.id,
+          name: s.name,
+          categoryId: 'CAT-101',
+          categoryName: s.category || 'General',
+          requestType: 'Normal',
+          basePrice: s.base_price || 350.0,
+          visitingCharge: 99.0,
+          status: s.is_active ? 'Active' : 'Inactive',
+          estimatedDuration: `${s.duration_minutes || 45} mins`,
+          description: s.name + ' professional service provided by verified partners.',
+        }));
+        setServices(normalized);
+      }
+      if (Array.isArray(catData)) {
+        setCategories(catData);
+      }
+      setIsLoading(false);
+    }
+    loadData();
+  }, []);
 
   // Filter Services
   const filteredServices = useMemo(() => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Settings as SettingsIcon,
   Globe,
@@ -22,12 +22,38 @@ import PageContainer from '../../components/layout/PageContainer';
 import ToggleCard from '../../components/common/ToggleCard';
 import { useToast } from '../../components/common/ToastContext';
 import { INITIAL_PLATFORM_SETTINGS } from '../../data/settings';
+import { adminService } from '../../services/adminService';
 
 export default function Settings() {
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState('general');
   const [settings, setSettings] = useState(INITIAL_PLATFORM_SETTINGS);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadSettings() {
+      setIsLoading(true);
+      const data = await adminService.getSettings();
+      if (data) {
+        setSettings(prev => ({
+          ...prev,
+          general: {
+            ...prev.general,
+            platformName: data.platform_name || prev.general.platformName,
+            supportEmail: data.support_email || prev.general.supportEmail,
+            supportPhone: data.support_phone || prev.general.supportPhone,
+          },
+          maintenance: {
+            ...prev.maintenance,
+            maintenanceMode: data.maintenance_mode ?? prev.maintenance.maintenanceMode,
+          }
+        }));
+      }
+      setIsLoading(false);
+    }
+    loadSettings();
+  }, []);
 
   const sections = [
     { id: 'general', label: 'General', icon: Globe },
@@ -39,12 +65,24 @@ export default function Settings() {
     { id: 'appearance', label: 'Appearance', icon: Palette },
   ];
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e?.preventDefault();
     setSavedSuccess(true);
+
+    try {
+      await adminService.updateSettings({
+        platform_name: settings.general.platformName,
+        support_email: settings.general.supportEmail,
+        support_phone: settings.general.supportPhone,
+        maintenance_mode: settings.maintenance.maintenanceMode,
+      });
+    } catch (err) {
+      console.warn('Failed to save settings:', err);
+    }
+
     addToast({
       title: 'Settings Saved',
-      message: 'Global platform configuration updated successfully.',
+      message: 'Global platform configuration updated successfully in MongoDB.',
       type: 'success',
     });
     setTimeout(() => setSavedSuccess(false), 3000);

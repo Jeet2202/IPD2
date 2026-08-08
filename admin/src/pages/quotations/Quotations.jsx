@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Search,
@@ -17,18 +17,42 @@ import PageContainer from '../../components/layout/PageContainer';
 import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
-import { QUOTATIONS_DATA } from '../../data/quotations';
+import { adminService } from '../../services/adminService';
 
 export default function Quotations() {
   const navigate = useNavigate();
 
-  const [quotations, setQuotations] = useState(QUOTATIONS_DATA);
+  const [quotations, setQuotations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [assessmentFilter, setAssessmentFilter] = useState('All');
 
   // Details Modal State
   const [selectedQuotation, setSelectedQuotation] = useState(null);
+
+  useEffect(() => {
+    async function loadQuotations() {
+      setIsLoading(true);
+      const data = await adminService.getQuotations();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(q => ({
+          id: q.quotation_id || q.id,
+          inspectionId: `INSP-${q.booking_id || '101'}`,
+          customerName: 'Customer User',
+          professionalName: 'Professional Partner',
+          serviceName: 'Inspection & Repair',
+          status: q.status ? q.status.charAt(0).toUpperCase() + q.status.slice(1) : 'Approved',
+          amount: q.total_amount || 1250.0,
+          pricingAssessment: 'Within Range',
+          date: q.created_at ? q.created_at.split('T')[0] : 'Today',
+        }));
+        setQuotations(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadQuotations();
+  }, []);
 
   // Filter Quotations
   const filteredQuotations = useMemo(() => {

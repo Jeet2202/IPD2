@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search,
@@ -23,10 +23,11 @@ import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { WORKERS_DATA } from '../../data/workers';
+import { adminService } from '../../services/adminService';
 
 export default function Workers() {
-  const [workers, setWorkers] = useState(WORKERS_DATA);
+  const [workers, setWorkers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [professionFilter, setProfessionFilter] = useState('All');
   const [verificationFilter, setVerificationFilter] = useState('All');
@@ -36,6 +37,30 @@ export default function Workers() {
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({ isOpen: false });
+
+  useEffect(() => {
+    async function loadWorkers() {
+      setIsLoading(true);
+      const data = await adminService.getWorkers();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(w => ({
+          id: w.worker_id || w.id,
+          name: w.full_name || 'Worker User',
+          phone: w.phone || 'N/A',
+          profession: (w.skills && w.skills[0]) ? w.skills[0] : 'Professional',
+          verificationStatus: (w.verification_status && w.verification_status.toLowerCase() === 'verified') ? 'Verified' : 'Pending',
+          accountStatus: w.is_active ? 'Active' : 'Suspended',
+          availabilityStatus: 'Online',
+          rating: w.rating || 4.8,
+          totalJobs: w.review_count || 12,
+          joinedDate: w.joined_at ? w.joined_at.split('T')[0] : 'Recently',
+        }));
+        setWorkers(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadWorkers();
+  }, []);
 
   // Calculate Summary Numbers
   const stats = useMemo(() => {

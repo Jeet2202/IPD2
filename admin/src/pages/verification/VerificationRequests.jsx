@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -17,15 +17,38 @@ import PageContainer from '../../components/layout/PageContainer';
 import StatCard from '../../components/cards/StatCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import EmptyState from '../../components/common/EmptyState';
-import { VERIFICATION_REQUESTS } from '../../data/verifications';
+import { adminService } from '../../services/adminService';
 
 export default function VerificationRequests() {
   const navigate = useNavigate();
 
-  const [requests, setRequests] = useState(VERIFICATION_REQUESTS);
+  const [requests, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [professionFilter, setProfessionFilter] = useState('All');
+
+  useEffect(() => {
+    async function loadVerifications() {
+      setIsLoading(true);
+      const data = await adminService.getVerifications();
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(v => ({
+          id: v.verification_id || v.id,
+          workerId: v.worker_id,
+          workerName: v.worker_name || 'Worker User',
+          phone: v.worker_phone || 'N/A',
+          profession: 'Plumber & Electrician',
+          status: v.status === 'verified' ? 'Approved' : (v.status === 'rejected' ? 'Rejected' : 'Pending'),
+          submittedAt: v.created_at ? v.created_at.split('T')[0] : 'Recently',
+          documentsCount: Object.keys(v.submitted_documents || {}).length || 2,
+        }));
+        setRequests(normalized);
+      }
+      setIsLoading(false);
+    }
+    loadVerifications();
+  }, []);
 
   // Filter requests
   const filteredRequests = useMemo(() => {
