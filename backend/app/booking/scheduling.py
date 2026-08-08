@@ -137,24 +137,127 @@ def validate_booking_schedule(
 
     if scheduled_date == today and scheduled_time:
         # Check if the requested slot's start time on today has passed
-        # Expecting scheduled_time like "09:00 - 11:00" or "09:00"
+        # Expecting scheduled_time like "09:00 - 11:00", "09:00 AM", or "09:00 AM - 11:00 AM"
         try:
             start_part = scheduled_time.split("-")[0].strip()
-            parts = start_part.split(":")
-            hour = int(parts[0])
-            minute = int(parts[1]) if len(parts) > 1 else 0
+            upper_part = start_part.upper()
+            is_pm = "PM" in upper_part
+            is_am = "AM" in upper_part
 
-            slot_dt = datetime.combine(today, time(hour=hour, minute=minute))
-            now_local = datetime.now()
-            cutoff_local = now_local + timedelta(hours=settings.BOOKING_SAME_DAY_BUFFER_HOURS)
+            clean_part = "".join(c for c in start_part if c.isdigit() or c == ":").strip()
+            parts = clean_part.split(":")
+            if parts and parts[0]:
+                hour = int(parts[0])
+                minute = int(parts[1]) if len(parts) > 1 and parts[1] else 0
 
-            if slot_dt < cutoff_local:
-                raise BadRequestException(
-                    message="Selected time slot has already passed for today.",
-                    error_code="PAST_TIME_SLOT",
-                )
+                if is_pm and hour < 12:
+                    hour += 12
+                elif is_am and hour == 12:
+                    hour = 0
+
+                slot_dt = datetime.combine(today, time(hour=hour, minute=minute))
+                now_local = datetime.now()
+                cutoff_local = now_local + timedelta(hours=settings.BOOKING_SAME_DAY_BUFFER_HOURS)
+
+                if slot_dt < cutoff_local:
+                    raise BadRequestException(
+                        message="Selected time slot has already passed for today.",
+                        error_code="PAST_TIME_SLOT",
+                    )
         except BadRequestException:
             raise
         except Exception:
             # If custom format string, allow unless format fails parsing
             pass
+
+
+# ---------------------------------------------------------------------------
+# Time Overlap Utilities (used by scheduling conflict detection)
+# ---------------------------------------------------------------------------
+
+def parse_time_range_minutes(time_str: str) -> tuple[int, int] | None:
+    """
+    Parse a time range string into (start_minutes_since_midnight, end_minutes_since_midnight).
+
+    Supported formats:
+        "09:00 - 11:00"          → (540, 660)
+        "09:00 AM - 11:00 AM"    → (540, 660)
+        "02:00 PM - 04:00 PM"    → (840, 960)
+        "09:00"                  → (540, 600)  single time → assume 60 min
+
+    Returns None if the string cannot be parsed.
+    """
+    if not time_str:
+        return None
+
+    try:
+        # Split on " - " to get start / end parts
+        raw_parts = time_str.split(" - ", 1)
+        start_part = raw_parts[0].strip()
+        end_part = raw_parts[1].strip() if len(raw_parts) > 1 else None
+
+        def _parse_part(part: str) -> int:
+            """Return minutes since midnight for a single time string like '09:00' or '09:00 AM'."""
+            upper = part.upper()
+            is_pm = "PM" in upper
+            is_am = "AM" in upper
+            # Strip AM/PM and whitespace
+            clean = "".join(c for c in part if c.isdigit() or c == ":").strip()
+            segments = clean.split(":")
+            hour = int(segments[0])
+            minute = int(segments[1]) if len(segments) > 1 and segments[1] else 0
+            if is_pm and hour < 12:
+                hour += 12
+            elif is_am and hour == 12:
+                hour = 0
+            return hour * 60 + minute
+
+        start_min = _parse_part(start_part)
+        if end_part:
+            end_min = _parse_part(end_part)
+        else:
+            end_min = start_min + 60  # default 60-minute duration
+
+        # Sanity check: end must be after start
+        if end_min <= start_min:
+            return None
+
+        return (start_min, end_min)
+
+    except Exception:
+        return None
+
+
+def has_time_overlap(time_a: str, time_b: str) -> bool:
+    """
+    Return True if two time range strings have any temporal overlap.
+
+    Two intervals [s1, e1) and [s2, e2) overlap iff s1 < e2 AND s2 < e1.
+    Touching intervals (e.g. 09:00-10:00 and 10:00-12:00) are NOT considered overlapping.
+    If either string fails to parse, returns False (safe/permissive default).
+
+    Args:
+        time_a: First time range string (e.g. "09:00 - 11:00")
+        time_b: Second time range string (e.g. "10:00 - 12:00")
+
+    Returns:
+        True if the intervals overlap, False otherwise.
+
+    Examples:
+        has_time_overlap("09:00 - 11:00", "10:00 - 12:00") → True  (overlap 10:00-11:00)
+        has_time_overlap("09:00 - 10:00", "10:00 - 12:00") → False (touching, not overlapping)
+        has_time_overlap("09:00 - 11:00", "11:00 - 13:00") → False (touching, not overlapping)
+        has_time_overlap("09:00 - 11:00", "09:30 - 10:30") → True  (fully nested)
+    """
+    range_a = parse_time_range_minutes(time_a)
+    range_b = parse_time_range_minutes(time_b)
+
+    if range_a is None or range_b is None:
+        return False  # Safe default — can't determine overlap, don't block
+
+    s1, e1 = range_a
+    s2, e2 = range_b
+
+    return s1 < e2 and s2 < e1
+
+

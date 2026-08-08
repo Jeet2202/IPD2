@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../l10n/app_translations.dart';
+import '../../../utils/booking_slot_utils.dart';
 
 class InspectionScheduleScreen extends StatefulWidget {
   const InspectionScheduleScreen({super.key});
@@ -18,23 +19,35 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
   bool _isExpressVisit = false;
   bool _preferSeniorTech = true;
 
-  final List<Map<String, String>> _dateCards = [
-    {'day': 'Today', 'date': '31 Jul'},
-    {'day': 'Fri', 'date': '01 Aug'},
-    {'day': 'Sat', 'date': '02 Aug'},
-    {'day': 'Sun', 'date': '03 Aug'},
-    {'day': 'Mon', 'date': '04 Aug'},
-  ];
+  late List<DateCardItem> _dateCards;
 
   final List<String> _morningSlots = ['08:00 AM - 09:00 AM', '09:30 AM - 10:30 AM', '11:00 AM - 12:00 PM'];
   final List<String> _afternoonSlots = ['01:00 PM - 02:00 PM', '02:30 PM - 03:30 PM', '04:00 PM - 05:00 PM'];
   final List<String> _eveningSlots = ['05:30 PM - 06:30 PM', '07:00 PM - 08:00 PM'];
 
+  List<String> get _allSlots => [..._morningSlots, ..._afternoonSlots, ..._eveningSlots];
+
+  @override
+  void initState() {
+    super.initState();
+    _dateCards = BookingSlotUtils.generateDateCards(days: 7, sampleSlots: _allSlots);
+    _selectedDateIndex = BookingSlotUtils.getFirstAvailableDateIndex(_dateCards, _allSlots);
+
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+    final avail = _allSlots.where((s) => BookingSlotUtils.isSlotAvailable(s, selectedDate)).toList();
+    if (avail.isNotEmpty) {
+      _selectedTimeSlot = avail.first;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -112,13 +125,26 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                       itemBuilder: (context, index) {
                         final isSelected = _selectedDateIndex == index;
                         final item = _dateCards[index];
+                        final isAvail = BookingSlotUtils.hasAvailableSlots(_allSlots, item.date);
+
                         return GestureDetector(
-                          onTap: () => setState(() => _selectedDateIndex = index),
+                          onTap: () {
+                            setState(() {
+                              _selectedDateIndex = index;
+                              final newDate = _dateCards[index].date;
+                              final avail = _allSlots.where((s) => BookingSlotUtils.isSlotAvailable(s, newDate)).toList();
+                              if (avail.isNotEmpty && !avail.contains(_selectedTimeSlot)) {
+                                _selectedTimeSlot = avail.first;
+                              }
+                            });
+                          },
                           child: Container(
                             width: 72,
                             margin: EdgeInsets.only(right: 12),
                             decoration: BoxDecoration(
-                              color: isSelected ? const Color(0xFF2563EB) : Colors.white,
+                              color: isSelected
+                                  ? const Color(0xFF2563EB)
+                                  : (isAvail ? Colors.white : const Color(0xFFF1F5F9)),
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
                             ),
@@ -126,19 +152,23 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  item['day']!,
+                                  item.dayLabel,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isSelected ? const Color(0xFFDBEAFE) : const Color(0xFF64748B),
+                                    color: isSelected
+                                        ? const Color(0xFFDBEAFE)
+                                        : (isAvail ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
                                   ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  item['date']!,
+                                  item.dateDisplay,
                                   style: TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w800,
-                                    color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : (isAvail ? const Color(0xFF0F172A) : const Color(0xFF94A3B8)),
                                   ),
                                 ),
                               ],
@@ -155,11 +185,11 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                   Text('select_time_slot'.tr(context), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
                   SizedBox(height: 12),
 
-                  _buildSlotGroup('Morning', _morningSlots),
+                  _buildSlotGroup('Morning', _morningSlots, selectedDate),
                   SizedBox(height: 12),
-                  _buildSlotGroup('Afternoon', _afternoonSlots),
+                  _buildSlotGroup('Afternoon', _afternoonSlots, selectedDate),
                   SizedBox(height: 12),
-                  _buildSlotGroup('Evening', _eveningSlots),
+                  _buildSlotGroup('Evening', _eveningSlots, selectedDate),
 
                   SizedBox(height: 24),
                 ],
@@ -188,7 +218,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
                       ),
                       Switch(
                         value: _preferSeniorTech,
-                        activeColor: const Color(0xFF2563EB),
+                        activeThumbColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _preferSeniorTech = val),
                       ),
                     ],
@@ -246,14 +276,25 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, -4)),
                 ],
               ),
               child: SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.searchingProfessional),
+                  onPressed: () {
+                    final dateStr = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.searchingProfessional,
+                      arguments: {
+                        'scheduled_date': dateStr,
+                        'scheduled_time': _selectedTimeSlot,
+                        'is_express': _isExpressVisit,
+                      },
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
@@ -272,7 +313,7 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
     );
   }
 
-  Widget _buildSlotGroup(String groupTitle, List<String> slots) {
+  Widget _buildSlotGroup(String groupTitle, List<String> slots, DateTime selectedDate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -283,19 +324,32 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
           runSpacing: 8,
           children: slots.map((slot) {
             final isSelected = _selectedTimeSlot == slot;
+            final isAvail = BookingSlotUtils.isSlotAvailable(slot, selectedDate);
+
             return ChoiceChip(
-              label: Text(slot),
-              selected: isSelected,
-              selectedColor: const Color(0xFF2563EB),
-              labelStyle: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF0F172A),
-              ),              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFCBD5E1)),
+              label: Text(
+                isAvail ? slot : '$slot (Passed)',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? Colors.white
+                      : (isAvail ? const Color(0xFF0F172A) : const Color(0xFF94A3B8)),
+                  decoration: isAvail ? TextDecoration.none : TextDecoration.lineThrough,
+                ),
               ),
-              onSelected: (_) => setState(() => _selectedTimeSlot = slot),
+              selected: isSelected && isAvail,
+              disabledColor: const Color(0xFFF1F5F9),
+              selectedColor: const Color(0xFF2563EB),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: isSelected
+                      ? const Color(0xFF2563EB)
+                      : (isAvail ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0)),
+                ),
+              ),
+              onSelected: isAvail ? (_) => setState(() => _selectedTimeSlot = slot) : null,
             );
           }).toList(),
         ),
@@ -303,3 +357,4 @@ class _InspectionScheduleScreenState extends State<InspectionScheduleScreen> {
     );
   }
 }
+

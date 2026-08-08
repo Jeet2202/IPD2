@@ -9,6 +9,7 @@ import '../../../models/address_model.dart';
 import '../../../services/address_service.dart';
 import '../../../services/api_service.dart';
 import '../../../l10n/app_translations.dart';
+import '../../../utils/booking_slot_utils.dart';
 
 class InspectionDetailsScreen extends StatefulWidget {
   const InspectionDetailsScreen({super.key});
@@ -26,7 +27,7 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
   final TextEditingController _problemDescController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
-  DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
+  DateTime _selectedDate = DateTime.now();
   String _selectedTimeSlot = '10:00 AM - 12:00 PM';
 
   List<AddressModel> _savedAddresses = [];
@@ -57,6 +58,15 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    final todayHasSlots = BookingSlotUtils.hasAvailableSlots(_timeSlots, now);
+    _selectedDate = todayHasSlots ? DateTime(now.year, now.month, now.day) : DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+
+    final avail = _timeSlots.where((s) => BookingSlotUtils.isSlotAvailable(s, _selectedDate)).toList();
+    if (avail.isNotEmpty) {
+      _selectedTimeSlot = avail.first;
+    }
+
     _fetchAddresses();
   }
 
@@ -475,12 +485,23 @@ class _InspectionDetailsScreenState extends State<InspectionDetailsScreen> {
                   spacing: 8,
                   children: _timeSlots.map((slot) {
                     final isSelected = _selectedTimeSlot == slot;
+                    final isAvail = BookingSlotUtils.isSlotAvailable(slot, _selectedDate);
+
                     return ChoiceChip(
-                      label: Text(slot),
-                      selected: isSelected,
+                      label: Text(
+                        isAvail ? slot : '$slot (Passed)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected
+                              ? Colors.white
+                              : (isAvail ? AppColors.textPrimary : AppColors.textHint),
+                          decoration: isAvail ? TextDecoration.none : TextDecoration.lineThrough,
+                        ),
+                      ),
+                      selected: isSelected && isAvail,
+                      disabledColor: const Color(0xFFF1F5F9),
                       selectedColor: AppColors.primary,
-                      labelStyle: TextStyle(color: isSelected ? Colors.white : AppColors.textPrimary, fontSize: 12),
-                      onSelected: (_) => setState(() => _selectedTimeSlot = slot),
+                      onSelected: isAvail ? (_) => setState(() => _selectedTimeSlot = slot) : null,
                     );
                   }).toList(),
                 ),

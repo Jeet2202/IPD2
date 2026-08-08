@@ -141,7 +141,7 @@ class _MarketplaceBookingDetailModalState
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -479,6 +479,9 @@ class _MarketplaceBookingDetailModalState
         errorMsg = 'This job is outside your designated service radius.';
       } else if (errorMsg.contains('DUPLICATE_APPLICATION')) {
         errorMsg = 'You have already submitted an application for this booking.';
+      } else if (errorMsg.contains('SCHEDULING_CONFLICT')) {
+        errorMsg = 'You already have an active or pending job on this date and time. '
+            'Wait for your existing application to be rejected before applying here.';
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

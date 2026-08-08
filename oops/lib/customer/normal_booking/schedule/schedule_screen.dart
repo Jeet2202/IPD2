@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../l10n/app_translations.dart';
+import '../../../utils/booking_slot_utils.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -17,22 +18,34 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   String _selectedTimeSlot = '10:30 AM';
   bool _preferPreviousPro = false;
 
-  final List<Map<String, String>> _dates = [
-    {'day': 'Today', 'date': '31 Jul', 'sub': 'Available'},
-    {'day': 'Tomorrow', 'date': '1 Aug', 'sub': 'Available'},
-    {'day': 'Fri', 'date': '2 Aug', 'sub': 'Available'},
-    {'day': 'Sat', 'date': '3 Aug', 'sub': 'Fast Slot'},
-    {'day': 'Sun', 'date': '4 Aug', 'sub': 'Available'},
-    {'day': 'Mon', 'date': '5 Aug', 'sub': 'Available'},
-  ];
+  late List<DateCardItem> _dateCards;
 
   final List<String> _morningSlots = ['09:00 AM', '10:30 AM', '11:30 AM'];
   final List<String> _afternoonSlots = ['01:00 PM', '02:30 PM', '04:00 PM'];
   final List<String> _eveningSlots = ['05:30 PM', '07:00 PM', '08:30 PM'];
 
+  List<String> get _allSlots => [..._morningSlots, ..._afternoonSlots, ..._eveningSlots];
+
+  @override
+  void initState() {
+    super.initState();
+    _dateCards = BookingSlotUtils.generateDateCards(days: 7, sampleSlots: _allSlots);
+    _selectedDateIndex = BookingSlotUtils.getFirstAvailableDateIndex(_dateCards, _allSlots);
+
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+    final available = _allSlots.where((s) => BookingSlotUtils.isSlotAvailable(s, selectedDate)).toList();
+    if (available.isNotEmpty) {
+      _selectedTimeSlot = available.first;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -68,17 +81,30 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   child: Row(
-                    children: List.generate(_dates.length, (index) {
-                      final item = _dates[index];
+                    children: List.generate(_dateCards.length, (index) {
+                      final item = _dateCards[index];
                       final isSelected = index == _selectedDateIndex;
+                      final isAvail = BookingSlotUtils.hasAvailableSlots(_allSlots, item.date);
+
                       return GestureDetector(
-                        onTap: () => setState(() => _selectedDateIndex = index),
+                        onTap: () {
+                          setState(() {
+                            _selectedDateIndex = index;
+                            final newDate = _dateCards[index].date;
+                            final avail = _allSlots.where((s) => BookingSlotUtils.isSlotAvailable(s, newDate)).toList();
+                            if (avail.isNotEmpty && !avail.contains(_selectedTimeSlot)) {
+                              _selectedTimeSlot = avail.first;
+                            }
+                          });
+                        },
                         child: Container(
                           width: 90,
                           margin: EdgeInsets.only(right: 12),
                           padding: EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFF8FAFC),
+                            color: isSelected
+                                ? const Color(0xFF2563EB)
+                                : (isAvail ? const Color(0xFFF8FAFC) : const Color(0xFFF1F5F9)),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
@@ -87,7 +113,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             boxShadow: [
                               if (isSelected)
                                 BoxShadow(
-                                  color: const Color(0xFF2563EB).withOpacity(0.3),
+                                  color: const Color(0xFF2563EB).withValues(alpha:0.3),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -96,35 +122,43 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           child: Column(
                             children: [
                               Text(
-                                item['day']!,
+                                item.dayLabel,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: isSelected ? const Color(0xFFDBEAFE) : const Color(0xFF64748B),
+                                  color: isSelected
+                                      ? const Color(0xFFDBEAFE)
+                                      : (isAvail ? const Color(0xFF64748B) : const Color(0xFF94A3B8)),
                                 ),
                               ),
                               SizedBox(height: 6),
                               Text(
-                                item['date']!,
+                                item.dateDisplay,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
-                                  color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                                  color: isSelected
+                                      ? Colors.white
+                                      : (isAvail ? const Color(0xFF0F172A) : const Color(0xFF94A3B8)),
                                 ),
                               ),
                               SizedBox(height: 6),
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? Colors.white.withOpacity(0.2) : const Color(0xFFEFF6FF),
+                                  color: isSelected
+                                      ? Colors.white.withValues(alpha:0.2)
+                                      : (isAvail ? const Color(0xFFEFF6FF) : const Color(0xFFE2E8F0)),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  item['sub']!,
+                                  isAvail ? 'Available' : 'Passed',
                                   style: TextStyle(
                                     fontSize: 9,
                                     fontWeight: FontWeight.w700,
-                                    color: isSelected ? Colors.white : const Color(0xFF2563EB),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : (isAvail ? const Color(0xFF2563EB) : const Color(0xFF64748B)),
                                   ),
                                 ),
                               ),
@@ -153,7 +187,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     children: [
                       Container(
                         padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha:0.2), shape: BoxShape.circle),
                         child: Icon(Icons.bolt_rounded, color: Colors.white, size: 24),
                       ),
                       SizedBox(width: 14),
@@ -173,7 +207,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pushNamed(context, AppRoutes.bookingAddress),
-                        style: ElevatedButton.styleFrom(                          foregroundColor: const Color(0xFF2563EB),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: const Color(0xFF2563EB),
                           elevation: 0,
                           padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -193,15 +228,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 SizedBox(height: 16),
 
                 // Morning
-                _buildSlotGroup('Morning Slots', Icons.wb_sunny_outlined, _morningSlots),
+                _buildSlotGroup('Morning Slots', Icons.wb_sunny_outlined, _morningSlots, selectedDate),
                 SizedBox(height: 16),
 
                 // Afternoon
-                _buildSlotGroup('Afternoon Slots', Icons.wb_sunny_rounded, _afternoonSlots),
+                _buildSlotGroup('Afternoon Slots', Icons.wb_sunny_rounded, _afternoonSlots, selectedDate),
                 SizedBox(height: 16),
 
                 // Evening
-                _buildSlotGroup('Evening Slots', Icons.nights_stay_outlined, _eveningSlots),
+                _buildSlotGroup('Evening Slots', Icons.nights_stay_outlined, _eveningSlots, selectedDate),
 
                 SizedBox(height: 28),
 
@@ -233,7 +268,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ),
                       Switch(
                         value: _preferPreviousPro,
-                        activeColor: const Color(0xFF2563EB),
+                        activeThumbColor: const Color(0xFF2563EB),
                         onChanged: (val) => setState(() => _preferPreviousPro = val),
                       ),
                     ],
@@ -255,14 +290,24 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4)),
+                  BoxShadow(color: Colors.black.withValues(alpha:0.08), blurRadius: 20, offset: const Offset(0, -4)),
                 ],
               ),
               child: SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.priceEstimation),
+                  onPressed: () {
+                    final dateStr = '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}';
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.priceEstimation,
+                      arguments: {
+                        'scheduled_date': dateStr,
+                        'scheduled_time': _selectedTimeSlot,
+                      },
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2563EB),
                     foregroundColor: Colors.white,
@@ -288,7 +333,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  Widget _buildSlotGroup(String groupTitle, IconData icon, List<String> slots) {
+  Widget _buildSlotGroup(String groupTitle, IconData icon, List<String> slots, DateTime selectedDate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -308,25 +353,35 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           runSpacing: 10,
           children: slots.map((slot) {
             final isSelected = slot == _selectedTimeSlot;
+            final isAvail = BookingSlotUtils.isSlotAvailable(slot, selectedDate);
+
             return ChoiceChip(
-              label: Text(slot),
-              selected: isSelected,
-              labelStyle: TextStyle(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: isSelected ? Colors.white : const Color(0xFF334155),
+              label: Text(
+                isAvail ? slot : '$slot (Passed)',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: isSelected
+                      ? Colors.white
+                      : (isAvail ? const Color(0xFF334155) : const Color(0xFF94A3B8)),
+                  decoration: isAvail ? TextDecoration.none : TextDecoration.lineThrough,
+                ),
               ),
+              selected: isSelected && isAvail,
+              disabledColor: const Color(0xFFF1F5F9),
               backgroundColor: const Color(0xFFF8FAFC),
               selectedColor: const Color(0xFF2563EB),
               padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
                 side: BorderSide(
-                  color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
+                  color: isSelected
+                      ? const Color(0xFF2563EB)
+                      : (isAvail ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1)),
                   width: 1.5,
                 ),
               ),
-              onSelected: (_) => setState(() => _selectedTimeSlot = slot),
+              onSelected: isAvail ? (_) => setState(() => _selectedTimeSlot = slot) : null,
             );
           }).toList(),
         ),
@@ -334,3 +389,4 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 }
+

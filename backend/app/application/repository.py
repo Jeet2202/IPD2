@@ -61,3 +61,25 @@ class JobApplicationRepository:
                 return None
             application_id = PydanticObjectId(application_id)
         return await JobApplication.get(application_id)
+
+    @staticmethod
+    async def find_active_applications_for_worker(
+        worker_id: PydanticObjectId,
+    ) -> list[JobApplication]:
+        """
+        Return all job applications for a worker that are active (not rejected or withdrawn).
+
+        "Active" means application_status is PENDING or ACCEPTED — i.e. the worker
+        has expressed interest and has not been released from this booking.
+
+        Used by the scheduling conflict check to build the worker's current time commitments.
+        Rejected and withdrawn applications free the slot and are excluded.
+        """
+        excluded_statuses = ["rejected", "withdrawn"]
+        return await JobApplication.find(
+            {
+                "worker_id": worker_id,
+                "application_status": {"$nin": excluded_statuses},
+            }
+        ).to_list()
+

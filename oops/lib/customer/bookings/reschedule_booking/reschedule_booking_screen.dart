@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../../../l10n/app_translations.dart';
+import '../../../utils/booking_slot_utils.dart';
 
 class RescheduleBookingScreen extends StatefulWidget {
   const RescheduleBookingScreen({super.key});
@@ -12,11 +13,12 @@ class RescheduleBookingScreen extends StatefulWidget {
 }
 
 class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
-  int _selectedDateIndex = 1;
+  int _selectedDateIndex = 0;
   int _selectedTimeIndex = 0;
   String _selectedReason = 'Change in Personal Schedule';
 
-  final List<String> _dates = ['Today (31 Jul)', 'Tomorrow (01 Aug)', 'Sat (02 Aug)', 'Sun (03 Aug)'];
+  late List<DateCardItem> _dateCards;
+
   final List<String> _timeSlots = ['09:00 AM - 12:00 PM', '02:00 PM - 05:00 PM', '06:00 PM - 09:00 PM'];
   final List<String> _reasons = [
     'Change in Personal Schedule',
@@ -26,10 +28,28 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _dateCards = BookingSlotUtils.generateDateCards(days: 7, sampleSlots: _timeSlots);
+    _selectedDateIndex = BookingSlotUtils.getFirstAvailableDateIndex(_dateCards, _timeSlots);
+
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+    for (int i = 0; i < _timeSlots.length; i++) {
+      if (BookingSlotUtils.isSlotAvailable(_timeSlots[i], selectedDate)) {
+        _selectedTimeIndex = i;
+        break;
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final selectedDate = _dateCards[_selectedDateIndex].date;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -83,26 +103,44 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                   height: 50,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: _dates.length,
+                    itemCount: _dateCards.length,
                     itemBuilder: (context, index) {
                       final isSelected = _selectedDateIndex == index;
+                      final card = _dateCards[index];
+                      final isAvail = BookingSlotUtils.hasAvailableSlots(_timeSlots, card.date);
+
                       return GestureDetector(
-                        onTap: () => setState(() => _selectedDateIndex = index),
+                        onTap: () {
+                          setState(() {
+                            _selectedDateIndex = index;
+                            final newDate = _dateCards[index].date;
+                            for (int i = 0; i < _timeSlots.length; i++) {
+                              if (BookingSlotUtils.isSlotAvailable(_timeSlots[i], newDate)) {
+                                _selectedTimeIndex = i;
+                                break;
+                              }
+                            }
+                          });
+                        },
                         child: Container(
                           margin: EdgeInsets.only(right: 10),
                           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF2563EB) : Colors.white,
+                            color: isSelected
+                                ? const Color(0xFF2563EB)
+                                : (isAvail ? Colors.white : const Color(0xFFF1F5F9)),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0)),
                           ),
                           child: Center(
                             child: Text(
-                              _dates[index],
+                              '${card.dayLabel} (${card.dateDisplay})',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isAvail ? const Color(0xFF0F172A) : const Color(0xFF94A3B8)),
                               ),
                             ),
                           ),
@@ -121,23 +159,46 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                 Column(
                   children: List.generate(_timeSlots.length, (index) {
                     final isSelected = _selectedTimeIndex == index;
+                    final isAvail = BookingSlotUtils.isSlotAvailable(_timeSlots[index], selectedDate);
+
                     return GestureDetector(
-                      onTap: () => setState(() => _selectedTimeIndex = index),
+                      onTap: isAvail ? () => setState(() => _selectedTimeIndex = index) : null,
                       child: Container(
                         margin: EdgeInsets.only(bottom: 10),
                         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFEFF6FF) : Colors.white,
+                          color: isSelected && isAvail
+                              ? const Color(0xFFEFF6FF)
+                              : (isAvail ? Colors.white : const Color(0xFFF8FAFC)),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0), width: isSelected ? 2 : 1),
+                          border: Border.all(
+                            color: isSelected && isAvail
+                                ? const Color(0xFF2563EB)
+                                : (isAvail ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1)),
+                            width: isSelected && isAvail ? 2 : 1,
+                          ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(_timeSlots[index], style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isSelected ? const Color(0xFF2563EB) : const Color(0xFF0F172A))),
+                            Text(
+                              isAvail ? _timeSlots[index] : '${_timeSlots[index]} (Passed)',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: isSelected && isAvail
+                                    ? const Color(0xFF2563EB)
+                                    : (isAvail ? const Color(0xFF0F172A) : const Color(0xFF94A3B8)),
+                                decoration: isAvail ? TextDecoration.none : TextDecoration.lineThrough,
+                              ),
+                            ),
                             Icon(
-                              isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                              color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFCBD5E1),
+                              isSelected && isAvail
+                                  ? Icons.radio_button_checked_rounded
+                                  : Icons.radio_button_off_rounded,
+                              color: isSelected && isAvail
+                                  ? const Color(0xFF2563EB)
+                                  : const Color(0xFFCBD5E1),
                             ),
                           ],
                         ),
@@ -206,7 +267,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, -4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, -4)),
                 ],
               ),
               child: SizedBox(
@@ -235,3 +296,4 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
     );
   }
 }
+

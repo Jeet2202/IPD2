@@ -96,9 +96,14 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
       _fetchJobs(); // Refresh to update hasApplied
     } on ApiException catch (e) {
       if (!mounted) return;
+      String errorMsg = e.message;
+      if (e.message.contains('SCHEDULING_CONFLICT')) {
+        errorMsg = 'You already have an active or pending job on this date and time. '
+            'Wait for your existing application to be rejected before applying here.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.message),
+          content: Text(errorMsg),
           backgroundColor: const Color(0xFFEF4444),
           behavior: SnackBarBehavior.floating,
         ),
@@ -333,11 +338,11 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: job.hasApplied ? const Color(0xFF10B981).withOpacity(0.4) : const Color(0xFFF1F5F9),
+          color: job.hasApplied ? const Color(0xFF10B981).withValues(alpha: 0.4) : const Color(0xFFF1F5F9),
           width: job.hasApplied ? 1.5 : 1,
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 16, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -352,7 +357,7 @@ class _WorkerIncomingJobsScreenState extends State<WorkerIncomingJobsScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: badgeColor.withOpacity(0.12),
+                      color: badgeColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(badgeLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: badgeColor)),

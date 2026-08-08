@@ -11,6 +11,7 @@ import '../../../services/address_service.dart';
 import '../../../services/booking_service.dart';
 import '../../../l10n/app_translations.dart';
 import '../../../widgets/language_selector_widget.dart';
+import '../../../utils/booking_slot_utils.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   final ServiceModel? service;
@@ -162,7 +163,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         _availableSlots = res.slots;
         _isLoadingSlots = false;
 
-        final avail = res.slots.where((s) => s.isAvailable).toList();
+        final avail = res.slots.where((s) => s.isAvailable && BookingSlotUtils.isSlotAvailable(s.slotId, dt)).toList();
         if (avail.isNotEmpty) {
           _selectedTimeSlot = avail.first.slotId;
         } else {
@@ -887,7 +888,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       runSpacing: 10,
       children: slots.map((slot) {
         final isSelected = _selectedTimeSlot == slot.slotId;
-        final isAvail = slot.isAvailable;
+        final isAvail = slot.isAvailable && BookingSlotUtils.isSlotAvailable(slot.slotId, _selectedDate);
 
         return ChoiceChip(
           label: Text(
@@ -903,7 +904,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           ),
           selected: isSelected && isAvail,
           disabledColor: const Color(0xFFF1F5F9),
-          selectedColor: AppColors.primary,          shape: RoundedRectangleBorder(
+          selectedColor: AppColors.primary,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
               color: isSelected

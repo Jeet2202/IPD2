@@ -35,7 +35,7 @@ def test_create_booking_request_validation():
     assert req.booking_type == BookingType.CUSTOM_SERVICE
 
     # 4. Inspection request requires problem_description
-    with pytest.raises(ValueError, match="Problem description is required"):
+    with pytest.raises(ValueError, match="problem_description is required"):
         CreateBookingRequest(
             address_id="60d5ec49f1a2c8b1f8e4e1b2",
             booking_type=BookingType.INSPECTION_REQUEST,

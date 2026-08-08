@@ -113,7 +113,7 @@ class JobApplicationService:
         )
 
         # 5. Centralized Business Rules Validation
-        MarketplaceRulesEngine.validate_application_submission(
+        await MarketplaceRulesEngine.validate_application_submission(
             booking=booking,
             worker_user=worker_user,
             worker_profile=worker_profile,
