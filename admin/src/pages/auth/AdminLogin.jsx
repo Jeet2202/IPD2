@@ -9,6 +9,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const errs = {};
@@ -24,12 +25,54 @@ export default function AdminLogin() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      // Demo navigation to admin dashboard with local token storage
-      localStorage.setItem('admin_auth_token', 'kaamsetu_demo_token');
+    if (!validate()) return;
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+          role: 'admin',
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        const msg = json?.detail || json?.message || 'Invalid credentials. Please try again.';
+        setErrors({ server: msg });
+        return;
+      }
+
+      // Backend: { success: true, data: { user, tokens: { access_token, refresh_token } } }
+      const accessToken = json?.data?.tokens?.access_token;
+      const user = json?.data?.user;
+
+      if (!accessToken) {
+        setErrors({ server: 'Unexpected server response. Please try again.' });
+        return;
+      }
+
+      localStorage.setItem('admin_auth_token', accessToken);
+      if (json?.data?.tokens?.refresh_token) {
+        localStorage.setItem('admin_refresh_token', json.data.tokens.refresh_token);
+      }
+      if (user?.id) localStorage.setItem('admin_user_id', user.id);
+      if (user?.full_name) localStorage.setItem('admin_user_name', user.full_name);
+
       navigate('/admin/dashboard');
+    } catch (err) {
+      setErrors({ server: 'Network error. Please check your connection and try again.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -138,13 +181,30 @@ export default function AdminLogin() {
             </a>
           </div>
 
+          {/* Server Error Banner */}
+          {errors.server && (
+            <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FCA5A5] text-[#DC2626] text-[11px] font-semibold">
+              {errors.server}
+            </div>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#2563EB]/30 transition-all flex items-center justify-center gap-2"
+            disabled={isLoading}
+            className="w-full py-3 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 disabled:cursor-not-allowed text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#2563EB]/30 transition-all flex items-center justify-center gap-2"
           >
-            <span>Sign In to Admin Panel</span>
-            <ArrowRight className="w-4 h-4" />
+            {isLoading ? (
+              <>
+                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              <>
+                <span>Sign In to Admin Panel</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 

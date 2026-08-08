@@ -154,9 +154,10 @@ export default function Complaints() {
     setActionModalOpen(true);
   };
 
-  const handleSaveAction = () => {
+  const handleSaveAction = async () => {
     if (!selectedComplaint) return;
 
+    // Optimistic UI update
     setComplaints((prev) =>
       prev.map((c) => {
         if (c.id === selectedComplaint.id) {
@@ -199,7 +200,7 @@ export default function Complaints() {
               updated.internalNotes = [
                 {
                   id: 'IN-' + Date.now(),
-                  adminName: 'Current Admin',
+                  adminName: localStorage.getItem('admin_user_name') || 'Admin',
                   note: noteValue.trim(),
                   timestamp: 'Just now',
                 },
@@ -212,6 +213,25 @@ export default function Complaints() {
         return c;
       })
     );
+
+    // Persist to backend MongoDB
+    try {
+      if (modalActionType === 'status') {
+        await supportService.updateTicketStatus(selectedComplaint.id, {
+          status: statusValue,
+        });
+      } else if (modalActionType === 'priority') {
+        await supportService.updateTicketStatus(selectedComplaint.id, {
+          priority: priorityValue,
+        });
+      } else if (modalActionType === 'assign') {
+        await supportService.updateTicketStatus(selectedComplaint.id, {
+          assigned_admin_id: adminValue,
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to sync action to backend:', e);
+    }
 
     addToast({
       title: 'Complaint Updated',

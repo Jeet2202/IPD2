@@ -1,0 +1,911 @@
+================================================================================
+AI SERVICE DEPLOYMENT AUDIT REPORT
+Target Service: ipd2/ai-service
+Generated For: Render Deployment Preparation
+================================================================================
+
+==================================================
+1. PROJECT STRUCTURE
+==================================================
+
+Root Directory Inspected: ipd2/ai-service/
+
+Tree Representation:
+ai-service/
+├── .env                              [Local environment file - Contains credentials]
+├── .env.example                      [Environment template file]
+├── .gitignore                        [Git ignore rules]
+├── pytest.ini                        [Pytest configuration]
+├── README.md                         [Setup & running instructions]
+├── requirements.txt                  [Python package dependencies]
+└── app/                              [Main application package]
+    ├── main.py                       [FastAPI application entry-point & lifespan]
+    ├── api/                          [API Route Routers]
+    │   ├── admin_dashboard.py        [Admin dashboard & intelligence routes]
+    │   ├── analytics.py              [Analytics, export & reporting routes]
+    │   ├── infrastructure.py         [Health, root, ready, metrics & config routes]
+    │   ├── mlops.py                  [MLOps models, datasets & experiments routes]
+    │   ├── pricing.py                [Smart pricing estimate & history routes]
+    │   ├── recommendations.py        [Worker recommendation routes]
+    │   ├── search.py                 [Hybrid search & analytics routes]
+    │   └── worker_voice_summary.py   [Worker voice summary TTS route]
+    ├── assistant/                    [Phase 5.5 - AI Assistant Engine]
+    │   ├── api/
+    │   │   └── assistant_router.py   [Chatbot endpoints: generic, customer, worker, admin]
+    │   ├── llm/
+    │   │   ├── base.py               [Abstract LLM Client interface]
+    │   │   ├── groq_client.py        [Groq SDK integration client]
+    │   │   └── mock_client.py        [Mock client for unit testing]
+    │   ├── memory/
+    │   │   └── conversation_memory.py [Session memory & auto-summarization]
+    │   ├── pipeline/
+    │   │   ├── assistant_pipeline.py  [RAG & tool execution pipeline]
+    │   │   ├── context_retriever.py   [Session history retriever]
+    │   │   ├── intent_detector.py    [Rule-based intent classifier]
+    │   │   ├── knowledge_retriever.py [MongoDB FAQ & policy search]
+    │   │   ├── prompt_builder.py     [Role-based system prompt composer]
+    │   │   ├── response_validator.py [Grounding validator]
+    │   │   └── safety_filter.py      [Prompt injection & safety filter]
+    │   ├── prompts/                  [Role-specific system prompts]
+    │   ├── repositories/             [Session & knowledge Mongo repos]
+    │   ├── schemas/                  [Assistant Pydantic request/response models]
+    │   └── tools/                    [Tool execution definitions for Customer, Worker, Admin]
+    ├── core/                         [Core Application Infrastructure]
+    │   ├── config.py                 [Pydantic Settings & environment schema]
+    │   ├── database.py               [Motor AsyncIOMotorClient wrapper & lifecycle]
+    │   ├── dependencies.py           [FastAPI dependency injection utilities]
+    │   ├── exceptions.py             [Global exception handlers]
+    │   └── logging.py                [Logging configuration]
+    ├── middleware/
+    │   └── main_middleware.py        [HTTP request timing & logging middleware]
+    ├── models/                       [Internal domain models]
+    ├── repositories/                 [MongoDB Repositories (Search, Pricing, Analytics, MLOps)]
+    ├── schemas/                      [Pydantic Request & Response Schemas]
+    ├── services/                     [Business Logic & AI Engines]
+    │   ├── elevenlabs_service.py     [ElevenLabs REST API TTS Service]
+    │   ├── gtts_service.py           [Google Text-to-Speech (gTTS) Async Service]
+    │   ├── embedding_service.py      [SentenceTransformers embedding generator]
+    │   ├── hybrid_search_service.py  [Semantic + Keyword search engine]
+    │   ├── smart_pricing_service.py  [Advisory dynamic pricing engine]
+    │   └── ...                       [Intelligence & analytics services]
+    ├── tests/                        [Pytest unit & integration tests (10 files)]
+    └── utils/                        [Utilities]
+        ├── backend_client.py         [Async HTTP client for main backend API]
+        ├── dataset_loader.py         [Dataset CSV/Parquet helper]
+        └── model_loader.py           [Scikit-learn / Joblib / SentenceTransformer loader]
+
+Important Structural Notes:
+- Dockerfile: NOT PRESENT
+- Procfile: NOT PRESENT
+- runtime.txt / .python-version: NOT PRESENT
+- model directories: ./trained_models (Configured in settings, created dynamically, gitignored)
+- dataset directories: ./datasets, ./datasets/exports (Configured in settings, created dynamically, gitignored)
+- static/public directories: NOT PRESENT
+
+==================================================
+2. APPLICATION FRAMEWORK
+==================================================
+
+- Framework: FastAPI (version >=0.111.0 specified in requirements.txt)
+- Expected Python Version: Python 3.12+ (Documented in README.md; code relies on standard modern type hints)
+- Application Entry Point: app/main.py
+- Exact ASGI Application Import Path: app.main:app
+
+Local Execution Analysis:
+- Local Start Command (from README.md & active process):
+  uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
+- Server Engine: Uvicorn (ASGI web server)
+- Lifespan Handler: Defined in app/main.py via `@asynccontextmanager async def lifespan(app: FastAPI)`
+  - Startup: Connects to MongoDB via Database.connect_db() (runs admin ping command)
+  - Shutdown: Closes MongoDB connection, closes BackendClient httpx AsyncClient, clears ModelLoader cache.
+
+==================================================
+3. RENDER DEPLOYMENT COMMANDS
+==================================================
+
+Based strictly on project codebase and configuration:
+
+ROOT DIRECTORY:
+  ai-service  (or ipd2/ai-service depending on repository root configuration in Render)
+
+BUILD COMMAND:
+  pip install -r requirements.txt
+
+START COMMAND:
+  uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+PYTHON VERSION:
+  3.12.4  (Or 3.12.x set via PYTHON_VERSION environment variable on Render)
+
+REGION RECOMMENDATION:
+  Oregon, USA (us-west-2) or Singapore (ap-southeast-1) — MUST match the region where the main backend (ally-backend-do03.onrender.com) and MongoDB Atlas cluster are deployed to minimize network latency.
+
+Command Rationale:
+- `uvicorn app.main:app --host 0.0.0.0 --port $PORT` binds directly to Render's dynamic host and port environment variable `$PORT`.
+- Alternative production command using Gunicorn: `gunicorn app.main:app -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT`
+  Note: `gunicorn` is NOT listed in requirements.txt, so `uvicorn` is the directly supported start command.
+
+==================================================
+4. REQUIREMENTS / DEPENDENCIES AUDIT
+==================================================
+
+Inspected: requirements.txt
+
+List of Dependencies:
+1. fastapi>=0.111.0         [Web framework]
+2. uvicorn[standard]>=0.30.1 [ASGI server engine]
+3. pydantic>=2.7.4          [Data validation]
+4. pydantic-settings>=2.3.4 [Env settings management]
+5. motor>=3.5.0             [Async MongoDB driver]
+6. pandas>=2.2.2            [Data manipulation - Large C extensions]
+7. scikit-learn>=1.5.0      [ML algorithms - Large C extensions]
+8. joblib>=1.4.2            [Model serialization]
+9. sentence-transformers>=3.0.1 [ML Embeddings - Pulls PyTorch / torch (~800MB+)]
+10. langchain>=0.2.6        [LLM orchestration components]
+11. groq>=0.9.0             [Official Groq SDK]
+12. httpx>=0.27.0           [Async HTTP client for Backend & ElevenLabs]
+13. gTTS>=2.5.0             [Google Text-to-Speech library]
+14. pytest>=8.2.2           [Test runner]
+15. pytest-asyncio>=0.23.7  [Async test plugin]
+16. python-dotenv>=1.0.1    [Dotenv file reader]
+17. psutil>=6.0.0           [System metrics - Requires C compilation]
+18. pyarrow>=16.1.0         [Arrow format - Large C++ binary wheel]
+19. fastparquet>=2024.5.0   [Parquet file reader/writer]
+
+Category Analysis:
+- AI/LLM Libraries: groq, langchain, sentence-transformers
+- ElevenLabs: REST API called directly via `httpx` (no SDK package needed)
+- Speech/Audio Libraries: gTTS (Google Text-to-Speech)
+- MongoDB Libraries: motor (Async PyMongo driver)
+- HTTP Clients: httpx
+- Security/Auth: Standard JWT verification handled via backend `/auth/me` call using `httpx`
+- System/Native Compilation Packages: psutil, pyarrow, fastparquet, scikit-learn, pandas, torch (via sentence-transformers)
+
+CRITICAL DEPLOYMENT WARNINGS FOR RENDER:
+1. PyTorch / sentence-transformers RAM Footprint:
+   `sentence-transformers` automatically pulls `torch` during `pip install`. Installing and loading `torch` + model `all-MiniLM-L6-v2` in memory requires at least 600MB - 1GB RAM.
+   Render's Free Tier has a strict 512MB RAM limit. Deploying on Free Tier WILL cause Out-Of-Memory (OOM) crashes during start up or request handling.
+   ACTION REQUIRED: Render instance tier MUST be Starter (1GB RAM) or higher.
+
+2. Build Timeouts:
+   Installing `pyarrow`, `pandas`, `scikit-learn`, and `torch` during `pip install` on Linux takes 2-4 minutes. Render build timeout is 15 minutes (sufficient, but pre-built wheels must be downloaded).
+
+==================================================
+5. ENVIRONMENT VARIABLES
+==================================================
+
+Inspection Source: app/core/config.py (Pydantic BaseSettings) & entire app codebase.
+
+Full List of 55 Supported Environment Variables:
+
+1. ENVIRONMENT
+   - Used By: app/core/config.py, app/api/infrastructure.py
+   - Purpose: Runtime environment name
+   - Required/Optional: OPTIONAL
+   - Default Value: "development"
+   - Expected Production Value: "production"
+   - Safe to leave empty?: YES (defaults to "development")
+   - Render Action: Set to "production"
+
+2. LOGGING_LEVEL
+   - Used By: app/core/config.py, app/core/logging.py
+   - Purpose: Python logging verbosity
+   - Required/Optional: OPTIONAL
+   - Default Value: "INFO"
+   - Expected Production Value: "INFO" or "WARNING"
+   - Safe to leave empty?: YES
+   - Render Action: Set to "INFO"
+
+3. MONGODB_URI
+   - Used By: app/core/config.py, app/core/database.py
+   - Purpose: MongoDB Atlas database connection string
+   - Required/Optional: REQUIRED (App lifespan pings DB at startup; fails if invalid)
+   - Default Value: "mongodb://localhost:27017"
+   - Secret: YES
+   - Expected Production Value: [REDACTED]
+   - Safe to leave empty?: NO
+   - Render Action: Add manually as Secret Environment Variable
+
+4. MONGODB_DATABASE
+   - Used By: app/core/config.py, app/core/database.py
+   - Purpose: MongoDB database name
+   - Required/Optional: OPTIONAL
+   - Default Value: "ally_db" (.env sets "ally")
+   - Expected Production Value: "ally"
+   - Safe to leave empty?: YES (defaults to "ally_db")
+   - Render Action: Set to "ally"
+
+5. BACKEND_BASE_URL
+   - Used By: app/core/config.py, app/utils/backend_client.py
+   - Purpose: Base URL of the deployed main backend microservice
+   - Required/Optional: REQUIRED for AI tools & voice authorization
+   - Default Value: "http://localhost:8000"
+   - Expected Production Value: "https://ally-backend-do03.onrender.com"
+   - Safe to leave empty?: NO (local default will fail on Render)
+   - Render Action: Set to "https://ally-backend-do03.onrender.com"
+
+6. REQUEST_TIMEOUT
+   - Used By: app/core/config.py, app/utils/backend_client.py
+   - Purpose: Timeout in seconds for backend HTTP calls
+   - Required/Optional: OPTIONAL
+   - Default Value: 10.0
+   - Expected Production Value: 10.0
+   - Safe to leave empty?: YES
+   - Render Action: Can leave default or set 10.0
+
+7. GROQ_API_KEY
+   - Used By: app/core/config.py, app/assistant/llm/groq_client.py
+   - Purpose: Authentication key for Groq Cloud LLM API (Llama 3.1)
+   - Required/Optional: REQUIRED for Chatbot & Worker Voice Summarizer
+   - Default Value: ""
+   - Secret: YES
+   - Expected Production Value: [REDACTED]
+   - Safe to leave empty?: NO (LLM calls will raise API key errors)
+   - Render Action: Add manually as Secret Environment Variable
+
+8. ELEVENLABS_API_KEY
+   - Used By: app/core/config.py, app/services/elevenlabs_service.py
+   - Purpose: Authentication key for ElevenLabs REST API
+   - Required/Optional: OPTIONAL (Service present in codebase; active voice endpoint uses gTTS)
+   - Default Value: ""
+   - Secret: YES
+   - Expected Production Value: [REDACTED]
+   - Safe to leave empty?: YES (if gTTS is used) / NO (if switching to ElevenLabs)
+   - Render Action: Add manually as Secret Environment Variable
+
+9. ELEVENLABS_VOICE_ID_EN
+   - Used By: app/core/config.py, app/services/elevenlabs_service.py
+   - Purpose: ElevenLabs voice ID for English synthesis
+   - Required/Optional: OPTIONAL
+   - Default Value: "21m00Tcm4TlvDq8ikWAM"
+   - Expected Production Value: "21m00Tcm4TlvDq8ikWAM"
+   - Render Action: Leave default or set explicitly
+
+10. ELEVENLABS_VOICE_ID_HI
+    - Used By: app/core/config.py, app/services/elevenlabs_service.py
+    - Purpose: ElevenLabs voice ID for Hindi synthesis
+    - Required/Optional: OPTIONAL
+    - Default Value: "pNInz6obpgDQGcFmaJgB"
+    - Expected Production Value: "pNInz6obpgDQGcFmaJgB"
+    - Render Action: Leave default or set explicitly
+
+11. MODEL_DIRECTORY
+    - Used By: app/core/config.py, app/utils/model_loader.py, app/api/infrastructure.py
+    - Purpose: Path for storing trained ML model artifacts
+    - Required/Optional: OPTIONAL
+    - Default Value: "./trained_models"
+    - Expected Production Value: "./trained_models"
+    - Render Action: Leave default
+
+12. DATASET_DIRECTORY
+    - Used By: app/core/config.py, app/utils/dataset_loader.py, app/api/infrastructure.py
+    - Purpose: Path for storing dataset files
+    - Required/Optional: OPTIONAL
+    - Default Value: "./datasets"
+    - Expected Production Value: "./datasets"
+    - Render Action: Leave default
+
+13. CORS_ORIGINS
+    - Used By: app/core/config.py, app/main.py
+    - Purpose: Allowed CORS origins (JSON array or comma-separated string)
+    - Required/Optional: REQUIRED for Web / Admin frontend access
+    - Default Value: ["*"]
+    - Expected Production Value: ["https://ally-backend-do03.onrender.com"] (plus frontend domains)
+    - Render Action: Set explicit production domain list
+
+14-22. RECOMMENDATION ENGINE PARAMETERS
+    - Environment Variables: WEIGHT_DISTANCE, WEIGHT_RATING, WEIGHT_EXPERIENCE, WEIGHT_COMPLETION, WEIGHT_AVAILABILITY, WEIGHT_RESPONSE_TIME, MAX_SEARCH_RADIUS_KM, MIN_WORKER_RATING, MAX_RECOMMENDATIONS
+    - Purpose: Scoring weights & filtering thresholds for recommendation engine
+    - Required/Optional: OPTIONAL (Defaults hardcoded in Settings)
+    - Render Action: Leave defaults unless custom tuning required
+
+23-27. SEARCH ENGINE PARAMETERS
+    - Environment Variables: EMBEDDING_MODEL_NAME, WEIGHT_SEMANTIC, WEIGHT_KEYWORD, WEIGHT_POPULARITY, SEARCH_HISTORY_COLLECTION, MAX_QUERY_LENGTH
+    - Purpose: Hybrid search engine configuration
+    - Required/Optional: OPTIONAL
+    - Default EMBEDDING_MODEL_NAME: "all-MiniLM-L6-v2"
+    - Render Action: Leave defaults
+
+28-42. SMART PRICING ENGINE PARAMETERS
+    - Environment Variables: PRICE_WEIGHT_BASE, PRICE_WEIGHT_HISTORICAL, PRICE_WEIGHT_DEMAND, PRICE_WEIGHT_URGENCY, PRICE_WEIGHT_WEEKEND, PRICE_WEIGHT_COMPLEXITY, PRICE_MULTIPLIER_WEEKEND, PRICE_MULTIPLIER_HOLIDAY, PRICE_MULTIPLIER_URGENT, DEMAND_MULTIPLIER_PEAK, DEMAND_MULTIPLIER_HIGH, DEMAND_MULTIPLIER_LOW, OUTLIER_STD_DEV_THRESHOLD, MAX_PRICE_VARIANCE_PERCENT
+    - Purpose: Dynamic pricing multipliers and statistical thresholds
+    - Required/Optional: OPTIONAL
+    - Render Action: Leave defaults
+
+43-53. AI ASSISTANT ENGINE PARAMETERS
+    - Environment Variables: ASSISTANT_LLM_MODEL, ASSISTANT_MAX_TURNS, ASSISTANT_SUMMARY_THRESHOLD, ASSISTANT_MAX_TOKENS, ASSISTANT_TEMPERATURE, ASSISTANT_SESSION_TTL_HOURS, ASSISTANT_FAQ_COLLECTION, ASSISTANT_POLICY_COLLECTION, ASSISTANT_SESSION_COLLECTION, ASSISTANT_TURN_COLLECTION, ASSISTANT_TOP_K_KNOWLEDGE
+    - Purpose: Groq LLM model selection and memory settings
+    - Default Model: "llama-3.1-8b-instant"
+    - Required/Optional: OPTIONAL
+    - Render Action: Set ASSISTANT_LLM_MODEL="llama-3.1-8b-instant"
+
+54-55. ANALYTICS PARAMETERS
+    - Environment Variables: ANALYTICS_DATASET_EXPORT_DIR, ANALYTICS_DASHBOARD_CACHE_TTL_SEC
+    - Default Export Dir: "./datasets/exports"
+    - Default TTL: 300
+    - Render Action: Leave defaults
+
+==================================================
+6. CURRENT .ENV FILE AUDIT
+==================================================
+
+Local File Inspected: ipd2/ai-service/.env
+
+Comparison of Variables:
+
+1. MONGODB_URI
+   - Status in .env: DEFINED (Contains MongoDB Atlas SRV URI)
+   - Status in Code: REFERENCED & MANDATORY in lifespan
+   - Value Masked: [REDACTED]
+
+2. MONGODB_DATABASE
+   - Status in .env: DEFINED ("ally")
+   - Status in Code: REFERENCED
+   - Value: "ally"
+
+3. BACKEND_BASE_URL
+   - Status in .env: DEFINED ("https://ally-backend-do03.onrender.com")
+   - Status in Code: REFERENCED in BackendClient
+   - Value: "https://ally-backend-do03.onrender.com"
+
+4. REQUEST_TIMEOUT
+   - Status in .env: DEFINED (10.0)
+   - Status in Code: REFERENCED
+
+5. GROQ_API_KEY
+   - Status in .env: DEFINED (Contains valid Groq API Key)
+   - Status in Code: REFERENCED in GroqLLMClient
+   - Value Masked: [REDACTED]
+
+6. ELEVENLABS_API_KEY
+   - Status in .env: DEFINED (Contains valid ElevenLabs Key)
+   - Status in Code: REFERENCED in ElevenLabsService
+   - Value Masked: [REDACTED]
+
+7. ELEVENLABS_VOICE_ID_EN / ELEVENLABS_VOICE_ID_HI
+   - Status in .env: DEFINED ("21m00Tcm4TlvDq8ikWAM", "pNInz6obpgDQGcFmaJgB")
+   - Status in Code: REFERENCED
+
+8. ENVIRONMENT / LOGGING_LEVEL
+   - Status in .env: DEFINED ("development", "INFO")
+   - Status in Code: REFERENCED
+
+9. CORS_ORIGINS
+   - Status in .env: DEFINED (["http://localhost:5173", "http://localhost:8000","https://ally-backend-do03.onrender.com"])
+   - Status in Code: REFERENCED in CORSMiddleware
+
+Unused / Missing Variable Analysis:
+- All variables in `.env` are actively mapped by `app/core/config.py`.
+- Missing from `.env` but present in defaults: AI Assistant parameters (fall back cleanly to defaults in `config.py`).
+
+==================================================
+7. MONGODB
+==================================================
+
+Client & ODM Architecture:
+- Client: AsyncIOMotorClient (`motor.motor_asyncio`)
+- Wrapper: `app.core.database.Database` singleton
+- ODM / ORM: Direct PyMongo dictionary queries & Async Motor cursors (No ODM like Beanie/MongoEngine)
+
+Lifecycle & Startup Requirement:
+- Code Location: app/main.py (lifespan) & app/core/database.py
+- On Application Startup: Calls `await Database.connect_db()`, which executes `await cls.client.admin.command('ping')`.
+- STARTUP DEPENDENCY: CRITICAL / MANDATORY.
+  If MONGODB_URI is invalid, unreachable, or blocked by firewall, `connect_db()` raises an Exception, preventing the FastAPI server from starting up.
+- On Application Shutdown: Calls `await Database.close_db()`.
+
+Database Name & Collections Used:
+- Database Name: Set by `MONGODB_DATABASE` (Production: "ally")
+- Core Collections:
+  1. `assistant_faqs`        (AI Assistant FAQ RAG knowledge base)
+  2. `assistant_policies`    (AI Assistant Policy RAG knowledge base)
+  3. `assistant_sessions`    (Chatbot conversation sessions)
+  4. `assistant_turns`       (Chatbot conversation turns)
+  5. `search_history`        (User search history & analytics)
+  6. `bookings`              (Analytics & recommendation queries)
+  7. `workers`               (Analytics & worker recommendation queries)
+  8. `customers`             (Analytics queries)
+  9. `services`              (Analytics & search queries)
+  10. `quotations`           (Smart pricing historical queries)
+  11. `marketplace`          (Marketplace intelligence queries)
+  12. `insights`             (Admin dashboard insights)
+  13. `anomalies`            (Admin anomaly reports)
+  14. `recommendations`      (Admin operational recommendations)
+  15. `reports`              (Exported reports)
+  16. `models`               (MLOps model registry)
+  17. `datasets`             (MLOps dataset registry)
+  18. `experiments`          (MLOps experiment logs)
+  19. `metrics`              (MLOps model metrics)
+  20. `audit_logs`           (MLOps configuration audit logs)
+
+Backend Database Relationship:
+- The AI Service connects directly to the SAME MongoDB Atlas cluster ("ally") as the main backend to perform analytical, recommendation, and AI assistant operations.
+
+Atlas Network & Security Requirements:
+- Render Web Services use dynamic IP addresses.
+- MongoDB Atlas IP Access List MUST include `0.0.0.0/0` (Allow Access from Anywhere) unless static egress IPs are configured on Render.
+- Mandatory Render Env Vars for MongoDB: `MONGODB_URI` and `MONGODB_DATABASE`.
+
+==================================================
+8. BACKEND CONNECTION
+==================================================
+
+Communication Mechanism:
+- HTTP Client: `httpx.AsyncClient` wrapped in `app.utils.backend_client.BackendClient`.
+- Config Variable: `BACKEND_BASE_URL` (default `http://localhost:8000`).
+- Request Timeout: `REQUEST_TIMEOUT` (default `10.0` seconds).
+- Connection Pool Limits: `max_keepalive_connections=5`, `max_connections=10`.
+
+Backend Endpoints Called by AI Service:
+1. `GET /api/v1/auth/me`
+   - Used By: `app/api/worker_voice_summary.py` (`_validate_worker_token`)
+   - Auth: Passes Bearer token received from Flutter client header
+   - Purpose: Validates worker identity & extracts user role ("worker" or "partner")
+
+2. `POST /services/search`
+   - Used By: `ServiceSearchTool` in `app/assistant/tools/customer_tools.py`
+   - Purpose: Natural language service search via assistant
+
+3. `GET /api/v1/customer/bookings/{booking_id}`
+   - Used By: `BookingStatusTool` in `app/assistant/tools/customer_tools.py`
+   - Auth: Passes Bearer token
+
+4. `GET /api/v1/customer/bookings`
+   - Used By: `CustomerBookingsTool` in `app/assistant/tools/customer_tools.py`
+   - Auth: Passes Bearer token
+
+5. `GET /api/bookings/{booking_id}`
+   - Used By: `WorkerBookingDetailTool` in `app/assistant/tools/worker_tools.py`
+   - Auth: Passes Bearer token
+
+6. `GET /api/workers/{worker_id}/bookings`
+   - Used By: `WorkerScheduleTool` in `app/assistant/tools/worker_tools.py`
+   - Auth: Passes Bearer token
+
+7. `GET /api/workers/{worker_id}/profile`
+   - Used By: `WorkerProfileTipTool` in `app/assistant/tools/worker_tools.py`
+   - Auth: Passes Bearer token
+
+8. `GET /api/admin/stats`
+   - Used By: `PlatformStatsTool` in `app/assistant/tools/admin_tools.py`
+   - Auth: Passes Bearer token
+
+9. `GET /api/admin/workers/insights`
+   - Used By: `WorkerInsightTool` in `app/assistant/tools/admin_tools.py`
+   - Auth: Passes Bearer token
+
+10. `GET /api/admin/bookings/analytics`
+    - Used By: `BookingAnalyticsTool` in `app/assistant/tools/admin_tools.py`
+    - Auth: Passes Bearer token
+
+Deployed Backend Target:
+- Deployed Backend URL: `https://ally-backend-do03.onrender.com`
+- Render Setting for AI Service: Set `BACKEND_BASE_URL=https://ally-backend-do03.onrender.com`
+
+==================================================
+9. GROQ / LLM
+==================================================
+
+Implementation Overview:
+- SDK: `groq>=0.9.0` (`AsyncGroq` client)
+- Centralized File: `app/assistant/llm/groq_client.py` (GroqLLMClient)
+
+LLM Configuration Parameters:
+- API Key Var: `GROQ_API_KEY`
+- Model Name Var: `ASSISTANT_LLM_MODEL` (Default: "llama-3.1-8b-instant")
+- Max Tokens Var: `ASSISTANT_MAX_TOKENS` (Default: 1024)
+- Temperature Var: `ASSISTANT_TEMPERATURE` (Default: 0.1)
+- Max Turns Var: `ASSISTANT_MAX_TURNS` (Default: 20)
+- Summary Threshold Var: `ASSISTANT_SUMMARY_THRESHOLD` (Default: 10)
+- Session TTL Var: `ASSISTANT_SESSION_TTL_HOURS` (Default: 24)
+
+Features & Pipeline:
+- Streaming: Non-streaming (`choice.message`)
+- Function Calling / Tool Usage: Supported natively via Groq `tools` parameter and mapped to internal `ToolCall` objects.
+- RAG & System Prompts: Built dynamically per role (Customer, Worker, Admin) using intent detection, FAQ search, and policy search.
+- Session Memory: Automated turn storage in MongoDB with background summarization when turn count exceeds threshold (10).
+
+Exposed Assistant Endpoints:
+- `POST /assistant/chat` (Role in body)
+- `POST /assistant/customer` (Forces role=customer)
+- `POST /assistant/worker` (Forces role=worker)
+- `POST /assistant/admin` (Forces role=admin)
+- `GET /assistant/history/{session_id}`
+- `DELETE /assistant/history/{session_id}`
+
+==================================================
+10. ELEVENLABS / VOICE
+==================================================
+
+Text-to-Speech Architecture:
+- Service 1: `app/services/elevenlabs_service.py` (ElevenLabs REST API Integration)
+  - Endpoint Called: `https://api.elevenlabs.io/v1/text-to-speech/{voice_id}`
+  - Model: `eleven_multilingual_v2`
+  - English Voice ID: `ELEVENLABS_VOICE_ID_EN` (Default: "21m00Tcm4TlvDq8ikWAM")
+  - Hindi Voice ID: `ELEVENLABS_VOICE_ID_HI` (Default: "pNInz6obpgDQGcFmaJgB")
+  - Format: `mp3_44100_128`
+  - Auth: `xi-api-key` header set from `settings.ELEVENLABS_API_KEY`
+
+- Service 2: `app/services/gtts_service.py` (Google Text-to-Speech Integration)
+  - Free, open-source Google Translate TTS engine wrapper (`gtts` package)
+  - Runs in asyncio thread executor (`loop.run_in_executor`)
+  - Supports English ('en') and Hindi ('hi') natively without API keys.
+
+Active Worker Voice Summary API:
+- Endpoint: `POST /ai/worker/voice-summary` (`app/api/worker_voice_summary.py`)
+- Active Pipeline:
+  1. Validates worker Bearer token via backend `/api/v1/auth/me`
+  2. Generates 2-3 sentence English or Hindi summary via Groq LLM
+  3. Synthesizes MP3 audio bytes using `gtts_service`
+  4. Encodes MP3 bytes to base64 and returns JSON payload to Flutter client
+- Audio Delivery: Returned in-memory as base64 string in JSON (no files written to disk, no ffmpeg system package required).
+
+==================================================
+11. COMPLETE API ROUTES SUMMARY
+==================================================
+
+1. INFRASTRUCTURE ROUTER (app/api/infrastructure.py)
+   - GET / -> Root status
+   - GET /health -> Service & DB health check (200 OK / 503 Degraded)
+   - GET /ready -> Readiness check
+   - GET /metrics -> CPU & Memory usage metrics
+   - GET /models -> Loaded models in cache
+   - GET /config -> Masked configuration view
+
+2. RECOMMENDATIONS ROUTER (app/api/recommendations.py)
+   - POST /recommendations/workers -> Recommend workers for booking
+
+3. SEARCH ROUTER (app/api/search.py)
+   - POST /search -> Hybrid intelligent search
+   - GET /search/suggestions -> Auto-complete suggestions
+   - GET /search/trending -> Popular trending searches
+   - GET /search/history -> User search history
+   - DELETE /search/history -> Clear search history
+
+4. PRICING ROUTER (app/api/pricing.py)
+   - POST /pricing/estimate -> Advisory price estimate
+   - GET /pricing/history/{service_id} -> Historical pricing analytics
+
+5. ASSISTANT ROUTER (app/assistant/api/assistant_router.py)
+   - POST /assistant/chat -> Generic AI assistant chat
+   - POST /assistant/customer -> Customer AI assistant chat
+   - POST /assistant/worker -> Worker AI assistant chat
+   - POST /assistant/admin -> Admin AI assistant chat
+   - GET /assistant/history/{session_id} -> Get session chat history
+   - DELETE /assistant/history/{session_id} -> Delete chat session
+
+6. ANALYTICS ROUTER (app/api/analytics.py)
+   - GET /analytics/dashboard -> Top-level dashboard metrics
+   - GET /analytics/bookings -> Booking analytics
+   - GET /analytics/workers -> Worker performance analytics
+   - GET /analytics/customers -> Customer behavior analytics
+   - GET /analytics/services -> Service popularity
+   - GET /analytics/pricing -> Pricing variance analytics
+   - GET /analytics/recommendations -> Recommendation performance
+   - GET /analytics/search -> Search analytics
+   - GET /analytics/insights -> Rule-based business insights
+   - POST /analytics/datasets/export -> Generate ML dataset export
+   - GET /analytics/datasets/download -> Download exported dataset file
+
+7. ADMIN DASHBOARD ROUTER (app/api/admin_dashboard.py)
+   - GET /admin/dashboard & /admin/overview -> Overview stats
+   - GET /admin/business -> Business intelligence
+   - GET /admin/marketplace -> Marketplace intelligence
+   - GET /admin/workers -> Worker intelligence
+   - GET /admin/customers -> Customer intelligence
+   - GET /admin/revenue -> Revenue intelligence
+   - GET /admin/pricing -> Pricing intelligence
+   - GET /admin/search -> Search intelligence
+   - GET /admin/recommendations -> Operational recommendations
+   - GET /admin/insights -> AI Insights
+   - GET /admin/anomalies -> Anomaly detection reports
+   - GET /admin/system-health -> System health report
+   - GET /admin/executive-summary -> Daily/Weekly executive summary
+   - POST /admin/reports/export -> Export admin report
+   - GET /admin/reports -> List generated reports
+
+8. MLOPS ROUTER (app/api/mlops.py)
+   - GET /ml/models -> List registered ML models
+   - POST /ml/models/register -> Register new ML model
+   - PUT /ml/models/{id}/activate -> Activate registered model
+   - GET /ml/models/history -> Model history
+   - GET /ml/datasets -> List datasets
+   - POST /ml/datasets/register -> Register dataset
+   - GET /ml/experiments -> List experiments
+   - POST /ml/experiments -> Log experiment
+   - GET /ml/health -> AI model health status
+   - GET /ml/metrics -> Performance metrics
+   - GET /ml/configuration -> System configuration
+   - GET /ml/audit-logs -> MLOps audit logs
+
+9. WORKER VOICE SUMMARY ROUTER (app/api/worker_voice_summary.py)
+   - POST /ai/worker/voice-summary -> Spoken screen summary (base64 MP3)
+
+==================================================
+12. CORS
+==================================================
+
+Configuration Location: app/main.py & app/core/config.py
+Middleware: fastapi.middleware.cors.CORSMiddleware
+Setting Field: `CORS_ORIGINS` (List[str])
+
+Current State in Code & .env:
+- Code Default: `["*"]`
+- `.env` Configured Value: `["http://localhost:5173", "http://localhost:8000","https://ally-backend-do03.onrender.com"]`
+- `allow_credentials=True`, `allow_methods=["*"]`, `allow_headers=["*"]`
+
+Deployment Recommendation:
+- In production on Render, set `CORS_ORIGINS` explicitly to a JSON array of authorized origins:
+  `["https://ally-backend-do03.onrender.com","https://admin.yourdomain.com"]`
+- Note: Mobile Flutter applications (Android/iOS) do not perform browser CORS checks, but web browsers accessing Admin / API endpoints enforce CORS.
+
+==================================================
+13. FILE SYSTEM / MODEL DEPENDENCIES
+==================================================
+
+Directory References in Code:
+- `MODEL_DIRECTORY` ("./trained_models")
+- `DATASET_DIRECTORY` ("./datasets")
+- `ANALYTICS_DATASET_EXPORT_DIR` ("./datasets/exports")
+
+Runtime Verification & Usage:
+1. `app/services/embedding_service.py` loads SentenceTransformer model `all-MiniLM-L6-v2`.
+   - On first request, `sentence-transformers` automatically downloads model weights (~90MB) into the default HuggingFace / PyTorch cache (~/.cache/torch/sentence_transformers/).
+2. Trained ML Models / Scikit-Learn Pickles:
+   - `app/utils/model_loader.py` checks `MODEL_DIRECTORY`. If pickle files are missing, functions fall back gracefully to heuristic/rule-based scoring.
+3. Git Status:
+   - `./trained_models` and `./datasets` are explicitly ignored in `.gitignore`.
+4. Render Disk Requirements:
+   - Render's ephemeral container disk is sufficient for runtime caching of `all-MiniLM-L6-v2`.
+   - Persistent Disk is NOT mandatory for initial deployment.
+
+==================================================
+14. SECRETS / SECURITY AUDIT
+==================================================
+
+Audit Findings:
+
+1. Local `.env` File Tracked Status:
+   - FILE: ipd2/ai-service/.env
+   - STATUS: Contains real secrets (`MONGODB_URI`, `GROQ_API_KEY`, `ELEVENLABS_API_KEY`).
+   - SEVERITY: HIGH (If committed to version control).
+   - CHECK: `.gitignore` line 29 contains `.env`. Ensure `.env` is NOT tracked in Git (`git status`).
+
+2. Hardcoded Credentials in Fallbacks:
+   - FILE: app/core/config.py
+   - LINE: 12
+   - VALUE: `MONGODB_URI = "mongodb://localhost:27017"`
+   - SEVERITY: LOW (Standard development fallback; overridden by env var).
+
+3. Endpoint Exposure of Sensitive Config:
+   - FILE: app/api/infrastructure.py
+   - ROUTE: `GET /config`
+   - CHECK: Explicitly masks `MONGO_URI` and `GROQ_API_KEY` with `***` before returning JSON response.
+
+==================================================
+15. PRODUCTION READINESS
+==================================================
+
+Status: READY FOR DEPLOYMENT with configuration adjustments.
+
+Issue Severity Classification:
+
+BLOCKER:
+1. Render Free Tier Memory Exhaustion:
+   - `sentence-transformers` requires PyTorch. PyTorch + model in memory requires ~600MB+ RAM. Free tier (512MB RAM) will crash (OOM Kill).
+   - Solution: Select Starter Tier (1GB RAM) or higher on Render.
+
+2. MongoDB Atlas Network Access:
+   - MongoDB Atlas network IP access list must allow Render IPs (`0.0.0.0/0`). Server fails lifespan startup ping if DB is unreachable.
+
+HIGH:
+1. Environment Variable Configuration on Render:
+   - `MONGODB_URI`, `GROQ_API_KEY`, and `BACKEND_BASE_URL` MUST be populated in Render Environment settings.
+
+MEDIUM:
+1. Production CORS Origins:
+   - Update `CORS_ORIGINS` to remove localhost entries and specify production web domains.
+
+LOW:
+1. Missing Gunicorn in requirements.txt:
+   - Currently uses `uvicorn` directly. Sufficient for single-process async execution, but `gunicorn` with worker processes is preferred for heavy multi-core concurrency.
+
+==================================================
+16. RENDER DEPLOYMENT COMPATIBILITY
+==================================================
+
+Assessment: Render Web Service IS HIGHLY APPROPRIATE for this service.
+
+Compatibility Factors:
+- ASGI Web Framework: FastAPI is fully supported by Uvicorn on Render.
+- Environment Loading: Clean Pydantic BaseSettings pattern integrates seamlessly with Render Environment Variables.
+- Health Check: Native `/health` endpoint returning 200 OK is readily available for Render HTTP Health Check Path.
+- Background Tasks: Uses FastAPI `BackgroundTasks` in memory for non-blocking search logging (no Celery/Redis cluster required for basic operations).
+- WebSockets / Streaming: Standard HTTP endpoints used; compatible with standard Render HTTP proxying.
+
+==================================================
+17. DEPENDENCY / SYSTEM PACKAGE WARNINGS
+==================================================
+
+1. PACKAGE: sentence-transformers & torch
+   - WHY IT MAY FAIL: Large wheel download (~800MB) during build; high memory usage during runtime.
+   - RENDER IMPACT: May cause build timeout if network is slow; will OOM on 512MB RAM tier.
+   - RECOMMENDED ACTION: Deploy on Render Starter Plan (1GB RAM).
+
+2. PACKAGE: psutil
+   - WHY IT MAY FAIL: Requires C header files to compile on Linux if pre-built wheel is unavailable.
+   - RENDER IMPACT: Render Python 3.12 build environment includes build-essential tools; standard wheel installs cleanly.
+   - RECOMMENDED ACTION: None.
+
+3. PACKAGE: pyarrow & fastparquet
+   - WHY IT MAY FAIL: Heavy binary dependencies for Apache Arrow / Parquet.
+   - RENDER IMPACT: Installs standard binary wheels on x86_64 Linux.
+   - RECOMMENDED ACTION: None.
+
+==================================================
+18. HEALTH CHECK
+==================================================
+
+Primary Health Check Endpoint:
+- METHOD: GET
+- PATH: /health
+- CODE LOCATION: app/api/infrastructure.py (Line 20)
+- EXPECTED RESPONSE (200 OK):
+  {
+    "status": "ok",
+    "components": {
+      "database": "connected",
+      "filesystem": "ok"
+    }
+  }
+- DEGRADED RESPONSE (503 Service Unavailable):
+  Returned if MongoDB connection or directory creation fails.
+
+Secondary Health Endpoint:
+- METHOD: GET
+- PATH: /ready
+- EXPECTED RESPONSE: {"ready": true}
+
+Render Health Check Setting: Set path to `/health`.
+
+==================================================
+19. FRONTEND / FLUTTER CONNECTION
+==================================================
+
+Flutter App Directory: ipd2/oops/
+
+Configuration Files in Flutter App:
+- `lib/config/environment.dart`: Reads `AI_SERVICE_URL` from `.env.development` / `.env.production`.
+  - Fallback logic: If `AI_SERVICE_URL` is empty, replaces port 8000 with 8001 in `API_BASE_URL`.
+- `lib/services/ai_service.dart`: Client singleton `AIService` issuing HTTP requests to `EnvironmentConfig.aiServiceUrl`.
+- `lib/constants/api_endpoints.dart`: Defines `/ai/worker/voice-summary`.
+
+Current Local Flutter Config (.env.development):
+- `API_BASE_URL=https://ally-backend-do03.onrender.com/api/v1`
+- `AI_SERVICE_URL=http://192.168.0.145:8001`
+
+Required Action Post-Deployment:
+- Once the AI service is deployed to Render (e.g. `https://ally-ai-service.onrender.com`), update `AI_SERVICE_URL` in `oops/.env.development` and `oops/.env.production` to:
+  `AI_SERVICE_URL=https://<your-ai-service-render-name>.onrender.com`
+
+==================================================
+20. EXACT DEPLOYMENT CHECKLIST
+==================================================
+
+[ ] Root Directory: set to `ai-service` (or `ipd2/ai-service`)
+[ ] Runtime: Python 3
+[ ] Python Version: set `PYTHON_VERSION=3.12.4` environment variable
+[ ] Build Command: `pip install -r requirements.txt`
+[ ] Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+[ ] Instance Type: Starter Tier (1 GB RAM minimum required due to PyTorch memory footprint)
+[ ] Region Recommendation: Oregon, USA or Singapore (Match backend region)
+[ ] Required Render Environment Variables Configured:
+    [ ] `ENVIRONMENT=production`
+    [ ] `LOGGING_LEVEL=INFO`
+    [ ] `MONGODB_URI=[REDACTED]` (MongoDB Atlas connection string)
+    [ ] `MONGODB_DATABASE=ally`
+    [ ] `BACKEND_BASE_URL=https://ally-backend-do03.onrender.com`
+    [ ] `GROQ_API_KEY=[REDACTED]`
+    [ ] `ELEVENLABS_API_KEY=[REDACTED]`
+    [ ] `CORS_ORIGINS=["https://ally-backend-do03.onrender.com"]`
+[ ] MongoDB Atlas IP Whitelisting: `0.0.0.0/0` added to Network Access IP Access List
+[ ] Health Check Path: `/health`
+[ ] Post-deployment Flutter URL updated in `oops/.env.development` & `oops/.env.production`
+
+==================================================
+21. FINAL DEPLOYMENT CONFIGURATION
+==================================================
+
+==============================
+RECOMMENDED RENDER CONFIG
+==============================
+
+Service Type: Web Service
+Root Directory: ai-service (or ipd2/ai-service)
+Runtime: Python 3
+Python Version: 3.12.4
+Build Command: pip install -r requirements.txt
+Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+Instance Plan: Starter (1 GB RAM / 1 CPU)
+Region: Match Backend Region (e.g. Oregon / Singapore)
+Health Check Path: /health
+
+Environment Variables:
+
+NON-SECRET:
+- ENVIRONMENT=production
+- LOGGING_LEVEL=INFO
+- MONGODB_DATABASE=ally
+- BACKEND_BASE_URL=https://ally-backend-do03.onrender.com
+- REQUEST_TIMEOUT=10.0
+- ASSISTANT_LLM_MODEL=llama-3.1-8b-instant
+- ELEVENLABS_VOICE_ID_EN=21m00Tcm4TlvDq8ikWAM
+- ELEVENLABS_VOICE_ID_HI=pNInz6obpgDQGcFmaJgB
+- CORS_ORIGINS=["https://ally-backend-do03.onrender.com"]
+- PYTHON_VERSION=3.12.4
+
+SECRET:
+- MONGODB_URI=[REDACTED]
+- GROQ_API_KEY=[REDACTED]
+- ELEVENLABS_API_KEY=[REDACTED]
+
+Backend URL: https://ally-backend-do03.onrender.com
+MongoDB: Cluster0 (Database: ally)
+Groq: Active (Model: llama-3.1-8b-instant)
+ElevenLabs: Active REST API / gTTS fallback active
+Model Files: SentenceTransformers all-MiniLM-L6-v2 (cached at runtime)
+Dataset Files: Created at runtime under ./datasets
+
+==============================
+DEPLOYMENT BLOCKERS
+==============================
+
+1. Render Free Tier Memory Limit:
+   PyTorch + sentence-transformers requires 1 GB RAM. Free Tier (512MB RAM) will crash with OOM. Instance MUST be Starter (1GB RAM) or higher.
+
+2. MongoDB Atlas Network Access:
+   MongoDB Atlas IP Access List must include `0.0.0.0/0` (Allow Access from Anywhere). Render dynamic IP will be rejected on startup otherwise.
+
+==============================
+POST-DEPLOYMENT TEST PLAN
+==============================
+
+1. Service Startup:
+   Verify Render build log succeeds and start command executes `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+
+2. Health Endpoint Test:
+   Send HTTP GET to `https://<ai-service-url>/health`
+   Expected Response: HTTP 200 OK with `{"status": "ok", "components": {"database": "connected", "filesystem": "ok"}}`
+
+3. Chatbot Generic Endpoint:
+   Send HTTP POST to `https://<ai-service-url>/assistant/chat` with body:
+   `{"message": "Hello, what services are available?", "role": "customer"}`
+
+4. Conversation/Session Persistence:
+   Send HTTP GET to `https://<ai-service-url>/assistant/history/<session_id>` to verify turns stored in MongoDB.
+
+5. Groq Response Test:
+   Verify AI response generated by Groq LLM without 401/403 authorization errors.
+
+6. Voice Generation (gTTS / ElevenLabs):
+   Send HTTP POST to `https://<ai-service-url>/ai/worker/voice-summary` with worker Bearer token and body:
+   `{"screen_name": "dashboard", "screen_data": {"pending_jobs": 2}, "language": "en"}`
+
+7. English Voice Test:
+   Verify returned JSON contains non-empty `audio_base64` string for language `en`.
+
+8. Hindi Voice Test:
+   Send same POST request with `"language": "hi"` and verify Hindi audio base64 generated.
+
+9. Backend Communication Test:
+   Verify backend authentication check `/api/v1/auth/me` succeeds when worker token is supplied.
+
+10. MongoDB Persistence Test:
+    Perform search via POST to `https://<ai-service-url>/search` and verify search query logged into `search_history` collection.
+
+11. Flutter Integration Test:
+    Update `AI_SERVICE_URL` in `oops/.env.development`, launch Flutter app, click AI Assistant button and Worker Voice Summary button, and confirm real-time speech and chat responses.
+
+================================================================================
+END OF AUDIT REPORT
+================================================================================
