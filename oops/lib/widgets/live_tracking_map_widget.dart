@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
@@ -32,8 +34,9 @@ class LiveTrackingMapWidget extends StatefulWidget {
 class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
   MapboxMap? _mapboxMap;
   PointAnnotationManager? _pointAnnotationManager;
-  PointAnnotation? _workerAnnotation;
   PointAnnotation? _customerAnnotation;
+  CircleAnnotationManager? _circleAnnotationManager;
+  CircleAnnotation? _workerCircle;
   PolylineAnnotationManager? _polylineAnnotationManager;
   PolylineAnnotation? _routeAnnotation;
 
@@ -48,6 +51,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
     _mapboxMap = mapboxMap;
     
     _pointAnnotationManager = await mapboxMap.annotations.createPointAnnotationManager();
+    _circleAnnotationManager = await mapboxMap.annotations.createCircleAnnotationManager();
     _polylineAnnotationManager = await mapboxMap.annotations.createPolylineAnnotationManager();
 
     // Create Customer Annotation
@@ -63,19 +67,21 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
   }
 
   Future<void> _createOrUpdateWorkerAnnotation(double lat, double lng) async {
-    if (_pointAnnotationManager == null) return;
+    if (_circleAnnotationManager == null) return;
     
     final point = Point(coordinates: Position(lng, lat));
     
-    if (_workerAnnotation == null) {
-        _workerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
+    if (_workerCircle == null) {
+        _workerCircle = await _circleAnnotationManager!.create(CircleAnnotationOptions(
             geometry: point,
-            iconImage: 'car-15', // Built-in mapbox car icon
-            iconSize: 2.0,
+            circleRadius: 8.0,
+            circleColor: 0xFF2563EB, // Blue color
+            circleStrokeColor: 0xFFFFFFFF, // White outline
+            circleStrokeWidth: 3.0,
         ));
     } else {
-        _workerAnnotation!.geometry = point;
-        _pointAnnotationManager!.update(_workerAnnotation!);
+        _workerCircle!.geometry = point;
+        _circleAnnotationManager!.update(_workerCircle!);
     }
     _drawRoute(lat, lng);
     _fitCamera(lat, lng);
@@ -205,6 +211,11 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
               children: [
                 MapWidget(
                   onMapCreated: _onMapCreated,
+                  gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                    ),
+                  },
                   cameraOptions: CameraOptions(
                       center: Point(coordinates: Position(
                           hasWorkerLocation ? widget.workerLng! : widget.customerLng, 
