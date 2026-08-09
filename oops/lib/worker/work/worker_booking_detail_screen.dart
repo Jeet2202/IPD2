@@ -83,6 +83,12 @@ class _WorkerBookingDetailScreenState
     if (permission == LocationPermission.deniedForever) return;
 
     setState(() => _isLocationSharing = true);
+    
+    try {
+      await WorkerTrackingService.instance.startTracking(_booking.id);
+    } catch (e) {
+      debugPrint("Background tracking start failed: $e");
+    }
 
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -120,6 +126,7 @@ class _WorkerBookingDetailScreenState
   void _stopLocationSharing() {
     _positionStream?.cancel();
     _positionStream = null;
+    WorkerTrackingService.instance.stopTracking();
     if (mounted) setState(() => _isLocationSharing = false);
   }
 
