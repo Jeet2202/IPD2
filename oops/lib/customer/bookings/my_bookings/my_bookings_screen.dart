@@ -773,24 +773,51 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                       '₹${b.estimatedPrice?.toStringAsFixed(0) ?? '0'}',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.primary),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.bookingDetails,
-                          arguments: {'booking': b, 'booking_id': b.id},
-                        ).then((_) => _fetchBookings());
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: b.isWorkCompleted ? const Color(0xFF0D9488) : const Color(0xFFEFF6FF),
-                        foregroundColor: b.isWorkCompleted ? Colors.white : AppColors.primary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: Text(
-                        b.isWorkCompleted ? 'Confirm Work' : 'View Details',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-                      ),
+                    Row(
+                      children: [
+                        if ((b.status.toLowerCase() == 'pending' || b.status.toLowerCase() == 'requested') && b.workerId == null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                final result = await Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.cancelBooking,
+                                  arguments: {'booking_id': b.id},
+                                );
+                                if (result == true) {
+                                  _fetchBookings();
+                                }
+                              },
+                              icon: const Icon(Icons.delete_outline_rounded, size: 16, color: Color(0xFFEF4444)),
+                              label: const Text('Cancel', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFEF4444))),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Color(0xFFFCA5A5)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              ),
+                            ),
+                          ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.bookingDetails,
+                              arguments: {'booking': b, 'booking_id': b.id},
+                            ).then((_) => _fetchBookings());
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: b.isWorkCompleted ? const Color(0xFF0D9488) : const Color(0xFFEFF6FF),
+                            foregroundColor: b.isWorkCompleted ? Colors.white : AppColors.primary,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: Text(
+                            b.isWorkCompleted ? 'Confirm Work' : 'View Details',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -210,4 +210,14 @@ class BookingService {
     final res = await _apiService.post('/bookings/$bookingId/inspection/complete', {});
     return BookingModel.fromJson(res as Map<String, dynamic>);
   }
+
+  /// Cancel booking via POST /bookings/{id}/cancel
+  Future<BookingModel> cancelBooking(String bookingId, {String? reason}) async {
+    final body = <String, dynamic>{};
+    if (reason != null && reason.trim().isNotEmpty) {
+      body['reason'] = reason.trim();
+    }
+    final res = await _apiService.post('/bookings/$bookingId/cancel', body);
+    return BookingModel.fromJson(res as Map<String, dynamic>);
+  }
 }

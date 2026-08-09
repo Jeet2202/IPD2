@@ -44,7 +44,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     {'name': 'AC & Appliance Repair', 'slug': 'appliance-repair'},
     {'name': 'Painting', 'slug': 'painting'},
     {'name': 'Carpentry', 'slug': 'carpentry'},
-    {'name': 'General Maintenance', 'slug': 'general'},
   ];
 
   ServiceModel? _service;
