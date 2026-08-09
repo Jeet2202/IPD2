@@ -398,7 +398,21 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   Widget _buildSkillsSection() {
     final data = _profileData!;
     final rawSkills = data['skills'] as List?;
-    final skills = rawSkills?.map((s) => s.toString()).toList() ?? [];
+    final rawSkillsList = rawSkills?.map((s) => s.toString().toLowerCase()).toList() ?? [];
+
+    final displaySkills = <String>[];
+    bool hasAcOrAppliance = false;
+    for (final s in rawSkillsList) {
+      if (s == 'ac-repair' || s == 'appliance-repair') {
+        if (!hasAcOrAppliance) {
+          hasAcOrAppliance = true;
+          displaySkills.add('AC & Appliance Repair');
+        }
+      } else {
+        displaySkills.add(AppTranslations.getLocalizedName(context, s));
+      }
+    }
+
     final rawLangs = data['languages'] as List?;
     final langs = rawLangs?.map((l) => l.toString().toUpperCase()).toList() ?? [];
 
@@ -414,12 +428,12 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         children: [
           Text('offered_services_skills'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
           const SizedBox(height: 12),
-          skills.isNotEmpty
+          displaySkills.isNotEmpty
               ? Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: skills.map((s) => Chip(
-                    label: Text(AppTranslations.getLocalizedName(context, s), style: const TextStyle(fontSize: 12, color: Color(0xFF1E40AF))),
+                  children: displaySkills.map((label) => Chip(
+                    label: Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF1E40AF))),
                     backgroundColor: const Color(0xFFEFF6FF),
                     side: const BorderSide(color: Color(0xFFBFDBFE)),
                     padding: const EdgeInsets.symmetric(horizontal: 4),
