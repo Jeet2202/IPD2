@@ -84,6 +84,16 @@ export const adminService = {
     return [];
   },
 
+  async getVerificationById(id) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/verifications/${id}`, { headers: getAuthHeaders() });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Backend verification detail error:', e);
+    }
+    return null;
+  },
+
   async reviewVerification(id, status, notes = '') {
     try {
       const res = await fetch(

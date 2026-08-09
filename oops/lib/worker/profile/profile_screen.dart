@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../services/location_service.dart';
 import '../../l10n/app_translations.dart';
 import '../../widgets/language_selector_widget.dart';
 import '../widgets/worker_bottom_navigation_bar.dart';
@@ -20,6 +21,9 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   Map<String, dynamic>? _profileData;
+  String? _resolvedAddress;
+  bool _isResolvingAddress = false;
+  String? _verificationStatus;
 
   @override
   void initState() {
@@ -31,6 +35,9 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _resolvedAddress = null;
+      _isResolvingAddress = false;
+      _verificationStatus = null;
     });
 
     try {
@@ -40,6 +47,8 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
           _profileData = res;
           _isLoading = false;
         });
+        _resolveWorkerAddress(res);
+        _fetchVerificationStatus();
       }
     } on ApiException catch (e) {
       if (mounted) {
@@ -53,6 +62,119 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
         setState(() {
           _errorMessage = 'failed_load_profile_retry'.tr(context);
           _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchVerificationStatus() async {
+    try {
+      final res = await ApiService.instance.get('/verification/status');
+      if (mounted && res is Map<String, dynamic>) {
+        final overall = res['overall_status'] as String? ?? 'draft';
+        setState(() {
+          _verificationStatus = overall;
+        });
+      }
+    } catch (_) {
+      if (mounted && _profileData != null) {
+        final data = _profileData!['data'] as Map<String, dynamic>? ?? _profileData!;
+        final isVerified = data['is_verified'] == true;
+        setState(() {
+          _verificationStatus = isVerified ? 'approved' : 'draft';
+        });
+      }
+    }
+  }
+
+  Future<void> _resolveWorkerAddress(Map<String, dynamic> res) async {
+    final data = res['data'] as Map<String, dynamic>? ?? res;
+
+    // 1. Check if profile already contains a human-readable address field
+    final existingAddress = data['address'] as String? ?? data['formatted_address'] as String?;
+    if (existingAddress != null && existingAddress.trim().isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _resolvedAddress = existingAddress.trim();
+        });
+      }
+      return;
+    }
+
+    // 2. Check current_location GeoJSON Point
+    final loc = data['current_location'] as Map<String, dynamic>?;
+    if (loc == null) {
+      if (mounted) {
+        setState(() {
+          _resolvedAddress = null;
+        });
+      }
+      return;
+    }
+
+    final coords = loc['coordinates'] as List<dynamic>?;
+    if (coords == null || coords.length < 2) {
+      if (mounted) {
+        setState(() {
+          _resolvedAddress = null;
+        });
+      }
+      return;
+    }
+
+    final double lng = (coords[0] as num).toDouble();
+    final double lat = (coords[1] as num).toDouble();
+
+    if (lat == 0.0 && lng == 0.0) {
+      if (mounted) {
+        setState(() {
+          _resolvedAddress = null;
+        });
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isResolvingAddress = true;
+      });
+    }
+
+    try {
+      final latLng = LatLng(lat, lng);
+      final geo = await LocationService.instance.reverseGeocode(latLng);
+
+      final addressParts = <String>[];
+      if (geo.addressLine != null && geo.addressLine!.trim().isNotEmpty) {
+        addressParts.add(geo.addressLine!.trim());
+      }
+      if (geo.city != null && geo.city!.trim().isNotEmpty) {
+        addressParts.add(geo.city!.trim());
+      }
+      if (geo.state != null && geo.state!.trim().isNotEmpty) {
+        addressParts.add(geo.state!.trim());
+      }
+
+      if (!mounted) return;
+
+      String? formattedAddress;
+      if (addressParts.isNotEmpty) {
+        formattedAddress = addressParts.join(', ');
+      } else if (geo.displayName != null && geo.displayName!.trim().isNotEmpty) {
+        formattedAddress = geo.displayName!.trim();
+      } else {
+        formattedAddress = 'location_set'.tr(context);
+      }
+
+      setState(() {
+        _resolvedAddress = formattedAddress;
+        _isResolvingAddress = false;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _resolvedAddress = 'location_set'.tr(context);
+          _isResolvingAddress = false;
         });
       }
     }
@@ -448,6 +570,12 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
     final data = _profileData!;
     final bio = (data['bio'] as String?) ?? 'no_professional_bio'.tr(context);
 
+    final String addressDisplay = _isResolvingAddress
+        ? 'loading_location'.tr(context)
+        : (_resolvedAddress != null && _resolvedAddress!.isNotEmpty)
+            ? _resolvedAddress!
+            : 'location_not_set'.tr(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -464,12 +592,45 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             bio,
             style: const TextStyle(fontSize: 13, height: 1.5, color: Color(0xFF475569)),
           ),
+          const SizedBox(height: 16),
+          const Divider(color: Color(0xFFF1F5F9), height: 1),
+          const SizedBox(height: 16),
+          Text('address'.tr(context), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF64748B)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  addressDisplay,
+                  style: const TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF475569)),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget _buildMenuCard() {
+    final String locationSubtitle = _isResolvingAddress
+        ? 'loading_location'.tr(context)
+        : (_resolvedAddress != null && _resolvedAddress!.isNotEmpty)
+            ? _resolvedAddress!
+            : 'set_location_radius'.tr(context);
+
+    final isVerified = (_profileData?['is_verified'] == true) || (_profileData?['data']?['is_verified'] == true) || (_verificationStatus == 'approved');
+    final String verificationSubtitle = isVerified
+        ? 'verified'.tr(context)
+        : (_verificationStatus == 'submitted' || _verificationStatus == 'under_review')
+            ? 'verification_pending'.tr(context)
+            : (_verificationStatus == 'rejected' || _verificationStatus == 'resubmission_required')
+                ? 'verification_rejected'.tr(context)
+                : 'not_verified'.tr(context);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -493,15 +654,24 @@ class _WorkerProfileScreenState extends State<WorkerProfileScreen> {
             },
           ),
           _MenuItem(
+            icon: Icons.verified_user_rounded,
+            title: 'verification'.tr(context),
+            subtitle: verificationSubtitle,
+            onTap: () async {
+              await Navigator.pushNamed(context, '/worker/verification/kyc');
+              _loadProfile();
+            },
+          ),
+          _MenuItem(
             icon: Icons.location_on_rounded,
             title: 'service_area_location'.tr(context),
-            subtitle: 'set_location_radius'.tr(context),
+            subtitle: locationSubtitle,
             onTap: () async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const WorkerServiceAreaScreen()),
               );
-              _loadProfile(); // Refresh profile to show updated radius
+              _loadProfile(); // Refresh profile to show updated radius & location
             },
           ),
           _MenuItem(

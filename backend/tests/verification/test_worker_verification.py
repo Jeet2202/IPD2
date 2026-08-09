@@ -75,6 +75,7 @@ async def test_approve_verification_workflow():
          patch("app.verification.repository.WorkerVerificationRepository.update_verification", new_callable=AsyncMock, return_value=fake_verif), \
          patch("app.verification.repository.VerificationDocumentRepository.update_document", new_callable=AsyncMock), \
          patch("app.verification.repository.VerificationReviewRepository.create_review", new_callable=AsyncMock), \
+         patch("app.verification.service.VerificationService.sync_worker_verification_status", new_callable=AsyncMock, return_value=True), \
          patch("app.trust.service.TrustService.get_or_create_profile", new_callable=AsyncMock, return_value=fake_profile), \
          patch("app.trust.service.TrustService.update_trust_score", new_callable=AsyncMock) as mock_update_score, \
          patch("app.verification.service.BadgeService.grant_badge", new_callable=AsyncMock) as mock_grant_badge, \

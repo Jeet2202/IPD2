@@ -33,7 +33,7 @@ class WorkerVerification(Document):
     """
     verification_id: Annotated[str, Indexed(unique=True)] = Field(default_factory=generate_uuid)
     worker_id: Annotated[str, Indexed()]
-    verification_type: VerificationType
+    verification_type: VerificationType = VerificationType.IDENTITY
     status: VerificationStatus = VerificationStatus.DRAFT
     submitted_at: datetime | None = None
     reviewed_at: datetime | None = None

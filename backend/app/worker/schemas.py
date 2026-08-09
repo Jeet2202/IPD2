@@ -72,6 +72,7 @@ class WorkerProfileResponse(BaseModel):
     profile_completed: bool = Field(default=False, description="True if completion threshold (>= 70%) is reached")
     is_verified: bool = Field(default=False, description="True if worker identity or profile verification has been approved")
 
+    current_location: dict | None = Field(default=None, description="Worker real-time GeoJSON Point location")
     current_location_updated_at: datetime | None = Field(default=None, description="Timestamp when current GPS location was last updated (UTC)")
     created_at: datetime
     updated_at: datetime

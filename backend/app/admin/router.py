@@ -15,7 +15,9 @@ from app.worker.models import WorkerProfile
 from app.booking.models import Booking
 from app.quotation.models import Quotation
 from app.support.models import SupportTicket
-from app.admin.models import WorkerVerification, AppSettings, VerificationStatus
+from app.admin.models import WorkerVerification as AdminWorkerVerification, AppSettings, VerificationStatus
+from app.verification.models import WorkerVerification as CoreWorkerVerification, VerificationDocument
+from app.verification.service import ApprovalService
 from app.category.models import Service, ServiceCategory
 from app.review.models import Review
 from app.notifications.models import Notification
@@ -39,7 +41,11 @@ async def get_dashboard_metrics(admin: AdminUserDep) -> dict[str, Any]:
     total_workers = await User.find(User.role == UserRole.WORKER).count()
     verified_workers = await WorkerProfile.find(WorkerProfile.rating_average >= 0.0).count()
     active_jobs = await Booking.find().count()
-    pending_verifications = await WorkerVerification.find(WorkerVerification.verification_status == VerificationStatus.PENDING).count()
+    core_pending = await CoreWorkerVerification.find(
+        (CoreWorkerVerification.status == "submitted") | (CoreWorkerVerification.status == "under_review")
+    ).count()
+    admin_pending = await AdminWorkerVerification.find(AdminWorkerVerification.verification_status == VerificationStatus.PENDING).count()
+    pending_verifications = core_pending + admin_pending
     open_complaints = await SupportTicket.find(SupportTicket.status == "open").count()
     
     # Calculate live revenue from bookings
@@ -369,22 +375,159 @@ async def update_worker_profile_by_admin(
 )
 async def list_verifications(admin: AdminUserDep) -> list[dict[str, Any]]:
     """List pending and processed worker verifications."""
-    verifs = await WorkerVerification.find_all().sort("-created_at").to_list()
+    from beanie import PydanticObjectId
+
+    core_verifs = await CoreWorkerVerification.find_all().sort("-created_at").to_list()
+    admin_verifs = await AdminWorkerVerification.find_all().sort("-created_at").to_list()
+
     result = []
-    for v in verifs:
-        w_user = await User.get(v.worker_id)
+    seen_ids = set()
+
+    for v in core_verifs:
+        v_id = str(v.verification_id or v.id)
+        seen_ids.add(v_id)
+        seen_ids.add(str(v.id))
+        seen_ids.add(str(v.worker_id))
+
+        w_user = None
+        if PydanticObjectId.is_valid(v.worker_id):
+            w_user = await User.get(PydanticObjectId(v.worker_id))
+        if not w_user:
+            w_user = await User.find_one(User.id == v.worker_id)
+
+        w_prof = await WorkerProfile.find_one(WorkerProfile.user_id == (str(w_user.id) if w_user else v.worker_id))
+
+        submitted_docs = {}
+        if v.document_ids:
+            for doc_id in v.document_ids:
+                doc_rec = await VerificationDocument.find_one(VerificationDocument.document_id == doc_id)
+                if not doc_rec and PydanticObjectId.is_valid(doc_id):
+                    doc_rec = await VerificationDocument.get(PydanticObjectId(doc_id))
+                if doc_rec:
+                    doc_type_name = doc_rec.document_type.value if hasattr(doc_rec.document_type, "value") else str(doc_rec.document_type)
+                    submitted_docs[doc_type_name] = doc_rec.secure_url
+
+        status_str = v.status.value if hasattr(v.status, "value") else str(v.status)
+        v_type_str = v.verification_type.value if hasattr(v.verification_type, "value") else str(v.verification_type)
+
         result.append({
-            "id": str(v.id),
-            "verification_id": str(v.id),
-            "worker_id": v.worker_id,
+            "id": v_id,
+            "verification_id": v_id,
+            "worker_id": str(v.worker_id),
+            "worker_name": w_user.full_name if w_user else (v.metadata.get("legal_name") or "Worker User"),
+            "worker_phone": w_user.phone if w_user else "N/A",
+            "worker_email": w_user.email if w_user else "",
+            "skills": w_prof.skills if w_prof else [],
+            "status": status_str,
+            "verification_type": v_type_str,
+            "submitted_documents": submitted_docs,
+            "document_ids": v.document_ids,
+            "metadata": v.metadata,
+            "notes": v.review_notes or v.metadata.get("worker_notes"),
+            "created_at": v.created_at.isoformat() if hasattr(v, "created_at") and v.created_at else (v.submitted_at.isoformat() if v.submitted_at else "Recently"),
+            "submitted_at": v.submitted_at.isoformat() if v.submitted_at else None,
+        })
+
+    for a in admin_verifs:
+        a_id = str(a.id)
+        if a_id in seen_ids or a.worker_id in seen_ids:
+            continue
+        w_user = None
+        if PydanticObjectId.is_valid(a.worker_id):
+            w_user = await User.get(PydanticObjectId(a.worker_id))
+        result.append({
+            "id": a_id,
+            "verification_id": a_id,
+            "worker_id": a.worker_id,
             "worker_name": w_user.full_name if w_user else "Worker User",
             "worker_phone": w_user.phone if w_user else "N/A",
-            "status": v.verification_status.value if hasattr(v.verification_status, "value") else str(v.verification_status),
-            "submitted_documents": v.submitted_documents,
-            "notes": v.verification_notes,
-            "created_at": v.created_at.isoformat() if v.created_at else "Recently",
+            "worker_email": w_user.email if w_user else "",
+            "status": a.verification_status.value if hasattr(a.verification_status, "value") else str(a.verification_status),
+            "submitted_documents": a.submitted_documents or {},
+            "notes": a.verification_notes,
+            "created_at": a.created_at.isoformat() if hasattr(a, "created_at") and a.created_at else "Recently",
         })
+
     return result
+
+
+@router.get(
+    "/verifications/{verification_id}",
+    summary="Get Worker Verification Details",
+    description="Retrieve detailed worker verification request info for admin review.",
+)
+async def get_verification_details(
+    verification_id: str,
+    admin: AdminUserDep,
+) -> dict[str, Any]:
+    """Get single worker verification details."""
+    from beanie import PydanticObjectId
+
+    v = await CoreWorkerVerification.find_one(CoreWorkerVerification.verification_id == verification_id)
+    if not v and PydanticObjectId.is_valid(verification_id):
+        v = await CoreWorkerVerification.get(PydanticObjectId(verification_id))
+    if not v:
+        v = await CoreWorkerVerification.find_one(CoreWorkerVerification.worker_id == verification_id)
+
+    if v:
+        w_user = None
+        if PydanticObjectId.is_valid(v.worker_id):
+            w_user = await User.get(PydanticObjectId(v.worker_id))
+        if not w_user:
+            w_user = await User.find_one(User.id == v.worker_id)
+        w_prof = await WorkerProfile.find_one(WorkerProfile.user_id == (str(w_user.id) if w_user else v.worker_id))
+
+        docs = {}
+        if v.document_ids:
+            for doc_id in v.document_ids:
+                doc_rec = await VerificationDocument.find_one(VerificationDocument.document_id == doc_id)
+                if not doc_rec and PydanticObjectId.is_valid(doc_id):
+                    doc_rec = await VerificationDocument.get(PydanticObjectId(doc_id))
+                if doc_rec:
+                    doc_type_name = doc_rec.document_type.value if hasattr(doc_rec.document_type, "value") else str(doc_rec.document_type)
+                    docs[doc_type_name] = doc_rec.secure_url
+
+        status_str = v.status.value if hasattr(v.status, "value") else str(v.status)
+
+        return {
+            "id": v.verification_id or str(v.id),
+            "verification_id": v.verification_id or str(v.id),
+            "worker_id": str(v.worker_id),
+            "worker_name": w_user.full_name if w_user else (v.metadata.get("legal_name") or "Worker User"),
+            "worker_phone": w_user.phone if w_user else "N/A",
+            "worker_email": w_user.email if w_user else "",
+            "skills": w_prof.skills if w_prof else [],
+            "experience_years": w_prof.experience_years if w_prof else 0.0,
+            "rating": w_prof.rating_average if w_prof else 0.0,
+            "bio": w_prof.bio if w_prof else "",
+            "status": status_str,
+            "verification_type": v.verification_type.value if hasattr(v.verification_type, "value") else str(v.verification_type),
+            "submitted_documents": docs,
+            "document_ids": v.document_ids,
+            "metadata": v.metadata,
+            "notes": v.review_notes or v.metadata.get("worker_notes"),
+            "created_at": v.created_at.isoformat() if hasattr(v, "created_at") and v.created_at else (v.submitted_at.isoformat() if v.submitted_at else "Recently"),
+        }
+
+    a = await AdminWorkerVerification.get(PydanticObjectId(verification_id)) if PydanticObjectId.is_valid(verification_id) else None
+    if not a:
+        a = await AdminWorkerVerification.find_one(AdminWorkerVerification.worker_id == verification_id)
+    if a:
+        w_user = await User.get(PydanticObjectId(a.worker_id)) if PydanticObjectId.is_valid(a.worker_id) else None
+        return {
+            "id": str(a.id),
+            "verification_id": str(a.id),
+            "worker_id": a.worker_id,
+            "worker_name": w_user.full_name if w_user else "Worker User",
+            "worker_phone": w_user.phone if w_user else "N/A",
+            "worker_email": w_user.email if w_user else "",
+            "status": a.verification_status.value if hasattr(a.verification_status, "value") else str(a.verification_status),
+            "submitted_documents": a.submitted_documents or {},
+            "notes": a.verification_notes,
+            "created_at": a.created_at.isoformat() if hasattr(a, "created_at") and a.created_at else "Recently",
+        }
+
+    raise HTTPException(status_code=404, detail=f"Verification record '{verification_id}' not found.")
 
 
 @router.put(
@@ -392,34 +535,64 @@ async def list_verifications(admin: AdminUserDep) -> list[dict[str, Any]]:
     summary="Review Worker Verification",
     description="Approve, reject, or request changes for a worker's KYC documents.",
 )
+@router.post(
+    "/verifications/{verification_id}/review",
+    include_in_schema=False,
+)
 async def review_worker_verification(
     verification_id: str,
     admin: AdminUserDep,
-    status_update: str = Query(..., description="verified | rejected | pending"),
+    status_update: str = Query(..., description="verified | approved | rejected | pending"),
     notes: str | None = Query(default=None),
 ) -> dict[str, Any]:
     """Approve or reject worker verification."""
-    v = await WorkerVerification.get(verification_id)
+    from beanie import PydanticObjectId
+
+    admin_info = {"id": str(admin.id), "email": admin.email, "role": "admin"}
+    target_action = status_update.lower().strip()
+
+    core_verif = await CoreWorkerVerification.find_one(CoreWorkerVerification.verification_id == verification_id)
+    if not core_verif and PydanticObjectId.is_valid(verification_id):
+        core_verif = await CoreWorkerVerification.get(PydanticObjectId(verification_id))
+    if not core_verif:
+        core_verif = await CoreWorkerVerification.find_one(CoreWorkerVerification.worker_id == verification_id)
+
+    if core_verif:
+        verif_key = core_verif.verification_id
+        if target_action in ["verified", "approved"]:
+            await ApprovalService.approve_verification(
+                admin_user=admin_info,
+                verification_id=verif_key,
+                review_notes=notes or "Approved by Admin",
+            )
+            return {"message": f"Worker verification {verif_key} approved successfully.", "status": "approved"}
+        else:
+            await ApprovalService.reject_verification(
+                admin_user=admin_info,
+                verification_id=verif_key,
+                review_notes=notes or "Rejected by Admin",
+            )
+            return {"message": f"Worker verification {verif_key} rejected.", "status": "rejected"}
+
+    v = await AdminWorkerVerification.get(PydanticObjectId(verification_id)) if PydanticObjectId.is_valid(verification_id) else None
     if not v:
-        # Fallback lookup by worker_id
-        v = await WorkerVerification.find_one(WorkerVerification.worker_id == verification_id)
+        v = await AdminWorkerVerification.find_one(AdminWorkerVerification.worker_id == verification_id)
     if not v:
         raise HTTPException(status_code=404, detail="Verification record not found")
-    
-    v.verification_status = VerificationStatus(status_update.lower())
+
+    v.verification_status = VerificationStatus.VERIFIED if target_action in ["verified", "approved"] else VerificationStatus.REJECTED
     if notes:
         v.verification_notes = notes
     v.verified_by = str(admin.id)
     v.verified_at = datetime.now(timezone.utc)
     await v.save()
-    
-    # Update worker profile is_verified flag
+
     w_prof = await WorkerProfile.find_one(WorkerProfile.user_id == v.worker_id)
     if w_prof:
-        w_prof.is_verified = (status_update.lower() == "verified")
+        w_prof.is_verified = (target_action in ["verified", "approved"])
         await w_prof.save()
-        
-    return {"message": f"Verification for worker {v.worker_id} updated to {status_update}"}
+
+    return {"message": f"Verification for worker {v.worker_id} updated to {status_update}", "status": status_update}
 
 
 # =============================================================================

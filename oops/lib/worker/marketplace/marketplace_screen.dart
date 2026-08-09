@@ -40,6 +40,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   List<String> _workerSkills = [];
   double _workerWorkingRadiusKm = 10.0;
   bool _isWorkerProfileLoaded = false;
+  bool _isVerified = true;
 
   // Filter & Sort State
   MarketplaceFilterData _filterData = MarketplaceFilterData();
@@ -71,10 +72,12 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     try {
       final profile = await AuthService.instance.fetchWorkerProfile();
       if (profile.isNotEmpty) {
-        final rawSkills = profile['skills'] as List?;
+        final data = profile['data'] as Map<String, dynamic>? ?? profile;
+        _isVerified = data['is_verified'] == true;
+        final rawSkills = data['skills'] as List?;
         _workerSkills = rawSkills?.map((s) => s.toString()).toList() ?? [];
-        _workerWorkingRadiusKm = (profile['working_radius_km'] as num?)?.toDouble() ?? 10.0;
-        final locUpdatedStr = profile['current_location_updated_at'] as String?;
+        _workerWorkingRadiusKm = (data['working_radius_km'] as num?)?.toDouble() ?? 10.0;
+        final locUpdatedStr = data['current_location_updated_at'] as String?;
         if (locUpdatedStr != null) {
           _lastLocationUpdatedAt = DateTime.tryParse(locUpdatedStr);
         }
@@ -252,6 +255,57 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     );
   }
 
+  Widget _buildVerificationRequiredBanner() {
+    if (_isVerified) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFFEF2F2),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          const Icon(Icons.shield_outlined, size: 22, color: Color(0xFFDC2626)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'verification_required'.tr(context),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF991B1B)),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'verification_required_desc'.tr(context),
+                  style: const TextStyle(fontSize: 11, color: Color(0xFFB91C1C)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () async {
+              await Navigator.pushNamed(context, '/worker/verification/kyc');
+              _initializeMarketplace();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text(
+              'verify_now'.tr(context),
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasActiveFilters =
@@ -330,6 +384,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            _buildVerificationRequiredBanner(),
             _buildStaleLocationBanner(),
 
             // Search Bar & Filter/Sort Controls

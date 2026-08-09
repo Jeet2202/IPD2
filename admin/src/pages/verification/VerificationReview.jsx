@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -17,6 +17,7 @@ import {
 import PageContainer from '../../components/layout/PageContainer';
 import StatusBadge from '../../components/common/StatusBadge';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import { adminService } from '../../services/adminService';
 import { VERIFICATION_REQUESTS } from '../../data/verifications';
 
 export default function VerificationReview() {
@@ -30,9 +31,49 @@ export default function VerificationReview() {
   const [selectedIssues, setSelectedIssues] = useState(initialReq.issuesFound || []);
   const [adminNote, setAdminNote] = useState('');
   const [rejectionReason, setRejectionReason] = useState('Invalid identity document');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Modal State
   const [modalConfig, setModalConfig] = useState({ isOpen: false });
+
+  useEffect(() => {
+    async function loadDetail() {
+      if (!id) return;
+      const data = await adminService.getVerificationById(id);
+      if (data) {
+        const rawStatus = (data.status || '').toLowerCase();
+        const displayStatus = (rawStatus === 'verified' || rawStatus === 'approved')
+          ? 'Approved'
+          : (rawStatus === 'rejected' ? 'Rejected' : 'Pending');
+
+        const prof = (data.skills && data.skills.length > 0)
+          ? data.skills.join(', ')
+          : (data.verification_type ? data.verification_type.toUpperCase() : 'General Service');
+
+        const firstDocUrl = data.submitted_documents
+          ? (Object.values(data.submitted_documents)[0] || 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&q=80&w=200')
+          : 'https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&q=80&w=200';
+
+        setRequest(prev => ({
+          ...prev,
+          id: data.id || data.verification_id || id,
+          workerId: data.worker_id || prev.workerId,
+          workerName: data.worker_name || prev.workerName,
+          phone: data.worker_phone || prev.phone,
+          email: data.worker_email || prev.email,
+          profession: prof,
+          status: displayStatus,
+          submittedDate: (data.submitted_at || data.created_at) ? (data.submitted_at || data.created_at).split('T')[0] : prev.submittedDate,
+          documentsCount: data.document_ids?.length || Object.keys(data.submitted_documents || {}).length || 1,
+          photo: firstDocUrl,
+          submitted_documents: data.submitted_documents || {},
+          metadata: data.metadata || {},
+          notes: data.notes || '',
+        }));
+      }
+    }
+    loadDetail();
+  }, [id]);
 
   // Handle document mark verified / issue toggle
   const handleMarkDoc = (docType, newStatus) => {
@@ -48,10 +89,23 @@ export default function VerificationReview() {
     }));
   };
 
-  const handleFinalDecision = (decisionStatus) => {
-    setRequest((prev) => ({ ...prev, status: decisionStatus }));
-    alert(`Verification decision set to: ${decisionStatus}`);
-    navigate('/admin/verifications');
+  const handleFinalDecision = async (decisionStatus) => {
+    setIsSubmitting(true);
+    try {
+      const targetAction = decisionStatus === 'Approved' ? 'verified' : (decisionStatus === 'Rejected' ? 'rejected' : 'resubmission_required');
+      const res = await adminService.reviewVerification(request.id, targetAction, adminNote);
+      if (res) {
+        setRequest((prev) => ({ ...prev, status: decisionStatus }));
+        alert(`Verification status updated to: ${decisionStatus}`);
+        navigate('/admin/verifications');
+      } else {
+        alert('Failed to update verification status. Check backend connection.');
+      }
+    } catch (e) {
+      alert(`Error updating verification: ${e.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleIssue = (issueText) => {

@@ -35,6 +35,7 @@ class WorkerDashboardResponse(BaseModel):
     availability: WorkerAvailability = Field(..., description="Current real-time availability")
     working_radius_km: float = Field(..., description="Current service radius in km")
     profile_completed: bool = Field(..., description="True if profile completion threshold met")
+    is_verified: bool = Field(default=False, description="True if worker verification is approved")
 
     stats: MarketplaceStatsDTO = Field(..., description="Marketplace statistics")
     applications_summary: ApplicationsSummaryDTO = Field(..., description="Applications summary breakdown")

@@ -61,7 +61,13 @@ class Settings(BaseSettings):
     # --- Server ---
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    ALLOWED_ORIGINS: list[str] = ["*"]
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
     TRUSTED_HOSTS: list[str] = ["*"]  # Restrict to your domain(s) in production
     GZIP_MINIMUM_SIZE: int = 500      # Compress responses larger than 500 bytes
     RATE_LIMIT_ENABLED: bool = False   # Enable when Redis backend is available

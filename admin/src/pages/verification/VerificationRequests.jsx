@@ -24,6 +24,7 @@ export default function VerificationRequests() {
 
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [professionFilter, setProfessionFilter] = useState('All');
@@ -31,24 +32,54 @@ export default function VerificationRequests() {
   useEffect(() => {
     async function loadVerifications() {
       setIsLoading(true);
-      const data = await adminService.getVerifications();
-      if (Array.isArray(data) && data.length > 0) {
-        const normalized = data.map(v => ({
-          id: v.verification_id || v.id,
-          workerId: v.worker_id,
-          workerName: v.worker_name || 'Worker User',
-          phone: v.worker_phone || 'N/A',
-          profession: 'Plumber & Electrician',
-          status: v.status === 'verified' ? 'Approved' : (v.status === 'rejected' ? 'Rejected' : 'Pending'),
-          submittedAt: v.created_at ? v.created_at.split('T')[0] : 'Recently',
-          documentsCount: Object.keys(v.submitted_documents || {}).length || 2,
-        }));
-        setRequests(normalized);
+      setApiError(null);
+      try {
+        const data = await adminService.getVerifications();
+        if (Array.isArray(data)) {
+          const normalized = data.map(v => {
+            const rawStatus = (v.status || '').toLowerCase();
+            const displayStatus = (rawStatus === 'verified' || rawStatus === 'approved')
+              ? 'Approved'
+              : (rawStatus === 'rejected' ? 'Rejected' : 'Pending');
+
+            const prof = (v.skills && v.skills.length > 0)
+              ? v.skills.join(', ')
+              : (v.verification_type ? v.verification_type.toUpperCase() : 'General Service');
+
+            const docCount = (v.document_ids && v.document_ids.length > 0)
+              ? v.document_ids.length
+              : Object.keys(v.submitted_documents || {}).length || 1;
+
+            const issues = Array.isArray(v.issuesFound) ? v.issuesFound : (Array.isArray(v.issues) ? v.issues : []);
+
+            return {
+              id: v.verification_id || v.id,
+              workerId: v.worker_id,
+              workerName: v.worker_name || 'Worker User',
+              phone: v.worker_phone || 'N/A',
+              profession: prof,
+              status: displayStatus,
+              submittedAt: (v.submitted_at || v.created_at) ? (v.submitted_at || v.created_at).split('T')[0] : 'Recently',
+              documentsCount: docCount,
+              issuesFound: issues,
+            };
+          });
+          setRequests(normalized);
+        } else {
+          setApiError('Unable to load verification requests from backend API.');
+        }
+      } catch (err) {
+        setApiError(err.message || 'Error connecting to backend API.');
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     loadVerifications();
   }, []);
+
+  const pendingCount = useMemo(() => requests.filter(r => r.status === 'Pending').length, [requests]);
+  const approvedCount = useMemo(() => requests.filter(r => r.status === 'Approved').length, [requests]);
+  const rejectedCount = useMemo(() => requests.filter(r => r.status === 'Rejected').length, [requests]);
 
   // Filter requests
   const filteredRequests = useMemo(() => {
@@ -76,11 +107,17 @@ export default function VerificationRequests() {
       subtitle="Review identity and professional verification requests."
     >
       <div className="space-y-6">
+        {apiError && (
+          <div className="p-4 rounded-xl bg-[#FEE2E2] border border-[#FCA5A5] flex items-center gap-3 text-xs font-bold text-[#991B1B]">
+            <AlertOctagon className="w-5 h-5 flex-shrink-0 text-[#DC2626]" />
+            <span>{apiError}</span>
+          </div>
+        )}
         {/* ── Summary Cards ────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Pending Requests"
-            value="72"
+            value={pendingCount.toString()}
             change="In Queue"
             changeType="warning"
             description="Requires admin review"
@@ -90,8 +127,8 @@ export default function VerificationRequests() {
           />
           <StatCard
             title="Approved Today"
-            value="18"
-            change="+12.5%"
+            value={approvedCount.toString()}
+            change="KYC Verified"
             changeType="positive"
             description="KYC verified"
             icon={CheckCircle2}
@@ -100,7 +137,7 @@ export default function VerificationRequests() {
           />
           <StatCard
             title="Rejected"
-            value="4"
+            value={rejectedCount.toString()}
             change="Actioned"
             changeType="danger"
             description="Failed verification"
@@ -246,7 +283,7 @@ export default function VerificationRequests() {
 
                       {/* Issues / Risk */}
                       <td className="py-3.5 px-4">
-                        {req.issuesFound.length > 0 ? (
+                        {(req.issuesFound || []).length > 0 ? (
                           <div className="flex flex-wrap gap-1">
                             {req.issuesFound.map((issue, idx) => (
                               <span

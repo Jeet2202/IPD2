@@ -23,8 +23,14 @@ class WorkerVerificationRepository:
 
     @staticmethod
     async def get_by_id(verification_id: str) -> WorkerVerification | None:
-        """Fetch verification by unique verification ID."""
-        return await WorkerVerification.find_one(WorkerVerification.verification_id == verification_id)
+        """Fetch verification by unique verification ID or MongoDB ObjectId or worker_id."""
+        from beanie import PydanticObjectId
+        v = await WorkerVerification.find_one(WorkerVerification.verification_id == verification_id)
+        if not v and PydanticObjectId.is_valid(verification_id):
+            v = await WorkerVerification.get(PydanticObjectId(verification_id))
+        if not v:
+            v = await WorkerVerification.find_one(WorkerVerification.worker_id == verification_id)
+        return v
 
     @staticmethod
     async def get_by_worker_and_type(

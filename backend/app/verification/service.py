@@ -299,7 +299,19 @@ class VerificationService:
         approved_count = sum(1 for s in type_statuses.values() if s == VerificationStatus.APPROVED)
         pending_count = sum(1 for s in type_statuses.values() if s in [VerificationStatus.SUBMITTED, VerificationStatus.UNDER_REVIEW])
 
-        if approved_count == len(VerificationType):
+        is_profile_verified = False
+        try:
+            from beanie import PydanticObjectId
+            if PydanticObjectId.is_valid(worker_id_str):
+                prof = await WorkerProfile.find_one(WorkerProfile.user_id == PydanticObjectId(worker_id_str))
+                if not prof:
+                    prof = await WorkerProfile.find_one(WorkerProfile.user_id == worker_id_str)
+                if prof:
+                    is_profile_verified = prof.is_verified
+        except Exception:
+            pass
+
+        if approved_count == len(VerificationType) or type_statuses.get(VerificationType.IDENTITY.value) == VerificationStatus.APPROVED or is_profile_verified:
             overall_status = VerificationStatus.APPROVED
         elif approved_count > 0:
             overall_status = VerificationStatus.UNDER_REVIEW
@@ -329,7 +341,7 @@ class VerificationService:
         new_document_ids: list[str] | None = None,
         notes: str | None = None,
     ) -> WorkerVerification:
-        """Resubmit a verification that was requested for resubmission."""
+        """Worker resubmits a rejected verification with updated documents."""
         worker_id_str = str(worker_id)
         verification = await WorkerVerificationRepository.get_by_id(verification_id)
 
@@ -369,17 +381,24 @@ class VerificationService:
             3. Update corresponding WorkerProfile.is_verified.
             4. Returns True if verified, False otherwise.
         """
+        from beanie import PydanticObjectId
         worker_id_str = str(worker_id)
         verifications = await WorkerVerificationRepository.list_by_worker(worker_id_str)
         is_verified = any(v.status == VerificationStatus.APPROVED for v in verifications)
 
         try:
+            profile = None
             if PydanticObjectId.is_valid(worker_id_str):
                 oid = PydanticObjectId(worker_id_str)
                 profile = await WorkerProfile.find_one(WorkerProfile.user_id == oid)
-                if profile:
-                    profile.is_verified = is_verified
-                    await profile.save()
+            if not profile:
+                profile = await WorkerProfile.find_one(WorkerProfile.user_id == worker_id_str)
+            if not profile and PydanticObjectId.is_valid(worker_id_str):
+                profile = await WorkerProfile.get(PydanticObjectId(worker_id_str))
+
+            if profile:
+                profile.is_verified = is_verified
+                await profile.save()
         except Exception as exc:
             logger.warning("Failed to sync worker profile verification status: %s", exc)
 
@@ -582,6 +601,9 @@ class ApprovalService:
                 actor=admin_user,
                 reason=f"Verification rejected: {verification.verification_type.value}",
             )
+
+        # 3. Synchronize WorkerProfile.is_verified
+        await VerificationService.sync_worker_verification_status(verification.worker_id)
 
         await AuditService.log_event(
             user_id=verification.worker_id,

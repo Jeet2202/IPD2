@@ -164,6 +164,18 @@ class AppTranslations {
       'professional_bio': 'Professional Bio',
       'service_area_location': 'Service Area & Location',
       'set_location_radius': 'Set your GPS location and job radius',
+      'loading_location': 'Loading location...',
+      'location_set': 'Location set',
+      'address': 'Address',
+      'location_not_set': 'Location not set',
+      'verification': 'Verification',
+      'not_verified': 'Not Verified',
+      'verification_pending': 'Pending',
+      'verification_under_review': 'Under Review',
+      'verification_rejected': 'Rejected',
+      'verification_required': 'Verification Required',
+      'verification_required_desc': 'You need to verify your worker account before you can receive or apply for bookings.',
+      'verify_now': 'Verify Now',
       'change_password': 'Change Password',
 
       // 10. Inspection Flow
