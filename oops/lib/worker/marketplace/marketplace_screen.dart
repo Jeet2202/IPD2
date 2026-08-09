@@ -127,6 +127,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
             ),
           );
         }
+        _loadMarketplaceBookings(isSilent: true);
       }
     } catch (e) {
       debugPrint('Location update failed: $e');

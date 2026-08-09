@@ -120,6 +120,12 @@ async def delete_worker_profile_photo(
     summary="Update worker current location",
     description="Update worker's real-time GPS location. Used by the app to enable geo-proximity job matching.",
 )
+@router.put(
+    "/profile/location",
+    response_model=WorkerProfileResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
 async def update_worker_location(
     payload: UpdateWorkerLocationRequest,
     user=Depends(_get_worker_user),

@@ -82,7 +82,7 @@ class MarketplaceRepository:
         # DB-Level Skill Filter & Category Slug intersection
         if category_slug and category_slug.strip():
             req_cat = category_slug.strip().lower()
-            if req_cat in clean_worker_skills:
+            if req_cat in clean_worker_skills or any(req_cat in s or s in req_cat for s in clean_worker_skills):
                 filters["service_snapshot.category_slug"] = req_cat
             else:
                 # Requested category is not within worker's registered skills
@@ -98,6 +98,7 @@ class MarketplaceRepository:
                 {"service_snapshot.name": regex_pat},
                 {"service_snapshot.category_slug": regex_pat},
                 {"problem_description": regex_pat},
+                {"custom_title": regex_pat},
             ]
 
         if booking_type:

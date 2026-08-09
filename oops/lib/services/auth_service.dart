@@ -221,7 +221,7 @@ class AuthService {
 
   /// Update worker real-time GPS location
   Future<Map<String, dynamic>> updateWorkerLocation(double latitude, double longitude) async {
-    final res = await ApiService.instance.put(
+    final res = await ApiService.instance.patch(
       ApiEndpoints.workerProfileLocation,
       {
         'latitude': latitude,
