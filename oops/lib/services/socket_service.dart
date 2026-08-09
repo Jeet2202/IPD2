@@ -124,17 +124,15 @@ class SocketService {
 
   // --- Phase 7.5: Live Location Tracking Helpers ---
 
-  void emitWorkerLocation(String bookingId, double lat, double lng, double distance, int etaMinutes) {
-    if (_socket != null && _isConnected) {
-      _socket!.emit('update_worker_location', {
-        'booking_id': bookingId,
-        'lat': lat,
-        'lng': lng,
-        'distance': distance,
-        'eta': etaMinutes,
-        'timestamp': DateTime.now().toIso8601String(),
-      });
-    }
+  void emitWorkerLocation(String bookingId, double lat, double lng, double distance, int eta) {
+    _socket?.emit('update_worker_location', {
+      'booking_id': bookingId,
+      'lat': lat,
+      'lng': lng,
+      'distance': distance,
+      'eta': eta,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
   }
 
   void onWorkerLocationUpdated(Function(dynamic) callback) {

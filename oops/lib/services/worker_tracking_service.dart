@@ -60,6 +60,16 @@ class WorkerTrackingService {
     }, onError: (e) {
       debugPrint("Location tracking error: $e");
     });
+    
+    // Fetch and send immediately so the customer's map updates instantly without waiting for movement
+    try {
+      final initialPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      await _sendLocationToBackend(initialPosition);
+    } catch (e) {
+      debugPrint("Failed to fetch initial location: $e");
+    }
   }
   
   Future<void> _sendLocationToBackend(Position position) async {

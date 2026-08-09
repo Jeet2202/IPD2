@@ -3,6 +3,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import '../l10n/app_translations.dart';
+import '../services/mapbox_directions_service.dart';
 
 class LiveTrackingMapWidget extends StatefulWidget {
   final double customerLat;
@@ -33,6 +34,8 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _workerAnnotation;
   PointAnnotation? _customerAnnotation;
+  PolylineAnnotationManager? _polylineAnnotationManager;
+  PolylineAnnotation? _routeAnnotation;
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
     _mapboxMap = mapboxMap;
     
     _pointAnnotationManager = await mapboxMap.annotations.createPointAnnotationManager();
+    _polylineAnnotationManager = await mapboxMap.annotations.createPolylineAnnotationManager();
 
     // Create Customer Annotation
     _customerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
@@ -73,7 +77,34 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
         _workerAnnotation!.geometry = point;
         _pointAnnotationManager!.update(_workerAnnotation!);
     }
+    _drawRoute(lat, lng);
     _fitCamera(lat, lng);
+  }
+
+  Future<void> _drawRoute(double workerLat, double workerLng) async {
+    if (_polylineAnnotationManager == null) return;
+    try {
+      final coords = await MapboxDirectionsService.instance.getRouteCoordinates(
+        workerLat, workerLng, widget.customerLat, widget.customerLng
+      );
+      if (coords.isEmpty) return;
+
+      final positions = coords.map((c) => Position(c[0], c[1])).toList();
+      final lineString = LineString(coordinates: positions);
+
+      if (_routeAnnotation == null) {
+        _routeAnnotation = await _polylineAnnotationManager!.create(PolylineAnnotationOptions(
+          geometry: lineString,
+          lineColor: 0xFF2563EB, // Blue color
+          lineWidth: 4.0,
+        ));
+      } else {
+        _routeAnnotation!.geometry = lineString;
+        _polylineAnnotationManager!.update(_routeAnnotation!);
+      }
+    } catch (e) {
+      debugPrint("Failed to draw route: $e");
+    }
   }
 
   void _fitCamera(double workerLat, double workerLng) {

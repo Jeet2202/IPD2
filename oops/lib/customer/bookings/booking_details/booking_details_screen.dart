@@ -76,10 +76,32 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       if (!mounted) return;
       if (_booking != null) {
         _fetchBookingById(_booking!.id, isSilentRefresh: true);
+        _fetchLiveLocation(_booking!.id);
       } else if (widget.bookingId != null) {
         _fetchBookingById(widget.bookingId!, isSilentRefresh: true);
       }
     });
+  }
+
+  Future<void> _fetchLiveLocation(String bookingId) async {
+    try {
+      final res = await ApiService.instance.get('/tracking/$bookingId');
+      if (!mounted) return;
+      if (res != null && res['worker_location'] != null) {
+        setState(() {
+          _workerLat = (res['worker_location']['latitude'] as num?)?.toDouble();
+          _workerLng = (res['worker_location']['longitude'] as num?)?.toDouble();
+          if (res['last_updated_at'] != null) {
+            final dt = DateTime.tryParse(res['last_updated_at']);
+            if (dt != null) {
+              _lastUpdated = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+            }
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Polling live location failed: $e");
+    }
   }
 
   Future<void> _onRazorpaySuccess() async {
@@ -171,6 +193,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     _socketService.joinBookingTracking(_booking!.id);
     _socketService.onBookingStatusUpdated(_onBookingStatusUpdated);
     _socketService.onWorkerLocationUpdated(_onWorkerLocationUpdated);
+    _fetchLiveLocation(_booking!.id);
   }
 
   void _onWorkerLocationUpdated(dynamic data) {
