@@ -15,6 +15,7 @@ Endpoints:
 import logging
 
 from fastapi import APIRouter, Query, status
+from pydantic import BaseModel, Field
 
 from datetime import date, datetime
 
@@ -519,4 +520,42 @@ async def accept_booking_applicant(
     """Accept worker applicant for a booking owned by the authenticated customer."""
     app_service = JobApplicationService()
     return await app_service.accept_applicant_for_customer(current_user, booking_id, application_id)
+
+
+# ---------------------------------------------------------------------------
+# Booking Cancellation Endpoint
+# ---------------------------------------------------------------------------
+
+class CancelBookingRequest(BaseModel):
+    reason: str | None = Field(default=None, description="Optional cancellation reason")
+
+
+@router.post(
+    "/bookings/{booking_id}/cancel",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Cancel a booking",
+    description="Cancel a booking if it is in an eligible state.",
+)
+@router.post(
+    "/customer/bookings/{booking_id}/cancel",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+@router.put(
+    "/bookings/{booking_id}/cancel",
+    response_model=BookingResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def cancel_booking(
+    booking_id: str,
+    payload: CancelBookingRequest | None = None,
+    current_user: ActiveUserDep = None,
+) -> BookingResponse:
+    """Cancel a booking."""
+    reason = payload.reason if payload else None
+    return await BookingService.cancel_booking(user=current_user, booking_id=booking_id, reason=reason)
+
 

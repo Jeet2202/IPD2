@@ -1239,6 +1239,12 @@ class BookingService:
 
         cls.validate_booking_mutable(booking)
 
+        if user.role == "customer" and (booking.status in (BookingStatus.ACCEPTED, BookingStatus.ASSIGNED) or booking.worker_id is not None):
+            raise BadRequestException(
+                message="Cannot cancel booking after accepting a quotation or worker assignment.",
+                error_code="QUOTATION_ALREADY_ACCEPTED",
+            )
+
         if booking.status not in BookingLifecycleConfig.CANCELLATION_ALLOWED_STATUSES:
             raise BadRequestException(
                 message=f"Cannot cancel booking in current status '{booking.status.value}'.",

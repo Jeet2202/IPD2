@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../models/booking_model.dart';
 import '../../../models/review_model.dart';
@@ -600,6 +601,11 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
                             SizedBox(height: 20),
 
+                            // ── Cancel Booking Card (If Pending & Unassigned) ──
+                            _buildCancelBookingCard(),
+
+                            SizedBox(height: 20),
+
                             // ── Timeline Audit Log ──────────────────────────
                             if (_booking!.timeline.isNotEmpty) ...[
                               BookingTimelineWidget(events: _booking!.timeline),
@@ -996,6 +1002,55 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               Text('estimated_duration'.tr(context), style: TextStyle(fontSize: 13)),
               Text('${svc.estimatedDurationMinutes} mins', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCancelBookingCard() {
+    if (_booking == null) return const SizedBox.shrink();
+    final canCancel = (_booking!.status.toLowerCase() == 'pending' || _booking!.status.toLowerCase() == 'requested') && _booking!.workerId == null;
+    if (!canCancel) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF2F2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFFCA5A5)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Need to cancel?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF991B1B))),
+              SizedBox(height: 2),
+              Text('You can cancel before worker assignment', style: TextStyle(fontSize: 11, color: Color(0xFFB91C1C))),
+            ],
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              final result = await Navigator.pushNamed(
+                context,
+                AppRoutes.cancelBooking,
+                arguments: {'booking_id': _booking!.id},
+              );
+              if (result == true) {
+                _fetchBookingById(_booking!.id);
+              }
+            },
+            icon: const Icon(Icons.delete_outline_rounded, size: 16),
+            label: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
           ),
         ],
       ),
