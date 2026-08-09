@@ -160,6 +160,28 @@ class BookingTimelineEvent(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Tracking State Schema (Phase 5.0)
+# ---------------------------------------------------------------------------
+
+class LocationCoordinates(BaseModel):
+    """Simple lat/lng pair for tracking."""
+    latitude: float
+    longitude: float
+
+
+class BookingTrackingState(BaseModel):
+    """
+    Embedded tracking state for live worker movement.
+    Maintained inside the Booking document.
+    """
+    is_active: bool = Field(default=False, description="True when worker has started travel but not arrived.")
+    worker_location: LocationCoordinates | None = Field(default=None, description="Latest known GPS coordinates.")
+    started_at: datetime | None = Field(default=None, description="When travel was started.")
+    last_updated_at: datetime | None = Field(default=None, description="When the last GPS point was received.")
+    arrived_at: datetime | None = Field(default=None, description="When the worker arrived at the destination.")
+
+
+# ---------------------------------------------------------------------------
 # Booking Document
 # ---------------------------------------------------------------------------
 
@@ -399,6 +421,12 @@ class Booking(Document):
         default=None,
         description="Timestamp when worker arrived at location.",
     )
+    worker_notes: str | None = Field(
+        default=None,
+        max_length=1000,
+        description="Internal notes or comments added by the worker during the job.",
+        examples=["Customer requested extra material."],
+    )
     completion_notes: str | None = Field(
         default=None,
         max_length=1000,
@@ -433,7 +461,12 @@ class Booking(Document):
         description="Last update timestamp (UTC, auto-updated)",
     )
 
-    # ── Settings ─────────────────────────────────────────────────────────────
+    tracking: BookingTrackingState = Field(
+        default_factory=BookingTrackingState,
+        description="Live tracking state and latest location of the assigned worker.",
+    )
+
+    # ⚙️ Settings ⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️
 
     class Settings:
         name = "bookings"

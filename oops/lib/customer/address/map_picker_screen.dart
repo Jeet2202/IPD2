@@ -1,36 +1,21 @@
 // File: lib/customer/address/map_picker_screen.dart
-//
-// Phase 4.3.3 — OpenStreetMap location picker.
-//
-// Uses flutter_map + OpenStreetMap tiles (no API key).
-// Returns LatLng + ReverseGeocodeResult to caller via Navigator.pop().
-//
-// Features:
-//   • OSM map with tile caching
-//   • Draggable center marker (moves with map pan)
-//   • Tap-to-place marker
-//   • Current Location button
-//   • Reverse geocode address preview
-//   • Confirm button returns selected location to AddEditAddressScreen
-
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart' as ll;
 
 import '../../services/location_service.dart';
 import '../../l10n/app_translations.dart';
 
-/// Result returned by [MapPickerScreen] via Navigator.pop().
 class MapPickerResult {
-  final LatLng location;
+  final ll.LatLng location;
   final ReverseGeocodeResult address;
 
   const MapPickerResult({required this.location, required this.address});
 }
 
 class MapPickerScreen extends StatefulWidget {
-  /// Initial center of the map. Defaults to India center if null.
-  final LatLng? initialLocation;
+  final ll.LatLng? initialLocation;
 
   const MapPickerScreen({super.key, this.initialLocation});
 
@@ -39,41 +24,59 @@ class MapPickerScreen extends StatefulWidget {
 }
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
-  // ── Palette ───────────────────────────────────────────────────────────────
   static const _blue = Color(0xFF2563EB);
   static const _darkText = Color(0xFF0F172A);
   static const _mutedText = Color(0xFF64748B);
   static const _border = Color(0xFFE2E8F0);
 
-  // ── Default center: India (Mumbai) ────────────────────────────────────────
-  static const _defaultCenter = LatLng(19.0760, 72.8777);
+  static const _defaultCenter = ll.LatLng(19.0760, 72.8777);
 
-  late MapController _mapController;
-  late LatLng _selectedLocation;
+  MapboxMap? _mapboxMap;
+  late ll.LatLng _selectedLocation;
 
   bool _isGeocodingLoading = false;
   bool _isLocatingGps = false;
   String? _previewAddress;
 
-  // Debounce geocoding after map movement
   DateTime _lastGeocode = DateTime(0);
+  double _currentZoom = 15.0;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
     _selectedLocation = widget.initialLocation ?? _defaultCenter;
-    // Geocode initial position
+    final token = dotenv.env['MAPBOX_PUBLIC_TOKEN'] ?? 'YOUR_MAPBOX_PUBLIC_TOKEN_HERE';
+    MapboxOptions.setAccessToken(token);
     _geocodeSelected();
   }
 
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
+  void _onMapCreated(MapboxMap mapboxMap) {
+    _mapboxMap = mapboxMap;
   }
 
-  // ── GPS ───────────────────────────────────────────────────────────────────
+  Future<void> _fetchCenterAndGeocode() async {
+    if (_mapboxMap == null) return;
+    try {
+      final cameraState = await _mapboxMap!.getCameraState();
+      
+      // Parse GeoJSON Point map to get coordinates
+      final centerMap = cameraState.center;
+      if (centerMap != null && centerMap is Map) {
+          final coordinates = centerMap['coordinates'] as List;
+          final lng = (coordinates[0] as num).toDouble();
+          final lat = (coordinates[1] as num).toDouble();
+          
+          setState(() {
+            _selectedLocation = ll.LatLng(lat, lng);
+            _currentZoom = (cameraState.zoom as num).toDouble();
+          });
+          
+          _geocodeSelected();
+      }
+    } catch (e) {
+      debugPrint("Error fetching map center: $e");
+    }
+  }
 
   Future<void> _goToCurrentLocation() async {
     setState(() {
@@ -85,14 +88,16 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       if (!mounted) return;
 
       setState(() {
-        _selectedLocation = loc;
+        _selectedLocation = ll.LatLng(loc.latitude, loc.longitude);
         _isLocatingGps = false;
       });
 
-      _mapController.move(
-        ll.LatLng(loc.latitude, loc.longitude),
-        16.0,
-      );
+      if (_mapboxMap != null) {
+        _mapboxMap!.setCamera(CameraOptions(
+            center: Point(coordinates: Position(loc.longitude, loc.latitude)).toJson(),
+            zoom: 16.0,
+        ));
+      }
       await _geocodeSelected();
     } on LocationException catch (e) {
       if (!mounted) return;
@@ -108,10 +113,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     }
   }
 
-  // ── Geocoding ─────────────────────────────────────────────────────────────
-
   Future<void> _geocodeSelected() async {
-    // Debounce: don't geocode more than once every 1.5 seconds
     final now = DateTime.now();
     if (now.difference(_lastGeocode).inMilliseconds < 1500) return;
     _lastGeocode = now;
@@ -136,41 +138,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     });
   }
 
-  // ── Map Event Handlers ────────────────────────────────────────────────────
-
-  void _onMapMoved(MapCamera camera, bool hasGesture) {
-    if (!hasGesture) return;
-    setState(() {
-      _selectedLocation = LatLng(
-        camera.center.latitude,
-        camera.center.longitude,
-      );
-    });
-    _geocodeSelected();
-  }
-
-  void _onMapTap(TapPosition tapPos, ll.LatLng latlng) {
-    setState(() {
-      _selectedLocation = LatLng(latlng.latitude, latlng.longitude);
-    });
-    _mapController.move(latlng, _mapController.camera.zoom);
-    _geocodeSelected();
-  }
-
-  // ── Confirm ───────────────────────────────────────────────────────────────
-
   Future<void> _confirm() async {
-    // Get final geocode result
     final result = await LocationService.instance.reverseGeocode(_selectedLocation);
-
     if (!mounted) return;
     Navigator.pop(
       context,
       MapPickerResult(location: _selectedLocation, address: result),
     );
   }
-
-  // ── Error Handling ────────────────────────────────────────────────────────
 
   String _friendlyLocationError(LocationException e) {
     switch (e.code) {
@@ -199,27 +174,27 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         icon: Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFEF2F2),
+          padding: const EdgeInsets.all(12),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFEF2F2),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.location_off_rounded, color: Color(0xFFDC2626), size: 28),
+          child: const Icon(Icons.location_off_rounded, color: Color(0xFFDC2626), size: 28),
         ),
         title: Text(
           isDisabled ? 'GPS Disabled' : 'Location Permission',
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.w800),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         content: Text(
           _friendlyLocationError(e),
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: _mutedText),
+          style: const TextStyle(fontSize: 14, color: _mutedText),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('cancel'.tr(context), style: TextStyle(color: _mutedText)),
+            child: Text('cancel'.tr(context), style: const TextStyle(color: _mutedText)),
           ),
           if (isPermanent)
             ElevatedButton(
@@ -252,20 +227,33 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     );
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
+  void _zoomIn() {
+    if (_mapboxMap != null) {
+      _currentZoom = (_currentZoom + 1).clamp(4.0, 19.0);
+      _mapboxMap!.setCamera(CameraOptions(zoom: _currentZoom));
+    }
+  }
+
+  void _zoomOut() {
+    if (_mapboxMap != null) {
+      _currentZoom = (_currentZoom - 1).clamp(4.0, 19.0);
+      _mapboxMap!.setCamera(CameraOptions(zoom: _currentZoom));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(        elevation: 0,
+      appBar: AppBar(
+        elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: _darkText),
+          icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('select_location'.tr(context),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _darkText),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -275,37 +263,23 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       ),
       body: Stack(
         children: [
-          // ── OpenStreetMap ────────────────────────────────────────────
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: ll.LatLng(
-                _selectedLocation.latitude,
-                _selectedLocation.longitude,
-              ),
-              initialZoom: 15.0,
-              minZoom: 4.0,
-              maxZoom: 19.0,
-              onMapEvent: (event) {
-                if (event is MapEventMoveEnd) {
-                  _onMapMoved(event.camera, event.source != MapEventSource.nonRotatedSizeChange);
-                }
-              },
-              onTap: _onMapTap,
+          // ── Mapbox Map ────────────────────────────────────────────
+          MapWidget(
+            onMapCreated: _onMapCreated,
+            cameraOptions: CameraOptions(
+                center: Point(coordinates: Position(
+                    _selectedLocation.longitude, 
+                    _selectedLocation.latitude
+                )).toJson(),
+                zoom: _currentZoom,
             ),
-            children: [
-              // OSM Tile Layer — free, no API key
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.ally.app',
-                maxZoom: 19,
-                // Tile provider uses default caching
-              ),
-            ],
+            onCameraChangeListener: (CameraChangedEventData event) {
+                _fetchCenterAndGeocode();
+            },
           ),
 
           // ── Center Marker (always points at selected location) ───────
-          Center(
+          const Center(
             child: Padding(
               padding: EdgeInsets.only(bottom: 40), // offset for pin drop effect
               child: _MapMarker(),
@@ -326,7 +300,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           Positioned(
             right: 16,
             bottom: 280,
-            child: _ZoomControls(mapController: _mapController),
+            child: _ZoomControls(
+              onZoomIn: _zoomIn,
+              onZoomOut: _zoomOut,
+            ),
           ),
 
           // ── Bottom Address Preview + Confirm ─────────────────────────
@@ -345,10 +322,6 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     );
   }
 }
-
-// ══════════════════════════════════════════════════════════════════════════════
-// Map Marker Widget
-// ══════════════════════════════════════════════════════════════════════════════
 
 class _MapMarker extends StatelessWidget {
   const _MapMarker();
@@ -373,7 +346,7 @@ class _MapMarker extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(Icons.location_on_rounded, color: Colors.white, size: 24),
+          child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 24),
         ),
         // Drop shadow triangle
         CustomPaint(
@@ -403,10 +376,6 @@ class _MarkerTrianglePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Location FAB
-// ══════════════════════════════════════════════════════════════════════════════
-
 class _LocationFab extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onPressed;
@@ -417,11 +386,12 @@ class _LocationFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       heroTag: 'map_location_fab',
-      mini: true,      foregroundColor: const Color(0xFF2563EB),
+      mini: true,
+      foregroundColor: const Color(0xFF2563EB),
       elevation: 4,
       onPressed: isLoading ? null : onPressed,
       child: isLoading
-          ? SizedBox(
+          ? const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
@@ -429,19 +399,16 @@ class _LocationFab extends StatelessWidget {
                 color: Color(0xFF2563EB),
               ),
             )
-          : Icon(Icons.my_location_rounded, size: 22),
+          : const Icon(Icons.my_location_rounded, size: 22),
     );
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Zoom Controls
-// ══════════════════════════════════════════════════════════════════════════════
-
 class _ZoomControls extends StatelessWidget {
-  final MapController mapController;
+  final VoidCallback onZoomIn;
+  final VoidCallback onZoomOut;
 
-  const _ZoomControls({required this.mapController});
+  const _ZoomControls({required this.onZoomIn, required this.onZoomOut});
 
   @override
   Widget build(BuildContext context) {
@@ -449,18 +416,12 @@ class _ZoomControls extends StatelessWidget {
       children: [
         _ZoomBtn(
           icon: Icons.add,
-          onPressed: () {
-            final zoom = mapController.camera.zoom + 1;
-            mapController.move(mapController.camera.center, zoom.clamp(4.0, 19.0));
-          },
+          onPressed: onZoomIn,
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         _ZoomBtn(
           icon: Icons.remove,
-          onPressed: () {
-            final zoom = mapController.camera.zoom - 1;
-            mapController.move(mapController.camera.center, zoom.clamp(4.0, 19.0));
-          },
+          onPressed: onZoomOut,
         ),
       ],
     );
@@ -497,10 +458,6 @@ class _ZoomBtn extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Bottom Panel
-// ══════════════════════════════════════════════════════════════════════════════
-
 class _BottomPanel extends StatelessWidget {
   final bool isLoading;
   final String? address;
@@ -515,7 +472,7 @@ class _BottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -542,14 +499,14 @@ class _BottomPanel extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           Row(
             children: [
-              Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 18),
+              const SizedBox(width: 8),
               Text('selected_location'.tr(context),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF64748B),
@@ -559,12 +516,12 @@ class _BottomPanel extends StatelessWidget {
             ],
           ),
 
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           if (isLoading)
             Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 14,
                   height: 14,
                   child: CircularProgressIndicator(
@@ -572,16 +529,16 @@ class _BottomPanel extends StatelessWidget {
                     color: Color(0xFF2563EB),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text('fetching_address'.tr(context),
-                  style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                  style: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
                 ),
               ],
             )
           else
             Text(
               address ?? 'Move the map to select a location',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF0F172A),
@@ -591,16 +548,16 @@ class _BottomPanel extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           SizedBox(
             width: double.infinity,
             height: 52,
             child: ElevatedButton.icon(
               onPressed: onConfirm,
-              icon: Icon(Icons.check_circle_outline_rounded, size: 20),
+              icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
               label: Text('confirm_this_location'.tr(context),
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),

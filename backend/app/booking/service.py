@@ -729,8 +729,12 @@ class BookingService:
             booking.assigned_at = now_utc
         elif new_status == BookingStatus.WORKER_EN_ROUTE and not booking.en_route_at:
             booking.en_route_at = now_utc
+            booking.tracking.is_active = True
+            booking.tracking.started_at = now_utc
         elif new_status == BookingStatus.ARRIVED and not booking.arrived_at:
             booking.arrived_at = now_utc
+            booking.tracking.is_active = False
+            booking.tracking.arrived_at = now_utc
         elif new_status == BookingStatus.IN_PROGRESS and not booking.started_at:
             booking.started_at = now_utc
         elif new_status in (BookingStatus.WORK_COMPLETED, BookingStatus.CUSTOMER_CONFIRMED, BookingStatus.COMPLETED) and not booking.completed_at:
@@ -1320,6 +1324,61 @@ class BookingService:
             for m in messages
         ]
         return ChatMessageListResponse(messages=dtos)
+
+
+    @classmethod
+    async def update_worker_location(
+        cls, worker_user: User, booking_id: str, latitude: float, longitude: float
+    ) -> None:
+        """
+        Updates the live tracking coordinates for an active booking.
+        Emits socket event to booking tracking room.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+
+        booking = await BookingRepository.get_by_id(booking_id)
+        if booking is None:
+            raise NotFoundException(
+                message="Booking not found.",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Worker role guard
+        if worker_user.role not in ("worker", "admin"):
+            raise ForbiddenException(
+                message="Only workers can update their location.",
+                error_code="WORKER_ROLE_REQUIRED",
+            )
+
+        # Check worker assignment
+        is_assigned_worker = (
+            booking.worker_id is not None
+            and str(booking.worker_id) == str(worker_user.id)
+        )
+        if not is_assigned_worker and worker_user.role != "admin":
+            raise ForbiddenException(
+                message="You are not authorized to update location for a booking assigned to another worker.",
+                error_code="UNAUTHORIZED_WORKER",
+            )
+
+        # Check if tracking is active
+        if not booking.tracking.is_active:
+            raise BadRequestException(
+                message="Tracking is not currently active for this booking.",
+                error_code="TRACKING_NOT_ACTIVE",
+            )
+
+        # Update tracking state
+        from app.booking.models import LocationCoordinates
+        now_utc = datetime.now(timezone.utc)
+        booking.tracking.worker_location = LocationCoordinates(latitude=latitude, longitude=longitude)
+        booking.tracking.last_updated_at = now_utc
+        
+        await booking.save()
 
 
 
