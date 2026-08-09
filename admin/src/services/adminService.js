@@ -60,6 +60,20 @@ export const adminService = {
     return null;
   },
 
+  async updateWorkerProfile(id, payload) {
+    const res = await fetch(`${API_BASE_URL}/admin/workers/${id}/profile`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Failed to update worker profile' }));
+      const msg = typeof err.detail === 'string' ? err.detail : (err.detail?.message || err.message || 'Failed to update worker profile');
+      throw new Error(msg);
+    }
+    return await res.json();
+  },
+
   async getVerifications() {
     try {
       const res = await fetch(`${API_BASE_URL}/admin/verifications`, { headers: getAuthHeaders() });

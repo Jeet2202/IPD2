@@ -69,6 +69,7 @@ class StandardBookingHandler(BaseBookingHandler):
             name=service.name,
             category_id=service.category_id,
             category_slug=service.category_slug,
+            required_skills=list(service.required_skills or []),
             base_market_price=service.base_market_price,
             estimated_duration_minutes=service.estimated_duration_minutes,
             is_inspection_required=service.is_inspection_required,
@@ -95,6 +96,7 @@ class CustomBookingHandler(BaseBookingHandler):
             name=payload.custom_title or f"Custom {category_name} Work",
             category_id="custom",
             category_slug=category_slug,
+            required_skills=[],
             base_market_price=payload.custom_budget or 0.0,
             estimated_duration_minutes=60,
             is_inspection_required=False,
@@ -122,6 +124,7 @@ class InspectionBookingHandler(BaseBookingHandler):
         
         # If a service_id was provided optionally, try to resolve its category
         service_name = "Site Inspection & Diagnostics"
+        required_skills: list[str] = []
         if payload.service_id:
             try:
                 s_oid = PydanticObjectId(payload.service_id)
@@ -129,6 +132,7 @@ class InspectionBookingHandler(BaseBookingHandler):
                 if s:
                     category_slug = s.category_slug
                     service_name = f"Inspection: {s.name}"
+                    required_skills = list(s.required_skills or [])
             except Exception:
                 pass
         else:
@@ -140,6 +144,7 @@ class InspectionBookingHandler(BaseBookingHandler):
             name=service_name,
             category_id="inspection",
             category_slug=category_slug,
+            required_skills=required_skills,
             base_market_price=0.0,
             estimated_duration_minutes=30,
             is_inspection_required=True,

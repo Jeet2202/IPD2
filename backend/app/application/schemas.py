@@ -59,3 +59,35 @@ class JobApplicationPaginatedResponse(BaseModel):
     page: int = Field(..., description="Current page number (1-indexed)")
     page_size: int = Field(..., description="Items per page")
     total_pages: int = Field(..., description="Total available pages")
+
+
+class CustomerApplicantItemResponse(BaseModel):
+    """
+    Customer-facing applicant DTO representing a worker who applied for a customer's booking.
+    """
+
+    application_id: str = Field(..., description="Job application ObjectId string")
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    worker_id: str = Field(..., description="Worker user ObjectId string")
+    worker_name: str = Field(..., description="Worker full name")
+    worker_phone: str | None = Field(default=None, description="Worker contact phone number")
+    worker_avatar_url: str | None = Field(default=None, description="Worker profile image URL")
+    worker_skills: list[str] = Field(default_factory=list, description="Worker registered domain skills")
+    working_radius_km: float = Field(default=10.0, description="Worker operating radius (km)")
+    cover_letter: str | None = Field(default=None, description="Optional worker message / cover letter")
+    proposed_price: float | None = Field(default=None, description="Optional proposed price")
+    application_status: ApplicationStatus = Field(..., description="Application status (PENDING, ACCEPTED, REJECTED, WITHDRAWN)")
+    applied_at: datetime = Field(..., description="Application submission timestamp (UTC)")
+
+
+class CustomerApplicantListResponse(BaseModel):
+    """
+    Response DTO listing all applicants for a customer's booking.
+    """
+
+    booking_id: str = Field(..., description="Booking ObjectId string")
+    booking_number: str = Field(..., description="Booking reference number")
+    booking_status: BookingStatus = Field(..., description="Current booking status")
+    applicant_count: int = Field(..., description="Total applicants count")
+    applicants: list[CustomerApplicantItemResponse] = Field(..., description="List of applicants for this booking")
+

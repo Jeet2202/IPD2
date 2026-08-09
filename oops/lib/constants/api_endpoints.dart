@@ -45,6 +45,9 @@ class ApiEndpoints {
   // ── Worker ────────────────────────────────────────────
   static const String workerProfile      = '/worker/profile';
   static const String workerProfilePhoto = '/worker/profile/photo';
+  static const String workerProfileLocation = '/worker/profile/location';
+  static const String workerValidSkills  = '/worker/valid-skills';
+  static const String workerMarketplace  = '/worker/marketplace';
   static const String workerJobs         = '/worker/jobs';
   static const String workerEarnings  = '/worker/earnings';
   static const String workerKyc       = '/worker/kyc';

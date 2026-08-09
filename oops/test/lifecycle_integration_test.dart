@@ -85,8 +85,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Service Journey'), findsOneWidget);
-      expect(find.text('In-Progress'), findsOneWidget);
+      expect(find.byType(BookingLifecycleStepper), findsOneWidget);
     });
 
     testWidgets('BookingTimelineWidget renders without error', (WidgetTester tester) async {

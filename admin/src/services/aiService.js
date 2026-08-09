@@ -43,7 +43,7 @@ export const aiSearch = {
   query: (payload) =>
     request('/search', { method: 'POST', body: JSON.stringify(payload) }),
   suggestions: (q) => request(`/search/suggestions?q=${encodeURIComponent(q)}`),
-  trending: () => request('/search/trending'),
+  trending: () => request('/search/trending').catch(() => []),
   history: () => request('/search/history'),
   clearHistory: () => request('/search/history', { method: 'DELETE' }),
 };

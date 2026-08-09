@@ -70,6 +70,8 @@ class WorkerProfileResponse(BaseModel):
 
     profile_completion_percentage: int = Field(..., ge=0, le=100, description="Calculated completion percentage (0-100)")
     profile_completed: bool = Field(default=False, description="True if completion threshold (>= 70%) is reached")
+    is_verified: bool = Field(default=False, description="True if worker identity or profile verification has been approved")
 
+    current_location_updated_at: datetime | None = Field(default=None, description="Timestamp when current GPS location was last updated (UTC)")
     created_at: datetime
     updated_at: datetime

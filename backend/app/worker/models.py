@@ -32,6 +32,10 @@ class WorkerProfile(Document):
         default=None,
         description="Worker real-time GeoJSON Point location. Enables geospatial proximity queries.",
     )
+    current_location_updated_at: datetime | None = Field(
+        default=None,
+        description="Timestamp when current GPS location was last updated (UTC)",
+    )
     availability: WorkerAvailability = Field(default=WorkerAvailability.AVAILABLE, description="Real-time availability status")
     hourly_rate: float | None = Field(default=None, ge=0.0, le=50000.0, description="Base rate in INR")
     rating: float = Field(default=0.0, ge=0.0, le=5.0, description="Average customer rating")
@@ -49,6 +53,7 @@ class WorkerProfile(Document):
     recommendation_percentage: float = Field(default=0.0, ge=0.0, le=100.0, description="Percentage of customers who would recommend")
     would_recommend_count: int = Field(default=0, ge=0, description="Total count of positive recommendations")
     profile_completed: bool = Field(default=False, description="True if profile completion threshold is reached")
+    is_verified: bool = Field(default=False, description="True if worker identity or profile verification has been approved")
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

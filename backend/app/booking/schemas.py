@@ -52,6 +52,7 @@ class ServiceSnapshotResponse(BaseModel):
     name: str
     category_id: str
     category_slug: str
+    required_skills: list[str] = Field(default_factory=list, description="Required trade skills copied at booking creation time")
     base_market_price: float
     estimated_duration_minutes: int
     is_inspection_required: bool

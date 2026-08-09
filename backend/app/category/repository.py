@@ -113,3 +113,12 @@ class CategoryRepository:
             if found:
                 return True
         return False
+
+    @staticmethod
+    async def get_active_category_slugs() -> list[str]:
+        """Fetch list of all active ServiceCategory slugs from MongoDB."""
+        try:
+            categories = await CategoryRepository.list_categories(include_inactive=False)
+            return [c.slug for c in categories if getattr(c, "slug", None)]
+        except Exception:
+            return []

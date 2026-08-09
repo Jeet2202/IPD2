@@ -209,6 +209,28 @@ class AuthService {
     return res;
   }
 
+  /// Fetch valid canonical category skills for workers
+  Future<List<String>> getValidSkills() async {
+    final res = await ApiService.instance.get(ApiEndpoints.workerValidSkills);
+    final rawList = res['skills'] as List?;
+    if (rawList != null && rawList.isNotEmpty) {
+      return rawList.map((e) => e.toString().trim().toLowerCase()).toList();
+    }
+    return [];
+  }
+
+  /// Update worker real-time GPS location
+  Future<Map<String, dynamic>> updateWorkerLocation(double latitude, double longitude) async {
+    final res = await ApiService.instance.put(
+      ApiEndpoints.workerProfileLocation,
+      {
+        'latitude': latitude,
+        'longitude': longitude,
+      },
+    );
+    return res;
+  }
+
   /// Fetch worker profile data
   Future<Map<String, dynamic>> fetchWorkerProfile() async {
     final res = await ApiService.instance.get(ApiEndpoints.workerProfile);

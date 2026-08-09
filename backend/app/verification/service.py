@@ -6,11 +6,13 @@ from datetime import datetime, timezone
 import logging
 from typing import Any
 
+from beanie import PydanticObjectId
 from app.core.exceptions import BadRequestException, NotFoundException, UnauthorizedException
 from app.trust.schemas import AuditEventType, RiskEventType, RiskLevel
 from app.trust.service import AuditService, RiskService, TrustService
 from app.uploads.service import CloudinaryService
 from app.utils.enums import UserRole
+from app.worker.models import WorkerProfile
 from app.verification.models import (
     VerificationBadge,
     VerificationDocument,
@@ -356,6 +358,33 @@ class VerificationService:
         )
         return updated
 
+    @staticmethod
+    async def sync_worker_verification_status(worker_id: str | PydanticObjectId) -> bool:
+        """
+        Synchronize WorkerProfile.is_verified with WorkerVerification collection state.
+
+        Rules:
+            1. Query all WorkerVerification documents for worker_id.
+            2. Worker is verified if ANY WorkerVerification has status == APPROVED.
+            3. Update corresponding WorkerProfile.is_verified.
+            4. Returns True if verified, False otherwise.
+        """
+        worker_id_str = str(worker_id)
+        verifications = await WorkerVerificationRepository.list_by_worker(worker_id_str)
+        is_verified = any(v.status == VerificationStatus.APPROVED for v in verifications)
+
+        try:
+            if PydanticObjectId.is_valid(worker_id_str):
+                oid = PydanticObjectId(worker_id_str)
+                profile = await WorkerProfile.find_one(WorkerProfile.user_id == oid)
+                if profile:
+                    profile.is_verified = is_verified
+                    await profile.save()
+        except Exception as exc:
+            logger.warning("Failed to sync worker profile verification status: %s", exc)
+
+        return is_verified
+
 
 # ---------------------------------------------------------------------------
 # Approval Service
@@ -478,6 +507,9 @@ class ApprovalService:
                     badge_type=b,
                     actor=admin_user,
                 )
+
+        # 3. Synchronize WorkerProfile.is_verified = True
+        await VerificationService.sync_worker_verification_status(verification.worker_id)
 
         await AuditService.log_event(
             user_id=verification.worker_id,

@@ -112,6 +112,10 @@ class ServiceSnapshot(BaseModel):
     category_slug: str = Field(..., description="Denormalized category slug")
     base_market_price: float = Field(..., description="Base price at booking time (INR)")
     estimated_duration_minutes: int = Field(..., description="Expected duration at booking time (minutes)")
+    required_skills: list[str] = Field(
+        default_factory=list,
+        description="Required trade skills copied at booking creation time",
+    )
     is_inspection_required: bool = Field(
         default=False,
         description="Whether an inspection was required for this service at booking time",
@@ -446,6 +450,7 @@ class Booking(Document):
             ),
             IndexModel([("service_location", "2dsphere")], name="service_location_2dsphere"),
             IndexModel([("service_snapshot.service_id", ASCENDING), ("status", ASCENDING)], name="service_status_idx"),
+            IndexModel([("service_snapshot.category_slug", ASCENDING), ("status", ASCENDING)], name="idx_category_slug_status"),
         ]
 
 # ---------------------------------------------------------------------------

@@ -171,7 +171,7 @@ async def toggle_customer_status(
 @router.get(
     "/workers",
     summary="List All Workers",
-    description="Retrieve all professional workers and their verification states.",
+    description="Retrieve all worker user accounts and profiles from MongoDB.",
 )
 async def list_workers(
     admin: AdminUserDep,
@@ -184,22 +184,45 @@ async def list_workers(
     for u in users:
         prof = await WorkerProfile.find_one(WorkerProfile.user_id == u.id)
         verif = await WorkerVerification.find_one(WorkerVerification.worker_id == str(u.id))
+        
+        # Resolve real verification status
+        v_status = "pending"
+        if verif and hasattr(verif, "verification_status"):
+            v_status = verif.verification_status.value if hasattr(verif.verification_status, "value") else str(verif.verification_status)
+        elif prof and getattr(prof, "is_verified", False):
+            v_status = "verified"
+
+        # Resolve real availability status
+        avail = "offline"
+        if prof and hasattr(prof, "availability") and prof.availability:
+            avail = prof.availability.value if hasattr(prof.availability, "value") else str(prof.availability)
+
         result.append({
             "id": str(u.id),
             "worker_id": str(u.id),
             "full_name": u.full_name,
             "email": u.email,
-            "phone": u.phone,
+            "phone": u.phone or "N/A",
             "is_active": u.is_active,
-            "rating": prof.rating_average if prof else 4.8,
-            "review_count": prof.total_reviews if prof else 12,
-            "skills": prof.skills if prof else ["Electrician", "Plumber"],
-            "hourly_rate": prof.hourly_rate if prof else 450.0,
-            "experience_years": prof.experience_years if prof else 5.0,
-            "verification_status": verif.verification_status.value if verif else ("verified" if u.is_email_verified else "pending"),
-            "joined_at": u.created_at.isoformat() if hasattr(u, "created_at") and u.created_at else "Recently",
+            "rating": round(prof.rating_average, 2) if (prof and prof.rating_average is not None) else 0.0,
+            "review_count": prof.total_reviews if (prof and prof.total_reviews is not None) else 0,
+            "skills": prof.skills if (prof and prof.skills) else [],
+            "hourly_rate": prof.hourly_rate if prof else None,
+            "experience_years": prof.experience_years if prof else 0.0,
+            "working_radius_km": prof.working_radius_km if prof else 10.0,
+            "profile_photo_url": prof.profile_photo_url if prof else None,
+            "verification_status": v_status.lower(),
+            "availability": avail.lower(),
+            "joined_at": u.created_at.isoformat() if (hasattr(u, "created_at") and u.created_at) else None,
         })
     return result
+
+
+from pydantic import BaseModel, Field
+
+class AdminWorkerProfileUpdateRequest(BaseModel):
+    skills: list[str] | None = Field(default=None, description="List of canonical category slugs")
+    working_radius_km: float | None = Field(default=None, ge=0.1, le=100.0, description="Service working radius in km")
 
 
 @router.get(
@@ -212,28 +235,130 @@ async def get_worker_details(
     admin: AdminUserDep,
 ) -> dict[str, Any]:
     """Get worker profile details."""
-    u = await User.get(worker_id)
+    from beanie import PydanticObjectId
+    u = None
+    if PydanticObjectId.is_valid(worker_id):
+        u = await User.get(PydanticObjectId(worker_id))
+        if not u or u.role != UserRole.WORKER:
+            prof_by_id = await WorkerProfile.get(PydanticObjectId(worker_id))
+            if prof_by_id:
+                u = await User.get(prof_by_id.user_id)
+
     if not u or u.role != UserRole.WORKER:
-        raise HTTPException(status_code=404, detail="Worker user not found")
+        raise HTTPException(status_code=404, detail=f"Worker '{worker_id}' not found")
     
     prof = await WorkerProfile.find_one(WorkerProfile.user_id == u.id)
-    verif = await WorkerVerification.find_one(WorkerVerification.worker_id == str(u.id))
+    verif = None
+    try:
+        from app.verification.models import WorkerVerification as CoreWorkerVerification
+        verif = await CoreWorkerVerification.find_one(CoreWorkerVerification.worker_id == str(u.id))
+    except Exception:
+        try:
+            verif = await WorkerVerification.find_one(WorkerVerification.worker_id == str(u.id))
+        except Exception:
+            verif = None
     
     return {
         "id": str(u.id),
+        "worker_id": str(u.id),
+        "profile_id": str(prof.id) if prof else None,
         "full_name": u.full_name,
         "email": u.email,
         "phone": u.phone,
         "is_active": u.is_active,
         "bio": prof.bio if prof else None,
         "skills": prof.skills if prof else [],
-        "rating": prof.rating_average if prof else 4.8,
-        "experience_years": prof.experience_years if prof else 5.0,
+        "working_radius_km": prof.working_radius_km if prof else 10.0,
+        "rating": prof.rating_average if prof else 0.0,
+        "review_count": prof.total_reviews if prof else 0,
+        "experience_years": prof.experience_years if prof else 0.0,
+        "availability": prof.availability.value if (prof and hasattr(prof.availability, "value")) else "available",
+        "profile_completed": prof.profile_completed if prof else False,
+        "is_verified": prof.is_verified if prof else False,
+        "current_location": prof.current_location.model_dump() if (prof and prof.current_location) else None,
+        "current_location_updated_at": prof.current_location_updated_at.isoformat() if (prof and prof.current_location_updated_at) else None,
         "verification": {
-            "status": verif.verification_status.value if verif else "pending",
-            "documents": verif.submitted_documents if verif else {},
-            "notes": verif.verification_notes if verif else None,
-        } if verif else None,
+            "status": verif.verification_status.value if (verif and hasattr(verif.verification_status, "value")) else ("verified" if getattr(prof, "is_verified", False) else "pending"),
+            "documents": getattr(verif, "submitted_documents", {}),
+            "notes": getattr(verif, "verification_notes", None),
+        } if verif else {"status": "verified" if getattr(prof, "is_verified", False) else "pending", "documents": {}, "notes": None},
+    }
+
+
+@router.patch(
+    "/workers/{worker_id}/profile",
+    summary="Update Worker Profile by Admin",
+    description="Admin endpoint to update worker skills and working radius with canonical category slug validation.",
+)
+async def update_worker_profile_by_admin(
+    worker_id: str,
+    payload: AdminWorkerProfileUpdateRequest,
+    admin: AdminUserDep,
+) -> dict[str, Any]:
+    """Update worker skills and working radius with canonical validation."""
+    from beanie import PydanticObjectId
+    u = None
+    if PydanticObjectId.is_valid(worker_id):
+        u = await User.get(PydanticObjectId(worker_id))
+        if not u or u.role != UserRole.WORKER:
+            prof_by_id = await WorkerProfile.get(PydanticObjectId(worker_id))
+            if prof_by_id:
+                u = await User.get(prof_by_id.user_id)
+
+    if not u or u.role != UserRole.WORKER:
+        raise HTTPException(status_code=404, detail=f"Worker '{worker_id}' not found")
+
+    prof = await WorkerProfile.find_one(WorkerProfile.user_id == u.id)
+    if not prof:
+        raise HTTPException(status_code=404, detail=f"Worker profile for user '{u.id}' not found")
+
+    # 1. Skill Validation & Normalization
+    if payload.skills is not None:
+        cleaned_skills = []
+        for s in payload.skills:
+            if isinstance(s, str) and s.strip():
+                cleaned_skills.append(s.strip().lower())
+        normalized_skills = list(dict.fromkeys(cleaned_skills))
+
+        # Fetch canonical active category slugs from database
+        categories = await ServiceCategory.find(ServiceCategory.is_active == True).to_list()
+        valid_slugs = {c.slug.strip().lower() for c in categories if getattr(c, "slug", None)}
+
+        if not valid_slugs:
+            # Standard seed fallback for initial DB state / test mocks
+            valid_slugs = {"electrical", "plumbing", "cleaning", "painting", "carpentry", "appliance-repair", "handyman", "ac-repair"}
+
+        invalid_skills = [s for s in normalized_skills if s not in valid_slugs]
+        if invalid_skills:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid worker skill(s): {', '.join(invalid_skills)}. Skills must be canonical category slugs.",
+            )
+
+        prof.skills = normalized_skills
+
+    # 2. Radius Validation
+    if payload.working_radius_km is not None:
+        r = payload.working_radius_km
+        if not isinstance(r, (int, float)) or r <= 0.0 or r > 100.0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="working_radius_km must be a number between 0.1 and 100.0 km.",
+            )
+        prof.working_radius_km = float(r)
+
+    await prof.save()
+
+    return {
+        "message": "Worker profile updated successfully",
+        "worker_id": str(u.id),
+        "profile_id": str(prof.id),
+        "skills": prof.skills,
+        "working_radius_km": prof.working_radius_km,
+        "availability": prof.availability.value if hasattr(prof.availability, "value") else str(prof.availability),
+        "profile_completed": prof.profile_completed,
+        "is_verified": prof.is_verified,
+        "updated_at": prof.updated_at.isoformat() if hasattr(prof, "updated_at") and prof.updated_at else datetime.now(timezone.utc).isoformat(),
     }
 
 

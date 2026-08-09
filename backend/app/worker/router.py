@@ -27,6 +27,17 @@ async def _get_worker_user(current_user: WorkerDep):
 
 
 @router.get(
+    "/valid-skills",
+    status_code=status.HTTP_200_OK,
+    summary="Get valid worker skills",
+    description="Returns canonical active category slugs for worker skill registration.",
+)
+async def get_valid_skills() -> dict[str, list[str]]:
+    """Get active canonical category slugs from the database for worker skill registration."""
+    return await WorkerService.get_valid_skills()
+
+
+@router.get(
     "/dashboard",
     response_model=WorkerDashboardResponse,
     status_code=status.HTTP_200_OK,

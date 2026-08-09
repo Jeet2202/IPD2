@@ -46,13 +46,18 @@ export default function Workers() {
         const normalized = data.map(w => ({
           id: w.worker_id || w.id,
           name: w.full_name || 'Worker User',
+          photo: w.photo || null,
           phone: w.phone || 'N/A',
           profession: (w.skills && w.skills[0]) ? w.skills[0] : 'Professional',
+          serviceArea: w.service_area || '—',
           verificationStatus: (w.verification_status && w.verification_status.toLowerCase() === 'verified') ? 'Verified' : 'Pending',
           accountStatus: w.is_active ? 'Active' : 'Suspended',
           availabilityStatus: 'Online',
-          rating: w.rating || 4.8,
-          totalJobs: w.review_count || 12,
+          rating: typeof w.rating === 'number' ? w.rating : 0,
+          reviewsCount: typeof w.review_count === 'number' ? w.review_count : 0,
+          jobsCompleted: typeof w.review_count === 'number' ? w.review_count : 0,
+          lifetimeEarnings: typeof w.lifetime_earnings === 'number' ? w.lifetime_earnings : null,
+          totalJobs: w.review_count || 0,
           joinedDate: w.joined_at ? w.joined_at.split('T')[0] : 'Recently',
         }));
         setWorkers(normalized);
@@ -352,7 +357,7 @@ export default function Workers() {
 
                       {/* Lifetime Earnings */}
                       <td className="py-3.5 px-4 font-black text-[#0F172A]">
-                        ₹{worker.lifetimeEarnings.toLocaleString()}
+                        {worker.lifetimeEarnings != null ? `₹${worker.lifetimeEarnings.toLocaleString()}` : '—'}
                       </td>
 
                       {/* Verification Badge */}

@@ -131,6 +131,9 @@ class Settings(BaseSettings):
     QUOTATION_MAX_PRICE: float = 500000.0
     QUOTATION_DEFAULT_TAX_RATE: float = 0.0
 
+    # --- Worker Skill Validation Feature Flag (Phase 3) ---
+    SKILL_VALIDATION_ENABLED: bool = False
+
     # --- Firebase (activate when notifications module is built) ---
     FIREBASE_CREDENTIALS_PATH: str | None = None
 

@@ -34,15 +34,15 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   final ImagePicker _picker = ImagePicker();
 
-  final List<String> _predefinedSkills = [
-    'electrician',
+  List<String> _predefinedSkills = [
+    'electrical',
     'plumbing',
     'carpentry',
-    'ac_repair',
+    'ac-repair',
     'cleaning',
     'painting',
-    'appliance_repair',
-    'pest_control',
+    'appliance-repair',
+    'pest-control',
     'gardening',
     'mechanic'
   ];
@@ -69,6 +69,13 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   Future<void> _loadWorkerProfile() async {
     try {
+      try {
+        final fetchedSkills = await AuthService.instance.getValidSkills();
+        if (fetchedSkills.isNotEmpty) {
+          _predefinedSkills = fetchedSkills;
+        }
+      } catch (_) {}
+
       final res = await AuthService.instance.fetchWorkerProfile();
       if (mounted) {
         setState(() {
@@ -226,7 +233,17 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   void _addCustomSkill() {
     final text = _customSkillController.text.trim().toLowerCase();
-    if (text.isNotEmpty && !_selectedSkills.contains(text)) {
+    if (text.isEmpty) return;
+    if (!_predefinedSkills.contains(text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Invalid skill "$text". Must be a canonical category (e.g. electrical, plumbing).'),
+          backgroundColor: Colors.amber[900],
+        ),
+      );
+      return;
+    }
+    if (!_selectedSkills.contains(text)) {
       setState(() {
         _selectedSkills.add(text);
         _customSkillController.clear();

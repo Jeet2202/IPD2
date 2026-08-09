@@ -81,8 +81,12 @@ class GeoJSONPoint(BaseModel):
         Construct a GeoJSONPoint from conventional (latitude, longitude) values.
 
         GeoJSON stores [longitude, latitude] — this helper ensures correct order.
-        Always use this factory instead of constructing coordinates manually.
+        Enforces valid geographic ranges: latitude [-90, 90], longitude [-180, 180].
         """
+        if not (-90.0 <= latitude <= 90.0):
+            raise ValueError(f"Latitude {latitude} out of bounds [-90, 90]")
+        if not (-180.0 <= longitude <= 180.0):
+            raise ValueError(f"Longitude {longitude} out of bounds [-180, 180]")
         return cls(coordinates=[longitude, latitude])
 
 

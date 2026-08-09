@@ -53,8 +53,15 @@ from app.booking.scheduling import (
     validate_booking_schedule,
 )
 from app.category.models import Service
-from app.core.exceptions import BadRequestException, ForbiddenException, NotFoundException
-from app.utils.enums import BookingStatus, BookingType
+from app.core.exceptions import (
+    BadRequestException,
+    ConflictException,
+    ForbiddenException,
+    NotFoundException,
+)
+from app.marketplace.rules import MarketplaceRulesEngine
+from app.utils.enums import BookingStatus, BookingType, InspectionStatus
+from app.worker.models import WorkerProfile
 
 logger = logging.getLogger(__name__)
 
@@ -384,32 +391,87 @@ class BookingService:
 
     @classmethod
     async def accept_inspection(cls, booking_id: str, worker: User) -> BookingResponse:
-        """Worker accepts an inspection request visit."""
-        booking = await Booking.get(PydanticObjectId(booking_id))
+        """
+        Worker accepts an inspection request visit.
+        Enforces Phase 8 secure, skill-aware, radius-aware, atomic assignment.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(message="Invalid booking ID format", error_code="INVALID_BOOKING_ID")
+
+        booking_oid = PydanticObjectId(booking_id)
+        booking = await Booking.get(booking_oid)
         if not booking:
             raise NotFoundException(message="Booking not found.", error_code="BOOKING_NOT_FOUND")
-        if booking.booking_type != BookingType.INSPECTION_REQUEST:
-            raise BadRequestException(message="Not an inspection request.", error_code="INVALID_BOOKING_TYPE")
 
-        booking.inspection_status = InspectionStatus.ACCEPTED
-        booking.worker_id = worker.id
-        booking.assigned_at = datetime.now(timezone.utc)
+        # 1. Fetch WorkerProfile
+        worker_profile = await WorkerProfile.find_one(WorkerProfile.user_id == worker.id)
 
+        # 2. Centralized Acceptance Eligibility Validation (Active worker, Complete Profile, Skill match, Radius match, Available status)
+        MarketplaceRulesEngine.validate_worker_acceptance_eligibility(booking, worker, worker_profile)
+
+        # 3. Atomic MongoDB Assignment (Race Condition Protection)
+        now = datetime.now(timezone.utc)
         event = BookingTimelineEvent(
             event_id=str(PydanticObjectId()),
             event_type="INSPECTION_ACCEPTED",
-            status=booking.status,
+            status=BookingStatus.ASSIGNED,
             previous_status=booking.status,
-            new_status=booking.status,
+            new_status=BookingStatus.ASSIGNED,
             title="Inspection Accepted",
             description=f"Worker {worker.full_name} accepted the inspection visit request.",
             actor_id=worker.id,
             actor_role="worker",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=now,
         )
-        booking.timeline.append(event)
-        saved = await booking.save()
-        return await _to_response(saved)
+
+        event_dict = event.model_dump()
+        if isinstance(event_dict.get("timestamp"), datetime):
+            event_dict["timestamp"] = event_dict["timestamp"].isoformat()
+
+        collection = Booking.get_motor_collection()
+        res = await collection.update_one(
+            {
+                "_id": booking_oid,
+                "worker_id": None,
+                "status": {"$in": [BookingStatus.PENDING.value, BookingStatus.ACCEPTED.value]},
+            },
+            {
+                "$set": {
+                    "worker_id": worker.id,
+                    "status": BookingStatus.ASSIGNED.value,
+                    "inspection_status": InspectionStatus.ACCEPTED.value,
+                    "assigned_at": now,
+                    "updated_at": now,
+                },
+                "$push": {
+                    "timeline": event_dict,
+                },
+            },
+        )
+
+        if res.modified_count == 0:
+            fresh_booking = await Booking.get(booking_oid)
+            if fresh_booking and fresh_booking.worker_id is not None:
+                raise ConflictException(
+                    message="This booking has already been accepted by another worker",
+                    error_code="BOOKING_ALREADY_ASSIGNED",
+                )
+            raise BadRequestException(
+                message="Booking is no longer available for acceptance",
+                error_code="BOOKING_NOT_AVAILABLE",
+            )
+
+        # 4. Update worker's job application to ACCEPTED if present
+        from app.application.models import JobApplication
+        from app.utils.enums import ApplicationStatus
+
+        existing_app = await JobApplication.find_one({"booking_id": booking_oid, "worker_id": worker.id})
+        if existing_app:
+            existing_app.application_status = ApplicationStatus.ACCEPTED
+            await existing_app.save()
+
+        assigned_booking = await Booking.get(booking_oid)
+        return await _to_response(assigned_booking)
 
     @classmethod
     async def schedule_inspection(

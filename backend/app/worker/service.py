@@ -3,6 +3,7 @@ Worker Profile Service — Business logic for worker profile management, photo u
 """
 
 import logging
+from datetime import datetime, timezone
 from fastapi import UploadFile
 
 from app.auth.models import User
@@ -11,6 +12,9 @@ from app.uploads.validation import validate_profile_image
 from app.worker.models import WorkerProfile
 from app.worker.repository import WorkerRepository
 from app.address.models import GeoJSONPoint
+from app.category.repository import CategoryRepository
+from app.core.config import settings
+from app.core.exceptions import BadRequestException
 from app.worker.schemas import UpdateWorkerLocationRequest, UpdateWorkerProfileRequest, WorkerProfileResponse
 
 logger = logging.getLogger(__name__)
@@ -18,6 +22,46 @@ logger = logging.getLogger(__name__)
 
 class WorkerService:
     """Business logic handler for worker profile endpoints."""
+
+    @classmethod
+    async def get_valid_skills(cls) -> dict[str, list[str]]:
+        """Return active canonical category slugs from MongoDB."""
+        slugs = await CategoryRepository.get_active_category_slugs()
+        return {"skills": slugs}
+
+    @classmethod
+    async def validate_and_normalize_skills(cls, skills: list[str]) -> list[str]:
+        """
+        Normalize and validate worker skills against active database category slugs.
+
+        Normalization rules:
+            - Trim whitespace
+            - Lowercase
+            - Deduplicate while preserving order
+            - Reject empty values
+            - Validate against canonical active category slugs in MongoDB when SKILL_VALIDATION_ENABLED is True
+        """
+        cleaned = []
+        for item in skills:
+            if not isinstance(item, str):
+                continue
+            normalized = item.strip().lower()
+            if normalized and normalized not in cleaned:
+                cleaned.append(normalized)
+
+        valid_slugs = await CategoryRepository.get_active_category_slugs()
+        if valid_slugs:
+            invalid_skills = [s for s in cleaned if s not in valid_slugs]
+            if invalid_skills:
+                if settings.SKILL_VALIDATION_ENABLED:
+                    raise BadRequestException(
+                        message=f"Invalid skill domain(s): {', '.join(invalid_skills)}. Valid options: {', '.join(valid_slugs)}",
+                        error_code="INVALID_SKILL",
+                    )
+                else:
+                    logger.warning("SKILL_VALIDATION_ENABLED=False: Allowing informal worker skill(s): %s", invalid_skills)
+
+        return cleaned
 
     @staticmethod
     def calculate_completion_percentage(user: User, profile: WorkerProfile) -> tuple[int, bool]:
@@ -100,6 +144,7 @@ class WorkerService:
             review_count=profile.review_count,
             profile_completion_percentage=completion_pct,
             profile_completed=is_completed,
+            current_location_updated_at=profile.current_location_updated_at,
             created_at=profile.created_at,
             updated_at=profile.updated_at,
         )
@@ -135,7 +180,7 @@ class WorkerService:
         if payload.experience_years is not None:
             profile.experience_years = payload.experience_years
         if payload.skills is not None:
-            profile.skills = payload.skills
+            profile.skills = await cls.validate_and_normalize_skills(payload.skills)
         if payload.languages is not None:
             profile.languages = payload.languages
         if payload.working_radius_km is not None:
@@ -214,18 +259,20 @@ class WorkerService:
         """Update worker's real-time GPS location as a GeoJSON Point."""
         profile = await cls.get_or_create_profile(user)
 
+        now = datetime.now(timezone.utc)
         profile.current_location = GeoJSONPoint.from_lat_lng(
             latitude=payload.latitude,
             longitude=payload.longitude,
         )
+        profile.current_location_updated_at = now
 
         completion_pct, is_completed = cls.calculate_completion_percentage(user, profile)
         profile.profile_completed = is_completed
 
         await WorkerRepository.save_profile(profile)
         logger.info(
-            "Updated location for worker user_id=%s (lat=%.6f, lng=%.6f)",
-            user.id, payload.latitude, payload.longitude,
+            "Updated location for worker user_id=%s (lat=%.6f, lng=%.6f, updated_at=%s)",
+            user.id, payload.latitude, payload.longitude, now.isoformat(),
         )
 
         return cls._build_response_dto(user, profile, completion_pct, is_completed)

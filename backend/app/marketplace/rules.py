@@ -35,7 +35,8 @@ class MarketplaceRulesEngine:
         Rules:
             1. Account must be active (is_active == True).
             2. Profile must be completed (profile_completed == True).
-            3. Availability must be set to AVAILABLE.
+            3. Worker must be verified (is_verified == True).
+            4. Availability must be set to AVAILABLE.
         """
         if not worker_user.is_active:
             raise ForbiddenException(
@@ -53,6 +54,12 @@ class MarketplaceRulesEngine:
             raise ForbiddenException(
                 message="Worker profile is incomplete. Please complete your profile to apply for marketplace jobs.",
                 error_code="PROFILE_INCOMPLETE",
+            )
+
+        if not getattr(worker_profile, "is_verified", False):
+            raise ForbiddenException(
+                message="Worker account is unverified. Verification is required to participate in the marketplace.",
+                error_code="WORKER_NOT_VERIFIED",
             )
 
         if worker_profile.availability != WorkerAvailability.AVAILABLE:
@@ -91,6 +98,107 @@ class MarketplaceRulesEngine:
         return True
 
     @staticmethod
+    def validate_worker_skill_eligibility(
+        booking: Booking,
+        worker_profile: WorkerProfile | None,
+    ) -> None:
+        """
+        Validate that a worker's registered skills match the booking's category or required skills.
+
+        Rules:
+            1. Worker profile must exist and contain at least one skill.
+            2. Worker skills and booking category/required_skills are normalized to lowercase slugs.
+            3. Worker is eligible if worker_skills contains booking category_slug OR intersects required_skills.
+            4. If no match is found, raise BadRequestException(error_code="SKILL_MISMATCH").
+        """
+        worker_skills = [
+            s.strip().lower()
+            for s in getattr(worker_profile, "skills", []) or []
+            if isinstance(s, str) and s.strip()
+        ]
+
+        if not worker_skills:
+            raise BadRequestException(
+                message="Worker has no registered skills matching this booking",
+                error_code="SKILL_MISMATCH",
+            )
+
+        snapshot = getattr(booking, "service_snapshot", None)
+        category_slug = (getattr(snapshot, "category_slug", None) or "").strip().lower()
+        required_skills = [
+            s.strip().lower()
+            for s in getattr(snapshot, "required_skills", []) or []
+            if isinstance(s, str) and s.strip()
+        ]
+
+        # Check 1: Category slug match
+        is_category_matched = category_slug in worker_skills
+
+        # Check 2: Required trade skills match (if required_skills list is populated)
+        is_required_skill_matched = False
+        if required_skills:
+            is_required_skill_matched = any(req in worker_skills for req in required_skills)
+
+        if not is_category_matched and not is_required_skill_matched:
+            raise BadRequestException(
+                message=f"Your registered skills do not match the required category ('{category_slug}') for this booking",
+                error_code="SKILL_MISMATCH",
+            )
+
+    @staticmethod
+    def validate_worker_acceptance_eligibility(
+        booking: Booking,
+        worker_user: User,
+        worker_profile: WorkerProfile | None,
+    ) -> None:
+        """
+        Validate all business rules before a worker accepts/claims a booking or inspection.
+
+        Rules:
+            1. Worker account active, profile completed, availability AVAILABLE.
+            2. Booking availability: status must allow assignment, worker_id must be None.
+            3. Skill match: worker skills must match booking category_slug or required_skills.
+            4. Current location: worker current_location must be present.
+            5. Service radius: distance between worker current_location and service_location
+               must be <= worker_profile.working_radius_km.
+        """
+        # 1. Worker eligibility (active, completed, available)
+        MarketplaceRulesEngine.validate_worker_eligibility(worker_user, worker_profile)
+
+        # 2. Booking availability check
+        if booking.status not in (BookingStatus.PENDING, BookingStatus.ACCEPTED) or booking.worker_id is not None:
+            raise BadRequestException(
+                message="Booking is no longer available for assignment",
+                error_code="BOOKING_NOT_AVAILABLE",
+            )
+
+        # 3. Worker skill eligibility check
+        MarketplaceRulesEngine.validate_worker_skill_eligibility(booking, worker_profile)
+
+        # 4. Worker location presence check
+        w_loc = getattr(worker_profile, "current_location", None)
+        if not w_loc or not getattr(w_loc, "coordinates", None):
+            raise BadRequestException(
+                message="Your current location is required to accept jobs. Please update your location.",
+                error_code="WORKER_LOCATION_REQUIRED",
+            )
+
+        # 5. Service radius check
+        b_loc = booking.service_location or (booking.address_snapshot.location if booking.address_snapshot else None)
+        if b_loc and getattr(b_loc, "coordinates", None):
+            dist_km = calculate_haversine_distance(
+                w_loc.latitude,
+                w_loc.longitude,
+                b_loc.latitude,
+                b_loc.longitude,
+            )
+            if dist_km > worker_profile.working_radius_km:
+                raise BadRequestException(
+                    message=f"Booking location ({dist_km} km away) exceeds your working radius of {worker_profile.working_radius_km} km",
+                    error_code="OUTSIDE_SERVICE_RADIUS",
+                )
+
+    @staticmethod
     async def validate_application_submission(
         booking: Booking,
         worker_user: User,
@@ -103,11 +211,10 @@ class MarketplaceRulesEngine:
         Rules:
             1. Worker eligibility (account active, profile completed, availability AVAILABLE).
             2. Booking availability (status PENDING, unassigned).
-            3. No duplicate applications.
-            4. GeoJSON service radius check.
-            5. Scheduling conflict check — worker must not have any PENDING or ACCEPTED
-               application (or an ACCEPTED/IN_PROGRESS booking) that overlaps the target
-               booking's date+time window.
+            3. Worker skill eligibility (skills match category_slug or required_skills).
+            4. No duplicate applications.
+            5. GeoJSON service radius check.
+            6. Scheduling conflict check.
         """
         # 1. Worker eligibility
         MarketplaceRulesEngine.validate_worker_eligibility(worker_user, worker_profile)
@@ -119,14 +226,17 @@ class MarketplaceRulesEngine:
                 error_code="BOOKING_NOT_AVAILABLE",
             )
 
-        # 3. Duplicate application check
+        # 3. Worker skill eligibility check (Phase 7)
+        MarketplaceRulesEngine.validate_worker_skill_eligibility(booking, worker_profile)
+
+        # 4. Duplicate application check
         if existing_application:
             raise ConflictException(
                 message="You have already submitted an application for this booking",
                 error_code="DUPLICATE_APPLICATION",
             )
 
-        # 4. Service radius check
+        # 5. Service radius check
         if worker_profile and worker_profile.current_location and worker_profile.current_location.coordinates:
             b_loc = booking.service_location or booking.address_snapshot.location
             if b_loc and b_loc.coordinates:

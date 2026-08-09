@@ -463,3 +463,60 @@ async def complete_inspection(
     worker: WorkerUserDep,
 ) -> BookingResponse:
     return await BookingService.complete_inspection(booking_id, worker)
+
+
+# ---------------------------------------------------------------------------
+# Customer Applicant Review & Acceptance Endpoints (Phase 9)
+# ---------------------------------------------------------------------------
+
+from app.application.schemas import (
+    CustomerApplicantItemResponse,
+    CustomerApplicantListResponse,
+)
+from app.application.service import JobApplicationService
+
+
+@router.get(
+    "/bookings/{booking_id}/applicants",
+    response_model=CustomerApplicantListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List worker applicants for a customer's booking",
+    description="Fetch all worker applicants for a booking owned by the authenticated customer.",
+)
+@router.get(
+    "/customer/bookings/{booking_id}/applicants",
+    response_model=CustomerApplicantListResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def list_booking_applicants(
+    booking_id: str,
+    current_user: CustomerDep,
+) -> CustomerApplicantListResponse:
+    """List worker applicants for a booking owned by the authenticated customer."""
+    app_service = JobApplicationService()
+    return await app_service.list_booking_applicants_for_customer(current_user, booking_id)
+
+
+@router.post(
+    "/bookings/{booking_id}/applicants/{application_id}/accept",
+    response_model=CustomerApplicantItemResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Accept worker applicant for a booking (Customer)",
+    description="Customer accepts a specific worker applicant, assigning the worker to the booking and rejecting other applicants.",
+)
+@router.post(
+    "/customer/bookings/{booking_id}/applicants/{application_id}/accept",
+    response_model=CustomerApplicantItemResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+async def accept_booking_applicant(
+    booking_id: str,
+    application_id: str,
+    current_user: CustomerDep,
+) -> CustomerApplicantItemResponse:
+    """Accept worker applicant for a booking owned by the authenticated customer."""
+    app_service = JobApplicationService()
+    return await app_service.accept_applicant_for_customer(current_user, booking_id, application_id)
+

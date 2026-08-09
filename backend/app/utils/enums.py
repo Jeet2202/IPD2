@@ -106,30 +106,40 @@ class BookingType(str, Enum):
 
 class InspectionStatus(str, Enum):
     """
-    Lifecycle states for Inspection Requests.
+    Canonical lifecycle states for Inspection Requests.
     """
     NOT_REQUIRED = "not_required"
     PENDING = "pending"
     REQUESTED = "requested"
     ACCEPTED = "accepted"
     SCHEDULED = "scheduled"
+    VISIT_SCHEDULED = "visit_scheduled"
+    IN_PROGRESS = "in_progress"
     VISITED = "visited"
     REPORT_READY = "report_ready"
+    REPORT_SUBMITTED = "report_submitted"
     QUOTATION_PENDING = "quotation_pending"
     QUOTATION_GENERATED = "quotation_generated"
+    QUOTATION_SUBMITTED = "quotation_submitted"
+    CUSTOMER_APPROVED = "customer_approved"
+    CUSTOMER_REJECTED = "customer_rejected"
+    JOB_CREATED = "job_created"
     COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 
 # ---------------------------------------------------------------------------
-# Service Categories
+# Service Categories (DEPRECATED ENUM - DO NOT USE FOR WORKER MATCHING)
 # ---------------------------------------------------------------------------
 
 class ServiceCategory(str, Enum):
     """
-    Blue-collar service categories offered on the marketplace.
+    DEPRECATED string Enum for service categories.
 
-    Each category maps to a set of workers with matching skills.
-    Add new categories here as the platform expands.
+    NOTE: Domain matching and category queries use the Beanie Document model
+    `app.category.models.ServiceCategory` which is backed by the `service_categories`
+    collection in MongoDB (slug-based matching). This Enum is kept for backward
+    compatibility only.
     """
     ELECTRICIAN = "electrician"
     PLUMBER = "plumber"
@@ -175,15 +185,6 @@ class VerificationStatus(str, Enum):
     VERIFIED = "verified"
     REJECTED = "rejected"
     EXPIRED = "expired"
-
-
-class InspectionStatus(str, Enum):
-    """Inspection lifecycle states."""
-    REQUESTED = "requested"
-    SCHEDULED = "scheduled"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
 
 
 # ---------------------------------------------------------------------------

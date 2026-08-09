@@ -19,50 +19,48 @@ Rate limit strategy:
 """
 
 import logging
-
+import time
+from collections import defaultdict
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
 logger = logging.getLogger(__name__)
+
+# Sliding window request log: client_key -> list of timestamp floats
+_request_history: dict[str, list[float]] = defaultdict(list)
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """
-    Rate limiting middleware placeholder.
+    In-memory sliding window rate limiting middleware.
 
-    Currently passes all requests through. When activated:
-        1. Extracts client identifier (IP or user ID).
-        2. Checks request count against the limit for the time window.
-        3. Returns 429 Too Many Requests if limit is exceeded.
-        4. Adds rate limit headers to all responses:
-           - X-RateLimit-Limit: max requests per window
-           - X-RateLimit-Remaining: requests left in current window
-           - X-RateLimit-Reset: seconds until the window resets
-
-    Args:
-        app: The ASGI application.
-        requests_per_minute: Maximum requests allowed per minute per client.
-        enabled: Set to True to activate rate limiting.
+    Enforces:
+        - Stricter limits (15 requests/min) on sensitive auth/OTP routes (/auth/login, /auth/register, /auth/otp/*).
+        - Standard limit (60 requests/min default) on all other API endpoints.
+        - Returns HTTP 429 Too Many Requests with Retry-After header when exceeded.
     """
 
     def __init__(
         self,
         app: object,
         requests_per_minute: int = 60,
-        enabled: bool = False,
+        enabled: bool = True,
     ) -> None:
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
         self.enabled = enabled
 
-        if self.enabled:
-            logger.info(
-                "Rate limiting enabled: %d requests/minute",
-                self.requests_per_minute,
-            )
+    def _get_client_key(self, request: Request) -> str:
+        """Derive client identifier from X-Forwarded-For or client.host."""
+        forwarded = request.headers.get("X-Forwarded-For")
+        if forwarded:
+            ip = forwarded.split(",")[0].strip()
+        elif request.client:
+            ip = request.client.host
         else:
-            logger.debug("Rate limiting disabled (placeholder mode)")
+            ip = "127.0.0.1"
+        return f"{ip}:{request.url.path}"
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -70,33 +68,44 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not self.enabled:
             return await call_next(request)
 
-        # ---------------------------------------------------------------
-        # TODO: Implement rate limiting when Redis is available.
-        #
-        # Pseudocode:
-        #   client_id = get_client_identifier(request)  # IP or user ID
-        #   key = f"rate_limit:{client_id}"
-        #   count = await redis.incr(key)
-        #   if count == 1:
-        #       await redis.expire(key, 60)
-        #   if count > self.requests_per_minute:
-        #       return JSONResponse(
-        #           status_code=429,
-        #           content=ErrorResponse(
-        #               error_code="RATE_LIMITED",
-        #               message="Too many requests",
-        #           ).model_dump(),
-        #           headers={
-        #               "X-RateLimit-Limit": str(self.requests_per_minute),
-        #               "X-RateLimit-Remaining": "0",
-        #               "Retry-After": str(ttl),
-        #           },
-        #       )
-        # ---------------------------------------------------------------
+        path = request.url.path
+        now = time.time()
+        window_seconds = 60.0
 
+        # Define limit based on path sensitivity
+        if any(sensitive in path for sensitive in ["/auth/login", "/auth/register", "/auth/otp"]):
+            limit = 15
+        else:
+            limit = self.requests_per_minute
+
+        client_key = self._get_client_key(request)
+        history = _request_history[client_key]
+
+        # Prune timestamps older than window_seconds
+        cutoff = now - window_seconds
+        _request_history[client_key] = [t for t in history if t > cutoff]
+        valid_history = _request_history[client_key]
+
+        if len(valid_history) >= limit:
+            retry_after = int(window_seconds - (now - valid_history[0])) + 1
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error_code": "RATE_LIMIT_EXCEEDED",
+                    "message": "Too many requests. Please try again later.",
+                    "details": None,
+                },
+                headers={
+                    "X-RateLimit-Limit": str(limit),
+                    "X-RateLimit-Remaining": "0",
+                    "Retry-After": str(retry_after),
+                },
+            )
+
+        valid_history.append(now)
         response = await call_next(request)
-
-        # Add informational rate limit headers even in passthrough mode
-        response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
+        remaining = max(0, limit - len(valid_history))
+        response.headers["X-RateLimit-Limit"] = str(limit)
+        response.headers["X-RateLimit-Remaining"] = str(remaining)
 
         return response

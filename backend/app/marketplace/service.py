@@ -162,7 +162,24 @@ class MarketplaceService:
         page_size = max(1, min(100, page_size))
         skip = (page - 1) * page_size
 
+        worker_skills = worker_profile.skills if worker_profile else []
+        worker_location = worker_profile.current_location if worker_profile else None
+        working_radius_km = worker_profile.working_radius_km if worker_profile else 10.0
+        is_verified = getattr(worker_profile, "is_verified", False) if worker_profile else False
+
+        if not is_verified or not worker_skills or not worker_location or not getattr(worker_location, "coordinates", None):
+            return MarketplacePaginatedResponse(
+                items=[],
+                total=0,
+                page=page,
+                page_size=page_size,
+                total_pages=0,
+            )
+
         bookings, total = await self.repo.list_marketplace_bookings(
+            worker_skills=worker_skills,
+            worker_location=worker_location,
+            working_radius_km=working_radius_km,
             query=query,
             category_slug=category_slug,
             booking_type=booking_type,
@@ -185,14 +202,6 @@ class MarketplaceService:
         items_with_score = []
         for b in bookings:
             score, dist_km, is_rec = self.recommendation_engine.score_booking(b, worker_profile)
-
-            # ── Radius Filter ───────────────────────────────────────────────
-            # Only exclude jobs that exceed the worker's configured radius when:
-            #   1. A worker_profile exists (radius is configured), AND
-            #   2. A valid distance was calculated (worker has a known location)
-            if worker_profile is not None and dist_km is not None:
-                if dist_km > worker_profile.working_radius_km:
-                    continue  # Skip jobs beyond the worker's radius
 
             has_applied = str(b.id) in applied_booking_ids
             item_dto = MarketplaceBookingItemResponse(
@@ -221,7 +230,7 @@ class MarketplaceService:
 
         return MarketplacePaginatedResponse(
             items=items,
-            total=len(items),  # Reflect actual count after radius filter
+            total=total,
             page=page,
             page_size=page_size,
             total_pages=total_pages,
@@ -239,7 +248,16 @@ class MarketplaceService:
         Raises:
             NotFoundException: If booking is not found or no longer available.
         """
-        booking = await self.repo.get_marketplace_booking_by_id(booking_id)
+        worker_skills = worker_profile.skills if worker_profile else []
+        worker_location = worker_profile.current_location if worker_profile else None
+        working_radius_km = worker_profile.working_radius_km if worker_profile else 10.0
+
+        booking = await self.repo.get_marketplace_booking_by_id(
+            booking_id,
+            worker_skills=worker_skills,
+            worker_location=worker_location,
+            working_radius_km=working_radius_km,
+        )
         if not booking or not MarketplaceRulesEngine.is_booking_visible(booking):
             raise NotFoundException(
                 message=f"Marketplace booking '{booking_id}' not found or no longer available",

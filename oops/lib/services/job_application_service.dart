@@ -55,4 +55,16 @@ class JobApplicationService {
     final res = await ApiService.instance.get('/worker/applications/$applicationId');
     return JobApplicationItem.fromJson(res);
   }
+
+  /// Fetch all worker applicants for a customer's booking
+  Future<Map<String, dynamic>> fetchBookingApplicants(String bookingId) async {
+    final res = await ApiService.instance.get('/customer/bookings/$bookingId/applicants');
+    return res as Map<String, dynamic>;
+  }
+
+  /// Accept a worker applicant for a customer's booking
+  Future<Map<String, dynamic>> acceptApplicant(String bookingId, String applicationId) async {
+    final res = await ApiService.instance.post('/customer/bookings/$bookingId/applicants/$applicationId/accept', {});
+    return res as Map<String, dynamic>;
+  }
 }

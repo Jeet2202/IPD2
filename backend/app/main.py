@@ -316,6 +316,28 @@ async def health_check() -> dict:
     }
 
 
+@app.get(
+    "/search/trending",
+    tags=["System"],
+    summary="Get trending search terms",
+)
+@app.get(
+    "/api/v1/search/trending",
+    tags=["System"],
+    summary="Get trending search terms",
+)
+async def get_trending_searches() -> list[str]:
+    """Returns active service category names for search bar trending terms."""
+    try:
+        from app.category.models import ServiceCategory
+        categories = await ServiceCategory.find(ServiceCategory.is_active == True).limit(5).to_list()
+        if categories:
+            return [c.name for c in categories]
+    except Exception:
+        pass
+    return ["Electrical Repair", "Plumbing Inspection", "AC Servicing", "Home Painting", "Carpentry Work"]
+
+
 # --- Versioned API ---
 # One line to include all 10 feature modules.
 # When v2 is needed: app.include_router(v2_router)

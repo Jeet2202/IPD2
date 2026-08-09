@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../../models/marketplace_booking_model.dart';
+import '../../services/auth_service.dart';
+import '../../services/location_service.dart';
 import '../../services/marketplace_service.dart';
 import '../../utils/token_storage.dart';
 import '../../l10n/app_translations.dart';
@@ -31,6 +33,14 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   List<MarketplaceBookingItem> _bookings = [];
   int _totalBookings = 0;
 
+  // Worker Profile & Location State
+  bool _isLocationUpdating = false;
+  bool _isLocationDenied = false;
+  DateTime? _lastLocationUpdatedAt;
+  List<String> _workerSkills = [];
+  double _workerWorkingRadiusKm = 10.0;
+  bool _isWorkerProfileLoaded = false;
+
   // Filter & Sort State
   MarketplaceFilterData _filterData = MarketplaceFilterData();
   String _selectedSort = 'recommended'; // recommended, newest, oldest, price_high, price_low
@@ -38,8 +48,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
   @override
   void initState() {
     super.initState();
-    _loadMarketplaceBookings();
-    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+    _initializeMarketplace();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       _loadMarketplaceBookings(isSilent: true);
     });
   }
@@ -50,6 +60,87 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     _debounceTimer?.cancel();
     _autoRefreshTimer?.cancel();
     super.dispose();
+  }
+
+  bool get _isLocationStale {
+    if (_lastLocationUpdatedAt == null) return true;
+    return DateTime.now().difference(_lastLocationUpdatedAt!).inHours >= 2;
+  }
+
+  Future<void> _initializeMarketplace() async {
+    try {
+      final profile = await AuthService.instance.fetchWorkerProfile();
+      if (profile.isNotEmpty) {
+        final rawSkills = profile['skills'] as List?;
+        _workerSkills = rawSkills?.map((s) => s.toString()).toList() ?? [];
+        _workerWorkingRadiusKm = (profile['working_radius_km'] as num?)?.toDouble() ?? 10.0;
+        final locUpdatedStr = profile['current_location_updated_at'] as String?;
+        if (locUpdatedStr != null) {
+          _lastLocationUpdatedAt = DateTime.tryParse(locUpdatedStr);
+        }
+      }
+      _isWorkerProfileLoaded = true;
+    } catch (e) {
+      debugPrint('Failed to load worker profile in marketplace: $e');
+    }
+
+    await _updateWorkerLocation();
+    await _loadMarketplaceBookings();
+  }
+
+  Future<void> _updateWorkerLocation({bool showToast = false}) async {
+    if (_isLocationUpdating) return;
+    setState(() {
+      _isLocationUpdating = true;
+    });
+
+    try {
+      final status = await LocationService.instance.checkPermission();
+      if (status == LocationPermissionStatus.denied || status == LocationPermissionStatus.permanentlyDenied) {
+        final granted = await LocationService.instance.requestPermission();
+        if (!granted) {
+          if (mounted) {
+            setState(() {
+              _isLocationDenied = true;
+              _isLocationUpdating = false;
+            });
+          }
+          return;
+        }
+      }
+
+      final location = await LocationService.instance.getCurrentLocation();
+      await AuthService.instance.updateWorkerLocation(location.latitude, location.longitude);
+
+      if (mounted) {
+        setState(() {
+          _isLocationDenied = false;
+          _lastLocationUpdatedAt = DateTime.now();
+          _isLocationUpdating = false;
+        });
+        if (showToast) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location updated successfully! Market dispatches refreshed.'),
+              backgroundColor: Color(0xFF16A34A),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Location update failed: $e');
+      if (mounted) {
+        setState(() {
+          _isLocationUpdating = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleRefresh() async {
+    await _updateWorkerLocation();
+    await _loadMarketplaceBookings();
   }
 
   void _onSearchChanged(String query) {
@@ -117,12 +208,57 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
     }
   }
 
+  Widget _buildStaleLocationBanner() {
+    if (_isLocationDenied || !_isLocationStale) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFFEF3C7),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          const Icon(Icons.warning_amber_rounded, size: 20, color: Color(0xFFD97706)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _lastLocationUpdatedAt == null
+                  ? 'Location update required to view nearby job dispatches.'
+                  : 'Your location was last updated over 2 hours ago.',
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: _isLocationUpdating ? null : () => _updateWorkerLocation(showToast: true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD97706),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: _isLocationUpdating
+                ? const SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                : const Text('Update', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasActiveFilters =
         _filterData.hasActiveFilters || _searchController.text.isNotEmpty;
 
-    return Scaffold(      appBar: AppBar(        elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
           children: [
@@ -185,7 +321,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
-            onPressed: _loadMarketplaceBookings,
+            onPressed: _handleRefresh,
             tooltip: 'Refresh Marketplace',
           ),
         ],
@@ -193,6 +329,8 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            _buildStaleLocationBanner(),
+
             // Search Bar & Filter/Sort Controls
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -415,7 +553,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
             Expanded(
               child: RefreshIndicator(
                 color: const Color(0xFF2563EB),
-                onRefresh: _loadMarketplaceBookings,
+                onRefresh: _handleRefresh,
                 child: _buildBodyContent(hasActiveFilters),
               ),
             ),
@@ -531,7 +669,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                           (route) => false,
                         );
                       } else {
-                        _loadMarketplaceBookings();
+                        _handleRefresh();
                       }
                     },
                     icon: Icon(isAuthError ? Icons.login_rounded : Icons.refresh_rounded, size: 18),
@@ -540,6 +678,136 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                       backgroundColor: const Color(0xFF2563EB),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // 1. Check Location Denied State
+    if (_isLocationDenied) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFEF2F2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.location_off_rounded,
+                      size: 44,
+                      color: Color(0xFFEF4444),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'Location Access Required',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Device location access is required to find jobs within your saved service radius (${_workerWorkingRadiusKm.toStringAsFixed(0)} km).',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () => LocationService.instance.openAppSettings(),
+                    icon: const Icon(Icons.settings_rounded, size: 18),
+                    label: const Text('Enable Location in Settings'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // 2. Check Empty Worker Skills State
+    if (_isWorkerProfileLoaded && _workerSkills.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFEF3C7),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.build_circle_outlined,
+                      size: 44,
+                      color: Color(0xFFD97706),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'No Service Skills Assigned',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Add at least one service category skill (e.g. electrical, plumbing) in your profile to view matching job dispatches.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.workerEditProfile),
+                    icon: const Icon(Icons.add_task_rounded, size: 18),
+                    label: const Text('Add Service Skills'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -580,7 +848,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   Text(
                     hasActiveFilters
                         ? 'no_matching_jobs'.tr(context)
-                        : 'no_marketplace_bookings'.tr(context),
+                        : 'No matching jobs in your area',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -591,7 +859,7 @@ class _WorkerMarketplaceScreenState extends State<WorkerMarketplaceScreen> {
                   Text(
                     hasActiveFilters
                         ? 'no_matching_jobs_desc'.tr(context)
-                        : 'no_marketplace_bookings_desc'.tr(context),
+                        : 'No active job dispatches matching your skills within your ${_workerWorkingRadiusKm.toStringAsFixed(0)} km radius right now.',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 13,

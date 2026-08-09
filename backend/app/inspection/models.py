@@ -50,34 +50,7 @@ from pymongo import ASCENDING, DESCENDING, IndexModel
 # Enums
 # ---------------------------------------------------------------------------
 
-class InspectionStatus(str, Enum):
-    """
-    Lifecycle status of an inspection request.
-    
-    - REQUESTED: Customer created the request.
-    - PENDING: System processing / awaiting broadcast.
-    - ACCEPTED: Worker accepted the inspection.
-    - VISIT_SCHEDULED: Worker confirmed visit time.
-    - VISITED: Worker arrived at the location.
-    - REPORT_SUBMITTED: Worker assessed the issue.
-    - QUOTATION_SUBMITTED: Worker provided the final estimated cost.
-    - CUSTOMER_APPROVED: Customer accepted the quotation.
-    - CUSTOMER_REJECTED: Customer declined the quotation.
-    - JOB_CREATED: System converted the approved inspection into an active Job.
-    - CANCELLED: Request aborted before completion.
-    """
-
-    REQUESTED = "requested"
-    PENDING = "pending"
-    ACCEPTED = "accepted"
-    VISIT_SCHEDULED = "visit_scheduled"
-    VISITED = "visited"
-    REPORT_SUBMITTED = "report_submitted"
-    QUOTATION_SUBMITTED = "quotation_submitted"
-    CUSTOMER_APPROVED = "customer_approved"
-    CUSTOMER_REJECTED = "customer_rejected"
-    JOB_CREATED = "job_created"
-    CANCELLED = "cancelled"
+from app.utils.enums import InspectionStatus
 
 
 class QuotationStatus(str, Enum):

@@ -187,6 +187,74 @@ class NotificationService:
         # By default, allow
         return True
 
+    async def find_eligible_workers_for_booking(self, booking) -> list[str]:
+        """
+        Query MongoDB for workers who are eligible to receive push notifications for a new booking:
+        1. User account is active and role == WORKER.
+        2. WorkerProfile profile_completed == True and is_verified == True.
+        3. Worker availability == AVAILABLE.
+        4. Worker current_location is present.
+        5. Worker skills contain booking.service_snapshot.category_slug.
+        6. Worker current_location is within booking location (haversine <= working_radius_km).
+        """
+        from app.auth.models import User, UserRole
+        from app.worker.models import WorkerProfile
+        from app.utils.enums import WorkerAvailability
+        from app.marketplace.recommendation.engine import calculate_haversine_distance
+
+        snapshot = getattr(booking, "service_snapshot", None)
+        if not snapshot:
+            return []
+        category_slug = (getattr(snapshot, "category_slug", None) or "").strip().lower()
+        if not category_slug:
+            return []
+
+        b_loc = booking.service_location or (booking.address_snapshot.location if booking.address_snapshot else None)
+        if not b_loc or not getattr(b_loc, "coordinates", None):
+            return []
+
+        # Fetch active workers
+        active_worker_users = await User.find(
+            User.role == UserRole.WORKER,
+            User.is_active == True,
+        ).to_list()
+        if not active_worker_users:
+            return []
+
+        active_user_map = {str(u.id): u for u in active_worker_users}
+
+        # Query worker profiles matching skill and status
+        profiles = await WorkerProfile.find(
+            WorkerProfile.is_verified == True,
+            WorkerProfile.profile_completed == True,
+            WorkerProfile.availability == WorkerAvailability.AVAILABLE,
+        ).to_list()
+
+        eligible_user_ids = []
+        for p in profiles:
+            uid_str = str(p.user_id)
+            if uid_str not in active_user_map:
+                continue
+
+            # Skill check
+            clean_skills = [s.strip().lower() for s in (p.skills or []) if isinstance(s, str)]
+            if category_slug not in clean_skills:
+                continue
+
+            # Location and radius check
+            w_loc = p.current_location
+            if not w_loc or not getattr(w_loc, "coordinates", None):
+                continue
+
+            dist_km = calculate_haversine_distance(
+                w_loc.latitude, w_loc.longitude,
+                b_loc.latitude, b_loc.longitude,
+            )
+            if dist_km <= p.working_radius_km:
+                eligible_user_ids.append(uid_str)
+
+        return eligible_user_ids
+
     # --- History Management ---
     
     async def get_history(self, user_id: str, skip: int = 0, limit: int = 50):

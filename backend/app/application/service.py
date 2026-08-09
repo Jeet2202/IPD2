@@ -12,9 +12,13 @@ Business Rules:
 import math
 from beanie import PydanticObjectId
 
+from datetime import datetime, timezone
+
 from app.application.models import JobApplication
 from app.application.repository import JobApplicationRepository
 from app.application.schemas import (
+    CustomerApplicantItemResponse,
+    CustomerApplicantListResponse,
     JobApplicationCreateRequest,
     JobApplicationPaginatedResponse,
     JobApplicationResponse,
@@ -185,3 +189,215 @@ class JobApplicationService:
             )
 
         return await self._to_response_dto(application)
+
+    async def list_booking_applicants_for_customer(
+        self, customer_user: User, booking_id: str
+    ) -> CustomerApplicantListResponse:
+        """
+        List all worker applicants for a booking owned by the authenticated customer.
+        Strictly enforces customer ownership authorization.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+        b_oid = PydanticObjectId(booking_id)
+        booking = await Booking.get(b_oid)
+        if not booking:
+            raise NotFoundException(
+                message="Booking not found",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # Ownership authorization: only customer who created booking (or admin) can view applicants
+        if booking.customer_id != customer_user.id and getattr(customer_user, "role", None) != "admin":
+            raise ForbiddenException(
+                message="You are not authorized to view applicants for this booking",
+                error_code="BOOKING_NOT_OWNED",
+            )
+
+        applications = await JobApplication.find(
+            JobApplication.booking_id == b_oid
+        ).sort("-applied_at").to_list()
+
+        applicant_dtos = []
+        for app in applications:
+            w_user = await User.get(app.worker_id)
+            w_profile = await WorkerProfile.find_one(WorkerProfile.user_id == app.worker_id)
+
+            w_name = w_user.full_name if w_user else "Worker"
+            w_phone = w_user.phone if w_user else None
+            w_avatar = getattr(w_profile, "avatar_url", None) if w_profile else None
+            w_skills = getattr(w_profile, "skills", []) if w_profile else []
+            w_radius = getattr(w_profile, "working_radius_km", 10.0) if w_profile else 10.0
+
+            applicant_dtos.append(
+                CustomerApplicantItemResponse(
+                    application_id=str(app.id),
+                    booking_id=str(app.booking_id),
+                    worker_id=str(app.worker_id),
+                    worker_name=w_name,
+                    worker_phone=w_phone,
+                    worker_avatar_url=w_avatar,
+                    worker_skills=w_skills,
+                    working_radius_km=w_radius,
+                    cover_letter=app.cover_letter,
+                    proposed_price=app.proposed_price,
+                    application_status=app.application_status,
+                    applied_at=app.applied_at,
+                )
+            )
+
+        return CustomerApplicantListResponse(
+            booking_id=str(booking.id),
+            booking_number=booking.booking_number,
+            booking_status=booking.status,
+            applicant_count=len(applicant_dtos),
+            applicants=applicant_dtos,
+        )
+
+    async def accept_applicant_for_customer(
+        self, customer_user: User, booking_id: str, application_id: str
+    ) -> CustomerApplicantItemResponse:
+        """
+        Customer accepts a specific worker applicant for their booking.
+        Enforces:
+            1. Customer ownership of booking.
+            2. Booking availability (PENDING, unassigned).
+            3. Target application belongs to booking and is PENDING.
+            4. Re-validates worker eligibility at acceptance time (active worker, skill match, working radius match).
+            5. Atomic MongoDB booking assignment to prevent race conditions.
+            6. Transitions target application to ACCEPTED and all other pending applications for this booking to REJECTED.
+        """
+        if not PydanticObjectId.is_valid(booking_id):
+            raise BadRequestException(
+                message=f"Invalid booking ID format '{booking_id}'",
+                error_code="INVALID_BOOKING_ID",
+            )
+        if not PydanticObjectId.is_valid(application_id):
+            raise BadRequestException(
+                message=f"Invalid application ID format '{application_id}'",
+                error_code="INVALID_APPLICATION_ID",
+            )
+
+        b_oid = PydanticObjectId(booking_id)
+        app_oid = PydanticObjectId(application_id)
+
+        # 1. Fetch booking
+        booking = await Booking.get(b_oid)
+        if not booking:
+            raise NotFoundException(
+                message="Booking not found",
+                error_code="BOOKING_NOT_FOUND",
+            )
+
+        # 2. Customer ownership authorization
+        if booking.customer_id != customer_user.id and getattr(customer_user, "role", None) != "admin":
+            raise ForbiddenException(
+                message="You are not authorized to accept applicants for this booking",
+                error_code="BOOKING_NOT_OWNED",
+            )
+
+        # 3. Check booking availability
+        if booking.status != BookingStatus.PENDING or booking.worker_id is not None:
+            raise BadRequestException(
+                message="Booking is no longer available for worker assignment",
+                error_code="BOOKING_NOT_AVAILABLE",
+            )
+
+        # 4. Fetch target application
+        target_app = await JobApplication.get(app_oid)
+        if not target_app or target_app.booking_id != b_oid:
+            raise NotFoundException(
+                message="Applicant record not found for this booking",
+                error_code="APPLICATION_NOT_FOUND",
+            )
+
+        if target_app.application_status != ApplicationStatus.PENDING:
+            if target_app.application_status == ApplicationStatus.ACCEPTED and booking.worker_id == target_app.worker_id:
+                # Idempotent response if already accepted for this worker
+                pass
+            else:
+                raise BadRequestException(
+                    message=f"Cannot accept application with status '{target_app.application_status.value}'",
+                    error_code="APPLICATION_NOT_PENDING",
+                )
+
+        # 5. Server-side worker eligibility revalidation at acceptance time
+        worker_user = await User.get(target_app.worker_id)
+        if not worker_user or not worker_user.is_active:
+            raise BadRequestException(
+                message="Worker account is inactive or no longer available",
+                error_code="WORKER_NOT_AVAILABLE",
+            )
+
+        worker_profile = await WorkerProfile.find_one(WorkerProfile.user_id == target_app.worker_id)
+        MarketplaceRulesEngine.validate_worker_acceptance_eligibility(booking, worker_user, worker_profile)
+
+        # 6. Atomic MongoDB Booking Assignment (Race Condition Protection)
+        now = datetime.now(timezone.utc)
+        collection = Booking.get_motor_collection()
+        res = await collection.update_one(
+            {
+                "_id": b_oid,
+                "worker_id": None,
+                "status": BookingStatus.PENDING.value,
+            },
+            {
+                "$set": {
+                    "worker_id": target_app.worker_id,
+                    "status": BookingStatus.ASSIGNED.value,
+                    "assigned_at": now,
+                    "updated_at": now,
+                }
+            },
+        )
+
+        if res.modified_count == 0:
+            fresh_b = await Booking.get(b_oid)
+            if fresh_b and fresh_b.worker_id is not None:
+                raise ConflictException(
+                    message="This booking has already been assigned to another worker",
+                    error_code="BOOKING_ALREADY_ASSIGNED",
+                )
+            raise BadRequestException(
+                message="Booking is no longer available for assignment",
+                error_code="BOOKING_NOT_AVAILABLE",
+            )
+
+        # 7. Update target application to ACCEPTED
+        target_app.application_status = ApplicationStatus.ACCEPTED
+        await target_app.save()
+
+        # 8. Update all other PENDING applications for this booking to REJECTED
+        other_apps = await JobApplication.find(
+            JobApplication.booking_id == b_oid,
+            JobApplication.id != app_oid,
+            JobApplication.application_status == ApplicationStatus.PENDING,
+        ).to_list()
+
+        for other_app in other_apps:
+            other_app.application_status = ApplicationStatus.REJECTED
+            await other_app.save()
+
+        w_name = worker_user.full_name if worker_user else "Worker"
+        w_phone = worker_user.phone if worker_user else None
+        w_avatar = getattr(worker_profile, "avatar_url", None) if worker_profile else None
+        w_skills = getattr(worker_profile, "skills", []) if worker_profile else []
+        w_radius = getattr(worker_profile, "working_radius_km", 10.0) if worker_profile else 10.0
+
+        return CustomerApplicantItemResponse(
+            application_id=str(target_app.id),
+            booking_id=str(target_app.booking_id),
+            worker_id=str(target_app.worker_id),
+            worker_name=w_name,
+            worker_phone=w_phone,
+            worker_avatar_url=w_avatar,
+            worker_skills=w_skills,
+            working_radius_km=w_radius,
+            cover_letter=target_app.cover_letter,
+            proposed_price=target_app.proposed_price,
+            application_status=target_app.application_status,
+            applied_at=target_app.applied_at,
+        )

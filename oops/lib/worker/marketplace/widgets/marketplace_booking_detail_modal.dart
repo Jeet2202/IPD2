@@ -475,6 +475,8 @@ class _MarketplaceBookingDetailModalState
         errorMsg = 'Please complete your worker profile before applying for jobs.';
       } else if (errorMsg.contains('WORKER_NOT_AVAILABLE') || errorMsg.contains('AVAILABLE')) {
         errorMsg = 'Your status must be set to AVAILABLE to apply for jobs.';
+      } else if (errorMsg.contains('SKILL_MISMATCH')) {
+        errorMsg = 'You do not have the required skill registered for this inspection.';
       } else if (errorMsg.contains('OUTSIDE_SERVICE_RADIUS')) {
         errorMsg = 'This job is outside your designated service radius.';
       } else if (errorMsg.contains('DUPLICATE_APPLICATION')) {

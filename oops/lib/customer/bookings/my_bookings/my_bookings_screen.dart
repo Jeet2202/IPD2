@@ -6,6 +6,7 @@ import '../../../models/booking_model.dart';
 import '../../../models/service_model.dart';
 import '../../../services/api_service.dart';
 import '../../../services/booking_service.dart';
+import '../../../services/job_application_service.dart';
 import '../../../l10n/app_translations.dart';
 import '../../../widgets/language_selector_widget.dart';
 
@@ -717,22 +718,28 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                 // ── Applicant count badge (only for PENDING marketplace bookings) ──
                 if (b.isPending && b.applicantCount > 0) ...[
                   SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFBFDBFE)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.people_alt_rounded, size: 15, color: Color(0xFF2563EB)),
-                        SizedBox(width: 8),
-                        Text(
-                          '${b.applicantCount} worker${b.applicantCount == 1 ? '' : 's'} have applied for this job',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF1D4ED8)),
-                        ),
-                      ],
+                  InkWell(
+                    onTap: () => _showApplicantsModal(context, b.id),
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFBFDBFE)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.people_alt_rounded, size: 15, color: Color(0xFF2563EB)),
+                          SizedBox(width: 8),
+                          Text(
+                            '${b.applicantCount} worker${b.applicantCount == 1 ? '' : 's'} have applied — View Applicants',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF1D4ED8)),
+                          ),
+                          Spacer(),
+                          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Color(0xFF2563EB)),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -791,6 +798,274 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showApplicantsModal(BuildContext context, String bookingId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) {
+        return _CustomerApplicantsModal(
+          bookingId: bookingId,
+          onAccepted: () {
+            _fetchBookings(isSilent: true);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CustomerApplicantsModal extends StatefulWidget {
+  final String bookingId;
+  final VoidCallback onAccepted;
+
+  const _CustomerApplicantsModal({
+    required this.bookingId,
+    required this.onAccepted,
+  });
+
+  @override
+  State<_CustomerApplicantsModal> createState() => _CustomerApplicantsModalState();
+}
+
+class _CustomerApplicantsModalState extends State<_CustomerApplicantsModal> {
+  bool _loading = true;
+  String? _error;
+  List<dynamic> _applicants = [];
+  String? _acceptingAppId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadApplicants();
+  }
+
+  Future<void> _loadApplicants() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final res = await JobApplicationService.instance.fetchBookingApplicants(widget.bookingId);
+      setState(() {
+        _applicants = res['applicants'] as List<dynamic>? ?? [];
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _handleAccept(String appId) async {
+    setState(() {
+      _acceptingAppId = appId;
+    });
+    try {
+      await JobApplicationService.instance.acceptApplicant(widget.bookingId, appId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Worker accepted successfully! Booking is now assigned.'),
+          backgroundColor: Color(0xFF10B981),
+        ),
+      );
+      widget.onAccepted();
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to accept worker: $e'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+      setState(() {
+        _acceptingAppId = null;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 10, bottom: 6),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Job Applicants',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.grey),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1),
+          Expanded(
+            child: _loading
+                ? Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                            _error!,
+                            style: TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : _applicants.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No applicants yet.',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          )
+                        : ListView.separated(
+                            padding: EdgeInsets.all(16),
+                            itemCount: _applicants.length,
+                            separatorBuilder: (_, __) => SizedBox(height: 12),
+                            itemBuilder: (ctx, index) {
+                              final app = _applicants[index] as Map<String, dynamic>;
+                              final appId = app['application_id'] as String;
+                              final workerName = app['worker_name'] as String? ?? 'Worker';
+                              final skills = (app['worker_skills'] as List<dynamic>?)?.cast<String>() ?? [];
+                              final status = app['application_status'] as String? ?? 'pending';
+                              final isPending = status.toLowerCase() == 'pending';
+                              final isAccepted = status.toLowerCase() == 'accepted';
+                              final isProcessing = _acceptingAppId == appId;
+
+                              return Container(
+                                padding: EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: isAccepted ? Color(0xFFECFDF5) : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isAccepted ? Color(0xFFA7F3D0) : Colors.grey.shade200,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: Color(0xFF2563EB),
+                                          child: Text(
+                                            workerName.isNotEmpty ? workerName[0].toUpperCase() : 'W',
+                                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                workerName,
+                                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
+                                              ),
+                                              if (skills.isNotEmpty) ...[
+                                                SizedBox(height: 2),
+                                                Text(
+                                                  'Skills: ${skills.join(', ')}',
+                                                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: isAccepted
+                                                ? Color(0xFFD1FAE5)
+                                                : isPending
+                                                    ? Color(0xFFEFF6FF)
+                                                    : Color(0xFFF3F4F6),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            status.toUpperCase(),
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: isAccepted
+                                                  ? Color(0xFF047857)
+                                                  : isPending
+                                                      ? Color(0xFF1D4ED8)
+                                                      : Color(0xFF6B7280),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    if (app['cover_letter'] != null && (app['cover_letter'] as String).isNotEmpty) ...[
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Note: ${app['cover_letter']}',
+                                        style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Color(0xFF4B5563)),
+                                      ),
+                                    ],
+                                    if (isPending) ...[
+                                      SizedBox(height: 12),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: _acceptingAppId != null ? null : () => _handleAccept(appId),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF10B981),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                            padding: EdgeInsets.symmetric(vertical: 10),
+                                          ),
+                                          child: isProcessing
+                                              ? SizedBox(
+                                                  height: 16,
+                                                  width: 16,
+                                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                                )
+                                              : Text(
+                                                  'Accept Worker',
+                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+          ),
+        ],
       ),
     );
   }
