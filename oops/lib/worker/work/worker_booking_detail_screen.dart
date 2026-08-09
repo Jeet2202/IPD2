@@ -16,6 +16,7 @@ import '../../widgets/review_display_card.dart';
 import '../../widgets/booking_communication_section.dart';
 import '../../widgets/worker_voice_summary_button.dart';
 import '../../services/socket_service.dart';
+import '../../services/worker_tracking_service.dart';
 import '../quotations/quotation_form_screen.dart';
 import 'worker_complete_job_dialog.dart';
 import '../../l10n/app_translations.dart';
@@ -213,12 +214,28 @@ class _WorkerBookingDetailScreenState
     return raw.length > 120 ? '${raw.substring(0, 120)}...' : raw;
   }
 
-  void _handleStartTravel() {
-    _performAction(() => BookingService.instance.startTravel(_booking.id));
+  void _handleStartTravel() async {
+    await _performAction(() => BookingService.instance.startTravel(_booking.id));
+    if (_booking.isWorkerEnRoute) {
+      try {
+        await WorkerTrackingService.instance.startTracking(_booking.id);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Tracking issue: $e')),
+          );
+        }
+      }
+      final addr = _booking.addressSnapshot;
+      if (addr != null) {
+        await _openMapsForAddress(addr);
+      }
+    }
   }
 
-  void _handleArrived() {
-    _performAction(() => BookingService.instance.markArrived(_booking.id));
+  void _handleArrived() async {
+    await WorkerTrackingService.instance.stopTracking();
+    await _performAction(() => BookingService.instance.markArrived(_booking.id));
   }
 
   void _handleStartWork() {

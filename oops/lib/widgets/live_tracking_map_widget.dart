@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart' as ll;
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_translations.dart';
 
 class LiveTrackingMapWidget extends StatefulWidget {
@@ -28,18 +29,84 @@ class LiveTrackingMapWidget extends StatefulWidget {
 }
 
 class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
-  late final MapController _mapController;
+  MapboxMap? _mapboxMap;
+  PointAnnotationManager? _pointAnnotationManager;
+  PointAnnotation? _workerAnnotation;
+  PointAnnotation? _customerAnnotation;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
+    final token = dotenv.env['MAPBOX_PUBLIC_TOKEN'] ?? 'YOUR_MAPBOX_PUBLIC_TOKEN_HERE';
+    MapboxOptions.setAccessToken(token);
   }
 
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
+  void _onMapCreated(MapboxMap mapboxMap) async {
+    _mapboxMap = mapboxMap;
+    
+    _pointAnnotationManager = await mapboxMap.annotations.createPointAnnotationManager();
+
+    // Create Customer Annotation
+    _customerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
+      geometry: Point(coordinates: Position(widget.customerLng, widget.customerLat)).toJson(),
+      iconImage: 'marker-15', // Built-in mapbox marker
+    ));
+
+    // Create Worker Annotation if exists
+    if (widget.workerLat != null && widget.workerLng != null) {
+      _createOrUpdateWorkerAnnotation(widget.workerLat!, widget.workerLng!);
+    }
+  }
+
+  Future<void> _createOrUpdateWorkerAnnotation(double lat, double lng) async {
+    if (_pointAnnotationManager == null) return;
+    
+    final point = Point(coordinates: Position(lng, lat)).toJson();
+    
+    if (_workerAnnotation == null) {
+        _workerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
+            geometry: point,
+            iconImage: 'car-15', // Built-in mapbox car icon
+            iconSize: 2.0,
+        ));
+    } else {
+        _workerAnnotation!.geometry = point;
+        _pointAnnotationManager!.update(_workerAnnotation!);
+    }
+    _fitCamera(lat, lng);
+  }
+
+  void _fitCamera(double workerLat, double workerLng) {
+     if (_mapboxMap == null) return;
+     // To fit both, calculate bounds
+     final swLat = workerLat < widget.customerLat ? workerLat : widget.customerLat;
+     final neLat = workerLat > widget.customerLat ? workerLat : widget.customerLat;
+     final swLng = workerLng < widget.customerLng ? workerLng : widget.customerLng;
+     final neLng = workerLng > widget.customerLng ? workerLng : widget.customerLng;
+
+     // Add padding
+     final latDiff = neLat - swLat;
+     final lngDiff = neLng - swLng;
+
+     final paddedSwLat = swLat - (latDiff * 0.2);
+     final paddedNeLat = neLat + (latDiff * 0.2);
+     final paddedSwLng = swLng - (lngDiff * 0.2);
+     final paddedNeLng = neLng + (lngDiff * 0.2);
+
+     final cameraOptions = _mapboxMap!.cameraForCoordinateBounds(
+         CoordinateBounds(
+             southwest: Point(coordinates: Position(paddedSwLng, paddedSwLat)).toJson(),
+             northeast: Point(coordinates: Position(paddedNeLng, paddedNeLat)).toJson(),
+             infiniteBounds: false,
+         ),
+         MbxEdgeInsets(top: 50.0, left: 50.0, bottom: 50.0, right: 50.0),
+         0.0, // bearing
+         0.0  // pitch
+     );
+     
+     cameraOptions.then((options) {
+        _mapboxMap!.setCamera(options);
+     });
   }
 
   @override
@@ -47,26 +114,9 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
     super.didUpdateWidget(oldWidget);
     if (widget.workerLat != oldWidget.workerLat || widget.workerLng != oldWidget.workerLng) {
       if (widget.workerLat != null && widget.workerLng != null) {
-        _fitBounds();
+        _createOrUpdateWorkerAnnotation(widget.workerLat!, widget.workerLng!);
       }
     }
-  }
-
-  void _fitBounds() {
-    if (widget.workerLat == null || widget.workerLng == null) return;
-    
-    final bounds = LatLngBounds.fromPoints([
-      ll.LatLng(widget.customerLat, widget.customerLng),
-      ll.LatLng(widget.workerLat!, widget.workerLng!),
-    ]);
-
-    // Add padding around the bounds
-    _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(50.0),
-      ),
-    );
   }
 
   @override
@@ -92,7 +142,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
                 const Icon(Icons.location_on_rounded, color: Color(0xFF2563EB), size: 20),
                 const SizedBox(width: 8),
                 Text('live_worker_location'.tr(context),
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: Color(0xFF0F172A)),
                 ),
                 const Spacer(),
                 if (widget.etaMinutes != null)
@@ -120,58 +170,15 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
             height: 250,
             child: Stack(
               children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: hasWorkerLocation 
-                        ? ll.LatLng(widget.workerLat!, widget.workerLng!)
-                        : ll.LatLng(widget.customerLat, widget.customerLng),
-                    initialZoom: 14.0,
-                    onMapReady: () {
-                      if (hasWorkerLocation) {
-                        _fitBounds();
-                      }
-                    },
+                MapWidget(
+                  onMapCreated: _onMapCreated,
+                  cameraOptions: CameraOptions(
+                      center: Point(coordinates: Position(
+                          hasWorkerLocation ? widget.workerLng! : widget.customerLng, 
+                          hasWorkerLocation ? widget.workerLat! : widget.customerLat
+                      )).toJson(),
+                      zoom: 14.0,
                   ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.ally.app',
-                      maxZoom: 19,
-                    ),
-                    if (hasWorkerLocation)
-                      PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: [
-                              ll.LatLng(widget.workerLat!, widget.workerLng!),
-                              ll.LatLng(widget.customerLat, widget.customerLng),
-                            ],
-                            strokeWidth: 3.0,
-                            color: const Color(0xFF2563EB).withOpacity(0.5),
-                          ),
-                        ],
-                      ),
-                    MarkerLayer(
-                      markers: [
-                        // Customer Marker
-                        Marker(
-                          point: ll.LatLng(widget.customerLat, widget.customerLng),
-                          width: 40,
-                          height: 40,
-                          child: const Icon(Icons.home_rounded, color: Color(0xFFEF4444), size: 30),
-                        ),
-                        // Worker Marker
-                        if (hasWorkerLocation)
-                          Marker(
-                            point: ll.LatLng(widget.workerLat!, widget.workerLng!),
-                            width: 40,
-                            height: 40,
-                            child: const Icon(Icons.directions_car_rounded, color: Color(0xFF2563EB), size: 30),
-                          ),
-                      ],
-                    ),
-                  ],
                 ),
                 
                 // Offline overlay / waiting

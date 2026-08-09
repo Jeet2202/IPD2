@@ -67,6 +67,7 @@ from app.uploads.router import router as uploads_router
 from app.verification.router import router as verification_router
 from app.worker.router import router as worker_router
 from app.payments.router import router as payments_router
+from app.tracking.router import router as tracking_router
 
 # ---------------------------------------------------------------------------
 # V1 Aggregate Router
@@ -340,6 +341,12 @@ v1_router.include_router(
     sockets_router,
     prefix="/sockets",
     tags=["Real-Time"],
+)
+
+# --- Live Tracking ---
+v1_router.include_router(
+    tracking_router,
+    prefix="",
 )
 
 # --- Payments (Razorpay) ---
