@@ -19,7 +19,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
   final _bioController = TextEditingController();
   final _experienceController = TextEditingController();
   final _hourlyRateController = TextEditingController();
-  final _customSkillController = TextEditingController();
 
   double _workingRadiusKm = 10.0;
   String _availability = 'available';
@@ -34,17 +33,13 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   final ImagePicker _picker = ImagePicker();
 
-  List<String> _predefinedSkills = [
-    'electrical',
-    'plumbing',
-    'carpentry',
-    'ac-repair',
-    'cleaning',
-    'painting',
-    'appliance-repair',
-    'pest-control',
-    'gardening',
-    'mechanic'
+  final List<Map<String, dynamic>> _skillOptions = const [
+    {'id': 'plumbing', 'label': 'Plumbing', 'dbSlugs': ['plumbing']},
+    {'id': 'electrical', 'label': 'Electrical', 'dbSlugs': ['electrical']},
+    {'id': 'cleaning', 'label': 'Cleaning', 'dbSlugs': ['cleaning']},
+    {'id': 'ac_appliance', 'label': 'AC & Appliance Repair', 'dbSlugs': ['ac-repair', 'appliance-repair']},
+    {'id': 'painting', 'label': 'Painting', 'dbSlugs': ['painting']},
+    {'id': 'carpentry', 'label': 'Carpentry', 'dbSlugs': ['carpentry']},
   ];
 
   final Map<String, String> _availableLanguages = {
@@ -69,13 +64,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
 
   Future<void> _loadWorkerProfile() async {
     try {
-      try {
-        final fetchedSkills = await AuthService.instance.getValidSkills();
-        if (fetchedSkills.isNotEmpty) {
-          _predefinedSkills = fetchedSkills;
-        }
-      } catch (_) {}
-
       final res = await AuthService.instance.fetchWorkerProfile();
       if (mounted) {
         setState(() {
@@ -231,25 +219,7 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     );
   }
 
-  void _addCustomSkill() {
-    final text = _customSkillController.text.trim().toLowerCase();
-    if (text.isEmpty) return;
-    if (!_predefinedSkills.contains(text)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invalid skill "$text". Must be a canonical category (e.g. electrical, plumbing).'),
-          backgroundColor: Colors.amber[900],
-        ),
-      );
-      return;
-    }
-    if (!_selectedSkills.contains(text)) {
-      setState(() {
-        _selectedSkills.add(text);
-        _customSkillController.clear();
-      });
-    }
-  }
+
 
   Future<void> _saveWorkerProfile() async {
     if (!_formKey.currentState!.validate()) return;
@@ -302,7 +272,6 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
     _bioController.dispose();
     _experienceController.dispose();
     _hourlyRateController.dispose();
-    _customSkillController.dispose();
     super.dispose();
   }
 
@@ -497,44 +466,36 @@ class _WorkerEditProfileScreenState extends State<WorkerEditProfileScreen> {
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: _predefinedSkills.map((s) {
-                          final isSelected = _selectedSkills.contains(s);
+                        children: _skillOptions.map((opt) {
+                          final label = opt['label'] as String;
+                          final dbSlugs = opt['dbSlugs'] as List<String>;
+                          final isSelected = dbSlugs.any((slug) => _selectedSkills.contains(slug));
+
                           return FilterChip(
-                            label: Text(s.replaceAll('_', ' '), style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF0F172A), fontSize: 12)),
+                            label: Text(
+                              label,
+                              style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF0F172A), fontSize: 12),
+                            ),
                             selected: isSelected,
                             selectedColor: const Color(0xFF2563EB),
                             backgroundColor: const Color(0xFFF1F5F9),
                             onSelected: (selected) {
                               setState(() {
                                 if (selected) {
-                                  _selectedSkills.add(s);
+                                  for (final slug in dbSlugs) {
+                                    if (!_selectedSkills.contains(slug)) {
+                                      _selectedSkills.add(slug);
+                                    }
+                                  }
                                 } else {
-                                  _selectedSkills.remove(s);
+                                  for (final slug in dbSlugs) {
+                                    _selectedSkills.remove(slug);
+                                  }
                                 }
                               });
                             },
                           );
                         }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _customSkillController,
-                              decoration: InputDecoration(
-                                hintText: 'add_custom_skill_hint'.tr(context),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_rounded, color: Color(0xFF2563EB), size: 32),
-                            onPressed: _addCustomSkill,
-                          ),
-                        ],
                       ),
 
                       const SizedBox(height: 20),
