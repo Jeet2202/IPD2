@@ -4,6 +4,7 @@ import 'app_routes.dart';
 import '../../models/address_model.dart';
 import '../../services/location_service.dart';
 import '../../utils/token_storage.dart';
+import 'package:latlong2/latlong.dart' as ll;
 
 // ── Role Selection ─────────────────────────────────────────────────────────────
 import '../role_selection/role_selection_screen.dart';
@@ -528,7 +529,8 @@ class AppRouter {
 
       case AppRoutes.mapPicker:
         final initialLoc = settings.arguments as LatLng?;
-        return _build(MapPickerScreen(initialLocation: initialLoc), settings);
+        final mappedLoc = initialLoc != null ? ll.LatLng(initialLoc.latitude, initialLoc.longitude) : null;
+        return _build(MapPickerScreen(initialLocation: mappedLoc), settings);
 
       case AppRoutes.paymentMethods:
         return _build(const PaymentMethodsScreen(), settings);

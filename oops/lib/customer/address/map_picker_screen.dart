@@ -1,6 +1,6 @@
 // File: lib/customer/address/map_picker_screen.dart
 import 'package:flutter/material.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Size;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:latlong2/latlong.dart' as ll;
 
@@ -60,11 +60,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       final cameraState = await _mapboxMap!.getCameraState();
       
       // Parse GeoJSON Point map to get coordinates
-      final centerMap = cameraState.center;
-      if (centerMap != null && centerMap is Map) {
-          final coordinates = centerMap['coordinates'] as List;
-          final lng = (coordinates[0] as num).toDouble();
-          final lat = (coordinates[1] as num).toDouble();
+      final centerPoint = cameraState.center;
+      if (centerPoint != null) {
+          final lng = centerPoint.coordinates.lng.toDouble();
+          final lat = centerPoint.coordinates.lat.toDouble();
           
           setState(() {
             _selectedLocation = ll.LatLng(lat, lng);
@@ -94,7 +93,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
       if (_mapboxMap != null) {
         _mapboxMap!.setCamera(CameraOptions(
-            center: Point(coordinates: Position(loc.longitude, loc.latitude)).toJson(),
+            center: Point(coordinates: Position(loc.longitude, loc.latitude)),
             zoom: 16.0,
         ));
       }
@@ -122,7 +121,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       _isGeocodingLoading = true;
     });
 
-    final result = await LocationService.instance.reverseGeocode(_selectedLocation);
+    final result = await LocationService.instance.reverseGeocode(
+      LatLng(_selectedLocation.latitude, _selectedLocation.longitude)
+    );
 
     if (!mounted) return;
     setState(() {
@@ -139,7 +140,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   }
 
   Future<void> _confirm() async {
-    final result = await LocationService.instance.reverseGeocode(_selectedLocation);
+    final result = await LocationService.instance.reverseGeocode(
+      LatLng(_selectedLocation.latitude, _selectedLocation.longitude)
+    );
     if (!mounted) return;
     Navigator.pop(
       context,
@@ -270,7 +273,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 center: Point(coordinates: Position(
                     _selectedLocation.longitude, 
                     _selectedLocation.latitude
-                )).toJson(),
+                )),
                 zoom: _currentZoom,
             ),
             onCameraChangeListener: (CameraChangedEventData event) {

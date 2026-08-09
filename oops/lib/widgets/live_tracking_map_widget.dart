@@ -48,7 +48,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
 
     // Create Customer Annotation
     _customerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
-      geometry: Point(coordinates: Position(widget.customerLng, widget.customerLat)).toJson(),
+      geometry: Point(coordinates: Position(widget.customerLng, widget.customerLat)),
       iconImage: 'marker-15', // Built-in mapbox marker
     ));
 
@@ -61,7 +61,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
   Future<void> _createOrUpdateWorkerAnnotation(double lat, double lng) async {
     if (_pointAnnotationManager == null) return;
     
-    final point = Point(coordinates: Position(lng, lat)).toJson();
+    final point = Point(coordinates: Position(lng, lat));
     
     if (_workerAnnotation == null) {
         _workerAnnotation = await _pointAnnotationManager!.create(PointAnnotationOptions(
@@ -95,13 +95,15 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
 
      final cameraOptions = _mapboxMap!.cameraForCoordinateBounds(
          CoordinateBounds(
-             southwest: Point(coordinates: Position(paddedSwLng, paddedSwLat)).toJson(),
-             northeast: Point(coordinates: Position(paddedNeLng, paddedNeLat)).toJson(),
+             southwest: Point(coordinates: Position(paddedSwLng, paddedSwLat)),
+             northeast: Point(coordinates: Position(paddedNeLng, paddedNeLat)),
              infiniteBounds: false,
          ),
          MbxEdgeInsets(top: 50.0, left: 50.0, bottom: 50.0, right: 50.0),
          0.0, // bearing
-         0.0  // pitch
+         0.0, // pitch
+         null, // maxZoom
+         null  // offset
      );
      
      cameraOptions.then((options) {
@@ -176,7 +178,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget> {
                       center: Point(coordinates: Position(
                           hasWorkerLocation ? widget.workerLng! : widget.customerLng, 
                           hasWorkerLocation ? widget.workerLat! : widget.customerLat
-                      )).toJson(),
+                      )),
                       zoom: 14.0,
                   ),
                 ),

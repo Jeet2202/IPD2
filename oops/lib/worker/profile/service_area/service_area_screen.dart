@@ -8,6 +8,7 @@ import '../../../widgets/location_search_bar.dart';
 import '../../../customer/address/map_picker_screen.dart';
 import '../../../l10n/app_translations.dart';
 import '../../../widgets/language_selector_widget.dart';
+import 'package:latlong2/latlong.dart' as ll;
 
 class WorkerServiceAreaScreen extends StatefulWidget {
   const WorkerServiceAreaScreen({super.key});
@@ -113,10 +114,14 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
 
   /// Pick location interactively on Map
   Future<void> _pickOnMap() async {
+    final mappedLoc = _detectedLocation != null 
+        ? ll.LatLng(_detectedLocation!.latitude, _detectedLocation!.longitude) 
+        : null;
+        
     final MapPickerResult? result = await Navigator.push<MapPickerResult>(
       context,
       MaterialPageRoute(
-        builder: (ctx) => MapPickerScreen(initialLocation: _detectedLocation),
+        builder: (ctx) => MapPickerScreen(initialLocation: mappedLoc),
       ),
     );
 
@@ -124,7 +129,7 @@ class _WorkerServiceAreaScreenState extends State<WorkerServiceAreaScreen> {
       final addressLine = result.address.addressLine ??
           '${result.location.latitude.toStringAsFixed(4)}, ${result.location.longitude.toStringAsFixed(4)}';
       setState(() {
-        _detectedLocation = result.location;
+        _detectedLocation = LatLng(result.location.latitude, result.location.longitude);
         _detectedAddress = addressLine;
       });
 
